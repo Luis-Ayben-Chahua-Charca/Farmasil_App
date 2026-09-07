@@ -1,0 +1,12 @@
+# Artefactos del entorno de trabajo
+.claude/
+.claude/settings.local.json
+AGENTS.md
+CLAUDE.md
+*.local.json
+
+# Temporales de ofimática
+~$*.docx
+~$*.xlsx
+.DS_Store
+Thumbs.db
