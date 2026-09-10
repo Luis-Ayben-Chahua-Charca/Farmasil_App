@@ -1,46 +1,5 @@
 # Diccionario de Datos — DB_FARMASIL
 
-**Versión:** 04.00
-**Fecha:** 05/09/2026
-**Autor:** AUT-0001
-**Origen:** Diccionario de Datos v02.00 y `Cambios_Modelo_ER_DB_FARMASIL.md`
-
-> **Cambios aplicados en esta versión.** Los cuatro cambios pendientes identificados durante la revisión de las ilaciones quedaron incorporados al esquema:
->
-> | # | Tabla | Cambio | Requisito que lo exige |
-> | --- | --- | --- | --- |
-> | 1 | `TBL_REGISTRO_VENTAS` | Se agregó `id_usuario` como clave foránea hacia `TBL_USUARIOS` | EDU-0010 y EDU-0013. La dueña confirmó que requiere saber qué personal realiza cada venta. `TBL_ORDENES_DEVOLUCION` ya registraba al usuario responsable; la tabla de ventas no. Desbloquea ILA-0021. |
-> | 2 | `TBL_PRODUCTOS` | Se agregó `numero_lote` | EDU-0002 y EDU-0004. El campo ya figuraba en el modelo ER pero nunca se trasladó al diccionario. Desbloquea ILA-0005. |
-> | 3 | `TBL_PRODUCTOS` | Se amplió el dominio de `estado_producto` con el valor `'Descontinuado'` | ILA-0008. Necesario para la baja lógica de productos con histórico de ventas. |
-> | 4 | `TBL_COMPROBANTES_TRIBUTARIOS` | Se agregó `numero_comprobante` con restricción de unicidad | ILA-0009. `id_comprobante` es un identificador interno autoincremental, no el número de serie del documento fiscal, que es el dato que se imprime y se declara. |
->
-> **Alineación con el motor de base de datos (v03.00).** El diccionario declaraba tipos genéricos que no existen como tales en SQL Server Express, que es el motor exigido por RNF-0008:
->
-> | Tipo anterior | Tipo corregido | Motivo |
-> | --- | --- | --- |
-> | `BOOLEAN` | `BIT` | SQL Server no tiene tipo booleano; el equivalente es `BIT`. Afectaba a `es_lote_defectuoso`. |
-> | `TEXT` | `NVARCHAR(MAX)` | `TEXT` está obsoleto en SQL Server y no admite las operaciones de comparación habituales. Afectaba a `comentario` y `motivo_advertencia`. |
-> | `VARCHAR(n)` | `NVARCHAR(n)` | Necesario para almacenar tildes y la letra ñ sin depender de la intercalación del servidor. Afecta a razones sociales, nombres de medicamentos y motivos de advertencia. |
-> | `INTEGER` | `INT` | `INTEGER` no es la palabra reservada de SQL Server. |
-> | `DATETIME` | `DATETIME2` | `DATETIME` está desaconsejado por Microsoft; `DATETIME2` es el tipo que corresponde a `DateTime` de .NET con precisión completa. |
->
-> Adicionalmente se reconstruyó la totalidad del documento en formato de tabla legible: la versión 02.00 provenía de una exportación que había fragmentado las columnas y dejado descripciones partidas fuera de sus celdas, lo que hacía imposible leer varias definiciones.
->
-> **Incorporación de `TBL_LOTES` (v04.00).** Tras la decisión del equipo se resolvió el punto más frágil del modelo. Hasta la versión 03.00 una fila de `TBL_PRODUCTOS` era simultáneamente el producto y su único lote, lo que impedía que un mismo medicamento conviviera en el estante en remesas con vencimientos distintos, obligaba a bloquear el producto entero cuando solo vencía una remesa, y hacía imposible rastrear qué lote se vendió ante una alerta sanitaria de DIGEMID, funcionalidad que la dueña pidió expresamente en la Sección 6 del Registro de Entrevista 1.
->
-> | # | Tabla | Cambio |
-> | --- | --- | --- |
-> | 1 | `TBL_LOTES` | **Tabla nueva.** Recibe `numero_lote`, `fecha_vencimiento` y `stock_actual`, que salen de `TBL_PRODUCTOS`, más `estado_lote` y `fecha_ingreso`. Relación 1:N identificadora desde `TBL_PRODUCTOS`. |
-> | 2 | `TBL_PRODUCTOS` | Queda como catálogo del medicamento: nombre, acción terapéutica, precio, proveedor y estado. Pierde `numero_lote`, `fecha_vencimiento` y `stock_actual`. El valor `'Bloqueado por devolucion'` se traslada a `estado_lote`, ya que el bloqueo afecta a una remesa concreta y no al medicamento completo. |
-> | 3 | `TBL_DETALLE_VENTAS` | `id_producto` se sustituye por `id_lote`. Es el cambio que hace posible el rastreo sanitario: la venta queda vinculada a la remesa exacta que salió del estante. |
-> | 4 | `TBL_DETALLE_DEVOLUCION` | `id_producto` se sustituye por `id_lote`. El proveedor tramita devoluciones por número de lote, no por medicamento. |
-> | 5 | `TBL_PRODUCTOS_RETIRADOS` | Se agrega `numero_lote` a la copia histórica, para que el registro de retiro conserve la remesa afectada aunque el lote se elimine. |
-> | 6 | `TBL_RESTRICCIONES_VENTA` | **Sin cambios.** Una restricción clínica aplica al principio activo, no a la remesa, y sigue referenciando `id_producto`. |
->
-> Se incorpora además el **módulo 11, Gestión de lotes (EDU-0015)**, con las cuatro ilaciones y especificaciones que administran la nueva entidad. Los lotes no podían gestionarse dentro del módulo de inventario sin romper la regla de cuatro fases CRUD por educción que estructura este catálogo.
-
----
-
 ## 1. TBL_USUARIOS
 
 Almacena las credenciales y perfiles del personal de la farmacia que accede al sistema.
@@ -318,3 +277,45 @@ Estos puntos no se modificaron porque implican decisiones de alcance, no correcc
 3. **Stock mínimo.** No hay campo que permita alertar por bajo stock, funcionalidad que la dueña pidió expresamente y que corresponde a una de las pérdidas económicas que declaró.
 4. **Tipo y presentación del producto.** No existe un campo que distinga medicamento genérico de comercial, ni que permita un precio por unidad y otro por conjunto, ambos solicitados en la entrevista.
 5. **Gestión de la configuración de alertas.** `TBL_ALERTAS_VENCIMIENTO` no tiene ninguna educción que la administre: el umbral es hoy un valor fijo que nadie puede cambiar desde el sistema.
+
+
+**Versión:** 04.00
+**Fecha:** 05/09/2026
+**Autor:** AUT-0001
+**Origen:** Diccionario de Datos v02.00 y `Cambios_Modelo_ER_DB_FARMASIL.md`
+
+> **Cambios aplicados en esta versión.** Los cuatro cambios pendientes identificados durante la revisión de las ilaciones quedaron incorporados al esquema:
+>
+> | # | Tabla | Cambio | Requisito que lo exige |
+> | --- | --- | --- | --- |
+> | 1 | `TBL_REGISTRO_VENTAS` | Se agregó `id_usuario` como clave foránea hacia `TBL_USUARIOS` | EDU-0010 y EDU-0013. La dueña confirmó que requiere saber qué personal realiza cada venta. `TBL_ORDENES_DEVOLUCION` ya registraba al usuario responsable; la tabla de ventas no. Desbloquea ILA-0021. |
+> | 2 | `TBL_PRODUCTOS` | Se agregó `numero_lote` | EDU-0002 y EDU-0004. El campo ya figuraba en el modelo ER pero nunca se trasladó al diccionario. Desbloquea ILA-0005. |
+> | 3 | `TBL_PRODUCTOS` | Se amplió el dominio de `estado_producto` con el valor `'Descontinuado'` | ILA-0008. Necesario para la baja lógica de productos con histórico de ventas. |
+> | 4 | `TBL_COMPROBANTES_TRIBUTARIOS` | Se agregó `numero_comprobante` con restricción de unicidad | ILA-0009. `id_comprobante` es un identificador interno autoincremental, no el número de serie del documento fiscal, que es el dato que se imprime y se declara. |
+>
+> **Alineación con el motor de base de datos (v03.00).** El diccionario declaraba tipos genéricos que no existen como tales en SQL Server Express, que es el motor exigido por RNF-0008:
+>
+> | Tipo anterior | Tipo corregido | Motivo |
+> | --- | --- | --- |
+> | `BOOLEAN` | `BIT` | SQL Server no tiene tipo booleano; el equivalente es `BIT`. Afectaba a `es_lote_defectuoso`. |
+> | `TEXT` | `NVARCHAR(MAX)` | `TEXT` está obsoleto en SQL Server y no admite las operaciones de comparación habituales. Afectaba a `comentario` y `motivo_advertencia`. |
+> | `VARCHAR(n)` | `NVARCHAR(n)` | Necesario para almacenar tildes y la letra ñ sin depender de la intercalación del servidor. Afecta a razones sociales, nombres de medicamentos y motivos de advertencia. |
+> | `INTEGER` | `INT` | `INTEGER` no es la palabra reservada de SQL Server. |
+> | `DATETIME` | `DATETIME2` | `DATETIME` está desaconsejado por Microsoft; `DATETIME2` es el tipo que corresponde a `DateTime` de .NET con precisión completa. |
+>
+> Adicionalmente se reconstruyó la totalidad del documento en formato de tabla legible: la versión 02.00 provenía de una exportación que había fragmentado las columnas y dejado descripciones partidas fuera de sus celdas, lo que hacía imposible leer varias definiciones.
+>
+> **Incorporación de `TBL_LOTES` (v04.00).** Tras la decisión del equipo se resolvió el punto más frágil del modelo. Hasta la versión 03.00 una fila de `TBL_PRODUCTOS` era simultáneamente el producto y su único lote, lo que impedía que un mismo medicamento conviviera en el estante en remesas con vencimientos distintos, obligaba a bloquear el producto entero cuando solo vencía una remesa, y hacía imposible rastrear qué lote se vendió ante una alerta sanitaria de DIGEMID, funcionalidad que la dueña pidió expresamente en la Sección 6 del Registro de Entrevista 1.
+>
+> | # | Tabla | Cambio |
+> | --- | --- | --- |
+> | 1 | `TBL_LOTES` | **Tabla nueva.** Recibe `numero_lote`, `fecha_vencimiento` y `stock_actual`, que salen de `TBL_PRODUCTOS`, más `estado_lote` y `fecha_ingreso`. Relación 1:N identificadora desde `TBL_PRODUCTOS`. |
+> | 2 | `TBL_PRODUCTOS` | Queda como catálogo del medicamento: nombre, acción terapéutica, precio, proveedor y estado. Pierde `numero_lote`, `fecha_vencimiento` y `stock_actual`. El valor `'Bloqueado por devolucion'` se traslada a `estado_lote`, ya que el bloqueo afecta a una remesa concreta y no al medicamento completo. |
+> | 3 | `TBL_DETALLE_VENTAS` | `id_producto` se sustituye por `id_lote`. Es el cambio que hace posible el rastreo sanitario: la venta queda vinculada a la remesa exacta que salió del estante. |
+> | 4 | `TBL_DETALLE_DEVOLUCION` | `id_producto` se sustituye por `id_lote`. El proveedor tramita devoluciones por número de lote, no por medicamento. |
+> | 5 | `TBL_PRODUCTOS_RETIRADOS` | Se agrega `numero_lote` a la copia histórica, para que el registro de retiro conserve la remesa afectada aunque el lote se elimine. |
+> | 6 | `TBL_RESTRICCIONES_VENTA` | **Sin cambios.** Una restricción clínica aplica al principio activo, no a la remesa, y sigue referenciando `id_producto`. |
+>
+> Se incorpora además el **módulo 11, Gestión de lotes (EDU-0015)**, con las cuatro ilaciones y especificaciones que administran la nueva entidad. Los lotes no podían gestionarse dentro del módulo de inventario sin romper la regla de cuatro fases CRUD por educción que estructura este catálogo.
+
+---

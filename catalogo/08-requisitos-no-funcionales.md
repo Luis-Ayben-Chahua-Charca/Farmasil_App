@@ -1,10 +1,5 @@
 # Requisitos No Funcionales — FARMASIL
 
-> **Actualización del 05/09/2026.** Cambios respecto a la versión anterior:
-> - **RNF-0006 refundido a la versión 03.00.** Pasa de describir el control de acceso en una sola frase enumerativa a cubrir las cinco características de seguridad que el catálogo necesita: autenticación, identificación del usuario en la trazabilidad, autorización por rol, comportamiento ante intento no autorizado y protección de credenciales. Se detallan los motivos en el comentario del propio requisito.
-> - **RNF-0009 actualizado a la versión 05.00** para incorporar `TBL_LOTES`, que eleva el modelo a catorce tablas.
-> - El resto de los requisitos se reproduce sin cambios.
-
 ---
 
 | Código | RNF-0001 |
@@ -152,3 +147,9 @@ El sistema opera hoy con dos roles fijos, definidos por el cliente. Si en el fut
 No se incorpora ahora por tres razones. Ningún enunciado del cliente lo solicita, y sería la única educción del catálogo sin fuente trazable. La escala del negocio no lo justifica: un equipo de despliegue (RNF-0007), dos usuarios simultáneos (RNF-0003) y dos perfiles declarados por la dueña. Y convertir los permisos en datos modificables en tiempo de ejecución debilitaría la verificación: las precondiciones de las 44 ilaciones dejarían de garantizar quién puede ejecutar cada operación, para depender del contenido de una tabla.
 
 La escalabilidad se resuelve por la vía barata en la condición 3 de RNF-0006: al delegar los permisos concretos en la Matriz de Permisos en lugar de enumerarlos en el texto del requisito, incorporar un rol adicional afecta a un solo artefacto.
+
+
+> **Actualización del 05/09/2026.** Cambios respecto a la versión anterior:
+> - **RNF-0006 refundido a la versión 03.00.** Pasa de describir el control de acceso en una sola frase enumerativa a cubrir las cinco características de seguridad que el catálogo necesita: autenticación, identificación del usuario en la trazabilidad, autorización por rol, comportamiento ante intento no autorizado y protección de credenciales. Se detallan los motivos en el comentario del propio requisito.
+> - **RNF-0009 actualizado a la versión 05.00** para incorporar `TBL_LOTES`, que eleva el modelo a catorce tablas.
+> - El resto de los requisitos se reproduce sin cambios.

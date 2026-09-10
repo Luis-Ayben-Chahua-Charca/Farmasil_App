@@ -1,30 +1,5 @@
 # Educciones de Requisitos — FARMASIL
 
-> **Versión corregida y consolidada (v04.00 — 05/09/2026).** Cambios respecto a la versión anterior:
-> - Se completó el campo **Código ilación** en las 8 educciones. En la versión anterior las 8 decían `Pendiente`, lo que rompía la cadena de trazabilidad EDU→ILA→ESP exigida por el catálogo de requisitos.
-> - Se documentó la **reserva de los códigos EDU-0005 a EDU-0008**, que corresponden a requisitos reclasificados como no funcionales. El salto de numeración es intencional y no debe renumerarse.
-> - **EDU-0004, EDU-0011 y EDU-0012** tenían `Fuente = Ninguno`. Se corrigió: las tres se originan en el Registro de Entrevista 1, y se documentó en el campo Comentario la pregunta concreta que les dio origen, siguiendo el criterio del capítulo 4 del catálogo de requisitos.
-> - Se unificó el formato de fecha a `dd/mm/aaaa` y se retiró el marcado inconsistente heredado de la exportación del documento original.
-> - Se corrigieron tildes y mayúsculas en los nombres de EDU-0003 y EDU-0012.
-> - Se hizo explícito en EDU-0004 el umbral de 2 meses, que ya estaba declarado en EDU-0011 pero en EDU-0004 aparecía solo como "configuración del sistema". Ambas educciones ahora expresan el mismo criterio.
->
-> **Ampliación del 05/09/2026.** Tras una consulta posterior a la dueña de la farmacia se incorporaron dos educciones nuevas y se amplió una existente:
-> - **EDU-0013 (Gestión de usuarios)**, nueva. La dueña confirmó que requiere verificación de identidad para saber qué personal realiza cada venta. Es además el módulo que hace implementable a RNF-0006 (control de acceso y gestión de roles).
-> - **EDU-0014 (Gestión de proveedores)**, nueva. Formaliza el registro de las droguerías y distribuidoras con RUC, razón social y teléfono, dato que hasta ahora se usaba en el modelo (`TBL_PROVEEDORES`, referenciada desde productos y devoluciones) sin ninguna educción que lo respaldara.
-> - **EDU-0010 (Reportes)** se amplió para autorizar la administración de los reportes ya generados, resolviendo la contradicción con ILA-0023 e ILA-0024.
->
-> **Ampliación del 05/09/2026 (lotes).** Tras la decisión del equipo de incorporar `TBL_LOTES` al modelo, se agregó **EDU-0015 (Gestión de lotes)** y se ajustaron EDU-0002, EDU-0004 y EDU-0011, que hasta ahora describían el lote como un atributo del medicamento.
->
-> El inicio y cierre de sesión **no** se incorporan como educción: son un requisito de seguridad ya cubierto por RNF-0006, y una sesión no es una entidad sobre la que aplique el ciclo CRUD que estructura este catálogo.
-
-## Convenciones aplicadas
-
-- Código de educción: `EDU-DDDD`, correlativo, con los saltos de numeración documentados.
-- Versión: `DD.DD`, incrementada en cada refinamiento del requisito.
-- Fecha: `dd/mm/aaaa`, correspondiente a la versión vigente de la tabla.
-- Ningún campo queda vacío. Cuando no hay contenido se consigna `Ninguno`.
-- Componentes de mockup con guion (`VEN-BTN-CREAR-VENTA`); tablas y campos de base de datos con guion bajo (`DB_FARMASIL.TBL_PRODUCTOS`).
-
 ## Nota sobre códigos reservados
 
 Los códigos **EDU-0005, EDU-0006, EDU-0007 y EDU-0008** no se encuentran en uso. Los requisitos que ocupaban ese rango fueron analizados durante la trazabilidad y resultaron ser **requisitos no funcionales**, por lo que se retiraron de la etapa de educción y se trasladaron al catálogo de requisitos no funcionales (`RequisitosNoFuncionales.md`).
@@ -255,3 +230,30 @@ Los códigos se mantienen reservados y **no se reasignan**, de modo que el salto
 | Importancia | Vital |
 | Estado | Concluido |
 | Comentario | El presente requisito tuvo origen en la Sección 6 del Registro de Entrevista 1, en la pregunta sobre si el sistema debería permitir rastrear lotes específicos ante una alerta sanitaria o retiro de producto, respondida afirmativamente e indicando que la química farmacéutica recibe esas alertas de la DIGEMID. Sin una entidad de remesa, ese rastreo es imposible: el sistema no podría responder qué se vendió de un lote retirado.<br>Se constituye como educción propia y no como ampliación de EDU-0002 porque la remesa es una entidad distinta del medicamento, con su propio ciclo CRUD. Incorporarla al módulo de inventario habría dejado a esa educción con ocho operaciones, rompiendo la estructura de cuatro fases por educción que sigue todo el catálogo.<br>Pendiente asignar el código FUE definitivo al Registro de Entrevista 1 en el catálogo de fuentes. |
+
+
+
+> **Versión corregida y consolidada (v04.00 — 05/09/2026).** Cambios respecto a la versión anterior:
+> - Se completó el campo **Código ilación** en las 8 educciones. En la versión anterior las 8 decían `Pendiente`, lo que rompía la cadena de trazabilidad EDU→ILA→ESP exigida por el catálogo de requisitos.
+> - Se documentó la **reserva de los códigos EDU-0005 a EDU-0008**, que corresponden a requisitos reclasificados como no funcionales. El salto de numeración es intencional y no debe renumerarse.
+> - **EDU-0004, EDU-0011 y EDU-0012** tenían `Fuente = Ninguno`. Se corrigió: las tres se originan en el Registro de Entrevista 1, y se documentó en el campo Comentario la pregunta concreta que les dio origen, siguiendo el criterio del capítulo 4 del catálogo de requisitos.
+> - Se unificó el formato de fecha a `dd/mm/aaaa` y se retiró el marcado inconsistente heredado de la exportación del documento original.
+> - Se corrigieron tildes y mayúsculas en los nombres de EDU-0003 y EDU-0012.
+> - Se hizo explícito en EDU-0004 el umbral de 2 meses, que ya estaba declarado en EDU-0011 pero en EDU-0004 aparecía solo como "configuración del sistema". Ambas educciones ahora expresan el mismo criterio.
+>
+> **Ampliación del 05/09/2026.** Tras una consulta posterior a la dueña de la farmacia se incorporaron dos educciones nuevas y se amplió una existente:
+> - **EDU-0013 (Gestión de usuarios)**, nueva. La dueña confirmó que requiere verificación de identidad para saber qué personal realiza cada venta. Es además el módulo que hace implementable a RNF-0006 (control de acceso y gestión de roles).
+> - **EDU-0014 (Gestión de proveedores)**, nueva. Formaliza el registro de las droguerías y distribuidoras con RUC, razón social y teléfono, dato que hasta ahora se usaba en el modelo (`TBL_PROVEEDORES`, referenciada desde productos y devoluciones) sin ninguna educción que lo respaldara.
+> - **EDU-0010 (Reportes)** se amplió para autorizar la administración de los reportes ya generados, resolviendo la contradicción con ILA-0023 e ILA-0024.
+>
+> **Ampliación del 05/09/2026 (lotes).** Tras la decisión del equipo de incorporar `TBL_LOTES` al modelo, se agregó **EDU-0015 (Gestión de lotes)** y se ajustaron EDU-0002, EDU-0004 y EDU-0011, que hasta ahora describían el lote como un atributo del medicamento.
+>
+> El inicio y cierre de sesión **no** se incorporan como educción: son un requisito de seguridad ya cubierto por RNF-0006, y una sesión no es una entidad sobre la que aplique el ciclo CRUD que estructura este catálogo.
+
+## Convenciones aplicadas
+
+- Código de educción: `EDU-DDDD`, correlativo, con los saltos de numeración documentados.
+- Versión: `DD.DD`, incrementada en cada refinamiento del requisito.
+- Fecha: `dd/mm/aaaa`, correspondiente a la versión vigente de la tabla.
+- Ningún campo queda vacío. Cuando no hay contenido se consigna `Ninguno`.
+- Componentes de mockup con guion (`VEN-BTN-CREAR-VENTA`); tablas y campos de base de datos con guion bajo (`DB_FARMASIL.TBL_PRODUCTOS`).

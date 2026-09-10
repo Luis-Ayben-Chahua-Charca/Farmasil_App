@@ -1,45 +1,5 @@
 # Ilaciones de Requisitos — FARMASIL
 
-> **Versión corregida y consolidada (05/09/2026).** Las 32 ilaciones fueron revisadas contra el Diccionario de Datos v2.00, el documento de Cambios al Modelo ER, las educciones v04.00 y las especificaciones de los módulos 1-8. Resumen de las correcciones aplicadas:
->
-> **1. Nomenclatura de base de datos.** Las ilaciones invocaban tablas que no existen en el Diccionario de Datos: `INV_TBL_PRODUCTOS`, `VEN_TBL_REGISTRO_VENTAS`, `PAG_TBL_METODOS_PAGO`, `DOC_TBL_COMPROBANTES`, `DEV_TBL_ORDENES_DEVOLUCION` y `ALR_TBL_ALERTAS_RESTRICCION_VENTA`. El prefijo de módulo pertenece a los componentes de interfaz, no al esquema. Todas fueron reemplazadas por su nombre real (`TBL_PRODUCTOS`, `TBL_REGISTRO_VENTAS`, `TBL_METODOS_PAGO`, `TBL_COMPROBANTES_TRIBUTARIOS`, `TBL_ORDENES_DEVOLUCION`, `TBL_RESTRICCIONES_VENTA`). También se corrigió `BD_FARMASIL` por `DB_FARMASIL` y las referencias con guion bajo en vez de punto (`DB_FARMASIL_TBL_...`).
->
-> **2. Códigos malformados.** `ILA_0011`, `ILA_0012`, `ILA_0025`, `ILA_0026`, `ILA_0027` y `ILA_0028` usaban guion bajo. `EDU-00011` (cinco dígitos) aparecía en ILA-0026, ILA-0027 e ILA-0028. Corregidos.
->
-> **3. Venta de varios productos en una sola transacción.** Las ilaciones del módulo 1 modelaban la venta de un único producto por transacción e ignoraban por completo `TBL_DETALLE_VENTAS`, que ya existe en el modelo justamente para eso. Se reescribieron ILA-0001 a ILA-0004 para operar sobre la cabecera y su detalle. **No requiere cambio en la base de datos**: el modelo ya lo soporta, era la ilación la que estaba por detrás del modelo.
->
-> **4. Descuento de stock.** Ninguna ilación descontaba `stock_actual` al vender ni lo restituía al anular o devolver. El sistema podía vender indefinidamente sin afectar el inventario. Corregido en ILA-0001, ILA-0003, ILA-0004 y ILA-0025.
->
-> **5. Bajas físicas que rompen la integridad referencial.** Eliminar un producto, un método de pago, una venta o un comprobante de forma física rompe las claves foráneas del histórico y, en el caso de los comprobantes, es inadmisible tributariamente. Se convirtieron en bajas lógicas usando los campos de estado que el propio diccionario ya define, salvo en los casos donde la eliminación física es legítima.
->
-> **6. Precondiciones incoherentes.** Varias operaciones de creación exigían que la tabla destino ya tuviera entradas válidas, lo que hace imposible el primer registro (ILA-0009 es el caso más claro). Se reemplazaron por las precondiciones que la operación realmente necesita.
->
-> **7. Consistencia de artefactos.** ILA-0004 cargaba `ART-MKP-VEN-0003` en el procedimiento mientras declaraba `ART-MKP-VEN-0004` en artefactos asociados; ILA-0025 cargaba un mockup del módulo de ventas y declaraba sus artefactos como "Pendiente"; ILA-0028 declaraba `ART-MKP-DEV-0003` para una eliminación que carga `ART-MKP-DEV-0004`; `ART-MKP-DOC--0001` tenía doble guion.
->
-> **8. Normalización formal.** Se unificó el marcado (12 de las 32 tablas venían con la primera columna en negrita), se corrigieron los estados `conluido` y `Concluida`, la fecha inválida `2106//26`, la numeración perdida de los pasos en ILA-0003 y ILA-0019, el nombre de componente `DOC-TLB-COMPROBANTES`, y se unificaron los identificadores de interfaz del módulo 8, que usaban el prefijo `ALR_` mientras las especificaciones ya usaban `RES-`.
->
-> **Ampliación del 05/09/2026.** Se incorporaron los módulos 9 y 10 con ocho ilaciones nuevas (ILA-0033 a ILA-0040), derivadas de las educciones EDU-0013 (Gestión de usuarios) y EDU-0014 (Gestión de proveedores). Ambas tablas ya existían en el Diccionario de Datos y eran referenciadas por otros módulos, pero ninguna ilación las alimentaba: ILA-0025 exigía proveedores válidos como precondición sin que existiera procedimiento alguno para crearlos.
-> El inicio y cierre de sesión no se descomponen en ilaciones por estar cubiertos como requisito de seguridad en RNF-0006.
-> Con EDU-0010 ampliada, ILA-0023 e ILA-0024 dejan de contradecir a su educción padre y pasan a estado Concluido.
->
-> **Actualización del 05/09/2026 (nomenclatura y modelo).** Se aplicaron los cambios de la Guía de Estilo de Nomenclatura v03.00: prefijo **USR** para usuarios y **PRV** para proveedores, tipo **FEC** para todos los campos de fecha, y la unificación de los nombres de las cuatro fases del CRUD (CREAR, LEER, ACTUALIZAR, ELIMINAR más CONFIRMAR-SI / CONFIRMAR-NO). Se corrigió además **DEV-CMB-ESTADO-PRODUCTO**, que capturaba el motivo de la devolución y no el estado del producto.
-> Los cuatro cambios de base de datos del Anexo A quedaron aplicados en el Diccionario de Datos v03.00.
->
-> **Revisión de tipos de dato del 05/09/2026.** Se verificó cada componente contra el tipo del campo que captura en el Diccionario de Datos v03.00 y contra los controles disponibles en WPF según RNF-0008. Correcciones aplicadas: los importes y cantidades pasan al prefijo **NUM**; `es_lote_defectuoso`, que es un valor lógico, pasa de ComboBox a **CHK**; `alerta_digemid`, que es un código de texto libre, pasa de ComboBox a **TXT**; el producto de una alerta pasa de texto libre a **CMB**, porque la ilación necesita el identificador del producto para bloquearlo; los valores autogenerados o calculados pasan a **LBL**; la contraseña pasa a **PWD**, que corresponde al PasswordBox de WPF. Se detectó además que ILA-0025 nunca capturaba `cantidad_devolver` ni `comentario`, ambos campos declarados en el diccionario, uno de ellos NOT NULL.
->
-> **Ampliación del 05/09/2026 (lotes).** Tras la decisión del equipo de incorporar `TBL_LOTES` al modelo, se agregó el módulo 11 con ILA-0041 a ILA-0044 y se ajustaron las dieciséis ilaciones de los módulos 1, 2, 4 y 7. Los cambios de fondo: la venta descuenta de una remesa concreta según el criterio FEFO y registra su `id_lote` en el detalle, lo que hace posible el rastreo sanitario; el bloqueo por vencimiento pasa del medicamento a la remesa, de modo que una remesa vencida ya no impide vender las sanas del mismo estante; la devolución identifica la remesa que el proveedor exige; y el módulo de inventario queda reducido a los datos de catálogo del medicamento.
->
-> **Criterio de estado:** se mantiene `Concluido` cuando la corrección fue formal o de coherencia interna. Se marca `Pendiente` cuando el cambio exige una decisión externa a la ilación: un componente de mockup nuevo, un ajuste al diccionario de datos o una ampliación de la educción. El Anexo al final del documento lista esos pendientes.
-
-## Convenciones aplicadas
-
-- Componentes de interfaz: guion y prefijo de módulo (`VEN-BTN-CREAR-VENTA`). Prefijos vigentes: `VEN`, `INV`, `DOC`, `ALV`, `PAG`, `REP`, `DEV`, `RES`.
-- Tablas y campos de base de datos: guion bajo, siempre con el punto entre base de datos y tabla (`DB_FARMASIL.TBL_PRODUCTOS`).
-- Versión `DD.DD`, fecha `dd/mm/aaaa`, ningún campo vacío (`Ninguno` cuando no aplica).
-- Cada educción se descompone en cuatro ilaciones que representan las fases del CRUD: Crear, Leer, Actualizar y Eliminar.
-
----
-
 # Módulo 1 — Gestión de ventas (EDU-0001)
 
 | Código ilación | ILA-0001 |
@@ -951,3 +911,46 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Importancia | Vital |
 | Estado | Pendiente |
 | Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**. |
+
+
+
+
+> **Versión corregida y consolidada (05/09/2026).** Las 32 ilaciones fueron revisadas contra el Diccionario de Datos v2.00, el documento de Cambios al Modelo ER, las educciones v04.00 y las especificaciones de los módulos 1-8. Resumen de las correcciones aplicadas:
+>
+> **1. Nomenclatura de base de datos.** Las ilaciones invocaban tablas que no existen en el Diccionario de Datos: `INV_TBL_PRODUCTOS`, `VEN_TBL_REGISTRO_VENTAS`, `PAG_TBL_METODOS_PAGO`, `DOC_TBL_COMPROBANTES`, `DEV_TBL_ORDENES_DEVOLUCION` y `ALR_TBL_ALERTAS_RESTRICCION_VENTA`. El prefijo de módulo pertenece a los componentes de interfaz, no al esquema. Todas fueron reemplazadas por su nombre real (`TBL_PRODUCTOS`, `TBL_REGISTRO_VENTAS`, `TBL_METODOS_PAGO`, `TBL_COMPROBANTES_TRIBUTARIOS`, `TBL_ORDENES_DEVOLUCION`, `TBL_RESTRICCIONES_VENTA`). También se corrigió `BD_FARMASIL` por `DB_FARMASIL` y las referencias con guion bajo en vez de punto (`DB_FARMASIL_TBL_...`).
+>
+> **2. Códigos malformados.** `ILA_0011`, `ILA_0012`, `ILA_0025`, `ILA_0026`, `ILA_0027` y `ILA_0028` usaban guion bajo. `EDU-00011` (cinco dígitos) aparecía en ILA-0026, ILA-0027 e ILA-0028. Corregidos.
+>
+> **3. Venta de varios productos en una sola transacción.** Las ilaciones del módulo 1 modelaban la venta de un único producto por transacción e ignoraban por completo `TBL_DETALLE_VENTAS`, que ya existe en el modelo justamente para eso. Se reescribieron ILA-0001 a ILA-0004 para operar sobre la cabecera y su detalle. **No requiere cambio en la base de datos**: el modelo ya lo soporta, era la ilación la que estaba por detrás del modelo.
+>
+> **4. Descuento de stock.** Ninguna ilación descontaba `stock_actual` al vender ni lo restituía al anular o devolver. El sistema podía vender indefinidamente sin afectar el inventario. Corregido en ILA-0001, ILA-0003, ILA-0004 y ILA-0025.
+>
+> **5. Bajas físicas que rompen la integridad referencial.** Eliminar un producto, un método de pago, una venta o un comprobante de forma física rompe las claves foráneas del histórico y, en el caso de los comprobantes, es inadmisible tributariamente. Se convirtieron en bajas lógicas usando los campos de estado que el propio diccionario ya define, salvo en los casos donde la eliminación física es legítima.
+>
+> **6. Precondiciones incoherentes.** Varias operaciones de creación exigían que la tabla destino ya tuviera entradas válidas, lo que hace imposible el primer registro (ILA-0009 es el caso más claro). Se reemplazaron por las precondiciones que la operación realmente necesita.
+>
+> **7. Consistencia de artefactos.** ILA-0004 cargaba `ART-MKP-VEN-0003` en el procedimiento mientras declaraba `ART-MKP-VEN-0004` en artefactos asociados; ILA-0025 cargaba un mockup del módulo de ventas y declaraba sus artefactos como "Pendiente"; ILA-0028 declaraba `ART-MKP-DEV-0003` para una eliminación que carga `ART-MKP-DEV-0004`; `ART-MKP-DOC--0001` tenía doble guion.
+>
+> **8. Normalización formal.** Se unificó el marcado (12 de las 32 tablas venían con la primera columna en negrita), se corrigieron los estados `conluido` y `Concluida`, la fecha inválida `2106//26`, la numeración perdida de los pasos en ILA-0003 y ILA-0019, el nombre de componente `DOC-TLB-COMPROBANTES`, y se unificaron los identificadores de interfaz del módulo 8, que usaban el prefijo `ALR_` mientras las especificaciones ya usaban `RES-`.
+>
+> **Ampliación del 05/09/2026.** Se incorporaron los módulos 9 y 10 con ocho ilaciones nuevas (ILA-0033 a ILA-0040), derivadas de las educciones EDU-0013 (Gestión de usuarios) y EDU-0014 (Gestión de proveedores). Ambas tablas ya existían en el Diccionario de Datos y eran referenciadas por otros módulos, pero ninguna ilación las alimentaba: ILA-0025 exigía proveedores válidos como precondición sin que existiera procedimiento alguno para crearlos.
+> El inicio y cierre de sesión no se descomponen en ilaciones por estar cubiertos como requisito de seguridad en RNF-0006.
+> Con EDU-0010 ampliada, ILA-0023 e ILA-0024 dejan de contradecir a su educción padre y pasan a estado Concluido.
+>
+> **Actualización del 05/09/2026 (nomenclatura y modelo).** Se aplicaron los cambios de la Guía de Estilo de Nomenclatura v03.00: prefijo **USR** para usuarios y **PRV** para proveedores, tipo **FEC** para todos los campos de fecha, y la unificación de los nombres de las cuatro fases del CRUD (CREAR, LEER, ACTUALIZAR, ELIMINAR más CONFIRMAR-SI / CONFIRMAR-NO). Se corrigió además **DEV-CMB-ESTADO-PRODUCTO**, que capturaba el motivo de la devolución y no el estado del producto.
+> Los cuatro cambios de base de datos del Anexo A quedaron aplicados en el Diccionario de Datos v03.00.
+>
+> **Revisión de tipos de dato del 05/09/2026.** Se verificó cada componente contra el tipo del campo que captura en el Diccionario de Datos v03.00 y contra los controles disponibles en WPF según RNF-0008. Correcciones aplicadas: los importes y cantidades pasan al prefijo **NUM**; `es_lote_defectuoso`, que es un valor lógico, pasa de ComboBox a **CHK**; `alerta_digemid`, que es un código de texto libre, pasa de ComboBox a **TXT**; el producto de una alerta pasa de texto libre a **CMB**, porque la ilación necesita el identificador del producto para bloquearlo; los valores autogenerados o calculados pasan a **LBL**; la contraseña pasa a **PWD**, que corresponde al PasswordBox de WPF. Se detectó además que ILA-0025 nunca capturaba `cantidad_devolver` ni `comentario`, ambos campos declarados en el diccionario, uno de ellos NOT NULL.
+>
+> **Ampliación del 05/09/2026 (lotes).** Tras la decisión del equipo de incorporar `TBL_LOTES` al modelo, se agregó el módulo 11 con ILA-0041 a ILA-0044 y se ajustaron las dieciséis ilaciones de los módulos 1, 2, 4 y 7. Los cambios de fondo: la venta descuenta de una remesa concreta según el criterio FEFO y registra su `id_lote` en el detalle, lo que hace posible el rastreo sanitario; el bloqueo por vencimiento pasa del medicamento a la remesa, de modo que una remesa vencida ya no impide vender las sanas del mismo estante; la devolución identifica la remesa que el proveedor exige; y el módulo de inventario queda reducido a los datos de catálogo del medicamento.
+>
+> **Criterio de estado:** se mantiene `Concluido` cuando la corrección fue formal o de coherencia interna. Se marca `Pendiente` cuando el cambio exige una decisión externa a la ilación: un componente de mockup nuevo, un ajuste al diccionario de datos o una ampliación de la educción. El Anexo al final del documento lista esos pendientes.
+
+## Convenciones aplicadas
+
+- Componentes de interfaz: guion y prefijo de módulo (`VEN-BTN-CREAR-VENTA`). Prefijos vigentes: `VEN`, `INV`, `DOC`, `ALV`, `PAG`, `REP`, `DEV`, `RES`.
+- Tablas y campos de base de datos: guion bajo, siempre con el punto entre base de datos y tabla (`DB_FARMASIL.TBL_PRODUCTOS`).
+- Versión `DD.DD`, fecha `dd/mm/aaaa`, ningún campo vacío (`Ninguno` cuando no aplica).
+- Cada educción se descompone en cuatro ilaciones que representan las fases del CRUD: Crear, Leer, Actualizar y Eliminar.
+
+---

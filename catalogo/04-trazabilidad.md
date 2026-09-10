@@ -1,15 +1,5 @@
 # Matriz de Trazabilidad — FARMASIL
 
-**Versión:** 02.00
-**Fecha:** 05/09/2026
-**Autor:** AUT-0001
-
-Sigue la estructura de la plantilla oficial de trazabilidad de la asignatura (Educción, Ilación, Especificación, Otros artefactos), ampliada con las columnas que el catálogo necesita para verificarse: rol autorizado, estado y cobertura de pruebas.
-
-Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificaciones.md`, `05-diccionario-datos.md` v04.00, `06-guia-nomenclatura-mockups.md` v04.00, `07-matriz-permisos.md` v02.00, `08-requisitos-no-funcionales.md` y `09-pruebas-software.md`.
-
----
-
 ## 1. Matriz principal
 
 | Educción | Ilación | Especificación | Otros artefactos |
@@ -179,3 +169,14 @@ Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificacio
 5. **Catálogo de fuentes inexistente.** FUE-0001 a FUE-0005 se citan en 26 artefactos sin que ningún documento los defina. Siete ilaciones citan la Entrevista 1 y cuatro la consulta posterior al cliente, ambas sin código.
 6. ~~**RNF-0006 pendiente de actualizar.**~~ **Resuelto el 05/09/2026.** Refundido en la versión 03.00, que cubre autenticación, identificación en la trazabilidad, autorización por rol, comportamiento ante intento no autorizado, protección de credenciales y continuidad de la administración. Ver `08-requisitos-no-funcionales.md`.
 7. **Falta el requisito de la generación automática de alertas de vencimiento**, al que ILA-0013 remite sin que exista.
+
+
+**Versión:** 02.00
+**Fecha:** 05/09/2026
+**Autor:** AUT-0001
+
+Sigue la estructura de la plantilla oficial de trazabilidad de la asignatura (Educción, Ilación, Especificación, Otros artefactos), ampliada con las columnas que el catálogo necesita para verificarse: rol autorizado, estado y cobertura de pruebas.
+
+Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificaciones.md`, `05-diccionario-datos.md` v04.00, `06-guia-nomenclatura-mockups.md` v04.00, `07-matriz-permisos.md` v02.00, `08-requisitos-no-funcionales.md` y `09-pruebas-software.md`.
+
+---

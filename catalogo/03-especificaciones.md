@@ -1,22 +1,5 @@
 # Especificaciones de Requisitos — FARMASIL
 
-> **Documento consolidado.** Reúne las 40 especificaciones del catálogo en un solo archivo, reemplazando a `Especificaciones.md`, `Especificaciones_Modulos_1_3_5_7.md` y `Especificaciones_Modulos_2_4_6_8.md`.
->
-> Cada especificación traduce a pseudocódigo la ilación correspondiente del archivo `02-ilaciones.md`, y opera sobre el esquema definido en el Diccionario de Datos v03.00 con los componentes de interfaz de la Guía de Estilo de Nomenclatura v03.00.
->
-> **Documento completo.** Contiene las 44 especificaciones, ESP-0001 a ESP-0044, correspondientes a los once módulos del catálogo.
->
-> **Ampliación del 05/09/2026 (lotes).** Con la incorporación de `TBL_LOTES` al Diccionario de Datos v04.00 se agregaron ESP-0041 a ESP-0044 y se ajustaron las dieciséis especificaciones de los módulos 1, 2, 4 y 7. Los cambios de fondo: el detalle de venta registra `id_lote` y el descuento de stock opera sobre la remesa; la selección de remesa sigue el criterio FEFO; el bloqueo por vencimiento pasa de `estado_producto` a `estado_lote`; y las líneas de devolución identifican la remesa que el proveedor exige.
-
-## Convenciones aplicadas
-
-- Componentes de mockup: guion `-` (`VEN-BTN-CREAR-VENTA`). Tablas y campos de base de datos: guion bajo `_`, con punto separador (`DB_FARMASIL.TBL_PRODUCTOS`).
-- Pseudocódigo indentado por nivel de anidamiento: `INICIO`/`FIN`, `INICIAR TRANSACCION`/`CONFIRMAR TRANSACCION`, `SI`/`FIN SI`, `PARA CADA`/`FIN PARA`.
-- Toda operación que escriba en más de una tabla se ejecuta dentro de una transacción, para que no queden cabeceras sin detalle ni stock descontado sin venta.
-- El campo Fuente hereda la fuente de la ilación de la que deriva la especificación. En la versión anterior las dieciséis decían `Ninguno`, lo que rompía la cadena de trazabilidad hacia la fuente original.
-- El campo Estado replica el de su ilación: `Pendiente` cuando la operación depende de un componente de mockup por diseñar o de una decisión externa, `Concluido` en caso contrario.
-
----
 
 # Módulo 1 — Gestión de Ventas (EDU-0001)
 
@@ -851,3 +834,21 @@
 | Importancia | Vital |
 | Estado | Pendiente |
 | Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**. |
+
+
+
+> **Documento consolidado.** Reúne las 40 especificaciones del catálogo en un solo archivo, reemplazando a `Especificaciones.md`, `Especificaciones_Modulos_1_3_5_7.md` y `Especificaciones_Modulos_2_4_6_8.md`.
+>
+> Cada especificación traduce a pseudocódigo la ilación correspondiente del archivo `02-ilaciones.md`, y opera sobre el esquema definido en el Diccionario de Datos v03.00 con los componentes de interfaz de la Guía de Estilo de Nomenclatura v03.00.
+>
+> **Documento completo.** Contiene las 44 especificaciones, ESP-0001 a ESP-0044, correspondientes a los once módulos del catálogo.
+>
+> **Ampliación del 05/09/2026 (lotes).** Con la incorporación de `TBL_LOTES` al Diccionario de Datos v04.00 se agregaron ESP-0041 a ESP-0044 y se ajustaron las dieciséis especificaciones de los módulos 1, 2, 4 y 7. Los cambios de fondo: el detalle de venta registra `id_lote` y el descuento de stock opera sobre la remesa; la selección de remesa sigue el criterio FEFO; el bloqueo por vencimiento pasa de `estado_producto` a `estado_lote`; y las líneas de devolución identifican la remesa que el proveedor exige.
+
+## Convenciones aplicadas
+
+- Componentes de mockup: guion `-` (`VEN-BTN-CREAR-VENTA`). Tablas y campos de base de datos: guion bajo `_`, con punto separador (`DB_FARMASIL.TBL_PRODUCTOS`).
+- Pseudocódigo indentado por nivel de anidamiento: `INICIO`/`FIN`, `INICIAR TRANSACCION`/`CONFIRMAR TRANSACCION`, `SI`/`FIN SI`, `PARA CADA`/`FIN PARA`.
+- Toda operación que escriba en más de una tabla se ejecuta dentro de una transacción, para que no queden cabeceras sin detalle ni stock descontado sin venta.
+- El campo Fuente hereda la fuente de la ilación de la que deriva la especificación. En la versión anterior las dieciséis decían `Ninguno`, lo que rompía la cadena de trazabilidad hacia la fuente original.
+- El campo Estado replica el de su ilación: `Pendiente` cuando la operación depende de un componente de mockup por diseñar o de una decisión externa, `Concluido` en caso contrario.
