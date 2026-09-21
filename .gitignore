@@ -10,3 +10,10 @@ CLAUDE.md
 ~$*.xlsx
 .DS_Store
 Thumbs.db
+
+# Artefactos de compilación
+bin/
+obj/
+.vs/
+*.user
+*.suo
