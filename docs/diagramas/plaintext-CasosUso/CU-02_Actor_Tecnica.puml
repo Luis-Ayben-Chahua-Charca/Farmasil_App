@@ -1,0 +1,41 @@
+@startuml
+left to right direction
+
+actor "Técnica" as Tecnica
+
+rectangle "Sistema FARMASIL" {
+
+    rectangle "Gestión de ventas" {
+        usecase "Registrar venta" as V1
+        usecase "Consultar ventas" as V2
+        usecase "Anular venta" as V3
+        usecase "Generar comprobante\nde venta" as V4
+
+        usecase "Buscar producto" as V5
+        usecase "Seleccionar\nmétodo de pago" as V6
+
+        V1 ..> V5 : <<include>>
+        V1 ..> V6 : <<include>>
+    }
+
+    rectangle "Consulta de inventario" {
+        usecase "Consultar stock\nde productos" as I1
+        usecase "Ver detalle de producto" as I2
+    }
+
+    rectangle "Reportes" {
+        usecase "Generar reporte de ventas" as R1
+    }
+}
+
+Tecnica -- V1
+Tecnica -- V2
+Tecnica -- V3
+Tecnica -- V4
+
+Tecnica -- I1
+Tecnica -- I2
+
+Tecnica -- R1
+
+@enduml
