@@ -1,0 +1,24 @@
+@startuml
+left to right direction
+
+actor "Administrador" as Admin
+
+rectangle "Módulo de reportes de ventas (EDU-0010)" {
+
+    usecase "Generar reporte\nde ventas" as RV1
+    usecase "Actualizar intervalo\nde un reporte" as RV2
+    usecase "Consultar reporte\nde ventas" as RV3
+    usecase "Eliminar reporte\nde ventas generado" as RV4
+
+    RV2 ..> RV3 : <<include>>
+    RV4 ..> RV3 : <<include>>
+
+    note "Rol autorizado según la Matriz de Trazabilidad:\nAdministrador (ACT-0001)" as N1
+}
+
+Admin -- RV1
+Admin -- RV2
+Admin -- RV3
+Admin -- RV4
+
+@enduml
