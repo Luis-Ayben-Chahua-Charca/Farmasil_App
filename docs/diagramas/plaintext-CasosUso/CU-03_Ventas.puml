@@ -1,0 +1,49 @@
+@startuml
+left to right direction
+
+actor "Dueña\n<<Administrador>>" as Duena
+actor "Técnica\n<<Tecnico>>" as Tecnica
+
+rectangle "Sistema FARMASIL" {
+    
+    rectangle "Gestión de Ventas" {
+        usecase "Registrar\nventa" as UC_Registrar
+        usecase "Actualizar\nventa" as UC_Actualizar
+        usecase "Eliminar\nventa" as UC_Eliminar
+        usecase "Consultar\nventas" as UC_Consultar
+    }
+    
+    usecase "Buscar\nproducto" as UC_Buscar
+    usecase "Seleccionar\nmétodo de pago" as UC_Pago
+
+    UC_Registrar ..> UC_Buscar : <<include>>
+    UC_Registrar ..> UC_Pago : <<include>>
+}
+
+Duena -- UC_Registrar
+Duena -- UC_Actualizar
+Duena -- UC_Eliminar
+Duena -- UC_Consultar
+
+Tecnica -- UC_Registrar
+Tecnica -- UC_Consultar
+
+note bottom of UC_Registrar
+ILA-0001 / ESP-0001
+Actores: Administrador, Técnico
+Descuenta stock por remesa (FEFO)
+Valida restricciones bloqueantes
+end note
+
+note bottom of UC_Actualizar
+ILA-0003 / ESP-0003
+Exclusivo Administrador
+Bloquea si existe comprobante 'Emitido'
+end note
+
+note bottom of UC_Eliminar
+ILA-0004 / ESP-0004
+Exclusivo Administrador
+Restituye stock de la remesa
+end note
+@enduml

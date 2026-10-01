@@ -1,0 +1,29 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Técnica\n(Operador)" as Tecnica
+actor "Dueña\n(Administrador)" as Duena
+
+rectangle "Sistema FARMASIL" {
+    usecase "Registrar Producto\n(Incluye Lote y Fecha de Vencimiento)" as UC_Registrar
+    usecase "Consultar Stock de Productos" as UC_Consultar
+    usecase "Actualizar Producto" as UC_Actualizar
+    usecase "Desactivar Producto\n(Borrado lógico)" as UC_Desactivar
+    usecase "Genera Alertas de Vencimiento\n(Visualización de registro y notificación)" as UC_Alertas
+}
+
+' Relaciones de la Técnica (Solo consulta)
+Tecnica --> UC_Consultar
+
+' Relaciones de la Dueña
+Duena --> UC_Consultar
+Duena --> UC_Actualizar
+Duena --> UC_Desactivar
+Duena --> UC_Alertas
+
+' Relaciones de inclusión (<<include>>)
+UC_Registrar ..> UC_Alertas : <<include>>
+UC_Actualizar ..> UC_Alertas : <<include>>
+
+@enduml

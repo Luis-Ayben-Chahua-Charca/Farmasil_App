@@ -1,0 +1,30 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Administradora" as admin
+
+rectangle "FARMASIL - Gestión de Métodos de Pago" {
+    usecase "Actualizar Método de Pago" as UC_Actualizar
+    usecase "Consultar Métodos de Pago" as UC_Consultar
+    usecase "Inactivar Método de Pago" as UC_Inactivar
+    usecase "Registrar Método de Pago" as UC_Registrar
+    
+    usecase "Validar Sesión de Usuario" as UC_ValidarSesion
+    usecase "Confirmar Eliminación" as UC_ConfirmarEliminacion
+}
+
+' Asociaciones del Actor
+admin --> UC_Actualizar
+admin --> UC_Consultar
+admin --> UC_Inactivar
+admin --> UC_Registrar
+
+' Relaciones <<include>>
+UC_Actualizar ..> UC_Consultar : <<include>>
+UC_Actualizar ..> UC_ValidarSesion : <<include>>
+UC_Consultar ..> UC_ValidarSesion : <<include>>
+UC_Inactivar ..> UC_ValidarSesion : <<include>>
+UC_Inactivar ..> UC_ConfirmarEliminacion : <<include>>
+UC_Registrar ..> UC_ValidarSesion : <<include>>
+@enduml

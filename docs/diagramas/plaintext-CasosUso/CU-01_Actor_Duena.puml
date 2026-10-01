@@ -1,0 +1,51 @@
+@startuml
+left to right direction
+
+actor "Dueña\n<<Administrador>>" as Duena
+
+rectangle "FARMASIL\nSistema de Gestión de Farmacia" {
+
+    rectangle "Gestión de Métodos de Pago" {
+        usecase "Registrar\nmétodo de pago" as MP1
+        usecase "Consultar\nmétodo de pago" as MP2
+        usecase "Actualizar\nmétodo de pago" as MP3
+        usecase "Eliminar / Desactivar\nmétodo de pago" as MP4
+        usecase "Validar datos\ndel método de pago" as MP5
+
+        MP1 ..> MP5 : <<include>>
+        MP2 ..> MP5 : <<include>>
+        MP3 ..> MP5 : <<include>>
+        MP4 ..> MP5 : <<include>>
+    }
+
+    rectangle "Gestión de Reportes de Ventas" {
+        usecase "Generar\nreporte de ventas" as RV1
+        usecase "Visualizar\nreporte de ventas" as RV2
+        usecase "Seleccionar\nrango de fechas" as RV3
+
+        RV1 ..> RV3 : <<include>>
+        RV2 ..> RV3 : <<include>>
+    }
+
+    rectangle "Gestión de Inventario" {
+        usecase "Modificar precio\nde producto" as INV1
+        usecase "Eliminar producto" as INV2
+        usecase "Consultar\nproducto" as INV3
+
+        INV1 ..> INV3 : <<include>>
+        INV2 ..> INV3 : <<include>>
+    }
+}
+
+Duena -- MP1
+Duena -- MP2
+Duena -- MP3
+Duena -- MP4
+
+Duena -- RV1
+Duena -- RV2
+
+Duena -- INV1
+Duena -- INV2
+
+@enduml
