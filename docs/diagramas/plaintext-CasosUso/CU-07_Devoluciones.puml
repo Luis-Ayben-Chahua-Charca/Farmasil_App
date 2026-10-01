@@ -1,0 +1,25 @@
+@startuml DiagramaDevoluciones
+left to right direction
+skinparam actorStyle awesome
+title Módulo: Devoluciones\n«FarmasilApp» · EDU-0011 / ILA-0025 - ILA-0028 · Prefijo: DEV
+
+actor "Técnica Farmacéutica" as Tecnica
+
+rectangle "Gestión de Devoluciones a Proveedores" {
+  usecase "Registrar orden de devolución\n(ILA-0025)" as UC_Registrar
+  usecase "Consultar orden de devolución\n(ILA-0026)" as UC_Consultar
+  usecase "Actualizar orden de devolución\n(ILA-0027)" as UC_Actualizar
+  usecase "Eliminar orden de devolución\n(ILA-0028)" as UC_Eliminar
+  usecase "Confirmar eliminación de orden\n(DEV_MDL_CONFIRMAR_ELIMINACION)" as UC_Confirmar
+}
+
+Tecnica --> UC_Registrar
+Tecnica --> UC_Consultar
+Tecnica --> UC_Actualizar
+Tecnica --> UC_Eliminar
+
+UC_Actualizar ..> UC_Consultar : <<include>>
+UC_Eliminar   ..> UC_Consultar : <<include>>
+UC_Confirmar  ..> UC_Eliminar  : <<extend>>
+
+@enduml
