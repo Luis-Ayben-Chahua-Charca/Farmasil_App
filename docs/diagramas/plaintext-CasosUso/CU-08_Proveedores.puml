@@ -1,0 +1,38 @@
+@startuml DiagramaProveedores
+left to right direction
+skinparam actorStyle awesome
+title Módulo: Proveedores\n«FarmasilApp» · EDU-0014 / ILA-0037 - ILA-0040 · Prefijo: PRV
+
+actor "Dueña de la Farmacia" as Duena
+
+rectangle "Gestión de Proveedores" {
+  usecase "Registrar proveedor\n(ILA-0037)" as UC_Registrar
+  usecase "Consultar proveedores\n(ILA-0038)" as UC_Consultar
+  usecase "Actualizar proveedor\n(ILA-0039)" as UC_Actualizar
+  usecase "Desactivar proveedor\n(ILA-0040)" as UC_Eliminar
+  usecase "Confirmar baja de proveedor\n(PRV-MDL-CONFIRMAR-ELIMINACION)" as UC_Confirmar
+}
+
+Duena --> UC_Registrar
+Duena --> UC_Consultar
+Duena --> UC_Actualizar
+Duena --> UC_Eliminar
+
+UC_Actualizar ..> UC_Consultar : <<include>>
+UC_Eliminar   ..> UC_Consultar : <<include>>
+UC_Confirmar  ..> UC_Eliminar  : <<extend>>
+
+note right of UC_Registrar
+  Relación con Devoluciones:
+  habilita al proveedor en
+  DEV-CMB-PROVEEDOR (ILA-0025).
+end note
+
+note right of UC_Eliminar
+  Relación con Devoluciones:
+  se bloquea si el proveedor tiene
+  devoluciones "Pendiente" en
+  DEV_TBL_ORDENES_DEVOLUCION.
+end note
+
+@enduml
