@@ -1,7 +1,7 @@
 # Matriz de Actores, Roles y Permisos — FARMASIL
 
-**Versión:** 02.00
-**Fecha:** 05/09/2026
+**Versión:** 03.00
+**Fecha:** 02/10/2026
 **Autor:** AUT-0001
 
 > **Por qué existe este documento.** Los códigos ACT-0001 y ACT-0002 se usaban en las tres etapas del catálogo sin que ningún artefacto los definiera, y ninguna ilación declaraba qué rol puede ejecutar qué operación. Cada una resolvía el control de acceso por su cuenta, de tres maneras distintas: unas exigían "sesión activa con rol de administrador", otras "permisos para modificar información" sin decir de quién, y veinte se conformaban con "sesión activa", lo que en la práctica autoriza a cualquier usuario del sistema a cualquier operación.
@@ -85,6 +85,8 @@ Quedan eliminadas las formulaciones genéricas del tipo "el usuario tiene permis
 | 11 Lotes | ILA-0042 | Consultar remesas | Sí | Sí |
 | 11 Lotes | ILA-0043 | Actualizar remesa | Sí | No |
 | 11 Lotes | ILA-0044 | Dar de baja remesa | Sí | No |
+| 12 Reabastecimiento | ILA-0045 a ILA-0048 | Todas | Sí | No |
+| 13 Comparación de precios | ILA-0049 a ILA-0052 | Todas | Sí | No |
 
 **Resumen del perfil Técnico.** Puede registrar y consultar ventas, emitir y consultar comprobantes, consultar inventario y remesas, consultar y levantar alertas de vencimiento, consultar métodos de pago y consultar restricciones sanitarias. No puede modificar ni eliminar nada, salvo dentro de la venta que está registrando.
 
@@ -100,6 +102,8 @@ Quedan eliminadas las formulaciones genéricas del tipo "el usuario tiene permis
 6. **Excepción razonada: emitir un comprobante (ILA-0009).** Se concede al técnico porque la boleta se entrega al cliente en el mostrador, en el mismo acto de la venta, según lo declarado en la Sección 6 de la Entrevista 1.
 7. **Consulta de remesas (ILA-0042).** Se concede al técnico porque necesita saber qué lote tiene disponible y cuándo vence antes de despachar. El registro y la modificación de remesas quedan con el administrador, por el mismo criterio que el alta de productos: la dueña recibe la mercancía del proveedor.
 8. **Farmacovigilancia.** Definir qué medicamento se bloquea para qué grupo de riesgo corresponde a la dueña, que es quien mantiene el contacto con la química farmacéutica y con DIGEMID. Por eso el actor principal de EDU-0012 pasó de ACT-0002 a ACT-0001, conservando la consulta para ambos roles.
+
+9. **Reabastecimiento y comparación de precios (módulos 12 y 13).** Siguen el mismo patrón que los módulos 9 (Usuarios) y 10 (Proveedores): exclusivos del administrador, sin ninguna operación de consulta cedida al rol Técnico, porque la dueña confirmó explícitamente en la Entrevista 3 que ningún aspecto de estos dos módulos debe ser accesible a la técnica farmacéutica.
 
 ---
 

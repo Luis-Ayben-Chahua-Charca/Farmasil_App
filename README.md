@@ -6,19 +6,19 @@ Sistema de gestión para farmacia. Universidad Nacional de San Agustín, Ingenie
 
 | Archivo | Versión | Descripción |
 | --- | --- | --- |
-| `01-educciones.md` | v05.00 y posteriores | 11 educciones. Requisitos tal como los expresó el cliente. |
-| `02-ilaciones.md` | — | 44 ilaciones. Cuatro fases CRUD por educción. |
-| `03-especificaciones.md` | — | 44 especificaciones en pseudocódigo. |
-| `04-trazabilidad.md` | v02.00 | Matriz EDU↔ILA↔ESP↔artefactos, más trazabilidad hacia RNF, modelo de datos y pruebas. |
-| `05-diccionario-datos.md` | v04.00 | 14 tablas de `DB_FARMASIL`, correspondencia de tipos y relaciones. |
+| `01-educciones.md` | v05.00 y posteriores | 13 educciones. Requisitos tal como los expresó el cliente. |
+| `02-ilaciones.md` | — | 52 ilaciones. Cuatro fases CRUD por educción. |
+| `03-especificaciones.md` | — | 52 especificaciones en pseudocódigo. |
+| `04-trazabilidad.md` | v03.00 | Matriz EDU↔ILA↔ESP↔artefactos, más trazabilidad hacia RNF, modelo de datos y pruebas. |
+| `05-diccionario-datos.md` | v05.00 | 16 tablas de `DB_FARMASIL`, correspondencia de tipos y relaciones. |
 | `06-guia-nomenclatura-mockups.md` | v04.00 | Prefijos por módulo, tipos de componente e inventario completo. |
-| `07-matriz-permisos.md` | v02.00 | Actores, roles y permisos por operación. |
+| `07-matriz-permisos.md` | v03.00 | Actores, roles y permisos por operación. |
 | `08-requisitos-no-funcionales.md` | — | 9 requisitos no funcionales. RNF-0006 v03.00 refundido en seguridad. |
-| `09-pruebas-software.md` | v03.00 | 223 pruebas sobre las 44 especificaciones y los 9 requisitos no funcionales. |
+| `09-pruebas-software.md` | v03.00 | 223 pruebas sobre las 44 especificaciones originales y los 9 requisitos no funcionales. Los módulos 12 y 13 aún no tienen pruebas. |
 
 ## Estructura del catálogo
 
-11 módulos, cada uno con una educción, cuatro ilaciones y cuatro especificaciones.
+13 módulos, cada uno con una educción, cuatro ilaciones y cuatro especificaciones.
 
 | # | Módulo | Educción | Ilaciones | Especificaciones | Prefijo UI |
 | --- | --- | --- | --- | --- | --- |
@@ -33,6 +33,8 @@ Sistema de gestión para farmacia. Universidad Nacional de San Agustín, Ingenie
 | 9 | Usuarios | EDU-0013 | ILA-0033 a 0036 | ESP-0033 a 0036 | USR |
 | 10 | Proveedores | EDU-0014 | ILA-0037 a 0040 | ESP-0037 a 0040 | PRV |
 | 11 | Lotes | EDU-0015 | ILA-0041 a 0044 | ESP-0041 a 0044 | LOT |
+| 12 | Reabastecimiento | EDU-0016 | ILA-0045 a 0048 | ESP-0045 a 0048 | REA |
+| 13 | Comparación de precios de proveedores | EDU-0017 | ILA-0049 a 0052 | ESP-0049 a 0052 | COT |
 
 Los códigos EDU-0005 a EDU-0008 están reservados y no se reasignan: corresponden a requisitos reclasificados como no funcionales. El salto de numeración es intencional.
 
