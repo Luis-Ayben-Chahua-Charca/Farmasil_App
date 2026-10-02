@@ -85,21 +85,21 @@
 | Código ilación | ILA-0005 |
 | --- | --- |
 | Nombre | Creación del producto de inventario |
-| Versión | 08.00 |
-| Fecha | 05/09/2026 |
+| Versión | 09.00 |
+| Fecha | 02/10/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0004, FUE-0005 |
 | Experto | Ninguno |
 | Código educción | EDU-0002 |
 | Código especificación | ESP-0005 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PROVEEDORES** tiene al menos un proveedor con `estado` = 'Activo'.<br>5. Se carga el mockup **ART-MKP-INV-0001**.<br>6. Los campos **INV-TXT-NOMBRE-PRODUCTO**, **INV-TXT-ACCION-TERAPEUTICA**, **INV-NUM-PRECIO-PRODUCTO** e **INV-CMB-PROVEEDOR** se encuentran habilitados.<br>7. El botón **INV-BTN-CREAR-PRODUCTO** se encuentra habilitado. |
-| Procedimiento | 1. El usuario visualiza el formulario de gestión de inventario en el mockup **ART-MKP-INV-0001**.<br>2. El usuario ingresa el nombre del producto en **INV-TXT-NOMBRE-PRODUCTO**.<br>3. El usuario ingresa la acción terapéutica en **INV-TXT-ACCION-TERAPEUTICA**.<br>4. El usuario ingresa el precio de venta en **INV-NUM-PRECIO-PRODUCTO**.<br>5. El usuario selecciona el proveedor que abastece el producto en **INV-CMB-PROVEEDOR**.<br>6. El usuario verifica la información ingresada y presiona **INV-BTN-CREAR-PRODUCTO**.<br>7. El sistema valida que el nombre no esté vacío y que el precio sea un valor no negativo.<br>8. El sistema genera automáticamente el identificador del producto y registra el nuevo producto en **DB_FARMASIL.TBL_PRODUCTOS** con `estado_producto` = 'Disponible'.<br>9. El sistema muestra el identificador generado en **INV-LBL-ID-PRODUCTO**, que no es editable y actualiza **INV-TBL-PRODUCTOS**. |
-| Postcondición | 1. El producto queda registrado en **DB_FARMASIL.TBL_PRODUCTOS** con todos sus campos obligatorios completos.<br>2. El producto aparece en **INV-TBL-PRODUCTOS** con estado 'Disponible'.<br>3. El producto queda disponible para recibir sus remesas según ILA-0041. Hasta que exista al menos una remesa con existencias, el medicamento no se ofrece en el módulo de ventas. |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PROVEEDORES** tiene al menos un proveedor con `estado` = 'Activo'.<br>5. Se carga el mockup **ART-MKP-INV-0001**.<br>6. Los campos **INV-TXT-NOMBRE-PRODUCTO**, **INV-TXT-ACCION-TERAPEUTICA**, **INV-NUM-PRECIO-PRODUCTO**, **INV-CMB-PROVEEDOR** e **INV-NUM-STOCK-MINIMO** se encuentran habilitados.<br>7. El botón **INV-BTN-CREAR-PRODUCTO** se encuentra habilitado. |
+| Procedimiento | 1. El usuario visualiza el formulario de gestión de inventario en el mockup **ART-MKP-INV-0001**.<br>2. El usuario ingresa el nombre del producto en **INV-TXT-NOMBRE-PRODUCTO**.<br>3. El usuario ingresa la acción terapéutica en **INV-TXT-ACCION-TERAPEUTICA**.<br>4. El usuario ingresa el precio de venta en **INV-NUM-PRECIO-PRODUCTO**.<br>5. El usuario selecciona el proveedor que abastece el producto en **INV-CMB-PROVEEDOR**.<br>6. El usuario ingresa el umbral mínimo de existencias en **INV-NUM-STOCK-MINIMO**, por debajo del cual el sistema debe incluir el medicamento en la lista de reabastecimiento.<br>7. El usuario verifica la información ingresada y presiona **INV-BTN-CREAR-PRODUCTO**.<br>8. El sistema valida que el nombre no esté vacío, que el precio sea un valor no negativo y que el umbral mínimo sea un entero no negativo.<br>9. El sistema genera automáticamente el identificador del producto y registra el nuevo producto en **DB_FARMASIL.TBL_PRODUCTOS** con `estado_producto` = 'Disponible'.<br>10. El sistema muestra el identificador generado en **INV-LBL-ID-PRODUCTO**, que no es editable y actualiza **INV-TBL-PRODUCTOS**. |
+| Postcondición | 1. El producto queda registrado en **DB_FARMASIL.TBL_PRODUCTOS** con todos sus campos obligatorios completos.<br>2. El producto aparece en **INV-TBL-PRODUCTOS** con estado 'Disponible'.<br>3. El producto queda disponible para recibir sus remesas según ILA-0041. Hasta que exista al menos una remesa con existencias, el medicamento no se ofrece en el módulo de ventas.<br>4. El medicamento queda registrado con su `stock_minimo`, usado por el proceso de generación automática de la lista de reabastecimiento (EDU-0016). |
 | Código de artefactos asociados | ART-MKP-INV-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | El procedimiento anterior pedía al usuario que ingresara manualmente el ID del producto, pero `id_producto` es clave primaria autoincremental según el Diccionario de Datos; se corrigió a generación automática con visualización de solo lectura.<br>Faltaba `id_proveedor`, campo obligatorio que el registro no puede completar sin él.<br>Con la incorporación de **TBL_LOTES** en el Diccionario de Datos v04.00, el número de lote, la fecha de vencimiento y las existencias dejaron de ser atributos del medicamento y se registran como remesas en ILA-0041. Esta ilación quedó reducida a los datos de catálogo.<br>Queda Pendiente porque requiere incorporar **INV-CMB-PROVEEDOR** al mockup **ART-MKP-INV-0001**. Ver Anexo. |
+| Comentario | El procedimiento anterior pedía al usuario que ingresara manualmente el ID del producto, pero `id_producto` es clave primaria autoincremental según el Diccionario de Datos; se corrigió a generación automática con visualización de solo lectura.<br>Faltaba `id_proveedor`, campo obligatorio que el registro no puede completar sin él.<br>Con la incorporación de **TBL_LOTES** en el Diccionario de Datos v04.00, el número de lote, la fecha de vencimiento y las existencias dejaron de ser atributos del medicamento y se registran como remesas en ILA-0041. Esta ilación quedó reducida a los datos de catálogo.<br>Queda Pendiente porque requiere incorporar **INV-CMB-PROVEEDOR** al mockup **ART-MKP-INV-0001**. Ver Anexo.<br>**Versión 09.00:** se incorporó la captura de `stock_minimo`, campo nuevo del Diccionario de Datos v05.00, para alimentar la lista de reabastecimiento (EDU-0016). Requiere incorporar **INV-NUM-STOCK-MINIMO** al mockup **ART-MKP-INV-0001**. Ver Anexo. |
 
 | Código ilación | ILA-0006 |
 | --- | --- |
@@ -123,8 +123,8 @@
 | Código ilación | ILA-0007 |
 | --- | --- |
 | Nombre | Actualización del producto de inventario |
-| Versión | 08.00 |
-| Fecha | 05/09/2026 |
+| Versión | 09.00 |
+| Fecha | 02/10/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0004, FUE-0005 |
@@ -132,12 +132,12 @@
 | Código educción | EDU-0002 |
 | Código especificación | ESP-0007 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-INV-0001**.<br>6. El botón **INV-BTN-ACTUALIZAR-PRODUCTO** se encuentra habilitado. |
-| Procedimiento | 1. El usuario visualiza la tabla de productos **INV-TBL-PRODUCTOS** en el mockup **ART-MKP-INV-0001**.<br>2. El usuario identifica y selecciona el producto que desea actualizar.<br>3. El usuario presiona **INV-BTN-ACTUALIZAR-PRODUCTO**.<br>4. El sistema carga el formulario de actualización en el mockup **ART-MKP-INV-0003** con la información vigente del producto.<br>5. El usuario modifica los campos editables: **INV-TXT-NOMBRE-PRODUCTO**, **INV-TXT-ACCION-TERAPEUTICA**, **INV-NUM-PRECIO-PRODUCTO** e **INV-CMB-PROVEEDOR**. El identificador se muestra en **INV-LBL-ID-PRODUCTO** y no es editable. El número de lote, el vencimiento y las existencias se modifican sobre la remesa correspondiente, según ILA-0043.<br>6. El usuario verifica la información y presiona **INV-BTN-ACTUALIZAR-PRODUCTO**.<br>7. El sistema valida la información ingresada con los mismos criterios de la creación.<br>8. El sistema actualiza el registro correspondiente en **DB_FARMASIL.TBL_PRODUCTOS**.<br>9. El sistema actualiza **INV-TBL-PRODUCTOS**. |
+| Procedimiento | 1. El usuario visualiza la tabla de productos **INV-TBL-PRODUCTOS** en el mockup **ART-MKP-INV-0001**.<br>2. El usuario identifica y selecciona el producto que desea actualizar.<br>3. El usuario presiona **INV-BTN-ACTUALIZAR-PRODUCTO**.<br>4. El sistema carga el formulario de actualización en el mockup **ART-MKP-INV-0003** con la información vigente del producto.<br>5. El usuario modifica los campos editables: **INV-TXT-NOMBRE-PRODUCTO**, **INV-TXT-ACCION-TERAPEUTICA**, **INV-NUM-PRECIO-PRODUCTO**, **INV-CMB-PROVEEDOR** e **INV-NUM-STOCK-MINIMO**. El identificador se muestra en **INV-LBL-ID-PRODUCTO** y no es editable. El número de lote, el vencimiento y las existencias se modifican sobre la remesa correspondiente, según ILA-0043.<br>6. El usuario verifica la información y presiona **INV-BTN-ACTUALIZAR-PRODUCTO**.<br>7. El sistema valida la información ingresada con los mismos criterios de la creación.<br>8. El sistema actualiza el registro correspondiente en **DB_FARMASIL.TBL_PRODUCTOS**.<br>9. El sistema actualiza **INV-TBL-PRODUCTOS**. |
 | Postcondición | 1. Los cambios quedan registrados en **DB_FARMASIL.TBL_PRODUCTOS**.<br>2. La información actualizada se visualiza en **INV-TBL-PRODUCTOS**.<br>3. El identificador del producto permanece inalterado, preservando las referencias desde **TBL_LOTES** y **TBL_RESTRICCIONES_VENTA**. |
 | Código de artefactos asociados | ART-MKP-INV-0001, ART-MKP-INV-0003 |
 | Importancia | Media |
 | Estado | Pendiente |
-| Comentario | Se declaró explícitamente que el identificador no es editable, dado que es clave foránea en tres tablas del modelo. Se alinearon los campos editables con los incorporados en ILA-0005.<br>Queda Pendiente por la misma dependencia de mockup que ILA-0005. |
+| Comentario | Se declaró explícitamente que el identificador no es editable, dado que es clave foránea en tres tablas del modelo. Se alinearon los campos editables con los incorporados en ILA-0005.<br>Queda Pendiente por la misma dependencia de mockup que ILA-0005.<br>**Versión 09.00:** se agregó **INV-NUM-STOCK-MINIMO** a los campos editables, alineado con ILA-0005 (Diccionario de Datos v05.00). Requiere incorporarlo al mockup **ART-MKP-INV-0003**. Ver Anexo. |
 
 | Código ilación | ILA-0008 |
 | --- | --- |
@@ -482,8 +482,8 @@
 | Código ilación | ILA-0025 |
 | --- | --- |
 | Nombre | Registrar orden de devolución |
-| Versión | 05.00 |
-| Fecha | 05/09/2026 |
+| Versión | 06.00 |
+| Fecha | 02/10/2026 |
 | Autor de la plantilla | AUT-0004 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -491,12 +491,12 @@
 | Código educción | EDU-0011 |
 | Código especificación | ESP-0025 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LOTES** tiene al menos una remesa con `estado_lote` = 'Bloqueado por devolucion', o con fecha de vencimiento dentro del umbral configurado en **DB_FARMASIL.TBL_ALERTAS_VENCIMIENTO**.<br>5. La tabla **DB_FARMASIL.TBL_PROVEEDORES** tiene entradas válidas con `estado` = 'Activo'.<br>6. Se carga el mockup **ART-MKP-DEV-0001**. |
-| Procedimiento | 1. El usuario accede al módulo de devoluciones.<br>2. El usuario registra la fecha de creación de la orden en **DEV-FEC-FECHA-DEVOLUCION**.<br>3. El usuario selecciona el proveedor al que se remitirá la mercancía en **DEV-CMB-PROVEEDOR**.<br>4. El usuario selecciona el motivo de la devolución en **DEV-CMB-MOTIVO-DEVOLUCION**, con los valores 'Por Vencimiento' o 'Por Depuracion de Error'.<br>5. El usuario selecciona la remesa a devolver en **DEV-CMB-LOTE-DEVOLUCION**, que lista únicamente remesas de medicamentos abastecidos por el proveedor seleccionado y en condición de cuarentena o por vencer, identificadas por medicamento y número de lote.<br>6. El usuario registra las unidades a devolver en **DEV-NUM-CANTIDAD-DEVOLVER** y agrega la línea al detalle mostrado en **DEV-TBL-DETALLE-DEVOLUCION**.<br>7. El usuario repite los pasos 5 y 6 por cada remesa que forme parte de la orden.<br>8. El usuario registra observaciones en **DEV-TXA-COMENTARIO**, obligatorio cuando el motivo es la depuración de un error.<br>9. El usuario presiona **DEV-BTN-CREAR-DEVOLUCION**.<br>10. El sistema valida que la orden tenga al menos una remesa, que cada línea tenga una cantidad entera positiva que no exceda el `stock_actual` de su remesa y que todas correspondan al proveedor seleccionado.<br>11. El sistema inicia una transacción, registra la cabecera en **DB_FARMASIL.TBL_ORDENES_DEVOLUCION** con `estado_orden` = 'Pendiente' y el `id_usuario` de la sesión activa, registra una fila por cada remesa en **DB_FARMASIL.TBL_DETALLE_DEVOLUCION** y confirma la transacción.<br>12. El sistema actualiza **DEV-TBL-ORDENES-DEVOLUCION**. |
+| Procedimiento | 1. El usuario accede al módulo de devoluciones.<br>2. El usuario registra la fecha de creación de la orden en **DEV-FEC-FECHA-DEVOLUCION**.<br>3. El usuario selecciona el proveedor al que se remitirá la mercancía en **DEV-CMB-PROVEEDOR**.<br>4. El usuario selecciona el motivo de la devolución en **DEV-CMB-MOTIVO-DEVOLUCION**, con los valores 'Por Vencimiento' o 'Por Depuracion de Error'.<br>5. El usuario selecciona la remesa a devolver en **DEV-CMB-LOTE-DEVOLUCION**, que lista únicamente remesas **cuyo proveedor registrado en la remesa (`TBL_LOTES.id_proveedor`) coincide con el proveedor seleccionado**, y en condición de cuarentena o por vencer, identificadas por medicamento y número de lote.<br>6. El usuario registra las unidades a devolver en **DEV-NUM-CANTIDAD-DEVOLVER** y agrega la línea al detalle mostrado en **DEV-TBL-DETALLE-DEVOLUCION**.<br>7. El usuario repite los pasos 5 y 6 por cada remesa que forme parte de la orden.<br>8. El usuario registra observaciones en **DEV-TXA-COMENTARIO**, obligatorio cuando el motivo es la depuración de un error.<br>9. El usuario presiona **DEV-BTN-CREAR-DEVOLUCION**.<br>10. El sistema valida que la orden tenga al menos una remesa, que cada línea tenga una cantidad entera positiva que no exceda el `stock_actual` de su remesa y que **el `id_proveedor` de cada remesa coincida con el proveedor seleccionado**.<br>11. El sistema inicia una transacción, registra la cabecera en **DB_FARMASIL.TBL_ORDENES_DEVOLUCION** con `estado_orden` = 'Pendiente' y el `id_usuario` de la sesión activa, registra una fila por cada remesa en **DB_FARMASIL.TBL_DETALLE_DEVOLUCION** y confirma la transacción.<br>12. El sistema actualiza **DEV-TBL-ORDENES-DEVOLUCION**. |
 | Postcondición | 1. La cabecera de la orden queda almacenada en **DB_FARMASIL.TBL_ORDENES_DEVOLUCION** con estado 'Pendiente' y el usuario responsable registrado.<br>2. Existe una fila en **DB_FARMASIL.TBL_DETALLE_DEVOLUCION** por cada remesa incluida en la orden, identificada por su `id_lote`.<br>3. La orden aparece en **DEV-TBL-ORDENES-DEVOLUCION**.<br>4. El `stock_actual` de las remesas aún no se modifica: el descuento se aplica cuando la orden pasa a estado 'Completada' según ILA-0027. |
 | Código de artefactos asociados | ART-MKP-DEV-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La versión anterior cargaba el mockup **ART-MKP-VEN-0001**, del módulo de ventas, y declaraba sus artefactos asociados como "Pendiente"; el procedimiento además decía que el usuario "guarda el formulario de venta". Se corrigieron ambas cosas.<br>La orden se modelaba con un único medicamento, ignorando **TBL_DETALLE_DEVOLUCION**, que existe en el modelo precisamente para agrupar varios productos en una misma orden. Se reescribió sobre el par cabecera y detalle.<br>Se incorporaron `motivo_devolucion`, `estado_orden` e `id_usuario`, campos obligatorios de la tabla que la ilación no contemplaba, y se corrigieron las referencias a las tablas inexistentes **BD-FARMASIL.INV_TBL_PRODUCTOS** y **DEV_TBL_ORDENES_DEVOLUCION**.<br>El actor era ACT-0002, en contradicción con EDU-0011, que asigna esta responsabilidad a ACT-0001; se alineó con la educción.<br>Queda Pendiente porque el mockup **ART-MKP-DEV-0001** debe incorporar la tabla de detalle de la orden. Ver Anexo. |
+| Comentario | **Corrección v06.00:** la validación del proveedor pasó de `lote.producto.id_proveedor` a `lote.id_proveedor`. Con la incorporación de `TBL_LOTES.id_proveedor` (Diccionario de Datos v05.00), validar contra el proveedor habitual del medicamento (`TBL_PRODUCTOS.id_proveedor`) ya no es correcto: un medicamento puede tener remesas de más de un proveedor, y la devolución siempre se tramita contra el proveedor que efectivamente entregó esa remesa. El resto del historial de versiones de esta ilación se conserva sin cambios (a continuación).<br>La versión anterior cargaba el mockup **ART-MKP-VEN-0001**, del módulo de ventas, y declaraba sus artefactos asociados como "Pendiente"; el procedimiento además decía que el usuario "guarda el formulario de venta". Se corrigieron ambas cosas.<br>La orden se modelaba con un único medicamento, ignorando **TBL_DETALLE_DEVOLUCION**, que existe en el modelo precisamente para agrupar varios productos en una misma orden. Se reescribió sobre el par cabecera y detalle.<br>Se incorporaron `motivo_devolucion`, `estado_orden` e `id_usuario`, campos obligatorios de la tabla que la ilación no contemplaba, y se corrigieron las referencias a las tablas inexistentes **BD-FARMASIL.INV_TBL_PRODUCTOS** y **DEV_TBL_ORDENES_DEVOLUCION**.<br>El actor era ACT-0002, en contradicción con EDU-0011, que asigna esta responsabilidad a ACT-0001; se alineó con la educción.<br>Queda Pendiente porque el mockup **ART-MKP-DEV-0001** debe incorporar la tabla de detalle de la orden. Ver Anexo. |
 
 | Código ilación | ILA-0026 |
 | --- | --- |
@@ -812,6 +812,8 @@
 
 **Múltiples lotes de un mismo medicamento: decisión abierta.** El documento de cambios al modelo ER ya señala que `TBL_PRODUCTOS` maneja un solo lote y una sola fecha de vencimiento por fila, y lo califica como el punto más frágil del modelo. Al introducir el descuento de stock y las devoluciones por lote, esa limitación se vuelve más visible: el sistema no puede distinguir qué lote se vendió ni cuál se devuelve. Resolverlo requiere una tabla `TBL_LOTES` en relación uno a muchos con `TBL_PRODUCTOS`, lo que impacta los módulos 1, 2, 4 y 7. Es una decisión de alcance que debe tomar el equipo, no un ajuste menor.
 
+**Módulos 12 y 13 (02/10/2026) — cambios en la base de datos aplicados en el Diccionario de Datos v05.00.** `TBL_PRODUCTOS.stock_minimo` (umbral de reabastecimiento por medicamento); `TBL_LOTES.id_proveedor` (proveedor real de cada remesa, que obliga a corregir ILA-0025 y a ampliar ILA-0041 y ILA-0043); y las tablas nuevas `TBL_LISTA_REABASTECIMIENTO` y `TBL_COTIZACIONES_PROVEEDOR`.
+
 ## B. Componentes de interfaz que deben incorporarse a los mockups
 
 | Mockup | Componentes nuevos | Motivo |
@@ -823,6 +825,10 @@
 | `ART-MKP-DEV-0001`, `ART-MKP-DEV-0003` | Tabla de detalle de la orden de devolución | Varios medicamentos por orden. |
 | `ART-MKP-USR-0001` a `ART-MKP-USR-0004` | Módulo completo, prefijo **USR** | Mockups aún no diseñados. Gestión de usuarios (EDU-0013). |
 | `ART-MKP-PRV-0001` a `ART-MKP-PRV-0004` | Módulo completo, prefijo **PRV** | Mockups aún no diseñados. Gestión de proveedores (EDU-0014). |
+| `ART-MKP-REA-0001` a `ART-MKP-REA-0004` | Módulo completo, prefijo **REA** | Mockups aún no diseñados. Gestión de reabastecimiento (EDU-0016). |
+| `ART-MKP-COT-0001` a `ART-MKP-COT-0004` | Módulo completo, prefijo **COT** | Mockups aún no diseñados. Gestión de comparación de precios de proveedores (EDU-0017). |
+| `ART-MKP-INV-0001`, `ART-MKP-INV-0003` | **INV-NUM-STOCK-MINIMO** | Campo nuevo `TBL_PRODUCTOS.stock_minimo`, capturado al crear/actualizar el medicamento (ver corrección a ILA-0005/ILA-0007 en la Sección 4). |
+| `ART-MKP-LOT-0001`, `ART-MKP-LOT-0003` | **LOT-CMB-PROVEEDOR-LOTE** | Campo nuevo `TBL_LOTES.id_proveedor`, capturado al registrar/actualizar la remesa (ver corrección a ILA-0041/ILA-0043 en la Sección 4). |
 
 Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura de Mockups antes de trasladarse a las especificaciones.
 
@@ -831,6 +837,8 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 1. ~~**EDU-0010 contradice a ILA-0023 e ILA-0024.**~~ **Resuelto el 05/09/2026.** EDU-0010 se amplió a la versión 05.00 autorizando la administración de los reportes generados y dejando explícito que las ventas de origen son inmutables. Ambas ilaciones pasaron a estado Concluido.
 2. **Catálogo de fuentes.** Siete ilaciones citan el Registro de Entrevista 1 sin código FUE, porque no existe un catálogo de fuentes en el proyecto. Los códigos FUE-0001 a FUE-0005 se usan sin que ningún documento defina a qué corresponden.
 3. **Catálogo de actores.** ACT-0001 y ACT-0002 se usan en las tres etapas sin estar definidos en ninguna parte. La corrección del actor en las ilaciones del módulo 7 se hizo por coherencia con su educción, no contra un catálogo.
+4. **Generación automática de la lista de reabastecimiento.** No existe todavía un requisito no funcional formal que documente el proceso periódico (cada ~15 días) que compara `TBL_PRODUCTOS.stock_minimo` contra el stock consolidado y genera los ítems automáticos en `TBL_LISTA_REABASTECIMIENTO`. Es la misma situación, ya conocida, de la generación automática de alertas de vencimiento que documenta ILA-0013 sin que exista el RNF correspondiente (ver huecos abiertos de `04-trazabilidad.md`, punto 7). Se recomienda resolver ambos casos juntos en un mismo requisito no funcional de "procesos programados del sistema".
+5. **Formato exacto del archivo CSV de exportación por proveedor.** Esta revisión define su contenido (medicamento, cantidad, precio) pero no las columnas exactas ni el formato de archivo; debe definirse al diseñar el mockup `ART-MKP-COT-0002`.
 
 ---
 
@@ -839,8 +847,8 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código ilación | ILA-0041 |
 | --- | --- |
 | Nombre | Registro de remesa |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 02/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -848,12 +856,12 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código educción | EDU-0015 |
 | Código especificación | ESP-0041 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene al menos un medicamento con `estado_producto` = 'Disponible'.<br>5. Se carga el mockup **ART-MKP-LOT-0001**.<br>6. El botón **LOT-BTN-CREAR-LOTE** se encuentra habilitado. |
-| Procedimiento | 1. La dueña accede al módulo de gestión de lotes.<br>2. La dueña selecciona el medicamento al que corresponde la remesa en **LOT-CMB-PRODUCTO**.<br>3. La dueña ingresa el número de lote impreso por el laboratorio en **LOT-TXT-NUMERO-LOTE**.<br>4. La dueña selecciona la fecha de vencimiento de la remesa en **LOT-FEC-FECHA-VENCIMIENTO**.<br>5. La dueña ingresa las unidades recibidas en **LOT-NUM-STOCK-LOTE**.<br>6. La dueña registra la fecha de ingreso al almacén en **LOT-FEC-FECHA-INGRESO**.<br>7. La dueña presiona **LOT-BTN-CREAR-LOTE**.<br>8. El sistema valida que la fecha de vencimiento sea posterior a la fecha actual, que las unidades sean un entero no negativo y que no exista ya una remesa con el mismo número de lote para ese medicamento.<br>9. El sistema registra la remesa en **DB_FARMASIL.TBL_LOTES** con `estado_lote` = 'Disponible'.<br>10. El sistema actualiza **LOT-TBL-LOTES**. |
-| Postcondición | 1. La remesa queda almacenada en **DB_FARMASIL.TBL_LOTES** asociada a su medicamento.<br>2. La combinación de medicamento y número de lote es única en la tabla.<br>3. La remesa aparece en **LOT-TBL-LOTES**.<br>4. La remesa queda disponible para ser seleccionada en **VEN-CMB-LOTE-VENTA** durante el registro de una venta.<br>5. El stock consolidado del medicamento, mostrado en **INV-TBL-PRODUCTOS**, se incrementa en las unidades recibidas. |
+| Procedimiento | 1. La dueña accede al módulo de gestión de lotes.<br>2. La dueña selecciona el medicamento al que corresponde la remesa en **LOT-CMB-PRODUCTO**.<br>3. El sistema propone como valor inicial el proveedor habitual del medicamento (`TBL_PRODUCTOS.id_proveedor`) en **LOT-CMB-PROVEEDOR-LOTE**, y la dueña puede cambiarlo cuando la remesa concreta proviene de un proveedor distinto.<br>4. La dueña ingresa el número de lote impreso por el laboratorio en **LOT-TXT-NUMERO-LOTE**.<br>5. La dueña selecciona la fecha de vencimiento de la remesa en **LOT-FEC-FECHA-VENCIMIENTO**.<br>6. La dueña ingresa las unidades recibidas en **LOT-NUM-STOCK-LOTE**.<br>7. La dueña registra la fecha de ingreso al almacén en **LOT-FEC-FECHA-INGRESO**.<br>8. La dueña presiona **LOT-BTN-CREAR-LOTE**.<br>9. El sistema valida que la fecha de vencimiento sea posterior a la fecha actual, que las unidades sean un entero no negativo y que no exista ya una remesa con el mismo número de lote para ese medicamento.<br>10. El sistema registra la remesa en **DB_FARMASIL.TBL_LOTES** con `estado_lote` = 'Disponible'.<br>11. El sistema actualiza **LOT-TBL-LOTES**. |
+| Postcondición | 1. La remesa queda almacenada en **DB_FARMASIL.TBL_LOTES** asociada a su medicamento y al proveedor que la entregó (`id_proveedor`).<br>2. La combinación de medicamento y número de lote es única en la tabla.<br>3. La remesa aparece en **LOT-TBL-LOTES**.<br>4. La remesa queda disponible para ser seleccionada en **VEN-CMB-LOTE-VENTA** durante el registro de una venta.<br>5. El stock consolidado del medicamento, mostrado en **INV-TBL-PRODUCTOS**, se incrementa en las unidades recibidas. |
 | Código de artefactos asociados | ART-MKP-LOT-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Ilación nueva, derivada de la incorporación de **TBL_LOTES** al Diccionario de Datos v04.00.<br>La restricción de unicidad sobre medicamento y número de lote es la que sostiene el rastreo sanitario: si el mismo lote pudiera registrarse dos veces, no habría forma de responder inequívocamente qué se vendió de una remesa retirada por la DIGEMID.<br>Queda Pendiente porque el mockup **ART-MKP-LOT-0001** aún no ha sido diseñado. |
+| Comentario | Ilación nueva, derivada de la incorporación de **TBL_LOTES** al Diccionario de Datos v04.00.<br>La restricción de unicidad sobre medicamento y número de lote es la que sostiene el rastreo sanitario: si el mismo lote pudiera registrarse dos veces, no habría forma de responder inequívocamente qué se vendió de una remesa retirada por la DIGEMID.<br>Queda Pendiente porque el mockup **ART-MKP-LOT-0001** aún no ha sido diseñado.<br>**Versión 02.00:** se incorpora `TBL_LOTES.id_proveedor` (Diccionario de Datos v05.00), que permite registrar remesas de un mismo medicamento provenientes de proveedores distintos, requisito surgido durante el diseño del módulo de comparación de precios de proveedores (EDU-0017). Requiere incorporar **LOT-CMB-PROVEEDOR-LOTE** al mockup **ART-MKP-LOT-0001**. Ver Anexo. |
 
 | Código ilación | ILA-0042 |
 | --- | --- |
@@ -877,8 +885,8 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código ilación | ILA-0043 |
 | --- | --- |
 | Nombre | Actualización de remesa |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 02/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -886,12 +894,12 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código educción | EDU-0015 |
 | Código especificación | ESP-0043 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LOTES** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-LOT-0003**. |
-| Procedimiento | 1. La dueña selecciona una remesa en **LOT-TBL-LOTES**.<br>2. La dueña presiona **LOT-BTN-ACTUALIZAR-LOTE**.<br>3. El sistema carga el mockup **ART-MKP-LOT-0003** con la información vigente de la remesa.<br>4. La dueña modifica el número de lote en **LOT-TXT-NUMERO-LOTE**, la fecha de vencimiento en **LOT-FEC-FECHA-VENCIMIENTO**, las existencias en **LOT-NUM-STOCK-LOTE** o el estado en **LOT-CMB-ESTADO-LOTE**. El medicamento asociado, mostrado en **LOT-CMB-PRODUCTO**, permanece de solo lectura.<br>5. La dueña presiona **LOT-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo número de lote no colisione con otra remesa del mismo medicamento y que las existencias sean un entero no negativo.<br>7. El sistema verifica que las existencias declaradas no sean inferiores a las unidades ya comprometidas en órdenes de devolución pendientes de esa remesa.<br>8. El sistema actualiza el registro en **DB_FARMASIL.TBL_LOTES**.<br>9. El sistema actualiza **LOT-TBL-LOTES**. |
+| Procedimiento | 1. La dueña selecciona una remesa en **LOT-TBL-LOTES**.<br>2. La dueña presiona **LOT-BTN-ACTUALIZAR-LOTE**.<br>3. El sistema carga el mockup **ART-MKP-LOT-0003** con la información vigente de la remesa.<br>4. La dueña modifica el número de lote en **LOT-TXT-NUMERO-LOTE**, la fecha de vencimiento en **LOT-FEC-FECHA-VENCIMIENTO**, las existencias en **LOT-NUM-STOCK-LOTE**, el estado en **LOT-CMB-ESTADO-LOTE** o el proveedor de la remesa en **LOT-CMB-PROVEEDOR-LOTE**. El medicamento asociado, mostrado en **LOT-CMB-PRODUCTO**, permanece de solo lectura.<br>5. La dueña presiona **LOT-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo número de lote no colisione con otra remesa del mismo medicamento y que las existencias sean un entero no negativo.<br>7. El sistema verifica que las existencias declaradas no sean inferiores a las unidades ya comprometidas en órdenes de devolución pendientes de esa remesa.<br>8. El sistema actualiza el registro en **DB_FARMASIL.TBL_LOTES**.<br>9. El sistema actualiza **LOT-TBL-LOTES**. |
 | Postcondición | 1. La remesa queda actualizada en **DB_FARMASIL.TBL_LOTES**.<br>2. El identificador de la remesa permanece inalterado, preservando las referencias desde **TBL_DETALLE_VENTAS** y **TBL_DETALLE_DEVOLUCION**.<br>3. El medicamento asociado a la remesa permanece inalterado: reasignar una remesa a otro medicamento falsearía el histórico de ventas ya registrado.<br>4. Si la remesa pasó a 'Bloqueado por devolucion' o 'Agotado', deja de ofrecerse en **VEN-CMB-LOTE-VENTA**.<br>5. Los cambios se reflejan en **LOT-TBL-LOTES**. |
 | Código de artefactos asociados | ART-MKP-LOT-0003 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | El medicamento asociado se declara de solo lectura por la misma razón que el identificador: las ventas ya registradas apuntan a esta remesa, y cambiarle el medicamento reescribiría retroactivamente qué se vendió.<br>La verificación del paso 7 evita que una corrección de inventario deje una orden de devolución comprometiendo unidades que ya no existen.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0003**. |
+| Comentario | El medicamento asociado se declara de solo lectura por la misma razón que el identificador: las ventas ya registradas apuntan a esta remesa, y cambiarle el medicamento reescribiría retroactivamente qué se vendió.<br>La verificación del paso 7 evita que una corrección de inventario deje una orden de devolución comprometiendo unidades que ya no existen.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0003**.<br>**Versión 02.00:** a diferencia del medicamento, el proveedor de la remesa **sí** es editable, porque puede corregirse un error de captura sin falsear qué medicamento se vendió. Requiere incorporar **LOT-CMB-PROVEEDOR-LOTE** al mockup **ART-MKP-LOT-0003**. Ver Anexo. |
 
 | Código ilación | ILA-0044 |
 | --- | --- |
@@ -911,6 +919,166 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Importancia | Vital |
 | Estado | Pendiente |
 | Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**. |
+
+---
+
+# Módulo 12 — Gestión de reabastecimiento (EDU-0016)
+
+| Código ilación | ILA-0045 |
+| --- | --- |
+| Nombre | Incorporación manual de ítem a la lista de reabastecimiento |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código educción | EDU-0016 |
+| Código especificación | ESP-0045 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene al menos un medicamento con `estado_producto` = 'Disponible'.<br>5. Se carga el mockup **ART-MKP-REA-0001**.<br>6. El botón **REA-BTN-CREAR-ITEM** se encuentra habilitado. |
+| Procedimiento | 1. La dueña accede al módulo de gestión de reabastecimiento.<br>2. La dueña selecciona el medicamento a incorporar en **REA-CMB-PRODUCTO**.<br>3. La dueña selecciona la prioridad del ítem en **REA-CMB-PRIORIDAD**, con los valores 'Normal' o 'Urgente'.<br>4. El sistema registra automáticamente la fecha de inclusión y la muestra en **REA-LBL-FECHA-INCLUSION**, que no es editable.<br>5. La dueña presiona **REA-BTN-CREAR-ITEM**.<br>6. El sistema valida que el medicamento no tenga ya un ítem pendiente en la lista.<br>7. El sistema registra el ítem en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** con `origen` = 'Manual'.<br>8. El sistema actualiza **REA-TBL-LISTA-REABASTECIMIENTO**. |
+| Postcondición | 1. El ítem queda almacenado en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** con `origen` = 'Manual'.<br>2. El ítem aparece en **REA-TBL-LISTA-REABASTECIMIENTO**, resaltado en rojo si su prioridad es 'Urgente'.<br>3. El ítem queda disponible para ser cotizado según EDU-0017. |
+| Código de artefactos asociados | ART-MKP-REA-0001 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | Ilación nueva, derivada de la Entrevista 3. Complementa la incorporación automática que realiza el proceso periódico del sistema (ver Anexo): permite a la dueña agregar manualmente productos que no están por agotarse pero que desea cotizar igual, por ejemplo una oferta detectada en el catálogo de un proveedor.<br>Queda Pendiente porque el mockup **ART-MKP-REA-0001** aún no ha sido diseñado. |
+
+| Código ilación | ILA-0046 |
+| --- | --- |
+| Nombre | Consulta de la lista de reabastecimiento |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código educción | EDU-0016 |
+| Código especificación | ESP-0046 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. Se carga el mockup **ART-MKP-REA-0002**. |
+| Procedimiento | 1. La dueña accede al módulo de gestión de reabastecimiento.<br>2. La dueña aplica los filtros disponibles: prioridad en **REA-CMB-FILTRO-PRIORIDAD** u origen en **REA-CMB-FILTRO-ORIGEN**.<br>3. La dueña presiona **REA-BTN-LEER-ITEM**.<br>4. El sistema consulta **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** y resuelve el nombre del medicamento contra **DB_FARMASIL.TBL_PRODUCTOS**.<br>5. El sistema muestra los resultados en **REA-TBL-LISTA-REABASTECIMIENTO**, ordenados con los ítems 'Urgente' primero y resaltados en rojo. |
+| Postcondición | 1. Los ítems consultados se visualizan en **REA-TBL-LISTA-REABASTECIMIENTO**, con los urgentes resaltados y listados primero.<br>2. No se modifica ninguna información en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**. |
+| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0002 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | Es la vista desde la que la dueña decide qué ítems enviar a cotizar según EDU-0017. El resaltado en rojo de los ítems urgentes es el componente de interfaz solicitado explícitamente en la Entrevista 3.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0002**. |
+
+| Código ilación | ILA-0047 |
+| --- | --- |
+| Nombre | Actualización de ítem de la lista de reabastecimiento |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código educción | EDU-0016 |
+| Código especificación | ESP-0047 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-REA-0003**. |
+| Procedimiento | 1. La dueña selecciona un ítem en **REA-TBL-LISTA-REABASTECIMIENTO**.<br>2. La dueña presiona **REA-BTN-ACTUALIZAR-ITEM**.<br>3. El sistema carga el mockup **ART-MKP-REA-0003** con la información vigente del ítem.<br>4. La dueña modifica la prioridad en **REA-CMB-PRIORIDAD**. El medicamento y el origen, mostrados de solo lectura, no se modifican.<br>5. La dueña presiona **REA-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema actualiza el registro en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>7. El sistema actualiza **REA-TBL-LISTA-REABASTECIMIENTO**. |
+| Postcondición | 1. La prioridad del ítem queda actualizada en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>2. El medicamento y el origen permanecen inalterados.<br>3. Los cambios se reflejan en **REA-TBL-LISTA-REABASTECIMIENTO**. |
+| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0003 |
+| Importancia | Media |
+| Estado | Pendiente |
+| Comentario | Permite reclasificar como 'Urgente' un ítem que entró originalmente con prioridad 'Normal', por ejemplo si el stock cae más rápido de lo previsto entre un escaneo periódico y otro. El medicamento y el origen se declaran de solo lectura por el mismo criterio que en el resto del catálogo: reasignar la identidad de un ítem ya existente equivaldría a crear uno nuevo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0003**. |
+
+| Código ilación | ILA-0048 |
+| --- | --- |
+| Nombre | Eliminación de ítem de la lista de reabastecimiento |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código educción | EDU-0016 |
+| Código especificación | ESP-0048 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-REA-0004**. |
+| Procedimiento | 1. La dueña selecciona un ítem en **REA-TBL-LISTA-REABASTECIMIENTO**.<br>2. La dueña presiona **REA-BTN-ELIMINAR-ITEM**.<br>3. El sistema muestra el modal **REA-MDL-CONFIRMAR-ELIMINACION** con el mensaje **REA-TXT-MSJ**: "¿Está seguro de quitar este ítem de la lista de reabastecimiento?"<br>4. Si la dueña presiona **REA-BTN-CONFIRMAR-SI**, el sistema elimina el registro de **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>5. Si la dueña presiona **REA-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>6. El sistema actualiza **REA-TBL-LISTA-REABASTECIMIENTO**. |
+| Postcondición | 1. El ítem queda eliminado de **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>2. El ítem deja de mostrarse en **REA-TBL-LISTA-REABASTECIMIENTO**.<br>3. No se produce ninguna violación de integridad referencial: ninguna otra tabla depende de un ítem de esta lista. |
+| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0004 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | La eliminación es física, a diferencia de la mayoría del catálogo, porque las cotizaciones de EDU-0017 se asocian al medicamento y al proveedor, no al ítem de esta lista. Quitar un ítem significa que ya fue pedido o que se decidió no cotizarlo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0004**. |
+
+---
+
+# Módulo 13 — Gestión de comparación de precios de proveedores (EDU-0017)
+
+| Código ilación | ILA-0049 |
+| --- | --- |
+| Nombre | Registro de cotización de proveedor |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código educción | EDU-0017 |
+| Código especificación | ESP-0049 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PROVEEDORES** tiene al menos un proveedor con `estado` = 'Activo'.<br>5. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene entradas válidas.<br>6. Se carga el mockup **ART-MKP-COT-0001**. |
+| Procedimiento | 1. La dueña accede al módulo de comparación de precios de proveedores.<br>2. La dueña selecciona el medicamento a cotizar en **COT-CMB-PRODUCTO**.<br>3. La dueña selecciona el proveedor que ofreció el precio en **COT-CMB-PROVEEDOR**.<br>4. La dueña ingresa el precio cotizado en **COT-NUM-PRECIO-COTIZADO**.<br>5. La dueña registra la fecha en que obtuvo la cotización en **COT-FEC-FECHA-COTIZACION**.<br>6. La dueña registra, de ser el caso, condiciones de promoción o descuento en **COT-TXA-PROMOCION**, campo opcional.<br>7. La dueña presiona **COT-BTN-CREAR-COTIZACION**.<br>8. El sistema valida que el precio cotizado sea un valor decimal no negativo y que la fecha no sea posterior a la fecha actual.<br>9. El sistema registra la cotización en **DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR**, asociada al usuario de la sesión activa.<br>10. El sistema actualiza **COT-TBL-COTIZACIONES**. |
+| Postcondición | 1. La cotización queda almacenada en **DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR** como una fila nueva, sin sobrescribir cotizaciones anteriores del mismo medicamento y proveedor.<br>2. La cotización aparece en **COT-TBL-COTIZACIONES**.<br>3. La cotización queda disponible para la comparación según ILA-0050, como la cotización vigente de ese proveedor para ese medicamento (la de fecha más reciente). |
+| Código de artefactos asociados | ART-MKP-COT-0001 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | Derivada de la Entrevista 3, donde la dueña confirmó que la obtención de precios es manual (por teléfono, visita presencial o catálogo en PDF/CSV) y que desea conservar el historial completo de cotizaciones, no solo el precio vigente. Cada registro es una fila nueva; nunca se sobrescribe una cotización anterior.<br>Queda Pendiente porque el mockup **ART-MKP-COT-0001** aún no ha sido diseñado. |
+
+| Código ilación | ILA-0050 |
+| --- | --- |
+| Nombre | Consulta comparativa de precios y exportación por proveedor |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código educción | EDU-0017 |
+| Código especificación | ESP-0050 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-COT-0002**. |
+| Procedimiento | 1. La dueña accede al módulo de comparación de precios de proveedores.<br>2. La dueña selecciona el medicamento a comparar en **COT-CMB-FILTRO-PRODUCTO**, o deja el filtro vacío para partir de la lista de reabastecimiento completa (ILA-0046).<br>3. La dueña presiona **COT-BTN-LEER-COTIZACION**.<br>4. El sistema consulta **DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR** y, por cada combinación de medicamento y proveedor, resuelve la cotización vigente como la de `fecha_cotizacion` más reciente.<br>5. El sistema muestra la comparativa en **COT-TBL-COMPARATIVA-PRECIOS**, con una columna por proveedor y su precio vigente, destacando el precio más bajo de cada fila.<br>6. La dueña selecciona, para cada medicamento, el proveedor al que decide comprarle.<br>7. La dueña selecciona el proveedor destinatario del archivo en **COT-CMB-PROVEEDOR-EXPORTAR**.<br>8. La dueña presiona **COT-BTN-EXPORTAR-PROVEEDOR**.<br>9. El sistema genera un archivo CSV que contiene únicamente los medicamentos seleccionados para ese proveedor, con su nombre, la cantidad pendiente en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** y el precio cotizado.<br>10. El sistema pone a disposición el archivo para su descarga o impresión. |
+| Postcondición | 1. La comparativa se muestra en **COT-TBL-COMPARATIVA-PRECIOS** con el precio vigente de cada proveedor.<br>2. El archivo CSV generado contiene únicamente los medicamentos y cantidades correspondientes al proveedor seleccionado.<br>3. Ningún dato se modifica en **DB_FARMASIL**: ni la comparación ni la exportación persisten registro alguno. |
+| Código de artefactos asociados | ART-MKP-COT-0001, ART-MKP-COT-0002 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | Reúne dos capacidades que la dueña describió en la Entrevista 3 como parte de un mismo flujo: comparar el precio de cada proveedor lado a lado, y luego generar un archivo por proveedor para pedirle (o confirmarle) únicamente esos productos. La exportación es efímera y sin historial, por decisión confirmada con la dueña: no genera ninguna fila en la base de datos, a diferencia de EDU-0010, cuyos reportes sí se indexan en **TBL_REPORTES_VENTAS**.<br>Queda Pendiente porque el mockup **ART-MKP-COT-0002** aún no ha sido diseñado. |
+
+| Código ilación | ILA-0051 |
+| --- | --- |
+| Nombre | Actualización de cotización |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código educción | EDU-0017 |
+| Código especificación | ESP-0051 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-COT-0003**. |
+| Procedimiento | 1. La dueña selecciona una cotización en **COT-TBL-COTIZACIONES**.<br>2. La dueña presiona **COT-BTN-ACTUALIZAR-COTIZACION**.<br>3. El sistema carga el mockup **ART-MKP-COT-0003** con la información vigente de la cotización.<br>4. La dueña corrige el precio en **COT-NUM-PRECIO-COTIZADO**, la fecha en **COT-FEC-FECHA-COTIZACION** o la nota en **COT-TXA-PROMOCION**. El medicamento y el proveedor, mostrados de solo lectura, no se modifican.<br>5. La dueña presiona **COT-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida la información con los mismos criterios de la creación.<br>7. El sistema actualiza el registro en **DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR**.<br>8. El sistema actualiza **COT-TBL-COTIZACIONES**. |
+| Postcondición | 1. La cotización queda actualizada en **DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR**.<br>2. El medicamento y el proveedor permanecen inalterados.<br>3. Los cambios se reflejan en **COT-TBL-COTIZACIONES**. |
+| Código de artefactos asociados | ART-MKP-COT-0001, ART-MKP-COT-0003 |
+| Importancia | Media |
+| Estado | Pendiente |
+| Comentario | Corrige un error de digitación en una cotización ya registrada (por ejemplo, un precio mal tecleado); no sustituye al registro de una cotización nueva, que siempre se hace mediante ILA-0049 para preservar el historial. El medicamento y el proveedor se declaran de solo lectura por el mismo criterio que en el resto del catálogo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-COT-0003**. |
+
+| Código ilación | ILA-0052 |
+| --- | --- |
+| Nombre | Eliminación de cotización |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código educción | EDU-0017 |
+| Código especificación | ESP-0052 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-COT-0004**. |
+| Procedimiento | 1. La dueña selecciona una cotización en **COT-TBL-COTIZACIONES**.<br>2. La dueña presiona **COT-BTN-ELIMINAR-COTIZACION**.<br>3. El sistema muestra el modal **COT-MDL-CONFIRMAR-ELIMINACION** con el mensaje **COT-TXT-MSJ**: "¿Está seguro de eliminar esta cotización? Se perderá del historial de precios de este proveedor."<br>4. Si la dueña presiona **COT-BTN-CONFIRMAR-SI**, el sistema elimina el registro de **DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR**.<br>5. Si la dueña presiona **COT-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>6. El sistema actualiza **COT-TBL-COTIZACIONES**. |
+| Postcondición | 1. La cotización queda eliminada de **DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR**.<br>2. La cotización deja de mostrarse en **COT-TBL-COTIZACIONES**.<br>3. Si era la cotización vigente de ese proveedor, la comparativa pasa a mostrar la cotización inmediatamente anterior del mismo proveedor, si existe. |
+| Código de artefactos asociados | ART-MKP-COT-0001, ART-MKP-COT-0004 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | La eliminación es física porque una cotización incorrecta (por ejemplo, cargada para el proveedor equivocado) no debe conservarse como historial legítimo. Se distingue de ILA-0051 en que aquí el registro entero es erróneo, no solo uno de sus campos.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-COT-0004**. |
 
 
 
@@ -944,6 +1112,8 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 >
 > **Ampliación del 05/09/2026 (lotes).** Tras la decisión del equipo de incorporar `TBL_LOTES` al modelo, se agregó el módulo 11 con ILA-0041 a ILA-0044 y se ajustaron las dieciséis ilaciones de los módulos 1, 2, 4 y 7. Los cambios de fondo: la venta descuenta de una remesa concreta según el criterio FEFO y registra su `id_lote` en el detalle, lo que hace posible el rastreo sanitario; el bloqueo por vencimiento pasa del medicamento a la remesa, de modo que una remesa vencida ya no impide vender las sanas del mismo estante; la devolución identifica la remesa que el proveedor exige; y el módulo de inventario queda reducido a los datos de catálogo del medicamento.
 >
+> **Ampliación del 02/10/2026 (reabastecimiento y comparación de precios).** Se agregaron los módulos 12 y 13 con ILA-0045 a ILA-0052, derivados de la Entrevista 3. Se corrigieron ILA-0025 (el proveedor se valida contra la remesa y no contra el producto) y, por la captura de `stock_minimo` y `TBL_LOTES.id_proveedor`, se ampliaron ILA-0005, ILA-0007, ILA-0041 e ILA-0043. Los cambios de base de datos quedaron aplicados en el Diccionario de Datos v05.00.
+
 > **Criterio de estado:** se mantiene `Concluido` cuando la corrección fue formal o de coherencia interna. Se marca `Pendiente` cuando el cambio exige una decisión externa a la ilación: un componente de mockup nuevo, un ajuste al diccionario de datos o una ampliación de la educción. El Anexo al final del documento lista esos pendientes.
 
 ## Convenciones aplicadas

@@ -48,6 +48,14 @@
 |  | ILA-0042 | ESP-0042 | ART-MKP-LOT-0002 |
 |  | ILA-0043 | ESP-0043 | ART-MKP-LOT-0003 |
 |  | ILA-0044 | ESP-0044 | ART-MKP-LOT-0004 |
+| EDU-0016 | ILA-0045 | ESP-0045 | ART-MKP-REA-0001 |
+|  | ILA-0046 | ESP-0046 | ART-MKP-REA-0001, ART-MKP-REA-0002 |
+|  | ILA-0047 | ESP-0047 | ART-MKP-REA-0001, ART-MKP-REA-0003 |
+|  | ILA-0048 | ESP-0048 | ART-MKP-REA-0001, ART-MKP-REA-0004 |
+| EDU-0017 | ILA-0049 | ESP-0049 | ART-MKP-COT-0001 |
+|  | ILA-0050 | ESP-0050 | ART-MKP-COT-0001, ART-MKP-COT-0002 |
+|  | ILA-0051 | ESP-0051 | ART-MKP-COT-0001, ART-MKP-COT-0003 |
+|  | ILA-0052 | ESP-0052 | ART-MKP-COT-0001, ART-MKP-COT-0004 |
 
 **Códigos reservados.** EDU-0005 a EDU-0008 no aparecen en esta matriz: fueron retirados de la etapa de educción por haberse reclasificado como requisitos no funcionales, y sus códigos se mantienen sin reasignar. El salto es intencional.
 
@@ -101,6 +109,14 @@
 | 11 | EDU-0015 | ILA-0042 | Leer | ESP-0042 | A y T | Pendiente | **sin pruebas** |
 | 11 | EDU-0015 | ILA-0043 | Actualizar | ESP-0043 | A | Pendiente | **sin pruebas** |
 | 11 | EDU-0015 | ILA-0044 | Eliminar | ESP-0044 | A | Pendiente | **sin pruebas** |
+| 12 | EDU-0016 | ILA-0045 | Crear | ESP-0045 | A | Pendiente | **sin pruebas** |
+| 12 | EDU-0016 | ILA-0046 | Leer | ESP-0046 | A | Pendiente | **sin pruebas** |
+| 12 | EDU-0016 | ILA-0047 | Actualizar | ESP-0047 | A | Pendiente | **sin pruebas** |
+| 12 | EDU-0016 | ILA-0048 | Eliminar | ESP-0048 | A | Pendiente | **sin pruebas** |
+| 13 | EDU-0017 | ILA-0049 | Crear | ESP-0049 | A | Pendiente | **sin pruebas** |
+| 13 | EDU-0017 | ILA-0050 | Leer | ESP-0050 | A | Pendiente | **sin pruebas** |
+| 13 | EDU-0017 | ILA-0051 | Actualizar | ESP-0051 | A | Pendiente | **sin pruebas** |
+| 13 | EDU-0017 | ILA-0052 | Eliminar | ESP-0052 | A | Pendiente | **sin pruebas** |
 
 `A` = Administrador (ACT-0001) · `T` = Técnico (ACT-0002). Los tipos de prueba corresponden al catálogo del capítulo 10 del Catálogo de Requisitos, según `09-pruebas-software.md`.
 
@@ -111,14 +127,14 @@
 | Requisito no funcional | Atributo de calidad | Artefactos funcionales relacionados | Relación |
 | --- | --- | --- | --- |
 | RNF-0001 Funcionamiento sin conexión permanente | Disponibilidad | Todos los módulos | El catálogo completo opera sobre una base local `DB_FARMASIL`; ninguna especificación requiere un servicio remoto. |
-| RNF-0002 Facilidad de uso sin capacitación | Usabilidad | Los mockups de los once módulos | Verificado por las pruebas T-016 y T-005. |
+| RNF-0002 Facilidad de uso sin capacitación | Usabilidad | Los mockups de los trece módulos | Verificado por las pruebas T-016 y T-005. |
 | RNF-0003 Soporte de usuarios simultáneos | Concurrencia | ESP-0001, ESP-0003, ESP-0004, ESP-0041, ESP-0043 | Operaciones transaccionales que pueden ejecutarse en paralelo sobre el mismo lote o la misma venta. Cubierto por T-008 y T-012. |
 | RNF-0004 Tiempo de recuperación del servicio | Fiabilidad | `DB_FARMASIL` completa | Sin ilación asociada: es un procedimiento de operación, no una función de usuario. |
 | RNF-0005 Velocidad en el registro de ventas | Rendimiento | ESP-0001 | Fija el límite de 4 segundos para la transacción completa, incluido el descuento de stock de la remesa. Cubierto por T-017 y T-008. |
-| RNF-0006 Control de acceso, autorización y protección de credenciales | Seguridad | EDU-0013, ILA-0033 a ILA-0036, ESP-0033 a ESP-0036, y las 44 precondiciones | El módulo 9 hace implementable a este requisito. Sus seis condiciones se verifican en: autenticación e identificación en ESP-0001 y ESP-0025 mediante `id_usuario`; autorización en las 44 precondiciones según la Matriz de Permisos; cuenta inactiva en ESP-0036; credenciales en ESP-0033 y ESP-0034; continuidad de la administración en ESP-0035. |
+| RNF-0006 Control de acceso, autorización y protección de credenciales | Seguridad | EDU-0013, ILA-0033 a ILA-0036, ESP-0033 a ESP-0036, y las 52 precondiciones | El módulo 9 hace implementable a este requisito. Sus seis condiciones se verifican en: autenticación e identificación en ESP-0001 y ESP-0025 mediante `id_usuario`; autorización en las 44 precondiciones según la Matriz de Permisos; cuenta inactiva en ESP-0036; credenciales en ESP-0033 y ESP-0034; continuidad de la administración en ESP-0035. |
 | RNF-0007 Funcionamiento en el equipo objetivo | Compatibilidad | Todos los módulos | Verificado por las pruebas T-015 y T-011. |
 | RNF-0008 Stack tecnológico | Restricción de implementación | Todos los módulos | Determina la correspondencia de tipos de la sección de tipos del Diccionario de Datos v04.00. |
-| RNF-0009 Integridad y respaldo de DB_FARMASIL | Integridad | Las 14 tablas de `DB_FARMASIL` | Las 44 especificaciones operan sobre el esquema declarado en este requisito. Las transacciones declaradas en cada especificación son el mecanismo por el que se cumple la parte de integridad. |
+| RNF-0009 Integridad y respaldo de DB_FARMASIL | Integridad | Las 16 tablas de `DB_FARMASIL` | Las 52 especificaciones operan sobre el esquema declarado en este requisito. Las transacciones declaradas en cada especificación son el mecanismo por el que se cumple la parte de integridad. |
 
 **Educciones reclasificadas.** Los requisitos que ocupaban EDU-0005 a EDU-0008 se trasladaron al catálogo de requisitos no funcionales. Su trazabilidad se conserva por la nota de códigos reservados de `01-educciones.md` y por esta matriz.
 
@@ -129,7 +145,7 @@
 | Tabla de `DB_FARMASIL` | Especificaciones que la escriben | Especificaciones que la leen |
 | --- | --- | --- |
 | TBL_USUARIOS | ESP-0033, ESP-0035, ESP-0036 | ESP-0034, ESP-0021 |
-| TBL_PROVEEDORES | ESP-0037, ESP-0039, ESP-0040 | ESP-0038, ESP-0005, ESP-0007, ESP-0025, ESP-0026 |
+| TBL_PROVEEDORES | ESP-0037, ESP-0039, ESP-0040 | ESP-0038, ESP-0005, ESP-0007, ESP-0025, ESP-0026, ESP-0041, ESP-0043, ESP-0049, ESP-0050 |
 | TBL_PRODUCTOS | ESP-0005, ESP-0007, ESP-0008 | ESP-0006, ESP-0001, ESP-0026, ESP-0029, ESP-0030, ESP-0041, ESP-0042 |
 | TBL_LOTES | ESP-0041, ESP-0043, ESP-0044, ESP-0001, ESP-0003, ESP-0004, ESP-0014, ESP-0016, ESP-0027 | ESP-0042, ESP-0006, ESP-0013, ESP-0002, ESP-0025, ESP-0026 |
 | TBL_REGISTRO_VENTAS | ESP-0001, ESP-0003, ESP-0004 | ESP-0002, ESP-0009, ESP-0010, ESP-0020, ESP-0021, ESP-0023, ESP-0036 |
@@ -142,6 +158,8 @@
 | TBL_DETALLE_DEVOLUCION | ESP-0025, ESP-0027, ESP-0028 | ESP-0026, ESP-0016 |
 | TBL_RESTRICCIONES_VENTA | ESP-0029, ESP-0031, ESP-0032 | ESP-0030, ESP-0001, ESP-0008 |
 | TBL_REPORTES_VENTAS | ESP-0021, ESP-0023, ESP-0024 | ESP-0022 |
+| TBL_LISTA_REABASTECIMIENTO | ESP-0045, ESP-0047, ESP-0048 | ESP-0046, ESP-0050 |
+| TBL_COTIZACIONES_PROVEEDOR | ESP-0049, ESP-0051, ESP-0052 | ESP-0050 |
 
 **Hallazgo.** `TBL_ALERTAS_VENCIMIENTO` es la única tabla del modelo que ninguna especificación escribe. Su contenido, incluido el umbral de meses, solo se lee. Nadie puede configurarla desde el sistema.
 
@@ -151,14 +169,14 @@
 
 | Verificación | Resultado |
 | --- | --- |
-| Educciones con sus cuatro ilaciones | 11 de 11 |
-| Ilaciones con especificación | 44 de 44 |
-| Especificaciones con ilación de origen | 44 de 44 |
+| Educciones con sus cuatro ilaciones | 13 de 13 |
+| Ilaciones con especificación | 52 de 52 |
+| Especificaciones con ilación de origen | 52 de 52 |
 | Correspondencia uno a uno EDU→ILA→ESP | Sin huecos ni duplicados |
-| Ilaciones con rol autorizado declarado | 44 de 44 |
-| Estado coincidente entre ilación y especificación | 44 de 44 |
-| Especificaciones con pruebas definidas | 44 de 44 |
-| Mockups referenciados que existen | **28 de 40** |
+| Ilaciones con rol autorizado declarado | 52 de 52 |
+| Estado coincidente entre ilación y especificación | 52 de 52 |
+| Especificaciones con pruebas definidas | 44 de 52 |
+| Mockups referenciados que existen | **28 de 48** |
 
 ### Huecos abiertos
 
@@ -169,14 +187,16 @@
 5. **Catálogo de fuentes inexistente.** FUE-0001 a FUE-0005 se citan en 26 artefactos sin que ningún documento los defina. Siete ilaciones citan la Entrevista 1 y cuatro la consulta posterior al cliente, ambas sin código.
 6. ~~**RNF-0006 pendiente de actualizar.**~~ **Resuelto el 05/09/2026.** Refundido en la versión 03.00, que cubre autenticación, identificación en la trazabilidad, autorización por rol, comportamiento ante intento no autorizado, protección de credenciales y continuidad de la administración. Ver `08-requisitos-no-funcionales.md`.
 7. **Falta el requisito de la generación automática de alertas de vencimiento**, al que ILA-0013 remite sin que exista.
+8. **Veinte mockups sin diseñar** (antes doce): se suman `ART-MKP-REA-0001` a `0004` y `ART-MKP-COT-0001` a `0004` a los ya pendientes de `02-ilaciones.md`.
+9. **Generación automática de la lista de reabastecimiento sin requisito no funcional formal**, en la misma situación que el punto 7 (generación automática de alertas de vencimiento, a la que ILA-0013 remite sin que exista). Se recomienda resolver ambos en un mismo RNF de "procesos programados del sistema".
 
 
-**Versión:** 02.00
-**Fecha:** 05/09/2026
+**Versión:** 03.00
+**Fecha:** 02/10/2026
 **Autor:** AUT-0001
 
 Sigue la estructura de la plantilla oficial de trazabilidad de la asignatura (Educción, Ilación, Especificación, Otros artefactos), ampliada con las columnas que el catálogo necesita para verificarse: rol autorizado, estado y cobertura de pruebas.
 
-Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificaciones.md`, `05-diccionario-datos.md` v04.00, `06-guia-nomenclatura-mockups.md` v04.00, `07-matriz-permisos.md` v02.00, `08-requisitos-no-funcionales.md` y `09-pruebas-software.md`.
+Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificaciones.md`, `05-diccionario-datos.md` v05.00, `06-guia-nomenclatura-mockups.md` v04.00, `07-matriz-permisos.md` v03.00, `08-requisitos-no-funcionales.md` y `09-pruebas-software.md`.
 
 ---

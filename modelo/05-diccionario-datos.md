@@ -39,11 +39,14 @@ Catálogo de medicamentos e insumos médicos disponibles en el inventario.
 | accion_terapeutica | NVARCHAR(150) | NOT NULL | Principio activo o categoría terapéutica. |
 | precio_venta | DECIMAL(10,2) | NOT NULL | Precio al público por unidad o blíster. |
 | estado_producto | NVARCHAR(25) | DEFAULT 'Disponible' | Estados: 'Disponible', 'Descontinuado'. |
-| id_proveedor | INT | FK (TBL_PROVEEDORES) | Enlace para saber quién abastece este producto. |
+| id_proveedor | INT | FK (TBL_PROVEEDORES) | Enlace para saber quién abastece este producto (proveedor habitual del catálogo). |
+| stock_minimo | INT | NOT NULL, DEFAULT 0 | Umbral de existencias consolidadas (suma de `TBL_LOTES.stock_actual`) por debajo del cual el medicamento se incorpora automáticamente a `TBL_LISTA_REABASTECIMIENTO`. |
 
 *Educción asociada: EDU-0002. El estado 'Descontinuado' lo asigna ILA-0008.*
 
 *Cambio en v04.00: `numero_lote`, `fecha_vencimiento` y `stock_actual` se trasladaron a `TBL_LOTES`. El valor `'Bloqueado por devolucion'` se retiró de este dominio y ahora vive en `estado_lote`: bloquear un medicamento completo porque una de sus remesas vence impedía vender las remesas sanas.*
+
+*Cambio en v05.00: se agrega `stock_minimo`, capturado al crear o actualizar el medicamento (ESP-0005/ESP-0007) y usado por el proceso periódico que alimenta la lista de reabastecimiento (EDU-0016).*
 
 ## 4. TBL_LOTES
 
@@ -58,10 +61,13 @@ Remesas físicas de cada medicamento. Un producto del catálogo puede tener vari
 | stock_actual | INT | NOT NULL, DEFAULT 0 | Unidades físicas disponibles de esta remesa. |
 | estado_lote | NVARCHAR(25) | DEFAULT 'Disponible' | Estados: 'Disponible', 'Bloqueado por devolucion', 'Agotado'. |
 | fecha_ingreso | DATE | NOT NULL | Fecha en que la remesa ingresó al almacén. |
+| id_proveedor | INT | FK (TBL_PROVEEDORES) | Proveedor que efectivamente entregó esta remesa. Puede diferir del proveedor habitual declarado en `TBL_PRODUCTOS.id_proveedor` cuando el medicamento se compra a más de un proveedor. |
 
 Restricción adicional: `UNIQUE (id_producto, numero_lote)`. El mismo laboratorio no repite número de lote para un mismo medicamento, y admitir duplicados haría ambiguo el rastreo sanitario.
 
 *Educción asociada: EDU-0015. El estado 'Bloqueado por devolucion' lo asigna ILA-0014 y lo restituye ILA-0016.*
+
+*Cambio en v05.00: se agrega `id_proveedor`, que resuelve la limitación del modelo para el caso de remesas de un mismo medicamento provenientes de proveedores distintos. Exige corregir ESP-0025 (que hasta v02.00 validaba el proveedor contra `TBL_PRODUCTOS` en vez de contra la remesa) y ampliar ESP-0041/ESP-0043 para capturarlo.*
 
 ## 5. TBL_REGISTRO_VENTAS
 
@@ -211,6 +217,44 @@ Reglas de seguridad clínica para protección en el punto de venta.
 
 *Educción asociada: EDU-0010. Es un log de salida sin referencias foráneas, por lo que su eliminación física en ILA-0024 es legítima.*
 
+## 15. TBL_LISTA_REABASTECIMIENTO
+
+**Nueva en v05.00.** Mantiene los medicamentos que deben cotizarse y reabastecerse, ya sea porque el proceso periódico del sistema detectó que su stock consolidado cayó por debajo de `stock_minimo`, o porque la dueña los agregó manualmente.
+
+| Campo | Tipo de dato | Restricciones | Descripción |
+| --- | --- | --- | --- |
+| id_reabastecimiento | INT | PK, Auto-increment | Identificador único del ítem de la lista. |
+| id_producto | INT | FK (TBL_PRODUCTOS) | Medicamento a reabastecer. |
+| origen | NVARCHAR(20) | NOT NULL, DEFAULT 'Automático' | Valores: 'Automático' (generado por el proceso periódico), 'Manual' (agregado por la dueña, ESP-0045). |
+| prioridad | NVARCHAR(10) | NOT NULL, DEFAULT 'Normal' | Valores: 'Normal', 'Urgente'. Determina el resaltado visual en rojo. |
+| fecha_inclusion | DATE | NOT NULL | Fecha en que el ítem entró a la lista. |
+
+*Educción asociada: EDU-0016. Ilaciones: ILA-0045 a ILA-0048.*
+
+*Sin restricción de unicidad sobre `id_producto`: un medicamento puede reaparecer en la lista después de haber sido eliminado (por ejemplo, tras ser pedido y vuelto a caer bajo el umbral).*
+
+*Fuente: ESP-0045 (creación manual), ESP-0046 (consulta), ESP-0047 (actualización), ESP-0048 (eliminación). La escribe también el proceso periódico de generación automática, que aún no tiene requisito no funcional formal (ver `02-ilaciones.md`, Anexo, punto C.4).*
+
+## 16. TBL_COTIZACIONES_PROVEEDOR
+
+**Nueva en v05.00.** Conserva el historial completo de precios que cada proveedor ha cotizado por cada medicamento, permitiendo comparar el precio vigente de cada proveedor sin perder las cotizaciones anteriores.
+
+| Campo | Tipo de dato | Restricciones | Descripción |
+| --- | --- | --- | --- |
+| id_cotizacion | INT | PK, Auto-increment | Identificador único de la cotización. |
+| id_producto | INT | FK (TBL_PRODUCTOS) | Medicamento cotizado. |
+| id_proveedor | INT | FK (TBL_PROVEEDORES) | Proveedor que ofreció el precio. |
+| precio_cotizado | DECIMAL(10,2) | NOT NULL | Precio ofrecido por el proveedor para este medicamento. |
+| fecha_cotizacion | DATE | NOT NULL | Fecha en que se obtuvo la cotización. Determina cuál es la "vigente" por proveedor (la más reciente). |
+| promocion | NVARCHAR(MAX) | Opcional | Notas sobre condiciones de descuento o promoción asociadas al precio cotizado. |
+| id_usuario | INT | FK (TBL_USUARIOS) | Usuario que registró la cotización. |
+
+*Educción asociada: EDU-0017. Ilaciones: ILA-0049 a ILA-0052.*
+
+*Sin restricción de unicidad sobre (`id_producto`, `id_proveedor`): es intencional, porque permite el historial de cotizaciones (decisión confirmada con la dueña). La cotización vigente de cada proveedor se resuelve en consulta como la de `fecha_cotizacion` más reciente para esa combinación de medicamento y proveedor.*
+
+*Fuente: ESP-0049 (registro), ESP-0050 (consulta comparativa y exportación), ESP-0051 (actualización), ESP-0052 (eliminación).*
+
 ---
 
 ## Correspondencia de tipos entre base de datos, código e interfaz
@@ -233,7 +277,7 @@ Esta tabla es el criterio único para decidir el tipo de un campo en las tres ca
 
 **Nunca usar `float` ni `double` para importes.** `DECIMAL(10,2)` corresponde a `decimal` en C#, y cualquier otra elección introduce errores de redondeo en `monto_total` y `precio_unitario`.
 
-**Campos con dominio cerrado.** Los siguientes campos admiten un conjunto fijo de valores y se capturan siempre con un ComboBox, nunca escribiéndolos: `rol`, `estado`, `estado_producto`, `estado_documento`, `estado_orden`, `estado_alerta`, `tipo_comprobante`, `tipo_restriccion` y `motivo_devolucion`. Se recomienda declararlos con una restricción CHECK en el motor para que la validación no dependa únicamente de la interfaz.
+**Campos con dominio cerrado.** Los siguientes campos admiten un conjunto fijo de valores y se capturan siempre con un ComboBox, nunca escribiéndolos: `rol`, `estado`, `estado_producto`, `estado_documento`, `estado_orden`, `estado_alerta`, `tipo_comprobante`, `tipo_restriccion`, `motivo_devolucion`, `origen` y `prioridad`. Se recomienda declararlos con una restricción CHECK en el motor para que la validación no dependa únicamente de la interfaz.
 
 ---
 
@@ -253,6 +297,11 @@ Esta tabla es el criterio único para decidir el tipo de un campo en las tres ca
 | `TBL_LOTES` → `TBL_DETALLE_VENTAS` | No identificadora, 1:N | Modificada en v04.00. Una remesa aparece en muchas líneas de venta. |
 | `TBL_LOTES` → `TBL_DETALLE_DEVOLUCION` | No identificadora, 1:N | Modificada en v04.00. Una remesa aparece en muchas líneas de devolución. |
 | `TBL_PRODUCTOS` → `TBL_RESTRICCIONES_VENTA` | No identificadora, 1:N | Un producto puede tener varias restricciones sanitarias. |
+| `TBL_PROVEEDORES` → `TBL_LOTES` | No identificadora, 1:N | Nueva en v05.00. Un proveedor entrega muchas remesas; cada remesa registra su proveedor real. |
+| `TBL_PRODUCTOS` → `TBL_LISTA_REABASTECIMIENTO` | No identificadora, 1:N | Nueva en v05.00. Un medicamento puede aparecer en la lista más de una vez a lo largo del tiempo. |
+| `TBL_PRODUCTOS` → `TBL_COTIZACIONES_PROVEEDOR` | No identificadora, 1:N | Nueva en v05.00. Un medicamento acumula cotizaciones de varios proveedores y en varias fechas. |
+| `TBL_PROVEEDORES` → `TBL_COTIZACIONES_PROVEEDOR` | No identificadora, 1:N | Nueva en v05.00. Un proveedor ofrece muchas cotizaciones. |
+| `TBL_USUARIOS` → `TBL_COTIZACIONES_PROVEEDOR` | No identificadora, 1:N | Nueva en v05.00. Un usuario registra muchas cotizaciones. |
 
 `TBL_ALERTAS_VENCIMIENTO`, `TBL_PRODUCTOS_RETIRADOS` y `TBL_REPORTES_VENTAS` no participan en relaciones foráneas, por las razones documentadas en cada tabla.
 
@@ -274,17 +323,24 @@ Estos puntos no se modificaron porque implican decisiones de alcance, no correcc
 
 1. ~~**Múltiples lotes por medicamento.**~~ **Resuelto en la versión 04.00** con la incorporación de `TBL_LOTES` y del módulo 11.
 2. **Clientes.** No existe `TBL_CLIENTES` ni relación desde la venta, pese a que en la Entrevista 1 la dueña confirmó que quiere registrar clientes, llevar historial de compras y manejar clientes frecuentes.
-3. **Stock mínimo.** No hay campo que permita alertar por bajo stock, funcionalidad que la dueña pidió expresamente y que corresponde a una de las pérdidas económicas que declaró.
+3. ~~**Stock mínimo.**~~ **Resuelto en la versión 05.00** con `TBL_PRODUCTOS.stock_minimo` y la tabla `TBL_LISTA_REABASTECIMIENTO` (EDU-0016).
 4. **Tipo y presentación del producto.** No existe un campo que distinga medicamento genérico de comercial, ni que permita un precio por unidad y otro por conjunto, ambos solicitados en la entrevista.
 5. **Gestión de la configuración de alertas.** `TBL_ALERTAS_VENCIMIENTO` no tiene ninguna educción que la administre: el umbral es hoy un valor fijo que nadie puede cambiar desde el sistema.
 
 
-**Versión:** 04.00
-**Fecha:** 05/09/2026
+**Versión:** 05.00
+**Fecha:** 02/10/2026
 **Autor:** AUT-0001
-**Origen:** Diccionario de Datos v02.00 y `Cambios_Modelo_ER_DB_FARMASIL.md`
+**Origen:** Diccionario de Datos v02.00, `Cambios_Modelo_ER_DB_FARMASIL.md` y Entrevista 3 (v05.00)
 
-> **Cambios aplicados en esta versión.** Los cuatro cambios pendientes identificados durante la revisión de las ilaciones quedaron incorporados al esquema:
+> **Aplicado en v05.00 (módulo de reabastecimiento y comparación de precios de proveedores, derivado de la Entrevista 3, 02/10/2026):**
+>
+> - `TBL_PRODUCTOS`: se agrega `stock_minimo`, el umbral de existencias consolidadas por debajo del cual el medicamento se incorpora automáticamente a la lista de reabastecimiento (EDU-0016). Se captura en ESP-0005/ESP-0007.
+> - `TBL_LOTES`: se agrega `id_proveedor` (FK a `TBL_PROVEEDORES`), el proveedor real que entregó esa remesa específica. Resuelve una limitación detectada durante el diseño de EDU-0017: un mismo medicamento puede recibirse de más de un proveedor en remesas distintas, algo que `TBL_PRODUCTOS.id_proveedor` (proveedor habitual, a nivel de catálogo) no puede representar. Exige corregir ESP-0025/ILA-0025 y ampliar ESP-0041/ILA-0041 y ESP-0043/ILA-0043.
+> - Nueva tabla **`TBL_LISTA_REABASTECIMIENTO`** (EDU-0016).
+> - Nueva tabla **`TBL_COTIZACIONES_PROVEEDOR`** (EDU-0017).
+>
+> **Cambios aplicados en la versión 04.00.** Los cuatro cambios pendientes identificados durante la revisión de las ilaciones quedaron incorporados al esquema:
 >
 > | # | Tabla | Cambio | Requisito que lo exige |
 > | --- | --- | --- | --- |

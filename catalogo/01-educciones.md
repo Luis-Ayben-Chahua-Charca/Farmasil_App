@@ -4,7 +4,7 @@
 
 Los códigos **EDU-0005, EDU-0006, EDU-0007 y EDU-0008** no se encuentran en uso. Los requisitos que ocupaban ese rango fueron analizados durante la trazabilidad y resultaron ser **requisitos no funcionales**, por lo que se retiraron de la etapa de educción y se trasladaron al catálogo de requisitos no funcionales (`RequisitosNoFuncionales.md`).
 
-Los códigos se mantienen reservados y **no se reasignan**, de modo que el salto de numeración deje constancia de la depuración realizada. Las educciones vigentes son once: EDU-0001 a EDU-0004 y EDU-0009 a EDU-0015.
+Los códigos se mantienen reservados y **no se reasignan**, de modo que el salto de numeración deje constancia de la depuración realizada. Las educciones vigentes son trece: EDU-0001 a EDU-0004 y EDU-0009 a EDU-0017.
 
 ## Mapa de módulos
 
@@ -21,6 +21,8 @@ Los códigos se mantienen reservados y **no se reasignan**, de modo que el salto
 | 9 | EDU-0013 | Gestión de usuarios | ILA-0033 a ILA-0036 | ESP-0033 a ESP-0036 |
 | 10 | EDU-0014 | Gestión de proveedores | ILA-0037 a ILA-0040 | ESP-0037 a ESP-0040 |
 | 11 | EDU-0015 | Gestión de lotes | ILA-0041 a ILA-0044 | ESP-0041 a ESP-0044 |
+| 12 | EDU-0016 | Gestión de reabastecimiento | ILA-0045 a ILA-0048 | ESP-0045 a ESP-0048 |
+| 13 | EDU-0017 | Gestión de comparación de precios de proveedores | ILA-0049 a ILA-0052 | ESP-0049 a ESP-0052 |
 
 ---
 
@@ -231,6 +233,44 @@ Los códigos se mantienen reservados y **no se reasignan**, de modo que el salto
 | Estado | Concluido |
 | Comentario | El presente requisito tuvo origen en la Sección 6 del Registro de Entrevista 1, en la pregunta sobre si el sistema debería permitir rastrear lotes específicos ante una alerta sanitaria o retiro de producto, respondida afirmativamente e indicando que la química farmacéutica recibe esas alertas de la DIGEMID. Sin una entidad de remesa, ese rastreo es imposible: el sistema no podría responder qué se vendió de un lote retirado.<br>Se constituye como educción propia y no como ampliación de EDU-0002 porque la remesa es una entidad distinta del medicamento, con su propio ciclo CRUD. Incorporarla al módulo de inventario habría dejado a esa educción con ocho operaciones, rompiendo la estructura de cuatro fases por educción que sigue todo el catálogo.<br>Pendiente asignar el código FUE definitivo al Registro de Entrevista 1 en el catálogo de fuentes. |
 
+---
+
+## Módulo 12 — Gestión de reabastecimiento
+
+| Código educción | EDU-0016 |
+| --- | --- |
+| Nombre | Gestión de reabastecimiento |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código ilación | ILA-0045, ILA-0046, ILA-0047, ILA-0048 |
+| Descripción | La dueña de la farmacia manifiesta la necesidad de anticipar cuándo un medicamento está por agotarse, para poder solicitar cotizaciones a los proveedores antes de quedarse sin stock. El sistema debe permitir configurar, por cada medicamento del catálogo, un umbral mínimo de existencias (`stock_minimo`) y mantener, a partir de ese umbral, una lista de reabastecimiento que:<br>• Se alimenta automáticamente, mediante un proceso periódico (cada 15 días aproximadamente), con los medicamentos cuyo stock consolidado haya caído por debajo de su `stock_minimo`.<br>• Admite también la incorporación manual de productos que no estén por agotarse pero que la dueña desee cotizar igual (por ejemplo, una oferta detectada en el catálogo de un proveedor).<br>• Permite marcar manualmente un ítem como urgente, para resaltarlo visualmente (en rojo) frente al resto de la lista.<br>El módulo debe permitir crear, consultar, actualizar y eliminar los ítems de esta lista. |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | Módulo nuevo, derivado de la Entrevista 3, realizada a la dueña tras su solicitud de incluir una funcionalidad de comparación de precios de proveedores. Durante esa entrevista la dueña describió además la necesidad de una alerta de stock bajo configurable por medicamento ("avísame cuando falten 4 blísteres"), distinta de EDU-0004 (que alerta por vencimiento, no por cantidad).<br>Requiere el campo nuevo `TBL_PRODUCTOS.stock_minimo`, capturado desde EDU-0002 (ver corrección a ILA-0005 e ILA-0007 en la Sección 4) e incorporado en el Diccionario de Datos v05.00.<br>La generación automática periódica de ítems se documenta como proceso de sistema, análogo al que alimenta las alertas de vencimiento de ILA-0013: no existe todavía un requisito no funcional formal que lo respalde, igual que ocurre con aquel. Ver Anexo en `02-ilaciones.md`.<br>Pendiente asignar el código FUE definitivo a la Entrevista 3 en el catálogo de fuentes. |
+
+---
+
+## Módulo 13 — Gestión de comparación de precios de proveedores
+
+| Código educción | EDU-0017 |
+| --- | --- |
+| Nombre | Gestión de comparación de precios de proveedores |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código ilación | ILA-0049, ILA-0050, ILA-0051, ILA-0052 |
+| Descripción | La dueña manifiesta la necesidad de comparar, para un mismo medicamento, el precio ofrecido por distintos proveedores antes de decidir a quién comprarle, ya que hoy esa comparación se hace de memoria o revisando catálogos en papel. Dado que el sistema no tiene integración alguna con los proveedores (los precios se obtienen por teléfono, visita presencial o catálogo en PDF/CSV), el registro de cada cotización es manual. El módulo debe permitir registrar, consultar, actualizar y eliminar cotizaciones de precio por medicamento y proveedor, conservando el historial completo (cada cotización nueva es una fila adicional, nunca sobrescribe a la anterior), de modo que la comparación siempre se resuelva contra la cotización más reciente de cada proveedor. A partir de la lista de reabastecimiento (EDU-0016) y de esta comparación, el sistema debe permitir generar un archivo CSV por proveedor, con únicamente los medicamentos que se decide pedirle a ese proveedor en particular. |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | Módulo nuevo, derivado de la Entrevista 3. La dueña confirmó que desea mantener separada la cotización por proveedor, no un precio único por medicamento, y que el intercambio de información con los proveedores seguirá siendo manual porque no existe integración por API ni por internet con ellos.<br>La exportación por proveedor es una operación efímera, sin tabla ni historial propio (decisión confirmada con la dueña): genera un archivo a partir de la lista de reabastecimiento y de la cotización vigente, pero no persiste ningún registro de la exportación en sí. A diferencia de EDU-0010, cuyos reportes sí se indexan en `TBL_REPORTES_VENTAS`.<br>Pendiente asignar el código FUE definitivo a la Entrevista 3 en el catálogo de fuentes. |
+
 
 
 > **Versión corregida y consolidada (v04.00 — 05/09/2026).** Cambios respecto a la versión anterior:
@@ -247,6 +287,8 @@ Los códigos se mantienen reservados y **no se reasignan**, de modo que el salto
 > - **EDU-0010 (Reportes)** se amplió para autorizar la administración de los reportes ya generados, resolviendo la contradicción con ILA-0023 e ILA-0024.
 >
 > **Ampliación del 05/09/2026 (lotes).** Tras la decisión del equipo de incorporar `TBL_LOTES` al modelo, se agregó **EDU-0015 (Gestión de lotes)** y se ajustaron EDU-0002, EDU-0004 y EDU-0011, que hasta ahora describían el lote como un atributo del medicamento.
+>
+> **Ampliación del 02/10/2026 (reabastecimiento y comparación de precios).** Tras la Entrevista 3 con la dueña se agregaron **EDU-0016 (Gestión de reabastecimiento)** y **EDU-0017 (Gestión de comparación de precios de proveedores)**, ambas exclusivas del rol Administrador. Decisiones confirmadas con la dueña: el umbral de stock mínimo se configura por medicamento (`TBL_PRODUCTOS.stock_minimo`, capturado desde EDU-0002); cada cotización de proveedor es una fila nueva con fecha y nunca se sobrescribe; la exportación de pedidos por proveedor es efímera y no deja historial en la base de datos; y el proveedor real de cada remesa se registra en `TBL_LOTES.id_proveedor`, lo que corrige ILA-0025/ESP-0025 y amplía ILA-0041/ILA-0043 e ILA-0005/ILA-0007. El código FUE de la Entrevista 3 queda pendiente de asignar.
 >
 > El inicio y cierre de sesión **no** se incorporan como educción: son un requisito de seguridad ya cubierto por RNF-0006, y una sesión no es una entidad sobre la que aplique el ciclo CRUD que estructura este catálogo.
 

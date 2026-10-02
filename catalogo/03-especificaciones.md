@@ -82,20 +82,20 @@
 | Código especificación | ESP-0005 |
 | --- | --- |
 | Nombre | Creación del producto de inventario |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 02/10/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0004, FUE-0005 |
 | Experto | Ninguno |
 | Código ilación | ILA-0005 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR EXISTE(DB_FARMASIL.TBL_PROVEEDORES, estado = 'Activo')**<br>&nbsp;&nbsp;**CARGAR ART-MKP-INV-0001**<br>&nbsp;&nbsp;**VALIDAR INV-BTN-CREAR-PRODUCTO = HABILITADO**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**nombre = INV-TXT-NOMBRE-PRODUCTO**<br>&nbsp;&nbsp;**accionTerapeutica = INV-TXT-ACCION-TERAPEUTICA**<br>&nbsp;&nbsp;**precio = INV-NUM-PRECIO-PRODUCTO**<br>&nbsp;&nbsp;**proveedor = INV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**PRESIONAR INV-BTN-CREAR-PRODUCTO**<br>&nbsp;&nbsp;**VALIDAR nombre <> VACIO**<br>&nbsp;&nbsp;**VALIDAR accionTerapeutica <> VACIO**<br>&nbsp;&nbsp;**VALIDAR precio = DECIMAL >= 0**<br>&nbsp;&nbsp;**VALIDAR proveedor**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (nombre, accionTerapeutica, precio, 'Disponible', proveedor) EN DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;&nbsp;&nbsp;**idProducto = ULTIMO_ID_GENERADO**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**MOSTRAR idProducto EN INV-LBL-ID-PRODUCTO**<br>&nbsp;&nbsp;**ACTUALIZAR INV-TBL-PRODUCTOS**<br>&nbsp;&nbsp;**MOSTRAR "Producto registrado correctamente"**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PRODUCTOS.estado_producto = 'Disponible'**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PRODUCTOS.id_proveedor <> NULO**<br>&nbsp;&nbsp;**VERIFICAR INV-TBL-PRODUCTOS = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR PRODUCTO SIN REMESAS NO SE OFRECE EN VEN-CMB-PRODUCTO-VENTA**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**nombre = INV-TXT-NOMBRE-PRODUCTO**<br>&nbsp;&nbsp;**accionTerapeutica = INV-TXT-ACCION-TERAPEUTICA**<br>&nbsp;&nbsp;**precio = INV-NUM-PRECIO-PRODUCTO**<br>&nbsp;&nbsp;**proveedor = INV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**stockMinimo = INV-NUM-STOCK-MINIMO**<br>&nbsp;&nbsp;**PRESIONAR INV-BTN-CREAR-PRODUCTO**<br>&nbsp;&nbsp;**VALIDAR nombre <> VACIO**<br>&nbsp;&nbsp;**VALIDAR accionTerapeutica <> VACIO**<br>&nbsp;&nbsp;**VALIDAR precio = DECIMAL >= 0**<br>&nbsp;&nbsp;**VALIDAR proveedor**<br>&nbsp;&nbsp;**VALIDAR stockMinimo = ENTERO >= 0**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (nombre, accionTerapeutica, precio, 'Disponible', proveedor, stockMinimo) EN DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;&nbsp;&nbsp;**idProducto = ULTIMO_ID_GENERADO**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**MOSTRAR idProducto EN INV-LBL-ID-PRODUCTO**<br>&nbsp;&nbsp;**ACTUALIZAR INV-TBL-PRODUCTOS**<br>&nbsp;&nbsp;**MOSTRAR "Producto registrado correctamente"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PRODUCTOS.estado_producto = 'Disponible'**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PRODUCTOS.id_proveedor <> NULO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PRODUCTOS.stock_minimo >= 0**<br>&nbsp;&nbsp;**VERIFICAR INV-TBL-PRODUCTOS = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR PRODUCTO SIN REMESAS NO SE OFRECE EN VEN-CMB-PRODUCTO-VENTA**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-INV-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | El identificador pasó de captura manual a generación automática, coherente con la clave primaria autoincremental del diccionario, y se muestra en **INV-LBL-ID-PRODUCTO**.<br>Se incorporó `id_proveedor`, campo obligatorio que la versión anterior no capturaba.<br>Con la incorporación de **TBL_LOTES** en el Diccionario de Datos v04.00, el número de lote, la fecha de vencimiento y las existencias se registran como remesas en ESP-0041, y esta especificación quedó reducida a los datos de catálogo del medicamento.<br>Depende del componente **INV-CMB-PROVEEDOR**, aún por incorporar al mockup. |
+| Comentario | El identificador pasó de captura manual a generación automática, coherente con la clave primaria autoincremental del diccionario, y se muestra en **INV-LBL-ID-PRODUCTO**.<br>Se incorporó `id_proveedor`, campo obligatorio que la versión anterior no capturaba.<br>Con la incorporación de **TBL_LOTES** en el Diccionario de Datos v04.00, el número de lote, la fecha de vencimiento y las existencias se registran como remesas en ESP-0041, y esta especificación quedó reducida a los datos de catálogo del medicamento.<br>Depende del componente **INV-CMB-PROVEEDOR**, aún por incorporar al mockup.<br>**Versión 03.00:** se incorpora la captura de `stock_minimo`, campo nuevo del Diccionario de Datos v05.00 (ver ILA-0005 v09.00). Requiere **INV-NUM-STOCK-MINIMO** en el mockup **ART-MKP-INV-0001**. |
 
 | Código especificación | ESP-0006 |
 | --- | --- |
@@ -118,20 +118,20 @@
 | Código especificación | ESP-0007 |
 | --- | --- |
 | Nombre | Actualización del producto de inventario |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 02/10/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0004, FUE-0005 |
 | Experto | Ninguno |
 | Código ilación | ILA-0007 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PRODUCTOS <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-INV-0001**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR producto EN INV-TBL-PRODUCTOS**<br>&nbsp;&nbsp;**PRESIONAR INV-BTN-ACTUALIZAR-PRODUCTO**<br>&nbsp;&nbsp;**CARGAR ART-MKP-INV-0003**<br>&nbsp;&nbsp;**MOSTRAR producto.id_producto EN INV-LBL-ID-PRODUCTO**<br>&nbsp;&nbsp;**nombre = INV-TXT-NOMBRE-PRODUCTO**<br>&nbsp;&nbsp;**accionTerapeutica = INV-TXT-ACCION-TERAPEUTICA**<br>&nbsp;&nbsp;**precio = INV-NUM-PRECIO-PRODUCTO**<br>&nbsp;&nbsp;**proveedor = INV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**PRESIONAR INV-BTN-ACTUALIZAR-PRODUCTO**<br>&nbsp;&nbsp;**VALIDAR nombre <> VACIO**<br>&nbsp;&nbsp;**VALIDAR precio = DECIMAL >= 0**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PRODUCTOS DONDE id_producto = producto.id_producto**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR INV-TBL-PRODUCTOS**<br>&nbsp;&nbsp;**MOSTRAR "Producto actualizado correctamente"**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR producto EN INV-TBL-PRODUCTOS**<br>&nbsp;&nbsp;**PRESIONAR INV-BTN-ACTUALIZAR-PRODUCTO**<br>&nbsp;&nbsp;**CARGAR ART-MKP-INV-0003**<br>&nbsp;&nbsp;**MOSTRAR producto.id_producto EN INV-LBL-ID-PRODUCTO**<br>&nbsp;&nbsp;**nombre = INV-TXT-NOMBRE-PRODUCTO**<br>&nbsp;&nbsp;**accionTerapeutica = INV-TXT-ACCION-TERAPEUTICA**<br>&nbsp;&nbsp;**precio = INV-NUM-PRECIO-PRODUCTO**<br>&nbsp;&nbsp;**proveedor = INV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**stockMinimo = INV-NUM-STOCK-MINIMO**<br>&nbsp;&nbsp;**PRESIONAR INV-BTN-ACTUALIZAR-PRODUCTO**<br>&nbsp;&nbsp;**VALIDAR nombre <> VACIO**<br>&nbsp;&nbsp;**VALIDAR precio = DECIMAL >= 0**<br>&nbsp;&nbsp;**VALIDAR stockMinimo = ENTERO >= 0**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PRODUCTOS DONDE id_producto = producto.id_producto**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR INV-TBL-PRODUCTOS**<br>&nbsp;&nbsp;**MOSTRAR "Producto actualizado correctamente"**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PRODUCTOS.id_producto = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR REFERENCIAS(TBL_LOTES, TBL_RESTRICCIONES_VENTA) = INTACTAS**<br>&nbsp;&nbsp;**VERIFICAR INV-TBL-PRODUCTOS = ACTUALIZADA**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-INV-0001, ART-MKP-INV-0003 |
 | Importancia | Media |
 | Estado | Pendiente |
-| Comentario | Se declaró de solo lectura el identificador, que es clave foránea en tres tablas del modelo, y se alinearon los campos editables con los incorporados en ESP-0005. |
+| Comentario | Se declaró de solo lectura el identificador, que es clave foránea en tres tablas del modelo, y se alinearon los campos editables con los incorporados en ESP-0005.<br>**Versión 03.00:** se agrega `stockMinimo` (**INV-NUM-STOCK-MINIMO**) a los campos editables, alineado con ESP-0005 y con ILA-0007 v09.00. Requiere el componente en el mockup **ART-MKP-INV-0003**. |
 
 | Código especificación | ESP-0008 |
 | --- | --- |
@@ -462,20 +462,20 @@
 | Código especificación | ESP-0025 |
 | --- | --- |
 | Nombre | Registro de orden de devolución |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 02/10/2026 |
 | Autor de la plantilla | AUT-0004 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0025 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR EXISTE(DB_FARMASIL.TBL_LOTES, estado_lote = 'Bloqueado por devolucion')**<br>&nbsp;&nbsp;**VALIDAR EXISTE(DB_FARMASIL.TBL_PROVEEDORES, estado = 'Activo')**<br>&nbsp;&nbsp;**CARGAR ART-MKP-DEV-0001**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**fechaCreacion = DEV-FEC-FECHA-DEVOLUCION**<br>&nbsp;&nbsp;**proveedor = DEV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**motivo = DEV-CMB-MOTIVO-DEVOLUCION**<br>&nbsp;&nbsp;**detalle = LISTA_VACIA**<br>&nbsp;&nbsp;**REPETIR**<br>&nbsp;&nbsp;&nbsp;&nbsp;**lote = DEV-CMB-LOTE-DEVOLUCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**cantidad = DEV-NUM-CANTIDAD-DEVOLVER**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VALIDAR lote.producto.id_proveedor = proveedor**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VALIDAR cantidad = ENTERO > 0**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VALIDAR cantidad <= lote.stock_actual**<br>&nbsp;&nbsp;&nbsp;&nbsp;**AGREGAR (lote, cantidad) A detalle**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DEV-TBL-DETALLE-DEVOLUCION**<br>&nbsp;&nbsp;**HASTA QUE USUARIO NO AGREGUE MAS REMESAS**<br>&nbsp;&nbsp;**comentario = DEV-TXA-COMENTARIO**<br>&nbsp;&nbsp;**SI motivo = 'Por Depuracion de Error' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VALIDAR comentario <> VACIO**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**PRESIONAR DEV-BTN-CREAR-DEVOLUCION**<br>&nbsp;&nbsp;**VALIDAR detalle <> VACIA**<br>&nbsp;&nbsp;**VALIDAR motivo EN ('Por Vencimiento', 'Por Depuracion de Error')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (fechaCreacion, motivo, proveedor, comentario, 'Pendiente', SESION_USUARIO.id_usuario) EN DB_FARMASIL.TBL_ORDENES_DEVOLUCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**idDevolucion = ULTIMO_ID_GENERADO**<br>&nbsp;&nbsp;&nbsp;&nbsp;**PARA CADA linea EN detalle HACER**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (idDevolucion, linea.lote, linea.cantidad) EN DB_FARMASIL.TBL_DETALLE_DEVOLUCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**FIN PARA**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR DEV-TBL-ORDENES-DEVOLUCION**<br>&nbsp;&nbsp;**MOSTRAR "Orden de devolución registrada correctamente"**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**fechaCreacion = DEV-FEC-FECHA-DEVOLUCION**<br>&nbsp;&nbsp;**proveedor = DEV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**motivo = DEV-CMB-MOTIVO-DEVOLUCION**<br>&nbsp;&nbsp;**detalle = LISTA_VACIA**<br>&nbsp;&nbsp;**REPETIR**<br>&nbsp;&nbsp;&nbsp;&nbsp;**lote = DEV-CMB-LOTE-DEVOLUCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**cantidad = DEV-NUM-CANTIDAD-DEVOLVER**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VALIDAR lote.id_proveedor = proveedor**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VALIDAR cantidad = ENTERO > 0**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VALIDAR cantidad <= lote.stock_actual**<br>&nbsp;&nbsp;&nbsp;&nbsp;**AGREGAR (lote, cantidad) A detalle**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DEV-TBL-DETALLE-DEVOLUCION**<br>&nbsp;&nbsp;**HASTA QUE USUARIO NO AGREGUE MAS REMESAS**<br>&nbsp;&nbsp;**comentario = DEV-TXA-COMENTARIO**<br>&nbsp;&nbsp;**SI motivo = 'Por Depuracion de Error' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VALIDAR comentario <> VACIO**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**PRESIONAR DEV-BTN-CREAR-DEVOLUCION**<br>&nbsp;&nbsp;**VALIDAR detalle <> VACIA**<br>&nbsp;&nbsp;**VALIDAR motivo EN ('Por Vencimiento', 'Por Depuracion de Error')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (fechaCreacion, motivo, proveedor, comentario, 'Pendiente', SESION_USUARIO.id_usuario) EN DB_FARMASIL.TBL_ORDENES_DEVOLUCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**idDevolucion = ULTIMO_ID_GENERADO**<br>&nbsp;&nbsp;&nbsp;&nbsp;**PARA CADA linea EN detalle HACER**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (idDevolucion, linea.lote, linea.cantidad) EN DB_FARMASIL.TBL_DETALLE_DEVOLUCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**FIN PARA**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR DEV-TBL-ORDENES-DEVOLUCION**<br>&nbsp;&nbsp;**MOSTRAR "Orden de devolución registrada correctamente"**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_ORDENES_DEVOLUCION.estado_orden = 'Pendiente'**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_ORDENES_DEVOLUCION.id_usuario = SESION_USUARIO.id_usuario**<br>&nbsp;&nbsp;**VERIFICAR CONTAR(DB_FARMASIL.TBL_DETALLE_DEVOLUCION DONDE id_devolucion = idDevolucion) = CONTAR(detalle)**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LOTES.stock_actual = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR DEV-TBL-ORDENES-DEVOLUCION = ACTUALIZADA**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-DEV-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Reescrita sobre el par cabecera y detalle. La versión anterior registraba un único medicamento e ignoraba **TBL_DETALLE_DEVOLUCION**.<br>Se incorporaron `cantidad_devolver`, que es NOT NULL y no se capturaba en ninguna parte, y `comentario`, obligatorio cuando el motivo es la depuración de un error.<br>El stock no se modifica al registrar: el descuento ocurre cuando la orden pasa a 'Completada' en ESP-0027, que es cuando la mercancía sale físicamente del almacén.<br>Depende de los componentes **DEV-TBL-DETALLE-DEVOLUCION**, **DEV-NUM-CANTIDAD-DEVOLVER** y **DEV-TXA-COMENTARIO**, aún por incorporar al mockup. |
+| Comentario | **Corrección v03.00:** `VALIDAR lote.producto.id_proveedor = proveedor` se reemplazó por `VALIDAR lote.id_proveedor = proveedor`. La versión anterior resolvía el proveedor a través del producto, lo que era incorrecto desde que `TBL_LOTES` tiene su propio `id_proveedor`: un medicamento puede tener remesas de más de un proveedor, y la devolución siempre corresponde al proveedor real de la remesa, no al proveedor habitual del catálogo. El comentario de v02.00 se conserva a continuación.<br>Reescrita sobre el par cabecera y detalle. La versión anterior registraba un único medicamento e ignoraba **TBL_DETALLE_DEVOLUCION**.<br>Se incorporaron `cantidad_devolver`, que es NOT NULL y no se capturaba en ninguna parte, y `comentario`, obligatorio cuando el motivo es la depuración de un error.<br>El stock no se modifica al registrar: el descuento ocurre cuando la orden pasa a 'Completada' en ESP-0027, que es cuando la mercancía sale físicamente del almacén.<br>Depende de los componentes **DEV-TBL-DETALLE-DEVOLUCION**, **DEV-NUM-CANTIDAD-DEVOLVER** y **DEV-TXA-COMENTARIO**, aún por incorporar al mockup. |
 
 | Código especificación | ESP-0026 |
 | --- | --- |
@@ -766,20 +766,20 @@
 | Código especificación | ESP-0041 |
 | --- | --- |
 | Nombre | Registro de remesa |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 02/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0041 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR EXISTE(DB_FARMASIL.TBL_PRODUCTOS, estado_producto = 'Disponible')**<br>&nbsp;&nbsp;**CARGAR ART-MKP-LOT-0001**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**producto = LOT-CMB-PRODUCTO**<br>&nbsp;&nbsp;**numeroLote = LOT-TXT-NUMERO-LOTE**<br>&nbsp;&nbsp;**fechaVencimiento = LOT-FEC-FECHA-VENCIMIENTO**<br>&nbsp;&nbsp;**stock = LOT-NUM-STOCK-LOTE**<br>&nbsp;&nbsp;**fechaIngreso = LOT-FEC-FECHA-INGRESO**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-CREAR-LOTE**<br>&nbsp;&nbsp;**VALIDAR producto EXISTE EN DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**VALIDAR numeroLote <> VACIO**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_LOTES, id_producto = producto Y numero_lote = numeroLote)**<br>&nbsp;&nbsp;**VALIDAR fechaVencimiento > FECHA_SISTEMA**<br>&nbsp;&nbsp;**VALIDAR stock = ENTERO >= 0**<br>&nbsp;&nbsp;**VALIDAR fechaIngreso <= FECHA_SISTEMA**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (producto, numeroLote, fechaVencimiento, stock, 'Disponible', fechaIngreso) EN DB_FARMASIL.TBL_LOTES**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR LOT-TBL-LOTES**<br>&nbsp;&nbsp;**MOSTRAR "Remesa registrada correctamente"**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**producto = LOT-CMB-PRODUCTO**<br>&nbsp;&nbsp;**proveedor = LOT-CMB-PROVEEDOR-LOTE (VALOR INICIAL producto.id_proveedor)**<br>&nbsp;&nbsp;**numeroLote = LOT-TXT-NUMERO-LOTE**<br>&nbsp;&nbsp;**fechaVencimiento = LOT-FEC-FECHA-VENCIMIENTO**<br>&nbsp;&nbsp;**stock = LOT-NUM-STOCK-LOTE**<br>&nbsp;&nbsp;**fechaIngreso = LOT-FEC-FECHA-INGRESO**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-CREAR-LOTE**<br>&nbsp;&nbsp;**VALIDAR producto EXISTE EN DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**VALIDAR proveedor EXISTE EN DB_FARMASIL.TBL_PROVEEDORES**<br>&nbsp;&nbsp;**VALIDAR numeroLote <> VACIO**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_LOTES, id_producto = producto Y numero_lote = numeroLote)**<br>&nbsp;&nbsp;**VALIDAR fechaVencimiento > FECHA_SISTEMA**<br>&nbsp;&nbsp;**VALIDAR stock = ENTERO >= 0**<br>&nbsp;&nbsp;**VALIDAR fechaIngreso <= FECHA_SISTEMA**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (producto, numeroLote, fechaVencimiento, stock, 'Disponible', fechaIngreso, proveedor) EN DB_FARMASIL.TBL_LOTES**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR LOT-TBL-LOTES**<br>&nbsp;&nbsp;**MOSTRAR "Remesa registrada correctamente"**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR (id_producto, numero_lote) = UNICO EN DB_FARMASIL.TBL_LOTES**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LOTES.estado_lote = 'Disponible'**<br>&nbsp;&nbsp;**VERIFICAR REMESA DISPONIBLE EN VEN-CMB-LOTE-VENTA**<br>&nbsp;&nbsp;**VERIFICAR STOCK_CONSOLIDADO(producto) = INCREMENTADO EN stock**<br>&nbsp;&nbsp;**VERIFICAR LOT-TBL-LOTES = ACTUALIZADA**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-LOT-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Especificación nueva, derivada de la incorporación de **TBL_LOTES** al Diccionario de Datos v04.00.<br>La validación de unicidad sobre la combinación de medicamento y número de lote es la que sostiene el rastreo sanitario: si la misma remesa pudiera registrarse dos veces, el sistema no podría responder inequívocamente qué se vendió de un lote retirado por la DIGEMID.<br>Queda Pendiente porque el mockup **ART-MKP-LOT-0001** aún no ha sido diseñado. |
+| Comentario | Especificación nueva, derivada de la incorporación de **TBL_LOTES** al Diccionario de Datos v04.00.<br>La validación de unicidad sobre la combinación de medicamento y número de lote es la que sostiene el rastreo sanitario: si la misma remesa pudiera registrarse dos veces, el sistema no podría responder inequívocamente qué se vendió de un lote retirado por la DIGEMID.<br>Queda Pendiente porque el mockup **ART-MKP-LOT-0001** aún no ha sido diseñado.<br>**Versión 02.00:** se incorpora `proveedor` (**LOT-CMB-PROVEEDOR-LOTE**) para registrar `TBL_LOTES.id_proveedor`, campo nuevo del Diccionario de Datos v05.00 (ver ILA-0041 v02.00). Requiere el componente en el mockup **ART-MKP-LOT-0001**. |
 
 | Código especificación | ESP-0042 |
 | --- | --- |
@@ -802,20 +802,20 @@
 | Código especificación | ESP-0043 |
 | --- | --- |
 | Nombre | Actualización de remesa |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 02/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0043 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_LOTES <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-LOT-0003**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR lote EN LOT-TBL-LOTES**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-ACTUALIZAR-LOTE**<br>&nbsp;&nbsp;**CARGAR ART-MKP-LOT-0003 CON INFORMACION VIGENTE**<br>&nbsp;&nbsp;**MOSTRAR lote.id_producto EN LOT-CMB-PRODUCTO = SOLO_LECTURA**<br>&nbsp;&nbsp;**numeroLote = LOT-TXT-NUMERO-LOTE**<br>&nbsp;&nbsp;**fechaVencimiento = LOT-FEC-FECHA-VENCIMIENTO**<br>&nbsp;&nbsp;**stock = LOT-NUM-STOCK-LOTE**<br>&nbsp;&nbsp;**estado = LOT-CMB-ESTADO-LOTE**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_LOTES, id_producto = lote.id_producto Y numero_lote = numeroLote Y id_lote <> lote)**<br>&nbsp;&nbsp;**VALIDAR stock = ENTERO >= 0**<br>&nbsp;&nbsp;**comprometido = SUMA(DB_FARMASIL.TBL_DETALLE_DEVOLUCION.cantidad_devolver DONDE id_lote = lote Y orden.estado_orden = 'Pendiente')**<br>&nbsp;&nbsp;**SI stock < comprometido ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Las existencias no pueden ser inferiores a las unidades comprometidas en devoluciones pendientes"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_LOTES DONDE id_lote = lote**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR LOT-TBL-LOTES**<br>&nbsp;&nbsp;**MOSTRAR "Remesa actualizada correctamente"**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR lote EN LOT-TBL-LOTES**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-ACTUALIZAR-LOTE**<br>&nbsp;&nbsp;**CARGAR ART-MKP-LOT-0003 CON INFORMACION VIGENTE**<br>&nbsp;&nbsp;**MOSTRAR lote.id_producto EN LOT-CMB-PRODUCTO = SOLO_LECTURA**<br>&nbsp;&nbsp;**numeroLote = LOT-TXT-NUMERO-LOTE**<br>&nbsp;&nbsp;**fechaVencimiento = LOT-FEC-FECHA-VENCIMIENTO**<br>&nbsp;&nbsp;**stock = LOT-NUM-STOCK-LOTE**<br>&nbsp;&nbsp;**estado = LOT-CMB-ESTADO-LOTE**<br>&nbsp;&nbsp;**proveedor = LOT-CMB-PROVEEDOR-LOTE**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_LOTES, id_producto = lote.id_producto Y numero_lote = numeroLote Y id_lote <> lote)**<br>&nbsp;&nbsp;**VALIDAR stock = ENTERO >= 0**<br>&nbsp;&nbsp;**VALIDAR proveedor EXISTE EN DB_FARMASIL.TBL_PROVEEDORES**<br>&nbsp;&nbsp;**comprometido = SUMA(DB_FARMASIL.TBL_DETALLE_DEVOLUCION.cantidad_devolver DONDE id_lote = lote Y orden.estado_orden = 'Pendiente')**<br>&nbsp;&nbsp;**SI stock < comprometido ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Las existencias no pueden ser inferiores a las unidades comprometidas en devoluciones pendientes"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_LOTES DONDE id_lote = lote**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR LOT-TBL-LOTES**<br>&nbsp;&nbsp;**MOSTRAR "Remesa actualizada correctamente"**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LOTES.id_lote = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LOTES.id_producto = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR REFERENCIAS(TBL_DETALLE_VENTAS, TBL_DETALLE_DEVOLUCION) = INTACTAS**<br>&nbsp;&nbsp;**SI estado <> 'Disponible' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR REMESA NO DISPONIBLE EN VEN-CMB-LOTE-VENTA**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**VERIFICAR LOT-TBL-LOTES = ACTUALIZADA**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-LOT-0003 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | El medicamento asociado se declara de solo lectura por la misma razón que el identificador: las ventas ya registradas apuntan a esta remesa, y reasignarla a otro medicamento reescribiría retroactivamente qué se vendió.<br>La verificación contra las unidades comprometidas evita que una corrección de inventario deje una orden de devolución reclamando existencias que ya no hay.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0003**. |
+| Comentario | El medicamento asociado se declara de solo lectura por la misma razón que el identificador: las ventas ya registradas apuntan a esta remesa, y reasignarla a otro medicamento reescribiría retroactivamente qué se vendió.<br>La verificación contra las unidades comprometidas evita que una corrección de inventario deje una orden de devolución reclamando existencias que ya no hay.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0003**.<br>**Versión 02.00:** el proveedor de la remesa (**LOT-CMB-PROVEEDOR-LOTE**) es editable y se persiste en `TBL_LOTES.id_proveedor` mediante el `ACTUALIZAR` (ver ILA-0043 v02.00). Requiere el componente en el mockup **ART-MKP-LOT-0003**. |
 
 | Código especificación | ESP-0044 |
 | --- | --- |
@@ -835,6 +835,158 @@
 | Estado | Pendiente |
 | Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**. |
 
+---
+
+# Módulo 12 — Gestión de Reabastecimiento (EDU-0016)
+
+| Código especificación | ESP-0045 |
+| --- | --- |
+| Nombre | Incorporación manual de ítem a la lista de reabastecimiento |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código ilación | ILA-0045 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR EXISTE(DB_FARMASIL.TBL_PRODUCTOS, estado_producto = 'Disponible')**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0001**<br>&nbsp;&nbsp;**VALIDAR REA-BTN-CREAR-ITEM = HABILITADO**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**producto = REA-CMB-PRODUCTO**<br>&nbsp;&nbsp;**prioridad = REA-CMB-PRIORIDAD**<br>&nbsp;&nbsp;**fechaInclusion = FECHA_SISTEMA**<br>&nbsp;&nbsp;**MOSTRAR fechaInclusion EN REA-LBL-FECHA-INCLUSION**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-CREAR-ITEM**<br>&nbsp;&nbsp;**VALIDAR producto EXISTE EN DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO, id_producto = producto)**<br>&nbsp;&nbsp;**VALIDAR prioridad EN ('Normal', 'Urgente')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (producto, 'Manual', prioridad, fechaInclusion) EN DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**MOSTRAR "Ítem agregado a la lista de reabastecimiento"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO.origen = 'Manual'**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>&nbsp;&nbsp;**SI prioridad = 'Urgente' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR ITEM RESALTADO EN ROJO**<br>&nbsp;&nbsp;**FIN SI**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-REA-0001 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | Especificación nueva, derivada de la Entrevista 3. Complementa la incorporación automática del proceso periódico del sistema (ver Anexo de `02-ilaciones.md`).<br>Queda Pendiente porque el mockup **ART-MKP-REA-0001** aún no ha sido diseñado. |
+
+| Código especificación | ESP-0046 |
+| --- | --- |
+| Nombre | Consulta de la lista de reabastecimiento |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código ilación | ILA-0046 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0002**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**prioridad = REA-CMB-FILTRO-PRIORIDAD**<br>&nbsp;&nbsp;**origen = REA-CMB-FILTRO-ORIGEN**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-LEER-ITEM**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO UNIENDO DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**APLICAR FILTRO prioridad = prioridad**<br>&nbsp;&nbsp;**APLICAR FILTRO origen = origen**<br>&nbsp;&nbsp;**ORDENAR POR prioridad = 'Urgente' DESCENDENTE**<br>&nbsp;&nbsp;**CARGAR REA-TBL-LISTA-REABASTECIMIENTO CON (nombre, origen, prioridad, fecha_inclusion)**<br>&nbsp;&nbsp;**RESALTAR EN ROJO FILAS DONDE prioridad = 'Urgente'**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO = SIN_MODIFICACION**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0002 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | Es la vista desde la que la dueña decide qué ítems enviar a cotizar según EDU-0017. Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0002**. |
+
+| Código especificación | ESP-0047 |
+| --- | --- |
+| Nombre | Actualización de ítem de la lista de reabastecimiento |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código ilación | ILA-0047 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0003**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR item EN REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-ACTUALIZAR-ITEM**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0003 CON INFORMACION VIGENTE**<br>&nbsp;&nbsp;**MOSTRAR item.id_producto EN REA-CMB-PRODUCTO = SOLO_LECTURA**<br>&nbsp;&nbsp;**MOSTRAR item.origen EN REA-LBL-ORIGEN = SOLO_LECTURA**<br>&nbsp;&nbsp;**prioridad = REA-CMB-PRIORIDAD**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR prioridad EN ('Normal', 'Urgente')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO.prioridad = prioridad DONDE id_reabastecimiento = item**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**MOSTRAR "Ítem actualizado correctamente"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO.id_producto = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO.origen = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0003 |
+| Importancia | Media |
+| Estado | Pendiente |
+| Comentario | El medicamento y el origen se declaran de solo lectura: reasignar la identidad de un ítem ya existente equivaldría a crear uno nuevo. Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0003**. |
+
+| Código especificación | ESP-0048 |
+| --- | --- |
+| Nombre | Eliminación de ítem de la lista de reabastecimiento |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código ilación | ILA-0048 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0004**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR item EN REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-ELIMINAR-ITEM**<br>&nbsp;&nbsp;**MOSTRAR REA-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR REA-TXT-MSJ = "¿Está seguro de quitar este ítem de la lista de reabastecimiento?"**<br>&nbsp;&nbsp;**SI PRESIONAR REA-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ELIMINAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO DONDE id_reabastecimiento = item**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Ítem eliminado correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR REA-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR REA-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR REA-TBL-LISTA-REABASTECIMIENTO**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ELIMINADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0004 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | Eliminación física: ninguna otra tabla depende de un ítem de esta lista (las cotizaciones de EDU-0017 se asocian al medicamento y al proveedor, no al ítem). Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0004**. |
+
+---
+
+# Módulo 13 — Gestión de Comparación de Precios de Proveedores (EDU-0017)
+
+| Código especificación | ESP-0049 |
+| --- | --- |
+| Nombre | Registro de cotización de proveedor |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código ilación | ILA-0049 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR EXISTE(DB_FARMASIL.TBL_PROVEEDORES, estado = 'Activo')**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PRODUCTOS <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-COT-0001**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**producto = COT-CMB-PRODUCTO**<br>&nbsp;&nbsp;**proveedor = COT-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**precio = COT-NUM-PRECIO-COTIZADO**<br>&nbsp;&nbsp;**fechaCotizacion = COT-FEC-FECHA-COTIZACION**<br>&nbsp;&nbsp;**promocion = COT-TXA-PROMOCION**<br>&nbsp;&nbsp;**PRESIONAR COT-BTN-CREAR-COTIZACION**<br>&nbsp;&nbsp;**VALIDAR precio = DECIMAL >= 0**<br>&nbsp;&nbsp;**VALIDAR fechaCotizacion <= FECHA_SISTEMA**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (producto, proveedor, precio, fechaCotizacion, promocion, SESION_USUARIO.id_usuario) EN DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR COT-TBL-COTIZACIONES**<br>&nbsp;&nbsp;**MOSTRAR "Cotización registrada correctamente"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR = FILA_NUEVA_SIN_SOBRESCRIBIR**<br>&nbsp;&nbsp;**VERIFICAR COT-TBL-COTIZACIONES = ACTUALIZADA**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-COT-0001 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | La obtención de precios es manual (teléfono, visita presencial o catálogo en PDF/CSV); no hay integración con proveedores. Cada registro es una fila nueva, nunca se sobrescribe una cotización anterior. Queda Pendiente porque el mockup **ART-MKP-COT-0001** aún no ha sido diseñado. |
+
+| Código especificación | ESP-0050 |
+| --- | --- |
+| Nombre | Consulta comparativa de precios y exportación por proveedor |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código ilación | ILA-0050 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-COT-0002**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**producto = COT-CMB-FILTRO-PRODUCTO**<br>&nbsp;&nbsp;**PRESIONAR COT-BTN-LEER-COTIZACION**<br>&nbsp;&nbsp;**cotizaciones = CONSULTAR DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR**<br>&nbsp;&nbsp;**APLICAR FILTRO id_producto = producto**<br>&nbsp;&nbsp;**PARA CADA (producto, proveedor) EN cotizaciones HACER**<br>&nbsp;&nbsp;&nbsp;&nbsp;**vigente = COTIZACION CON fecha_cotizacion = MAXIMA(fecha_cotizacion) PARA (producto, proveedor)**<br>&nbsp;&nbsp;&nbsp;&nbsp;**AGREGAR vigente A comparativa**<br>&nbsp;&nbsp;**FIN PARA**<br>&nbsp;&nbsp;**CARGAR COT-TBL-COMPARATIVA-PRECIOS CON comparativa**<br>&nbsp;&nbsp;**DESTACAR EN comparativa EL PRECIO MAS BAJO POR FILA**<br>&nbsp;&nbsp;**proveedorExportar = COT-CMB-PROVEEDOR-EXPORTAR**<br>&nbsp;&nbsp;**PRESIONAR COT-BTN-EXPORTAR-PROVEEDOR**<br>&nbsp;&nbsp;**itemsProveedor = CONSULTAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO UNIENDO comparativa DONDE proveedor_seleccionado = proveedorExportar**<br>&nbsp;&nbsp;**archivoCsv = GENERAR_ARCHIVO_CSV(itemsProveedor)**<br>&nbsp;&nbsp;**PONER_A_DISPOSICION archivoCsv**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR COT-TBL-COMPARATIVA-PRECIOS = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR archivoCsv CONTIENE SOLO ITEMS DE proveedorExportar**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL = SIN_MODIFICACION**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-COT-0001, ART-MKP-COT-0002 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | La exportación es efímera y sin historial (decisión confirmada con la dueña): no se registra ninguna fila nueva en `DB_FARMASIL` por el hecho de exportar, a diferencia de `TBL_REPORTES_VENTAS` en EDU-0010. Queda Pendiente porque el mockup **ART-MKP-COT-0002** aún no ha sido diseñado. |
+
+| Código especificación | ESP-0051 |
+| --- | --- |
+| Nombre | Actualización de cotización |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código ilación | ILA-0051 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-COT-0003**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR cotizacion EN COT-TBL-COTIZACIONES**<br>&nbsp;&nbsp;**PRESIONAR COT-BTN-ACTUALIZAR-COTIZACION**<br>&nbsp;&nbsp;**CARGAR ART-MKP-COT-0003 CON INFORMACION VIGENTE**<br>&nbsp;&nbsp;**MOSTRAR cotizacion.id_producto EN COT-CMB-PRODUCTO = SOLO_LECTURA**<br>&nbsp;&nbsp;**MOSTRAR cotizacion.id_proveedor EN COT-CMB-PROVEEDOR = SOLO_LECTURA**<br>&nbsp;&nbsp;**precio = COT-NUM-PRECIO-COTIZADO**<br>&nbsp;&nbsp;**fechaCotizacion = COT-FEC-FECHA-COTIZACION**<br>&nbsp;&nbsp;**promocion = COT-TXA-PROMOCION**<br>&nbsp;&nbsp;**PRESIONAR COT-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR precio = DECIMAL >= 0**<br>&nbsp;&nbsp;**VALIDAR fechaCotizacion <= FECHA_SISTEMA**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR DONDE id_cotizacion = cotizacion**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR COT-TBL-COTIZACIONES**<br>&nbsp;&nbsp;**MOSTRAR "Cotización actualizada correctamente"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR.id_producto = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR.id_proveedor = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR COT-TBL-COTIZACIONES = ACTUALIZADA**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-COT-0001, ART-MKP-COT-0003 |
+| Importancia | Media |
+| Estado | Pendiente |
+| Comentario | Corrige un error de digitación en una cotización ya registrada; no sustituye al registro de una cotización nueva (ESP-0049), que es lo que preserva el historial. El medicamento y el proveedor se declaran de solo lectura. Queda Pendiente por la dependencia del mockup **ART-MKP-COT-0003**. |
+
+| Código especificación | ESP-0052 |
+| --- | --- |
+| Nombre | Eliminación de cotización |
+| Versión | 01.00 |
+| Fecha | 02/10/2026 |
+| Autor de la plantilla | AUT-0001 |
+| Actor | ACT-0001 |
+| Fuente | Entrevista 3 |
+| Experto | Ninguno |
+| Código ilación | ILA-0052 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-COT-0004**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR cotizacion EN COT-TBL-COTIZACIONES**<br>&nbsp;&nbsp;**PRESIONAR COT-BTN-ELIMINAR-COTIZACION**<br>&nbsp;&nbsp;**MOSTRAR COT-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR COT-TXT-MSJ = "¿Está seguro de eliminar esta cotización? Se perderá del historial de precios de este proveedor."**<br>&nbsp;&nbsp;**SI PRESIONAR COT-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ELIMINAR DB_FARMASIL.TBL_COTIZACIONES_PROVEEDOR DONDE id_cotizacion = cotizacion**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Cotización eliminada correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR COT-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR COT-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR COT-TBL-COTIZACIONES**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ELIMINADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR COT-TBL-COTIZACIONES = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-COT-0001, ART-MKP-COT-0004 |
+| Importancia | Vital |
+| Estado | Pendiente |
+| Comentario | Eliminación física: una cotización incorrecta (por ejemplo, cargada para el proveedor equivocado) no debe conservarse como historial legítimo. Queda Pendiente por la dependencia del mockup **ART-MKP-COT-0004**. |
+
 
 
 > **Documento consolidado.** Reúne las 40 especificaciones del catálogo en un solo archivo, reemplazando a `Especificaciones.md`, `Especificaciones_Modulos_1_3_5_7.md` y `Especificaciones_Modulos_2_4_6_8.md`.
@@ -844,6 +996,8 @@
 > **Documento completo.** Contiene las 44 especificaciones, ESP-0001 a ESP-0044, correspondientes a los once módulos del catálogo.
 >
 > **Ampliación del 05/09/2026 (lotes).** Con la incorporación de `TBL_LOTES` al Diccionario de Datos v04.00 se agregaron ESP-0041 a ESP-0044 y se ajustaron las dieciséis especificaciones de los módulos 1, 2, 4 y 7. Los cambios de fondo: el detalle de venta registra `id_lote` y el descuento de stock opera sobre la remesa; la selección de remesa sigue el criterio FEFO; el bloqueo por vencimiento pasa de `estado_producto` a `estado_lote`; y las líneas de devolución identifican la remesa que el proveedor exige.
+
+> **Ampliación del 02/10/2026 (reabastecimiento y comparación de precios).** Se agregaron ESP-0045 a ESP-0052 (módulos 12 y 13), derivadas de la Entrevista 3; el catálogo suma ahora 52 especificaciones. Se corrigió ESP-0025 (v03.00: valida `lote.id_proveedor` y no el proveedor del producto) y se ampliaron ESP-0005, ESP-0007, ESP-0041 y ESP-0043 para capturar `stock_minimo` y `TBL_LOTES.id_proveedor`, según el Diccionario de Datos v05.00.
 
 ## Convenciones aplicadas
 
