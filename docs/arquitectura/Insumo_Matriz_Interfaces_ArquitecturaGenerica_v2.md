@@ -133,12 +133,13 @@ Cada fila es una interfaz nombrada con el prefijo `I` seguido del nombre del mó
 
 ### IUsuarios (provista por Usuarios) — transversal
 - **Expone:** verificación de sesión activa y rol, registro de autoría (`id_usuario`).
-- **Requerida transversalmente por:** Ventas (`TBL_REGISTRO_VENTAS.id_usuario`), Reportes de Ventas (consolidación por `usuario_responsable`), Devoluciones (`TBL_ORDENES_DEVOLUCION.id_usuario`) y Comparación de Precios (`TBL_COTIZACIONES_PROVEEDOR.id_usuario`).
-- **Confianza:** alta (las cuatro FK están declaradas en el diccionario de datos).
+- **Requerida transversalmente por:** Ventas (`TBL_REGISTRO_VENTAS.id_usuario`, FK almacenada), Devoluciones (`TBL_ORDENES_DEVOLUCION.id_usuario`, FK almacenada), Comparación de Precios (`TBL_COTIZACIONES_PROVEEDOR.id_usuario`, FK almacenada) y Reportes de Ventas (`usuario_responsable`, **calculado al vuelo** — ver nota).
+- **Confianza:** alta (las tres primeras son FK declaradas en el diccionario de datos; la cuarta está sustentada en el pseudocódigo de ESP-0021, no en una columna de la tabla — ver nota).
+- **Nota sobre Reportes de Ventas:** `TBL_REPORTES_VENTAS` **no tiene ninguna clave foránea** (el diccionario lo dice explícito: "log de salida sin referencias foráneas, por lo que su eliminación física en ILA-0024 es legítima"). `usuario_responsable` no es una columna de esa tabla: ESP-0021 lo consolida en el momento de generar el reporte vía `CONSULTAR TBL_REGISTRO_VENTAS UNIENDO TBL_DETALLE_VENTAS UNIENDO TBL_USUARIOS`, y el valor solo vive en el archivo de salida (PDF/Excel), nunca se persiste. La dependencia `REP→USR` sigue siendo real (sin ese JOIN no hay forma de mostrar el usuario), pero un agente que solo lea el esquema de `TBL_REPORTES_VENTAS` no la va a encontrar ahí — por eso se deja esta aclaración explícita.
 - **Representación sugerida en el diagrama:** no dibujar como flecha de dependencia con lollipop; usar la misma convención visual que RNF-0006 (aspecto transversal adosado a los módulos que aplican, por ejemplo un ícono o un marco punteado alrededor de todo el diagrama), consistente con la Sección 3.
 
-### IDocumentacion, IAlertasVencimiento, IReportes — sin consumidores
-Documentación Tributaria, Alertas de Vencimiento y Reportes de Ventas no son requeridas por ningún otro módulo (filas de sus columnas en 0, salvo la celda transversal de Usuarios/Reportes ya contada). Son módulos **terminales**: consumen de otros pero nadie consume de ellos. Esto es coherente con su naturaleza: son los tres módulos más cercanos a "vista de salida" del sistema (comprobante fiscal, alerta operativa, reporte gerencial), no infraestructura que otros módulos necesiten para funcionar.
+### IDocumentacion, IAlertasVencimiento, IReportes, IComparacionPrecios — sin consumidores
+Documentación Tributaria, Alertas de Vencimiento, Reportes de Ventas y Comparación de Precios de Proveedores no son requeridas por ningún otro módulo (sus columnas están en 0 en toda la matriz). Son módulos **terminales**: consumen de otros pero nadie consume de ellos. Esto es coherente con su naturaleza: son los módulos más cercanos a "vista de salida" del sistema (comprobante fiscal, alerta operativa, reporte gerencial, comparativo de proveedores), no infraestructura que otros módulos necesiten para funcionar. En el diagrama, ninguno de los cuatro necesita dibujar una bola de interfaz de salida.
 
 ---
 
@@ -157,6 +158,13 @@ Esta es la misma lógica de capas por dependencia (no por responsabilidad técni
 
 ---
 
-## 7. Siguiente paso manual
+## 7. Estado: diagrama verificado y cerrado
 
-Con esta matriz y el detalle de interfaces, el único trabajo que queda es visual: abrir el diagrama de componentes en FigJam y, por cada módulo nuevo (Reabastecimiento, Comparación de Precios) y cada arista corregida (Sección 1), ajustar las cajas y los conectores de bola-enchufe. Esta matriz es el insumo textual completo para ese ajuste — no requiere volver a derivar ninguna dependencia desde el catálogo de requisitos.
+El diagrama de componentes en FigJam (13 módulos) ya fue construido y verificado contra esta matriz arista por arista — incluida `ALV→DEV` (`IDevoluciones`), que fue la última que faltaba. Las 22 aristas (18 de negocio + 4 transversales) están representadas. Los artefactos finales son `docs/arquitectura/ArquitecturaGenerica_Nivel1.png` (vista simplificada) y `ArquitecturaGenerica_Nivel2.png` (13 componentes con interfaces). No queda trabajo pendiente sobre este documento para la arquitectura genérica; ver Sección 8 para dos puntos abiertos que no bloquean el cierre pero sí conviene tener presentes más adelante.
+
+---
+
+## 8. Ambigüedades detectadas en la auditoría final (no bloquean el cierre de este issue)
+
+1. **`usuario_responsable` de Reportes de Ventas no es una columna de BD.** Ver la nota en la explicación de `IUsuarios` (Sección 5). Si en algún momento se decide persistir quién generó cada reporte (hoy no se persiste, `TBL_REPORTES_VENTAS` no tiene FKs), eso sería un cambio al diccionario de datos, no a esta arquitectura.
+2. **El valor `'Mermas'` de `TBL_REPORTES_VENTAS.tipo_reporte` no tiene una fuente de datos distinta documentada.** ESP-0021 consulta siempre `TBL_REGISTRO_VENTAS` + `TBL_DETALLE_VENTAS` + `TBL_USUARIOS`, sin importar el `tipo_reporte` elegido — nunca toca `TBL_PRODUCTOS_RETIRADOS` ni `TBL_ALERTAS_VENCIMIENTO`. Si un reporte de mermas debe reflejar retiros reales de producto, falta esa rama en ESP-0021 y, arquitectónicamente, una arista nueva `Reportes de Ventas → Alertas de Vencimiento` que hoy no existe en ningún documento. Es una decisión de producto pendiente (confirmar con la dueña/el profesor), no un error de esta matriz — se deja registrado aquí para no perderlo de vista.
