@@ -403,8 +403,8 @@
 | Código ilación | ILA-0021 |
 | --- | --- |
 | Nombre | Generación de reportes de ventas |
-| Versión | 07.00 |
-| Fecha | 05/09/2026 |
+| Versión | 08.00 |
+| Fecha | 12/10/2026 |
 | Autor de la plantilla | AUT-0005 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
@@ -412,12 +412,12 @@
 | Código educción | EDU-0010 |
 | Código especificación | ESP-0021 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_REGISTRO_VENTAS** contiene registros válidos.<br>5. La tabla **DB_FARMASIL.TBL_DETALLE_VENTAS** contiene el detalle de productos vendidos.<br>6. La tabla **DB_FARMASIL.TBL_REPORTES_VENTAS** está disponible para almacenar el índice del reporte.<br>7. Se carga el mockup **ART-MKP-REP-0001**. |
-| Procedimiento | 1. El usuario accede al módulo de reportes de ventas.<br>2. El usuario selecciona el tipo de reporte en **REP-CMB-TIPO-REPORTE**.<br>3. El usuario selecciona el formato de salida en **REP-CMB-FORMATO-REPORTE**.<br>4. El usuario registra la fecha de inicio en **REP-FEC-FECHA-INICIO** y la fecha de fin en **REP-FEC-FECHA-FIN**.<br>5. El usuario presiona **REP-BTN-GENERAR-REPORTE**.<br>6. El sistema valida que la fecha de inicio no sea posterior a la fecha de fin.<br>7. El sistema consolida la información de **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS** para el intervalo indicado, obteniendo el monto recaudado, la cantidad de productos vendidos, las fechas de las transacciones y el usuario responsable de cada venta.<br>8. El sistema registra el índice del nuevo reporte en **DB_FARMASIL.TBL_REPORTES_VENTAS**.<br>9. El sistema actualiza **REP-TBL-REPORTES**. |
+| Procedimiento | 1. El usuario accede al módulo de reportes de ventas.<br>2. El usuario selecciona el tipo de reporte en **REP-CMB-TIPO-REPORTE**.<br>3. El usuario selecciona el formato de salida en **REP-CMB-FORMATO-REPORTE**.<br>4. El usuario registra la fecha de inicio en **REP-FEC-FECHA-INICIO** y la fecha de fin en **REP-FEC-FECHA-FIN**.<br>5. El usuario presiona **REP-BTN-GENERAR-REPORTE**.<br>6. El sistema valida que la fecha de inicio no sea posterior a la fecha de fin.<br>7. El sistema consolida la información de **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS**, uniéndola con **DB_FARMASIL.TBL_USUARIOS** a partir de `id_usuario`, para el intervalo indicado, obteniendo el monto recaudado, la cantidad de productos vendidos, las fechas de las transacciones y el usuario responsable de cada venta.<br>8. El sistema registra el índice del nuevo reporte en **DB_FARMASIL.TBL_REPORTES_VENTAS**.<br>9. El sistema actualiza **REP-TBL-REPORTES**. |
 | Postcondición | 1. El sistema genera el reporte con la información consolidada del intervalo solicitado.<br>2. El reporte queda registrado en **DB_FARMASIL.TBL_REPORTES_VENTAS**.<br>3. El reporte queda disponible para su descarga y para consultas posteriores.<br>4. Las ventas de origen permanecen sin modificación. |
 | Código de artefactos asociados | ART-MKP-REP-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Corresponde a la fase Crear del CRUD. La consulta de un reporte existente, antes mezclada aquí, se separó hacia ILA-0022.<br>Queda Pendiente porque EDU-0010 exige que el reporte incluya "la identificación del personal que realizó la venta", requisito que la dueña confirmó expresamente, pero **TBL_REGISTRO_VENTAS** no tiene ninguna columna que vincule la venta con un usuario. La gestión de las cuentas queda cubierta por EDU-0013, y resta agregar el campo `id_usuario` a la tabla de ventas. Ver Anexo. |
+| Comentario | Corresponde a la fase Crear del CRUD. La consulta de un reporte existente, antes mezclada aquí, se separó hacia ILA-0022.<br>La identificación del personal que realizó la venta, que EDU-0010 exige y que la dueña confirmó, se resuelve con el campo `id_usuario` que el Diccionario de Datos v03.00 incorporó a **TBL_REGISTRO_VENTAS**: el responsable se obtiene al generar el reporte uniendo con **TBL_USUARIOS** y no se persiste en **TBL_REPORTES_VENTAS** (ver ESP-0021 v03.00). Ver Anexo.<br>v08.00: el paso 7 explicita la unión con **TBL_USUARIOS**, que la especificación ya realizaba, y se actualiza este comentario, que aún daba por ausente el campo `id_usuario`.<br>Queda Pendiente porque no está definido el dominio de valores de `tipo_reporte` y el valor 'Mermas' no tiene respaldo en EDU-0010; se requiere la confirmación de la dueña. |
 
 | Código ilación | ILA-0022 |
 | --- | --- |

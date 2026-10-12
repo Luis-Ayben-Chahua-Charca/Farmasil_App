@@ -59,7 +59,8 @@ Comparación Precios → Inventario, Proveedores, Reabastecimiento
 `Usuarios` **no aparece en el grafo de la Sección 3** a propósito. Su relación con otros módulos es transversal: todo módulo que registra una acción de un usuario lleva un campo `id_usuario` de auditoría (quién hizo la operación), pero ningún módulo le "pregunta" a Usuarios una regla de negocio para poder operar. Al implementar:
 
 - No crees un servicio `UsuarioService` que otros módulos consulten como parte de su lógica de negocio.
-- Sí usa el usuario de la sesión activa (autenticación/autorización, válido para **todas** las pantallas, no solo las que tienen FK) para rellenar el campo `id_usuario` donde la tabla lo tenga: `TBL_REGISTRO_VENTAS`, `TBL_ORDENES_DEVOLUCION`, `TBL_REPORTES_VENTAS` (como `usuario_responsable`), `TBL_COTIZACIONES_PROVEEDOR`.
+- Sí usa el usuario de la sesión activa (autenticación/autorización, válido para **todas** las pantallas, no solo las que tienen FK) para rellenar el campo `id_usuario` donde la tabla lo tenga: `TBL_REGISTRO_VENTAS`, `TBL_ORDENES_DEVOLUCION`, `TBL_COTIZACIONES_PROVEEDOR`.
+- `TBL_REPORTES_VENTAS` **no tiene `id_usuario` ni ninguna otra FK**. El `usuario_responsable` que exige EDU-0010 es un valor calculado: ESP-0021 lo obtiene al generar el reporte uniendo `TBL_REGISTRO_VENTAS.id_usuario` con `TBL_USUARIOS`, y solo existe dentro del archivo de salida. No agregues esa columna a la tabla.
 - Control de acceso por rol (Dueña vs. Técnica, columna "Accede" de la Sección 2) es una preocupación transversal de autorización (RNF-0006), no de dominio — impleméntalo como middleware/guard, no como dependencia entre módulos.
 
 ---

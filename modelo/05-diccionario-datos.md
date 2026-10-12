@@ -217,6 +217,10 @@ Reglas de seguridad clínica para protección en el punto de venta.
 
 *Educción asociada: EDU-0010. Es un log de salida sin referencias foráneas, por lo que su eliminación física en ILA-0024 es legítima.*
 
+*Aclaración sobre `usuario_responsable`: el reporte incluye la identificación del personal que realizó cada venta (EDU-0010), pero **`usuario_responsable` no es una columna de esta tabla ni de ninguna otra**. Es un valor calculado al vuelo, que ESP-0021 obtiene al generar el reporte uniendo `TBL_REGISTRO_VENTAS.id_usuario` con `TBL_USUARIOS`, y que solo existe dentro del archivo de salida (`ruta_archivo`). Nunca se persiste en `TBL_REPORTES_VENTAS`, que conserva únicamente el índice del reporte.*
+
+*Decisión de producto pendiente sobre `tipo_reporte` = 'Mermas': ningún requisito (EDU-0010, ILA-0021) define qué datos debe mostrar ese tipo de reporte ni de qué tablas salen. El valor figura aquí solo como ejemplo. Ver la nota correspondiente en ESP-0021.*
+
 ## 15. TBL_LISTA_REABASTECIMIENTO
 
 **Nueva en v05.00.** Mantiene los medicamentos que deben cotizarse y reabastecerse, ya sea porque el proceso periódico del sistema detectó que su stock consolidado cayó por debajo de `stock_minimo`, o porque la dueña los agregó manualmente.

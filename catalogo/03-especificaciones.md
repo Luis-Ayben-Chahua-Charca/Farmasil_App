@@ -386,8 +386,8 @@
 | Código especificación | ESP-0021 |
 | --- | --- |
 | Nombre | Generación de reportes de ventas |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 12/10/2026 |
 | Autor de la plantilla | AUT-0005 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
@@ -399,7 +399,7 @@
 | Código de artefactos asociados | ART-MKP-REP-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Corresponde a la fase Crear del CRUD. La consulta de un reporte existente, antes mezclada aquí, se separó hacia ESP-0022.<br>La consolidación une ahora con **TBL_USUARIOS** para obtener el responsable de cada venta, que EDU-0010 exige y que la dueña confirmó.<br>Queda Pendiente hasta que el campo `id_usuario` incorporado al Diccionario de Datos v03.00 se refleje en el motor. |
+| Comentario | Corresponde a la fase Crear del CRUD. La consulta de un reporte existente, antes mezclada aquí, se separó hacia ESP-0022.<br>La consolidación une ahora con **TBL_USUARIOS** para obtener el responsable de cada venta, que EDU-0010 exige y que la dueña confirmó.<br>Queda Pendiente hasta que el campo `id_usuario` incorporado al Diccionario de Datos v03.00 se refleje en el motor.<br>**Nota v03.00 — `usuario_responsable` es un valor calculado, no una columna.** El campo que consolida el paso `CONSOLIDAR (..., usuario_responsable)` se obtiene en el momento de generar el reporte mediante el `UNIENDO DB_FARMASIL.TBL_USUARIOS` (a partir de `TBL_REGISTRO_VENTAS.id_usuario`) y solo vive en el archivo de salida. No se persiste: el `REGISTRAR` sobre `DB_FARMASIL.TBL_REPORTES_VENTAS` guarda únicamente el índice (tipo, fechas, fecha de generación y ruta), tal como documenta el Diccionario de Datos.<br>**Nota v03.00 — Ambigüedad abierta: origen de datos del `tipoReporte` = 'Mermas' (decisión de producto pendiente).** La consulta del procedimiento es única (`TBL_REGISTRO_VENTAS` + `TBL_DETALLE_VENTAS` + `TBL_USUARIOS`) y no tiene ninguna rama por tipo de reporte, de modo que 'Mermas' (valor que solo aparece como ejemplo en el Diccionario de Datos) hoy produciría el mismo contenido que 'Ventas Diarias'. Se revisaron EDU-0010, EDU-0004, ILA-0021 y el resto del catálogo, y ninguno define qué debe mostrar un reporte de mermas: EDU-0010 habla de dinero recaudado, productos vendidos, fechas e identificación del personal, es decir, ventas. Las pérdidas por vencimiento viven en `TBL_PRODUCTOS_RETIRADOS` y `TBL_ALERTAS_VENCIMIENTO`, pero vincularlas a este reporte sería inventar un requisito. Por ello **no se modificó el comportamiento especificado**; queda pendiente que la dueña confirme si el tipo 'Mermas' existe y, de existir, qué datos y qué origen debe tener. Tampoco está enumerado el dominio de valores válidos de `tipoReporte` (`VALIDAR tipoReporte`). |
 
 | Código especificación | ESP-0022 |
 | --- | --- |

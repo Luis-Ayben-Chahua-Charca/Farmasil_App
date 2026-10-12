@@ -3,7 +3,7 @@ left to right direction
 skinparam actorStyle awesome
 title Módulo: Devoluciones\n«FarmasilApp» · EDU-0011 / ILA-0025 - ILA-0028 · Prefijo: DEV
 
-actor "Técnica Farmacéutica" as Tecnica
+actor "Dueña\n<<Administrador>>" as Duena
 
 rectangle "Gestión de Devoluciones a Proveedores" {
   usecase "Registrar orden de devolución\n(ILA-0025)" as UC_Registrar
@@ -13,10 +13,10 @@ rectangle "Gestión de Devoluciones a Proveedores" {
   usecase "Confirmar eliminación de orden\n(DEV_MDL_CONFIRMAR_ELIMINACION)" as UC_Confirmar
 }
 
-Tecnica --> UC_Registrar
-Tecnica --> UC_Consultar
-Tecnica --> UC_Actualizar
-Tecnica --> UC_Eliminar
+Duena --> UC_Registrar
+Duena --> UC_Consultar
+Duena --> UC_Actualizar
+Duena --> UC_Eliminar
 
 UC_Actualizar ..> UC_Consultar : <<include>>
 UC_Eliminar   ..> UC_Consultar : <<include>>
