@@ -1,6 +1,6 @@
 # Gestión de Riesgos — FARMASIL
 
-**Versión:** 05.00 · **Fecha:** 13/10/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
+**Versión:** 06.00 · **Fecha:** 13/10/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
 
 Insumo para la plantilla de gestión de riesgos GRI_0002: el equipo revisa, ajusta y traslada estas
 filas a la hoja de cálculo. Cubre **las 52 ilaciones de los 13 módulos** más un bloque de **riesgos
@@ -15,8 +15,9 @@ generales (RG)**, según la observación del profesor.
 | 03.00 | 13/10/2026 | Primera versión en el repositorio. Se resuelven los 4 riesgos nuevos (ILA-0016-R03, ILA-0016-R04, ILA-0022-R03, ILA-0023-R04) con el Diccionario de Datos v06.00; se descarta el tipo de reporte 'Mermas'; se agregan los riesgos de los módulos 9 a 13 y RG-011. |
 | 04.00 | 13/10/2026 | Se resuelven RG-011 (bajas condicionales por rechazo del motor), ILA-0036-R01, ILA-0036-R02, ILA-0040-R01, ILA-0043-R01 y, con RNF-0010, ILA-0013-R03, ILA-0045-R01, ILA-0045-R02, ILA-0047-R01 e ILA-0048-R01. |
 | 05.00 | 13/10/2026 | Se resuelve ILA-0004-R03: la venta con cualquier comprobante asociado no puede eliminarse. |
+| 06.00 | 13/10/2026 | Se resuelven ILA-0033-R02 (contraseña como hash con sal), ILA-0041-R01 (remesa nueva con existencias mayores que cero) e ILA-0043-R02 (validación de la nueva fecha de vencimiento). |
 
-En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"** o **"v05 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
+En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"**, **"v05 —"** o **"v06 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
 
 ## Criterio usado para el campo Estado
 
@@ -193,7 +194,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | Clave | Riesgo identificado | Prob. | % | Impacto | Estado | Plan de mitigación | Artefactos |
 |---|---|---|---|---|---|---|---|
 | ILA-0033-R01 | No se define una política mínima de contraseña (longitud, composición): ESP-0033 solo exige que no esté vacía. | Media | 50% | 3 | Pendiente | Definir la política en RNF-0006 y validarla en ESP-0033 y ESP-0035. | ESP-0033, ESP-0035, RNF-0006 |
-| ILA-0033-R02 | `ENCRIPTAR(contrasena)` no precisa el mecanismo: un cifrado reversible permitiría recuperar las contraseñas si se filtra la base. | Media-alta | 75% | 4 | Pendiente | Especificar hash con sal (p. ej. PBKDF2 o bcrypt) en lugar de cifrado reversible. | ESP-0033, ESP-0035, RNF-0006 |
+| ILA-0033-R02 | `ENCRIPTAR(contrasena)` no precisa el mecanismo: un cifrado reversible permitiría recuperar las contraseñas si se filtra la base. | Baja | 10% | 4 | Resuelto | v06 — RNF-0006 v05.00, ESP-0033/0035 e ILA-0033/0035 especifican hash irreversible con sal individual (PBKDF2, bcrypt o equivalente). Prueba T-012 agregada (hashes distintos para contraseñas iguales). | ESP-0033, ESP-0035, RNF-0006 |
 | ILA-0034-R01 | Ambigüedad sobre si el filtro por nombre de usuario admite coincidencia parcial (`nombre_usuario = nombreUsuario`). | Media | 50% | 1 | Pendiente | Especificar el tipo de búsqueda. | ESP-0034 |
 | ILA-0035-R01 | Degradar o desactivar la última cuenta administradora dejaría el sistema sin nadie que lo administre. | Baja | 10% | 5 | Resuelto | ESP-0035 cuenta los administradores activos y cancela la operación si quedaría ninguno. | ESP-0035 |
 | ILA-0035-R02 | No se define si un cambio de rol o estado afecta a una sesión ya abierta de esa cuenta o solo al siguiente inicio de sesión. | Media | 50% | 3 | Pendiente | Revalidar rol y estado en cada operación, o cerrar la sesión de la cuenta modificada. | ESP-0035, RNF-0006 |
@@ -213,10 +214,10 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 
 | Clave | Riesgo identificado | Prob. | % | Impacto | Estado | Plan de mitigación | Artefactos |
 |---|---|---|---|---|---|---|---|
-| ILA-0041-R01 | Se puede registrar una remesa con `stock_actual = 0` en estado 'Disponible', mientras ESP-0001 marca 'Agotado' toda remesa que llega a cero. | Media | 50% | 2 | Pendiente | Exigir `stock > 0` al registrar, o asignar 'Agotado' cuando sea cero. | ESP-0041, ESP-0001 |
+| ILA-0041-R01 | Se puede registrar una remesa con `stock_actual = 0` en estado 'Disponible', mientras ESP-0001 marca 'Agotado' toda remesa que llega a cero. | Baja | 10% | 2 | Resuelto | v06 — ESP-0041 v03.00 e ILA-0041 v03.00 exigen existencias iniciales mayores que cero. | ESP-0041, ESP-0001 |
 | ILA-0041-R02 | Se acepta una remesa que vence dentro del umbral de alerta sin ninguna advertencia al registrarla. | Media | 50% | 2 | Pendiente | Advertir al registrar si `fecha_vencimiento` cae dentro del umbral de ESP-0013. | ESP-0041, ESP-0013 |
 | ILA-0043-R01 | El estado de la remesa es editable libremente: se puede pasar a 'Disponible' una remesa 'Bloqueado por devolucion', lo que evita la regla de ILA-0016 (alerta activa o remesa vencida). | Baja | 10% | 4 | Resuelto | v04 — ESP-0043 v03.00 e ILA-0043 v03.00 muestran el estado en solo lectura y lo derivan de las existencias; una remesa 'Bloqueado por devolucion' conserva su estado. Pruebas T-006 y T-012 agregadas. | ESP-0043, ESP-0016 |
-| ILA-0043-R02 | ESP-0043 no valida que la nueva fecha de vencimiento sea futura, a diferencia de ESP-0041. | Media | 50% | 3 | Pendiente | Aplicar la misma validación `fechaVencimiento > FECHA_SISTEMA`, o justificar la excepción (corrección de un dato mal digitado). | ESP-0043 |
+| ILA-0043-R02 | ESP-0043 no valida que la nueva fecha de vencimiento sea futura, a diferencia de ESP-0041. | Baja | 10% | 3 | Resuelto | v06 — ESP-0043 v04.00 e ILA-0043 v04.00 validan que la nueva fecha de vencimiento sea futura cuando se modifica. Prueba T-001 agregada. | ESP-0043 |
 | ILA-0044-R01 | La baja lógica pone `stock_actual = 0` sin registrar cuántas unidades se descartaron ni por qué. | Media | 50% | 2 | Pendiente | Registrar las unidades dadas de baja y el motivo. | ESP-0044 |
 
 ## Módulo 12 — Gestión de Reabastecimiento (EDU-0016) · ILA-0045 a ILA-0048 · prefijo REA
@@ -255,13 +256,13 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | 6 Reportes | ILA-0021-R02, ILA-0022-R03, ILA-0023-R01, ILA-0023-R04, ILA-0024-R01, ILA-0024-R02, ILA-0024-R03 |
 | 7 Devoluciones | ILA-0025-R01, ILA-0025-R02, ILA-0026-R02, ILA-0027-R01, ILA-0027-R02, ILA-0028-R01, ILA-0028-R02, ILA-0028-R03 |
 | 8 Restricciones | ILA-0029-R03, ILA-0030-R01, ILA-0030-R02, ILA-0032-R01 |
-| 9 Usuarios | ILA-0035-R01, ILA-0036-R01, ILA-0036-R02 |
+| 9 Usuarios | ILA-0033-R02, ILA-0035-R01, ILA-0036-R01, ILA-0036-R02 |
 | 10 Proveedores | ILA-0040-R01 |
-| 11 Lotes | ILA-0043-R01 |
+| 11 Lotes | ILA-0041-R01, ILA-0043-R01, ILA-0043-R02 |
 | 12 Reabastecimiento | ILA-0045-R01, ILA-0045-R02, ILA-0047-R01, ILA-0048-R01 |
 | 13 Comparación de precios | ILA-0052-R01 |
 
-**Total: 67 resueltos.**
+**Total: 70 resueltos.**
 
 ## Riesgos abiertos de mayor severidad (impacto ≥ 4 y probabilidad ≥ 50 %)
 
@@ -273,7 +274,6 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0011-R01 | No se define si un comprobante ya reportado en declaración tributaria puede modificarse (solo existe 'Emitido'/'Anulado'). |
 | ILA-0012-R02 | Riesgo de anular un comprobante ya presentado ante la autoridad tributaria sin advertencia. |
 | ILA-0031-R01 | Desactivar una restricción deja sin protección una venta próxima. |
-| ILA-0033-R02 | `ENCRIPTAR(contrasena)` no precisa el mecanismo: un cifrado reversible permitiría recuperar las contraseñas si se filtra la base. |
 
 No queda ningún riesgo en estado **Retrasado**.
 
@@ -283,5 +283,5 @@ No queda ningún riesgo en estado **Retrasado**.
 |---|---|---|---|---|
 | RG | 11 | 1 | 4 | 6 |
 | Módulos 1-8 | 89 | 56 | 3 | 30 |
-| Módulos 9-13 | 27 | 10 | 0 | 17 |
-| **Total** | **127** | **67** | **7** | **53** |
+| Módulos 9-13 | 27 | 13 | 0 | 14 |
+| **Total** | **127** | **70** | **7** | **50** |

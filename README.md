@@ -10,12 +10,13 @@ Sistema de gestión para farmacia. Universidad Nacional de San Agustín, Ingenie
 | `02-ilaciones.md` | — | 52 ilaciones. Cuatro fases CRUD por educción. |
 | `03-especificaciones.md` | — | 52 especificaciones en pseudocódigo. |
 | `04-trazabilidad.md` | v04.00 | Matriz EDU↔ILA↔ESP↔artefactos, más trazabilidad hacia RNF, modelo de datos y pruebas. |
-| `05-diccionario-datos.md` | v06.00 | 16 tablas de `DB_FARMASIL`, correspondencia de tipos y relaciones. |
-| `06-guia-nomenclatura-mockups.md` | v04.00 | Prefijos por módulo, tipos de componente e inventario completo. |
+| `05-diccionario-datos.md` | v07.00 | 16 tablas de `DB_FARMASIL`, correspondencia de tipos y relaciones. |
+| `06-guia-nomenclatura-mockups.md` | v05.00 | Prefijos por módulo, tipos de componente e inventario completo. |
 | `07-matriz-permisos.md` | v03.00 | Actores, roles y permisos por operación. |
 | `08-requisitos-no-funcionales.md` | — | 10 requisitos no funcionales. RNF-0006 refundido en seguridad; RNF-0010 documenta los procesos programados. |
-| `09-pruebas-software.md` | v04.00 | 254 pruebas sobre las 52 especificaciones y los 10 requisitos no funcionales. |
-| `10-gestion-riesgos.md` | v05.00 | 127 riesgos (11 generales y 116 de las 52 ilaciones), 67 resueltos, con su estado verificado contra el catálogo vigente. Insumo de la plantilla GRI_0002. |
+| `09-pruebas-software.md` | v04.00 | 256 pruebas sobre las 52 especificaciones y los 10 requisitos no funcionales. |
+| `10-gestion-riesgos.md` | v06.00 | 127 riesgos (11 generales y 116 de las 52 ilaciones), 70 resueltos, con su estado verificado contra el catálogo vigente. Insumo de la plantilla GRI_0002. |
+| `11-registro-pendientes.md` | v01.00 | Cuestiones abiertas (PEN), agenda para la dueña y registro de decisiones (DEC). Carpeta `seguimiento/`. |
 
 ## Estructura del catálogo
 

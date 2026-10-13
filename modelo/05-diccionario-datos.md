@@ -8,7 +8,7 @@ Almacena las credenciales y perfiles del personal de la farmacia que accede al s
 | --- | --- | --- | --- |
 | id_usuario | INT | PK, Auto-increment | Identificador único del usuario. |
 | nombre_usuario | NVARCHAR(50) | NOT NULL, UNIQUE | Nombre de usuario para el inicio de sesión. |
-| contrasena | NVARCHAR(255) | NOT NULL | Contraseña encriptada por seguridad, conforme a RNF-0006. |
+| contrasena | NVARCHAR(255) | NOT NULL | Hash con sal de la contraseña (PBKDF2, bcrypt o equivalente), nunca reversible, conforme a RNF-0006. |
 | rol | NVARCHAR(20) | NOT NULL | Rol en el sistema: 'Administrador' o 'Tecnico'. |
 | estado | NVARCHAR(10) | DEFAULT 'Activo' | Estado de la cuenta: 'Activo' o 'Inactivo'. |
 
@@ -281,7 +281,7 @@ Esta tabla es el criterio único para decidir el tipo de un campo en las tres ca
 | Valor lógico | `BIT` | `bool` | CheckBox | **CHK** |
 | Dominio cerrado de valores | `NVARCHAR(n)` con restricción CHECK | `string` o `enum` | ComboBox | **CMB** |
 | Referencia a otra entidad | `INT` con clave foránea | `int` | ComboBox | **CMB** |
-| Contraseña | `NVARCHAR(255)` con el valor ya encriptado | `string` | PasswordBox | **PWD** |
+| Contraseña | `NVARCHAR(255)` con el hash de la contraseña | `string` | PasswordBox | **PWD** |
 | Valor calculado por el sistema | No se persiste, o se persiste sin captura | según el cálculo | TextBlock | **LBL** |
 
 **Nunca usar `float` ni `double` para importes.** `DECIMAL(10,2)` corresponde a `decimal` en C#, y cualquier otra elección introduce errores de redondeo en `monto_total` y `precio_unitario`.
@@ -338,10 +338,12 @@ Estos puntos no se modificaron porque implican decisiones de alcance, no correcc
 5. **Gestión de la configuración de alertas.** `TBL_ALERTAS_VENCIMIENTO` no tiene ninguna educción que la administre: el umbral es hoy un valor fijo que nadie puede cambiar desde el sistema.
 
 
-**Versión:** 06.00
+**Versión:** 07.00
 **Fecha:** 13/10/2026
 **Autor:** AUT-0001
 **Origen:** Diccionario de Datos v02.00, `Cambios_Modelo_ER_DB_FARMASIL.md` y Entrevista 3 (v05.00)
+
+> **Aplicado en v07.00 (13/10/2026):** `TBL_USUARIOS.contrasena` guarda un hash con sal y no un valor encriptado, conforme a RNF-0006 v05.00.
 
 > **Aplicado en v06.00 (auditoría de coherencia, 12-13/10/2026):**
 >

@@ -6,7 +6,7 @@
 | Fecha | 13/10/2026 |
 | Responsable | AUT-0001 |
 
-> **Versión 04.00.** Completa las especificaciones de los módulos 12 y 13 y los procesos programados de RNF-0010, con el mismo criterio de la versión 03.00: solo las pruebas que cubren una clase de defecto que ninguna otra cubre. Agrega además las pruebas de las reglas incorporadas en la auditoría de coherencia del 12-13/10/2026: bajas condicionales por rechazo del motor, estado de remesa derivado y no editable, y remesa vencida que no vuelve a la venta. Total: 254 pruebas.
+> **Versión 04.00.** Completa las especificaciones de los módulos 12 y 13 y los procesos programados de RNF-0010, con el mismo criterio de la versión 03.00: solo las pruebas que cubren una clase de defecto que ninguna otra cubre. Agrega además las pruebas de las reglas incorporadas en la auditoría de coherencia del 12-13/10/2026: bajas condicionales por rechazo del motor, estado de remesa derivado y no editable, y remesa vencida que no vuelve a la venta. Total: 256 pruebas.
 >
 > **Versión 03.00.** Reduce el plan a las pruebas que el sistema necesita. La versión 02.00 contenía 294 pruebas, de las cuales unas cuarenta repetían el mismo caso de verificación de rol en cada especificación, seis pruebas de carga estaban dispersas por los módulos cuando bastaban tres consolidadas, y varios tipos aparecían una sola vez con una etiqueta forzada, elegidos para que ningún tipo del catálogo quedara sin representar. Esta versión aplica el criterio de que el tipo de prueba lo determina el riesgo del sistema y no la extensión del catálogo.
 >
@@ -250,13 +250,14 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Inspeccionar la tabla tras el registro y verificar que la contraseña no esté almacenada en texto plano. | T-012 |
 |  |  | Verificar que el campo de contraseña enmascare el contenido y que la tabla de la interfaz no tenga columna de contraseña. | T-012 |
 |  |  | Crear una cuenta 'Activo' y verificar que pueda iniciar sesión; crearla 'Inactivo' y verificar que no pueda. | T-006 |
+|  |  | Crear dos cuentas con la misma contraseña y verificar que sus hashes almacenados sean distintos, lo que confirma la sal individual. | T-012 |
 | ESP-0034 | Consulta de usuarios (Leer) | Camino básico: aplicar filtros por nombre y rol y desplegar el resultado. | T-002 |
-|  |  | Inspeccionar la respuesta y verificar que no incluya el campo de contraseña ni en su forma encriptada. | T-012 |
+|  |  | Inspeccionar la respuesta y verificar que no incluya el campo de contraseña ni su hash. | T-012 |
 |  |  | Verificar que el resultado muestre el estado de cada cuenta, para distinguir activas de dadas de baja. | T-004 |
 | ESP-0035 | Actualización de usuario (Actualizar) | Camino básico: seleccionar cuenta, modificar nombre, rol o estado y confirmar. | T-002 |
 |  |  | Complejidad ciclomática: ramas de contraseña vacía, contraseña nueva y bloqueo por último administrador. | T-003 |
 |  |  | Dejar el campo de contraseña vacío y verificar que la vigente se conserve intacta tras la actualización. | T-004 |
-|  |  | Ingresar una contraseña nueva y verificar que quede encriptada y que la anterior deje de ser válida. | T-012 |
+|  |  | Ingresar una contraseña nueva y verificar que se guarde un hash nuevo y que la anterior deje de ser válida. | T-012 |
 |  |  | Degradar a 'Tecnico' la única cuenta administradora activa y verificar que el sistema cancele la operación. | T-012 |
 |  |  | Desactivar la única cuenta administradora activa y verificar que el sistema cancele la operación. | T-012 |
 | ESP-0036 | Desactivación de usuario (Eliminar) | Camino básico: seleccionar cuenta ajena, confirmar y verificar la baja aplicada. | T-002 |
@@ -310,6 +311,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Intentar asignar un número de lote que ya existe para el mismo medicamento y verificar el rechazo. | T-001 |
 |  |  | Llevar las existencias a cero y verificar que la remesa pase a 'Agotado' y deje de ofrecerse en ventas; repetir con una remesa 'Bloqueado por devolucion' y verificar que conserve su estado. | T-006 |
 |  |  | Verificar que el estado se muestre en solo lectura y que no exista ruta para modificarlo. | T-012 |
+|  |  | Cambiar la fecha de vencimiento a una fecha pasada y verificar el rechazo; editar otro campo de una remesa ya vencida sin tocar su fecha y verificar que se acepte. | T-001 |
 | ESP-0044 | Baja de remesa (Eliminar) | Camino básico: seleccionar remesa, confirmar y verificar la baja aplicada. | T-002 |
 |  |  | Complejidad ciclomática: ramas de devolución pendiente, con movimientos, sin movimientos y confirmación negativa. | T-003 |
 |  |  | Intentar dar de baja una remesa comprometida en una devolución pendiente y verificar el rechazo. | T-006 |
@@ -386,7 +388,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 
 | Verificación | Resultado |
 | --- | --- |
-| Pruebas definidas | 254 |
+| Pruebas definidas | 256 |
 | Especificaciones con al menos una prueba | 52 de 52 |
 | Especificaciones con prueba de camino básico (T-002) | 52 de 52 |
 | Módulos con verificación de rol | 13 de 13 |

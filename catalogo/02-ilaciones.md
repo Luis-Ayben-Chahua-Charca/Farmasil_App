@@ -642,8 +642,8 @@
 | Código ilación | ILA-0033 |
 | --- | --- |
 | Nombre | Creación de usuario |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
@@ -651,12 +651,12 @@
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0033 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. Se carga el mockup **ART-MKP-USR-0001**.<br>5. Los campos **USR-TXT-NOMBRE-USUARIO**, **USR-PWD-CONTRASENA**, **USR-CMB-ROL** y **USR-CMB-ESTADO-USUARIO** se encuentran habilitados.<br>6. El botón **USR-BTN-CREAR-USUARIO** se encuentra habilitado. |
-| Procedimiento | 1. La dueña accede al módulo de gestión de usuarios.<br>2. La dueña ingresa el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**.<br>3. La dueña ingresa la contraseña en **USR-PWD-CONTRASENA**, cuyo contenido se muestra enmascarado.<br>4. La dueña selecciona el rol en **USR-CMB-ROL**, con los valores 'Administrador' o 'Tecnico'.<br>5. La dueña selecciona el estado inicial de la cuenta en **USR-CMB-ESTADO-USUARIO**.<br>6. La dueña presiona **USR-BTN-CREAR-USUARIO**.<br>7. El sistema valida que el nombre de usuario no esté vacío y que no exista otra cuenta con el mismo nombre, dado que `nombre_usuario` es único.<br>8. El sistema encripta la contraseña antes de persistirla, conforme a la condición 5 de RNF-0006.<br>9. El sistema registra la cuenta en **DB_FARMASIL.TBL_USUARIOS**.<br>10. El sistema actualiza **USR-TBL-USUARIOS**. |
-| Postcondición | 1. La cuenta queda registrada en **DB_FARMASIL.TBL_USUARIOS** con la contraseña almacenada de forma encriptada.<br>2. La cuenta aparece en **USR-TBL-USUARIOS** sin exponer la contraseña en ninguna columna.<br>3. Si su estado es 'Activo', la cuenta queda habilitada para iniciar sesión según la condición 1 de RNF-0006 y para ser registrada como responsable de una venta o de una orden de devolución. |
+| Procedimiento | 1. La dueña accede al módulo de gestión de usuarios.<br>2. La dueña ingresa el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**.<br>3. La dueña ingresa la contraseña en **USR-PWD-CONTRASENA**, cuyo contenido se muestra enmascarado.<br>4. La dueña selecciona el rol en **USR-CMB-ROL**, con los valores 'Administrador' o 'Tecnico'.<br>5. La dueña selecciona el estado inicial de la cuenta en **USR-CMB-ESTADO-USUARIO**.<br>6. La dueña presiona **USR-BTN-CREAR-USUARIO**.<br>7. El sistema valida que el nombre de usuario no esté vacío y que no exista otra cuenta con el mismo nombre, dado que `nombre_usuario` es único.<br>8. El sistema transforma la contraseña en un hash con sal antes de persistirla, conforme a la condición 5 de RNF-0006.<br>9. El sistema registra la cuenta en **DB_FARMASIL.TBL_USUARIOS**.<br>10. El sistema actualiza **USR-TBL-USUARIOS**. |
+| Postcondición | 1. La cuenta queda registrada en **DB_FARMASIL.TBL_USUARIOS** con la contraseña almacenada como hash con sal, nunca en texto plano ni con cifrado reversible.<br>2. La cuenta aparece en **USR-TBL-USUARIOS** sin exponer la contraseña en ninguna columna.<br>3. Si su estado es 'Activo', la cuenta queda habilitada para iniciar sesión según la condición 1 de RNF-0006 y para ser registrada como responsable de una venta o de una orden de devolución. |
 | Código de artefactos asociados | ART-MKP-USR-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Módulo nuevo, derivado de la confirmación de la dueña de que requiere saber qué personal realiza cada venta.<br>La tabla **TBL_USUARIOS** ya existe en el Diccionario de Datos y es referenciada desde **TBL_ORDENES_DEVOLUCION**, pero ninguna ilación alimentaba su contenido: las cuentas existían en el modelo sin ningún procedimiento que las creara.<br>Queda Pendiente porque requiere el mockup **ART-MKP-USR-0001**, que aún no ha sido diseñado. Ver Anexo. |
+| Comentario | Módulo nuevo, derivado de la confirmación de la dueña de que requiere saber qué personal realiza cada venta.<br>La tabla **TBL_USUARIOS** ya existe en el Diccionario de Datos y es referenciada desde **TBL_ORDENES_DEVOLUCION**, pero ninguna ilación alimentaba su contenido: las cuentas existían en el modelo sin ningún procedimiento que las creara.<br>Queda Pendiente porque requiere el mockup **ART-MKP-USR-0001**, que aún no ha sido diseñado. Ver Anexo.<br>**Versión 02.00:** se precisa el mecanismo de protección de la contraseña (hash con sal, RNF-0006 v05.00). |
 
 | Código ilación | ILA-0034 |
 | --- | --- |
@@ -680,8 +680,8 @@
 | Código ilación | ILA-0035 |
 | --- | --- |
 | Nombre | Actualización de usuario |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
@@ -689,12 +689,12 @@
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0035 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-USR-0003**. |
-| Procedimiento | 1. La dueña selecciona una cuenta en **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ACTUALIZAR-USUARIO**.<br>3. El sistema carga el mockup **ART-MKP-USR-0003** con la información vigente de la cuenta, dejando **USR-PWD-CONTRASENA** en blanco.<br>4. La dueña modifica el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**, el rol en **USR-CMB-ROL** o el estado en **USR-CMB-ESTADO-USUARIO**. Si desea restablecer la contraseña, ingresa una nueva en **USR-PWD-CONTRASENA**; si deja el campo en blanco, la contraseña vigente se conserva.<br>5. La dueña presiona **USR-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo nombre de usuario no colisione con otra cuenta.<br>7. El sistema verifica que la operación no deje al sistema sin ninguna cuenta activa con rol 'Administrador'.<br>8. El sistema actualiza el registro en **DB_FARMASIL.TBL_USUARIOS**, encriptando la contraseña si fue modificada.<br>9. El sistema actualiza **USR-TBL-USUARIOS**. |
+| Procedimiento | 1. La dueña selecciona una cuenta en **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ACTUALIZAR-USUARIO**.<br>3. El sistema carga el mockup **ART-MKP-USR-0003** con la información vigente de la cuenta, dejando **USR-PWD-CONTRASENA** en blanco.<br>4. La dueña modifica el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**, el rol en **USR-CMB-ROL** o el estado en **USR-CMB-ESTADO-USUARIO**. Si desea restablecer la contraseña, ingresa una nueva en **USR-PWD-CONTRASENA**; si deja el campo en blanco, la contraseña vigente se conserva.<br>5. La dueña presiona **USR-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo nombre de usuario no colisione con otra cuenta.<br>7. El sistema verifica que la operación no deje al sistema sin ninguna cuenta activa con rol 'Administrador'.<br>8. El sistema actualiza el registro en **DB_FARMASIL.TBL_USUARIOS**, guardando el hash con sal de la contraseña si fue modificada.<br>9. El sistema actualiza **USR-TBL-USUARIOS**. |
 | Postcondición | 1. La cuenta queda actualizada en **DB_FARMASIL.TBL_USUARIOS**.<br>2. El identificador de la cuenta permanece inalterado, preservando las referencias desde **TBL_ORDENES_DEVOLUCION** y desde el histórico de ventas.<br>3. Siempre existe al menos una cuenta activa con rol de administrador.<br>4. Los cambios se reflejan en **USR-TBL-USUARIOS**. |
 | Código de artefactos asociados | ART-MKP-USR-0003 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La validación del paso 7 evita el bloqueo total del sistema: si la única cuenta administradora se degrada a técnico o se desactiva, nadie podría volver a administrar usuarios.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0003**. |
+| Comentario | La validación del paso 7 evita el bloqueo total del sistema: si la única cuenta administradora se degrada a técnico o se desactiva, nadie podría volver a administrar usuarios.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0003**.<br>**Versión 02.00:** la contraseña nueva se guarda como hash con sal (RNF-0006 v05.00). |
 
 | Código ilación | ILA-0036 |
 | --- | --- |
@@ -834,9 +834,11 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 
 ## C. Decisiones que requieren validación del equipo o del cliente
 
+> Desde el 13/10/2026, las cuestiones abiertas se siguen en `seguimiento/11-registro-pendientes.md`.
+
 1. ~~**EDU-0010 contradice a ILA-0023 e ILA-0024.**~~ **Resuelto el 05/09/2026.** EDU-0010 se amplió a la versión 05.00 autorizando la administración de los reportes generados y dejando explícito que las ventas de origen son inmutables. Ambas ilaciones pasaron a estado Concluido.
 2. **Catálogo de fuentes.** Siete ilaciones citan el Registro de Entrevista 1 sin código FUE, porque no existe un catálogo de fuentes en el proyecto. Los códigos FUE-0001 a FUE-0005 se usan sin que ningún documento defina a qué corresponden.
-3. **Catálogo de actores.** ACT-0001 y ACT-0002 se usan en las tres etapas sin estar definidos en ninguna parte. La corrección del actor en las ilaciones del módulo 7 se hizo por coherencia con su educción, no contra un catálogo.
+3. ~~**Catálogo de actores.**~~ **Resuelto** con `diseno/07-matriz-permisos.md`, que define ACT-0001 y ACT-0002. Texto original: ACT-0001 y ACT-0002 se usan en las tres etapas sin estar definidos en ninguna parte. La corrección del actor en las ilaciones del módulo 7 se hizo por coherencia con su educción, no contra un catálogo.
 4. ~~**Generación automática de la lista de reabastecimiento.**~~ **Resuelto el 13/10/2026** con RNF-0010, que documenta en un solo requisito ambos procesos programados. Texto original: no existía todavía un requisito no funcional formal que documente el proceso periódico (cada ~15 días) que compara `TBL_PRODUCTOS.stock_minimo` contra el stock consolidado y genera los ítems automáticos en `TBL_LISTA_REABASTECIMIENTO`. Es la misma situación, ya conocida, de la generación automática de alertas de vencimiento que documenta ILA-0013 sin que exista el RNF correspondiente (ver huecos abiertos de `04-trazabilidad.md`, punto 7). Se recomienda resolver ambos casos juntos en un mismo requisito no funcional de "procesos programados del sistema".
 5. **Formato exacto del archivo CSV de exportación por proveedor.** Esta revisión define su contenido (medicamento, cantidad, precio) pero no las columnas exactas ni el formato de archivo; debe definirse al diseñar el mockup `ART-MKP-COT-0002`.
 
@@ -847,8 +849,8 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código ilación | ILA-0041 |
 | --- | --- |
 | Nombre | Registro de remesa |
-| Versión | 02.00 |
-| Fecha | 02/10/2026 |
+| Versión | 03.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -856,12 +858,12 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código educción | EDU-0015 |
 | Código especificación | ESP-0041 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene al menos un medicamento con `estado_producto` = 'Disponible'.<br>5. Se carga el mockup **ART-MKP-LOT-0001**.<br>6. El botón **LOT-BTN-CREAR-LOTE** se encuentra habilitado. |
-| Procedimiento | 1. La dueña accede al módulo de gestión de lotes.<br>2. La dueña selecciona el medicamento al que corresponde la remesa en **LOT-CMB-PRODUCTO**.<br>3. El sistema propone como valor inicial el proveedor habitual del medicamento (`TBL_PRODUCTOS.id_proveedor`) en **LOT-CMB-PROVEEDOR-LOTE**, y la dueña puede cambiarlo cuando la remesa concreta proviene de un proveedor distinto.<br>4. La dueña ingresa el número de lote impreso por el laboratorio en **LOT-TXT-NUMERO-LOTE**.<br>5. La dueña selecciona la fecha de vencimiento de la remesa en **LOT-FEC-FECHA-VENCIMIENTO**.<br>6. La dueña ingresa las unidades recibidas en **LOT-NUM-STOCK-LOTE**.<br>7. La dueña registra la fecha de ingreso al almacén en **LOT-FEC-FECHA-INGRESO**.<br>8. La dueña presiona **LOT-BTN-CREAR-LOTE**.<br>9. El sistema valida que la fecha de vencimiento sea posterior a la fecha actual, que las unidades sean un entero no negativo y que no exista ya una remesa con el mismo número de lote para ese medicamento.<br>10. El sistema registra la remesa en **DB_FARMASIL.TBL_LOTES** con `estado_lote` = 'Disponible'.<br>11. El sistema actualiza **LOT-TBL-LOTES**. |
+| Procedimiento | 1. La dueña accede al módulo de gestión de lotes.<br>2. La dueña selecciona el medicamento al que corresponde la remesa en **LOT-CMB-PRODUCTO**.<br>3. El sistema propone como valor inicial el proveedor habitual del medicamento (`TBL_PRODUCTOS.id_proveedor`) en **LOT-CMB-PROVEEDOR-LOTE**, y la dueña puede cambiarlo cuando la remesa concreta proviene de un proveedor distinto.<br>4. La dueña ingresa el número de lote impreso por el laboratorio en **LOT-TXT-NUMERO-LOTE**.<br>5. La dueña selecciona la fecha de vencimiento de la remesa en **LOT-FEC-FECHA-VENCIMIENTO**.<br>6. La dueña ingresa las unidades recibidas en **LOT-NUM-STOCK-LOTE**.<br>7. La dueña registra la fecha de ingreso al almacén en **LOT-FEC-FECHA-INGRESO**.<br>8. La dueña presiona **LOT-BTN-CREAR-LOTE**.<br>9. El sistema valida que la fecha de vencimiento sea posterior a la fecha actual, que las unidades sean un entero mayor que cero y que no exista ya una remesa con el mismo número de lote para ese medicamento.<br>10. El sistema registra la remesa en **DB_FARMASIL.TBL_LOTES** con `estado_lote` = 'Disponible'.<br>11. El sistema actualiza **LOT-TBL-LOTES**. |
 | Postcondición | 1. La remesa queda almacenada en **DB_FARMASIL.TBL_LOTES** asociada a su medicamento y al proveedor que la entregó (`id_proveedor`).<br>2. La combinación de medicamento y número de lote es única en la tabla.<br>3. La remesa aparece en **LOT-TBL-LOTES**.<br>4. La remesa queda disponible para ser seleccionada en **VEN-CMB-LOTE-VENTA** durante el registro de una venta.<br>5. El stock consolidado del medicamento, mostrado en **INV-TBL-PRODUCTOS**, se incrementa en las unidades recibidas. |
 | Código de artefactos asociados | ART-MKP-LOT-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Ilación nueva, derivada de la incorporación de **TBL_LOTES** al Diccionario de Datos v04.00.<br>La restricción de unicidad sobre medicamento y número de lote es la que sostiene el rastreo sanitario: si el mismo lote pudiera registrarse dos veces, no habría forma de responder inequívocamente qué se vendió de una remesa retirada por la DIGEMID.<br>Queda Pendiente porque el mockup **ART-MKP-LOT-0001** aún no ha sido diseñado.<br>**Versión 02.00:** se incorpora `TBL_LOTES.id_proveedor` (Diccionario de Datos v05.00), que permite registrar remesas de un mismo medicamento provenientes de proveedores distintos, requisito surgido durante el diseño del módulo de comparación de precios de proveedores (EDU-0017). Requiere incorporar **LOT-CMB-PROVEEDOR-LOTE** al mockup **ART-MKP-LOT-0001**. Ver Anexo. |
+| Comentario | Ilación nueva, derivada de la incorporación de **TBL_LOTES** al Diccionario de Datos v04.00.<br>La restricción de unicidad sobre medicamento y número de lote es la que sostiene el rastreo sanitario: si el mismo lote pudiera registrarse dos veces, no habría forma de responder inequívocamente qué se vendió de una remesa retirada por la DIGEMID.<br>Queda Pendiente porque el mockup **ART-MKP-LOT-0001** aún no ha sido diseñado.<br>**Versión 02.00:** se incorpora `TBL_LOTES.id_proveedor` (Diccionario de Datos v05.00), que permite registrar remesas de un mismo medicamento provenientes de proveedores distintos, requisito surgido durante el diseño del módulo de comparación de precios de proveedores (EDU-0017). Requiere incorporar **LOT-CMB-PROVEEDOR-LOTE** al mockup **ART-MKP-LOT-0001**. Ver Anexo.<br>**Versión 03.00:** una remesa nueva debe ingresar con al menos una unidad; con cero quedaba 'Disponible' sin existencias. |
 
 | Código ilación | ILA-0042 |
 | --- | --- |
@@ -885,7 +887,7 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código ilación | ILA-0043 |
 | --- | --- |
 | Nombre | Actualización de remesa |
-| Versión | 03.00 |
+| Versión | 04.00 |
 | Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
@@ -894,12 +896,12 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código educción | EDU-0015 |
 | Código especificación | ESP-0043 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LOTES** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-LOT-0003**. |
-| Procedimiento | 1. La dueña selecciona una remesa en **LOT-TBL-LOTES**.<br>2. La dueña presiona **LOT-BTN-ACTUALIZAR-LOTE**.<br>3. El sistema carga el mockup **ART-MKP-LOT-0003** con la información vigente de la remesa.<br>4. La dueña modifica el número de lote en **LOT-TXT-NUMERO-LOTE**, la fecha de vencimiento en **LOT-FEC-FECHA-VENCIMIENTO**, las existencias en **LOT-NUM-STOCK-LOTE** o el proveedor de la remesa en **LOT-CMB-PROVEEDOR-LOTE**. El medicamento asociado, mostrado en **LOT-CMB-PRODUCTO**, y el estado, mostrado en **LOT-CMB-ESTADO-LOTE**, permanecen de solo lectura.<br>5. La dueña presiona **LOT-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo número de lote no colisione con otra remesa del mismo medicamento y que las existencias sean un entero no negativo.<br>7. El sistema verifica que las existencias declaradas no sean inferiores a las unidades ya comprometidas en órdenes de devolución pendientes de esa remesa.<br>8. El sistema deriva el estado de la remesa: una remesa 'Bloqueado por devolucion' conserva su estado; en otro caso, si las existencias quedan en cero pasa a 'Agotado'; si estaba 'Agotado', no está vencida y recibe existencias, vuelve a 'Disponible'; en otro caso conserva su estado.<br>9. El sistema actualiza el registro en **DB_FARMASIL.TBL_LOTES**.<br>10. El sistema actualiza **LOT-TBL-LOTES**. |
+| Procedimiento | 1. La dueña selecciona una remesa en **LOT-TBL-LOTES**.<br>2. La dueña presiona **LOT-BTN-ACTUALIZAR-LOTE**.<br>3. El sistema carga el mockup **ART-MKP-LOT-0003** con la información vigente de la remesa.<br>4. La dueña modifica el número de lote en **LOT-TXT-NUMERO-LOTE**, la fecha de vencimiento en **LOT-FEC-FECHA-VENCIMIENTO**, las existencias en **LOT-NUM-STOCK-LOTE** o el proveedor de la remesa en **LOT-CMB-PROVEEDOR-LOTE**. El medicamento asociado, mostrado en **LOT-CMB-PRODUCTO**, y el estado, mostrado en **LOT-CMB-ESTADO-LOTE**, permanecen de solo lectura.<br>5. La dueña presiona **LOT-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo número de lote no colisione con otra remesa del mismo medicamento que las existencias sean un entero no negativo y, si se modificó la fecha de vencimiento, que la nueva fecha sea posterior a la actual.<br>7. El sistema verifica que las existencias declaradas no sean inferiores a las unidades ya comprometidas en órdenes de devolución pendientes de esa remesa.<br>8. El sistema deriva el estado de la remesa: una remesa 'Bloqueado por devolucion' conserva su estado; en otro caso, si las existencias quedan en cero pasa a 'Agotado'; si estaba 'Agotado', no está vencida y recibe existencias, vuelve a 'Disponible'; en otro caso conserva su estado.<br>9. El sistema actualiza el registro en **DB_FARMASIL.TBL_LOTES**.<br>10. El sistema actualiza **LOT-TBL-LOTES**. |
 | Postcondición | 1. La remesa queda actualizada en **DB_FARMASIL.TBL_LOTES**.<br>2. El identificador de la remesa permanece inalterado, preservando las referencias desde **TBL_DETALLE_VENTAS** y **TBL_DETALLE_DEVOLUCION**.<br>3. El medicamento asociado a la remesa permanece inalterado: reasignar una remesa a otro medicamento falsearía el histórico de ventas ya registrado.<br>4. Una remesa 'Bloqueado por devolucion' conserva ese estado; si la remesa queda 'Agotado', deja de ofrecerse en **VEN-CMB-LOTE-VENTA**.<br>5. Los cambios se reflejan en **LOT-TBL-LOTES**. |
 | Código de artefactos asociados | ART-MKP-LOT-0003 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | El medicamento asociado se declara de solo lectura por la misma razón que el identificador: las ventas ya registradas apuntan a esta remesa, y cambiarle el medicamento reescribiría retroactivamente qué se vendió.<br>La verificación del paso 7 evita que una corrección de inventario deje una orden de devolución comprometiendo unidades que ya no existen.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0003**.<br>**Versión 02.00:** a diferencia del medicamento, el proveedor de la remesa **sí** es editable, porque puede corregirse un error de captura sin falsear qué medicamento se vendió. Requiere incorporar **LOT-CMB-PROVEEDOR-LOTE** al mockup **ART-MKP-LOT-0003**. Ver Anexo.<br>**Versión 03.00:** el estado deja de ser editable: sus transiciones corresponden a la venta (ILA-0001), las alertas (ILA-0014 e ILA-0016) y la baja (ILA-0044). Editarlo a mano permitía devolver a la venta una remesa bloqueada o vencida. |
+| Comentario | El medicamento asociado se declara de solo lectura por la misma razón que el identificador: las ventas ya registradas apuntan a esta remesa, y cambiarle el medicamento reescribiría retroactivamente qué se vendió.<br>La verificación del paso 7 evita que una corrección de inventario deje una orden de devolución comprometiendo unidades que ya no existen.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0003**.<br>**Versión 02.00:** a diferencia del medicamento, el proveedor de la remesa **sí** es editable, porque puede corregirse un error de captura sin falsear qué medicamento se vendió. Requiere incorporar **LOT-CMB-PROVEEDOR-LOTE** al mockup **ART-MKP-LOT-0003**. Ver Anexo.<br>**Versión 03.00:** el estado deja de ser editable: sus transiciones corresponden a la venta (ILA-0001), las alertas (ILA-0014 e ILA-0016) y la baja (ILA-0044). Editarlo a mano permitía devolver a la venta una remesa bloqueada o vencida.<br>**Versión 04.00:** se valida la nueva fecha de vencimiento igual que en ILA-0041. |
 
 | Código ilación | ILA-0044 |
 | --- | --- |

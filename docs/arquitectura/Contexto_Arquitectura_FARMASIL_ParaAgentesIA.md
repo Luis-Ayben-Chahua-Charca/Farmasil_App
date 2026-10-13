@@ -90,11 +90,13 @@ Comparación Precios → Inventario, Proveedores, Reabastecimiento
 | Trazabilidad EDU↔ILA↔ESP | `catalogo/04-trazabilidad.md` |
 | Esquema de base de datos completo (tablas, FKs, tipos) | `modelo/05-diccionario-datos.md` |
 | Quién puede hacer qué (permisos por actor) | `diseno/07-matriz-permisos.md` |
-| Requisitos no funcionales (RNF-0001 a RNF-0009: operación local, un solo equipo, control de acceso, tiempos de respuesta) | `08-requisitos-no-funcionales.md` (si no está en este repo, está en el Proyecto de Claude) |
+| Requisitos no funcionales (RNF-0001 a RNF-0010: operación local, un solo equipo, control de acceso, tiempos de respuesta) | `catalogo/08-requisitos-no-funcionales.md` |
 | Diagrama de arquitectura genérica (visual) | `docs/arquitectura/ArquitecturaGenerica_Nivel1.png` (vista simplificada) y `ArquitecturaGenerica_Nivel2.png` (13 componentes con interfaces) |
 | Matriz de dependencias e interfaces (texto, la fuente de este documento) | `docs/arquitectura/Insumo_Matriz_Interfaces_ArquitecturaGenerica_v2.md` |
 | Mockups de pantallas | `diseno/Mockups/` |
 | Diagramas de casos de uso | `docs/diagramas/` |
+| Riesgos identificados y su estado | `riesgos/10-gestion-riesgos.md` |
+| Cuestiones abiertas y decisiones ya tomadas (no reabrir sin revisar) | `seguimiento/11-registro-pendientes.md` |
 | Reglas para agentes de IA trabajando en este repo (commits, git add, atribución) | `AGENTS.md` (raíz del repo) |
 
 ---

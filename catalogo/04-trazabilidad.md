@@ -181,6 +181,8 @@
 
 ### Huecos abiertos
 
+> Desde el 13/10/2026, los huecos abiertos se siguen como cuestiones `PEN-NNN` en `seguimiento/11-registro-pendientes.md`.
+
 1. ~~**Faltan pruebas y las existentes están desactualizadas.**~~ **Resuelto el 05/09/2026.** `09-pruebas-software.md` v03.00 cubre las 44 especificaciones con 223 pruebas, más las seis condiciones de RNF-0006 y los nueve requisitos no funcionales.
 2. **Faltan los datos de prueba.** El documento define qué se prueba, no con qué juego de datos de carga inicial.
 3. **Doce mockups sin diseñar**: ART-MKP-USR-0001 a 0004, ART-MKP-PRV-0001 a 0004 y ART-MKP-LOT-0001 a 0004.
