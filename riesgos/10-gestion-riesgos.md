@@ -1,6 +1,6 @@
 # Gestión de Riesgos — FARMASIL
 
-**Versión:** 03.00 · **Fecha:** 13/10/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
+**Versión:** 04.00 · **Fecha:** 13/10/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
 
 Insumo para la plantilla de gestión de riesgos GRI_0002: el equipo revisa, ajusta y traslada estas
 filas a la hoja de cálculo. Cubre **las 52 ilaciones de los 13 módulos** más un bloque de **riesgos
@@ -13,8 +13,9 @@ generales (RG)**, según la observación del profesor.
 | 01.00 | 20/07/2026 | Riesgos de los módulos 1 a 8 contra las especificaciones de julio (vivía en el Proyecto de Claude). |
 | 02.00 | 12/10/2026 | Reevaluación contra el catálogo vigente: 44 riesgos pasan a Resuelto, ningún riesgo queda Retrasado, se corrige el total declarado (94 → 85 filas reales) y se agregan 4 riesgos nuevos de coherencia. |
 | 03.00 | 13/10/2026 | Primera versión en el repositorio. Se resuelven los 4 riesgos nuevos (ILA-0016-R03, ILA-0016-R04, ILA-0022-R03, ILA-0023-R04) con el Diccionario de Datos v06.00; se descarta el tipo de reporte 'Mermas'; se agregan los riesgos de los módulos 9 a 13 y RG-011. |
+| 04.00 | 13/10/2026 | Se resuelven RG-011 (bajas condicionales por rechazo del motor), ILA-0036-R01, ILA-0036-R02, ILA-0040-R01, ILA-0043-R01 y, con RNF-0010, ILA-0013-R03, ILA-0045-R01, ILA-0045-R02, ILA-0047-R01 e ILA-0048-R01. |
 
-En la columna *Plan de mitigación*, el prefijo **"v02 —"** o **"v03 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
+En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"** o **"v04 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
 
 ## Criterio usado para el campo Estado
 
@@ -51,7 +52,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | RG-008 | Error del usuario al ingresar información incorrecta (fechas, cantidades, montos) por falta de capacitación. | Media | 50% | 2 | En proceso | Reforzar validaciones de formato por campo; plan de capacitación al personal. | Guía de nomenclatura de mockups |
 | RG-009 | Fallas del sistema operativo o incompatibilidad del software con el equipo de la farmacia. | Baja | 10% | 3 | Pendiente | Definir requisitos mínimos de hardware/software antes del despliegue. | 08-requisitos-no-funcionales.md |
 | RG-010 | Pérdida de información por ausencia de copias de seguridad periódicas de DB_FARMASIL. | Media | 50% | 5 | Pendiente | Programar respaldo automático diario de la base de datos. | DB_FARMASIL |
-| RG-011 | Las bajas condicionales (física si no hay referencias, lógica si las hay) consultan tablas de otros módulos para decidir: ESP-0008 lee Lotes y Restricciones, ESP-0020 lee Ventas, ESP-0036 lee Ventas y Devoluciones, ESP-0040 lee Productos y Devoluciones. Son dependencias inversas que la arquitectura genérica no registra, y las listas ya están incompletas (ILA-0036-R01, ILA-0040-R01). | Alta | 90% | 3 | Pendiente | Decidir el mecanismo: verificar referencias mediante la integridad del motor (intento de borrado físico con respaldo a baja lógica) en lugar de enumerar tablas, o registrar esas aristas en la arquitectura. | ESP-0008, ESP-0020, ESP-0036, ESP-0040, Arquitectura genérica |
+| RG-011 | Las bajas condicionales (física si no hay referencias, lógica si las hay) consultan tablas de otros módulos para decidir: ESP-0008 lee Lotes y Restricciones, ESP-0020 lee Ventas, ESP-0036 lee Ventas y Devoluciones, ESP-0040 lee Productos y Devoluciones. Son dependencias inversas que la arquitectura genérica no registra, y las listas ya están incompletas (ILA-0036-R01, ILA-0040-R01). | Baja | 10% | 3 | Resuelto | v04 — ESP-0008, ESP-0020, ESP-0036, ESP-0040 y ESP-0044 intentan el borrado físico y, si el motor lo rechaza por una clave foránea, aplican la baja lógica. Ningún módulo enumera tablas ajenas; la regla de borrado de las FK está en el Diccionario de Datos v06.00 y en la sección 5 del contexto de arquitectura. | ESP-0008, ESP-0020, ESP-0036, ESP-0040, Arquitectura genérica |
 
 ---
 
@@ -71,7 +72,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0003-R03 | El recálculo de cantidad no valida disponibilidad actual de stock. | Baja | 10% | 3 | Resuelto | v02 — ESP-0003 valida `diferencia <= linea.lote.stock_actual` y ajusta el stock por diferencia. | ESP-0003 |
 | ILA-0004-R01 | No se define si la eliminación de una venta es física o lógica. | Baja | 10% | 4 | Resuelto | v02 — ESP-0004 v03.00 define eliminación física en cascada (detalle y cabecera) con restitución del stock, permitida solo si no hay comprobante 'Emitido'. | ESP-0004 |
 | ILA-0004-R02 | Falta de validación sobre si una venta con comprobante emitido puede eliminarse. | Baja | 10% | 4 | Resuelto | v02 — ESP-0004 bloquea la eliminación si existe comprobante 'Emitido'. | ESP-0004 |
-| ILA-0004-R03 | Una venta con comprobante **'Anulado'** sí puede eliminarse físicamente, pero `TBL_COMPROBANTES_TRIBUTARIOS.id_venta` sigue apuntando a ella: violación de integridad referencial y pérdida del vínculo que la auditoría tributaria necesita. | Media | 50% | 4 | Pendiente | Decidir entre bloquear la eliminación si existe cualquier comprobante (no solo 'Emitido') o aplicar baja lógica a la venta. | ESP-0004, ESP-0012 |
+| ILA-0004-R03 | Una venta con comprobante **'Anulado'** sí puede eliminarse físicamente, pero `TBL_COMPROBANTES_TRIBUTARIOS.id_venta` sigue apuntando a ella: violación de integridad referencial y pérdida del vínculo que la auditoría tributaria necesita. | Media | 50% | 4 | Pendiente | Recomendación de la instancia maestra (13/10/2026): bloquear la eliminación si existe cualquier comprobante asociado, 'Emitido' o 'Anulado'. Pendiente de decisión de Leyni. | ESP-0004, ESP-0012 |
 
 ## Módulo 2 — Gestión de Inventario (EDU-0002) · ILA-0005 a ILA-0008 · prefijo INV
 
@@ -112,7 +113,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 |---|---|---|---|---|---|---|---|
 | ILA-0013-R01 | Ambigüedad sobre si las alertas provienen del proceso automático o del registro manual. | Baja | 10% | 1 | Resuelto | ESP-0013 consolida ambas fuentes (`UNION(proximosAVencer, retirados)`). | ESP-0013 |
 | ILA-0013-R02 | No se define el origen ni el valor de `umbral_meses` (¿configurable o fijo?). EDU-0011 menciona 2 meses. | Alta | 90% | 2 | Pendiente | Definir si es editable desde un panel de configuración o valor fijo, y alinearlo con EDU-0011. | ESP-0013 |
-| ILA-0013-R03 | El proceso programado que genera alertas se remite a "un requisito no funcional aparte" que no existe en 08-requisitos-no-funcionales.md. | Media | 50% | 3 | Pendiente | Crear el RNF o la especificación explícita del proceso automático. | ESP-0013, 08-RNF |
+| ILA-0013-R03 | El proceso programado que genera alertas se remite a "un requisito no funcional aparte" que no existe en 08-requisitos-no-funcionales.md. | Baja | 10% | 3 | Resuelto | v04 — Condición 1 de RNF-0010: evaluación al iniciar la aplicación y cada 24 horas, con el mismo cálculo de ESP-0013. | ESP-0013, 08-RNF |
 | ILA-0014-R01 | Ambigüedad sobre si loteDefectuoso y alertaDigemid son excluyentes o pueden marcarse ambos. | Media | 50% | 1 | Pendiente | Aclarar en el diccionario de datos. | ESP-0014, Diccionario de datos |
 | ILA-0014-R02 | Flujo de corrección ante validación fallida. | Baja | 10% | 1 | Resuelto | ESP-0014 define "SEÑALAR CAMPO_INVALIDO / PERMITIR CORRECCION". | ESP-0014 |
 | ILA-0014-R03 | No se valida si la remesa ya tiene una alerta activa antes de registrar otra (duplicidad). | Media-alta | 75% | 2 | Pendiente | Validar que no exista ya un retiro para el mismo lote. | ESP-0014 |
@@ -195,8 +196,8 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0034-R01 | Ambigüedad sobre si el filtro por nombre de usuario admite coincidencia parcial (`nombre_usuario = nombreUsuario`). | Media | 50% | 1 | Pendiente | Especificar el tipo de búsqueda. | ESP-0034 |
 | ILA-0035-R01 | Degradar o desactivar la última cuenta administradora dejaría el sistema sin nadie que lo administre. | Baja | 10% | 5 | Resuelto | ESP-0035 cuenta los administradores activos y cancela la operación si quedaría ninguno. | ESP-0035 |
 | ILA-0035-R02 | No se define si un cambio de rol o estado afecta a una sesión ya abierta de esa cuenta o solo al siguiente inicio de sesión. | Media | 50% | 3 | Pendiente | Revalidar rol y estado en cada operación, o cerrar la sesión de la cuenta modificada. | ESP-0035, RNF-0006 |
-| ILA-0036-R01 | La baja física solo verifica ventas y devoluciones, pero `TBL_COTIZACIONES_PROVEEDOR.id_usuario` también referencia la cuenta: eliminar un usuario que solo registró cotizaciones viola la integridad referencial. | Alta | 90% | 4 | Pendiente | Ver RG-011: depende de cómo se decida verificar referencias en las bajas condicionales. | ESP-0036, ESP-0049 |
-| ILA-0036-R02 | No existe ninguna ilación ni especificación de inicio de sesión: todas las precondiciones validan `SESION_USUARIO = ACTIVA` y ESP-0036 remite a un requisito "aún no redactado" que impida el ingreso de cuentas inactivas. | Alta | 90% | 4 | Pendiente | Redactar el requisito de autenticación (ilación propia o condición de RNF-0006) con el rechazo de cuentas inactivas. | ESP-0036, RNF-0006 |
+| ILA-0036-R01 | La baja física solo verifica ventas y devoluciones, pero `TBL_COTIZACIONES_PROVEEDOR.id_usuario` también referencia la cuenta: eliminar un usuario que solo registró cotizaciones viola la integridad referencial. | Baja | 10% | 4 | Resuelto | v04 — Cubierto por el mecanismo de RG-011: el motor rechaza el borrado de una cuenta referenciada desde cualquier tabla, incluida `TBL_COTIZACIONES_PROVEEDOR`. Prueba T-006 agregada. | ESP-0036, ESP-0049 |
+| ILA-0036-R02 | No existe ninguna ilación ni especificación de inicio de sesión: todas las precondiciones validan `SESION_USUARIO = ACTIVA` y ESP-0036 remite a un requisito "aún no redactado" que impida el ingreso de cuentas inactivas. | Baja | 10% | 4 | Resuelto | v04 — La condición 1 de RNF-0006 ya establece la autenticación y el rechazo de cuentas inactivas; ESP-0036 v02.00 e ILA-0036 v02.00 citan esa condición en lugar de un requisito "aún no redactado". | ESP-0036, RNF-0006 |
 
 ## Módulo 10 — Gestión de Proveedores (EDU-0014) · ILA-0037 a ILA-0040 · prefijo PRV
 
@@ -205,7 +206,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0037-R01 | La validación del RUC se limita a once dígitos numéricos: acepta RUC con prefijo o dígito verificador inválidos. | Media | 50% | 2 | Pendiente | Validar prefijo (10/15/17/20) y dígito verificador según el algoritmo de SUNAT. | ESP-0037, ESP-0039 |
 | ILA-0038-R01 | La consulta exige RUC o razón social y filtra por igualdad exacta: no permite listar todos los proveedores ni buscar por parte del nombre. | Media-alta | 75% | 2 | Pendiente | Permitir consulta sin filtros y búsqueda parcial por razón social. | ESP-0038 |
 | ILA-0039-R01 | El RUC es editable aunque el proveedor ya tenga productos, remesas o devoluciones registradas, lo que altera retroactivamente la identidad tributaria del histórico. | Media | 50% | 3 | Pendiente | Declarar el RUC de solo lectura cuando el proveedor tenga registros asociados. | ESP-0039 |
-| ILA-0040-R01 | La baja física verifica productos y órdenes de devolución, pero no `TBL_LOTES.id_proveedor` (v05.00) ni `TBL_COTIZACIONES_PROVEEDOR.id_proveedor`: eliminar un proveedor con remesas o cotizaciones viola la integridad referencial. | Alta | 90% | 4 | Pendiente | Ver RG-011. | ESP-0040, ESP-0041, ESP-0049 |
+| ILA-0040-R01 | La baja física verifica productos y órdenes de devolución, pero no `TBL_LOTES.id_proveedor` (v05.00) ni `TBL_COTIZACIONES_PROVEEDOR.id_proveedor`: eliminar un proveedor con remesas o cotizaciones viola la integridad referencial. | Baja | 10% | 4 | Resuelto | v04 — Cubierto por el mecanismo de RG-011, que alcanza también a `TBL_LOTES.id_proveedor` y `TBL_COTIZACIONES_PROVEEDOR.id_proveedor`. Prueba T-006 agregada. | ESP-0040, ESP-0041, ESP-0049 |
 
 ## Módulo 11 — Gestión de Lotes (EDU-0015) · ILA-0041 a ILA-0044 · prefijo LOT
 
@@ -213,7 +214,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 |---|---|---|---|---|---|---|---|
 | ILA-0041-R01 | Se puede registrar una remesa con `stock_actual = 0` en estado 'Disponible', mientras ESP-0001 marca 'Agotado' toda remesa que llega a cero. | Media | 50% | 2 | Pendiente | Exigir `stock > 0` al registrar, o asignar 'Agotado' cuando sea cero. | ESP-0041, ESP-0001 |
 | ILA-0041-R02 | Se acepta una remesa que vence dentro del umbral de alerta sin ninguna advertencia al registrarla. | Media | 50% | 2 | Pendiente | Advertir al registrar si `fecha_vencimiento` cae dentro del umbral de ESP-0013. | ESP-0041, ESP-0013 |
-| ILA-0043-R01 | El estado de la remesa es editable libremente: se puede pasar a 'Disponible' una remesa 'Bloqueado por devolucion', lo que evita la regla de ILA-0016 (alerta activa o remesa vencida). | Media-alta | 75% | 4 | Pendiente | Declarar `estado_lote` de solo lectura en ESP-0043: sus transiciones las gobiernan ventas, alertas y bajas. | ESP-0043, ESP-0016 |
+| ILA-0043-R01 | El estado de la remesa es editable libremente: se puede pasar a 'Disponible' una remesa 'Bloqueado por devolucion', lo que evita la regla de ILA-0016 (alerta activa o remesa vencida). | Baja | 10% | 4 | Resuelto | v04 — ESP-0043 v03.00 e ILA-0043 v03.00 muestran el estado en solo lectura y lo derivan de las existencias; una remesa 'Bloqueado por devolucion' conserva su estado. Pruebas T-006 y T-012 agregadas. | ESP-0043, ESP-0016 |
 | ILA-0043-R02 | ESP-0043 no valida que la nueva fecha de vencimiento sea futura, a diferencia de ESP-0041. | Media | 50% | 3 | Pendiente | Aplicar la misma validación `fechaVencimiento > FECHA_SISTEMA`, o justificar la excepción (corrección de un dato mal digitado). | ESP-0043 |
 | ILA-0044-R01 | La baja lógica pone `stock_actual = 0` sin registrar cuántas unidades se descartaron ni por qué. | Media | 50% | 2 | Pendiente | Registrar las unidades dadas de baja y el motivo. | ESP-0044 |
 
@@ -221,11 +222,11 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 
 | Clave | Riesgo identificado | Prob. | % | Impacto | Estado | Plan de mitigación | Artefactos |
 |---|---|---|---|---|---|---|---|
-| ILA-0045-R01 | El proceso periódico que agrega a la lista los medicamentos bajo `stock_minimo` no tiene especificación ni requisito no funcional (Anexo de 02-ilaciones, punto 4). | Alta | 90% | 4 | Pendiente | Especificar el proceso: frecuencia, origen 'Automático', prioridad asignada y tratamiento de ítems existentes. | Anexo 02-ilaciones, 08-RNF |
-| ILA-0045-R02 | Un ítem no sale de la lista cuando se repone el stock: permanece hasta que la dueña lo elimina manualmente. | Media | 50% | 2 | Pendiente | Definir si el proceso periódico retira los ítems automáticos ya repuestos. | ESP-0048, proceso periódico |
+| ILA-0045-R01 | El proceso periódico que agrega a la lista los medicamentos bajo `stock_minimo` no tiene especificación ni requisito no funcional (Anexo de 02-ilaciones, punto 4). | Baja | 10% | 4 | Resuelto | v04 — Condición 2 de RNF-0010: ejecución cada 15 días, origen 'Automático', prioridad 'Normal', sin duplicar ítems. | Anexo 02-ilaciones, 08-RNF |
+| ILA-0045-R02 | Un ítem no sale de la lista cuando se repone el stock: permanece hasta que la dueña lo elimina manualmente. | Baja | 10% | 2 | Resuelto | v04 — Decisión documentada en RNF-0010: el proceso no retira ítems; la dueña los retira al realizar el pedido (ESP-0048). | ESP-0048, proceso periódico |
 | ILA-0046-R01 | La vista de la lista no muestra el stock consolidado ni el stock mínimo, datos que la dueña necesita para decidir qué cotizar. | Media | 50% | 2 | Pendiente | Agregar ambas columnas a REA-TBL-LISTA-REABASTECIMIENTO. | ESP-0046 |
-| ILA-0047-R01 | No se define si el proceso periódico respeta o sobrescribe una prioridad cambiada manualmente. | Media | 50% | 2 | Pendiente | Establecer que el proceso no modifica la prioridad de ítems existentes. | ESP-0047, proceso periódico |
-| ILA-0048-R01 | Si la dueña elimina un ítem automático cuyo medicamento sigue bajo el mínimo, la siguiente corrida del proceso lo vuelve a agregar. | Media-alta | 75% | 2 | Pendiente | Definir el comportamiento (reingreso o exclusión temporal) en la especificación del proceso. | ESP-0048, proceso periódico |
+| ILA-0047-R01 | No se define si el proceso periódico respeta o sobrescribe una prioridad cambiada manualmente. | Baja | 10% | 2 | Resuelto | v04 — RNF-0010 establece que el proceso no modifica la prioridad de los ítems existentes. Prueba T-006 agregada. | ESP-0047, proceso periódico |
+| ILA-0048-R01 | Si la dueña elimina un ítem automático cuyo medicamento sigue bajo el mínimo, la siguiente corrida del proceso lo vuelve a agregar. | Baja | 10% | 2 | Resuelto | v04 — RNF-0010 fija el comportamiento: el ítem vuelve a agregarse mientras el medicamento siga bajo el mínimo. Prueba T-006 agregada. | ESP-0048, proceso periódico |
 
 ## Módulo 13 — Comparación de Precios de Proveedores (EDU-0017) · ILA-0049 a ILA-0052 · prefijo COT
 
@@ -242,20 +243,24 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 
 ## Resumen de riesgos resueltos (verde)
 
-| Módulo | Claves |
+| Bloque | Claves |
 |---|---|
+| Generales | RG-011 |
 | 1 Ventas | ILA-0001-R03, ILA-0001-R04, ILA-0002-R02, ILA-0003-R01, ILA-0003-R03, ILA-0004-R01, ILA-0004-R02 |
 | 2 Inventario | ILA-0005-R01, ILA-0005-R03, ILA-0005-R04, ILA-0007-R01, ILA-0007-R02, ILA-0007-R03, ILA-0008-R01, ILA-0008-R02 |
 | 3 Documentación | ILA-0009-R01, ILA-0009-R02, ILA-0009-R03, ILA-0011-R02, ILA-0012-R01, ILA-0012-R03 |
-| 4 Alertas de vencimiento | ILA-0013-R01, ILA-0014-R02, ILA-0015-R01, ILA-0015-R02, ILA-0016-R01, ILA-0016-R03, ILA-0016-R04 |
+| 4 Alertas de vencimiento | ILA-0013-R01, ILA-0013-R03, ILA-0014-R02, ILA-0015-R01, ILA-0015-R02, ILA-0016-R01, ILA-0016-R03, ILA-0016-R04 |
 | 5 Métodos de pago | ILA-0017-R01, ILA-0017-R02, ILA-0018-R01, ILA-0019-R01, ILA-0019-R02, ILA-0020-R01, ILA-0020-R02 |
 | 6 Reportes | ILA-0021-R02, ILA-0022-R03, ILA-0023-R01, ILA-0023-R04, ILA-0024-R01, ILA-0024-R02, ILA-0024-R03 |
 | 7 Devoluciones | ILA-0025-R01, ILA-0025-R02, ILA-0026-R02, ILA-0027-R01, ILA-0027-R02, ILA-0028-R01, ILA-0028-R02, ILA-0028-R03 |
 | 8 Restricciones | ILA-0029-R03, ILA-0030-R01, ILA-0030-R02, ILA-0032-R01 |
-| 9 Usuarios | ILA-0035-R01 |
+| 9 Usuarios | ILA-0035-R01, ILA-0036-R01, ILA-0036-R02 |
+| 10 Proveedores | ILA-0040-R01 |
+| 11 Lotes | ILA-0043-R01 |
+| 12 Reabastecimiento | ILA-0045-R01, ILA-0045-R02, ILA-0047-R01, ILA-0048-R01 |
 | 13 Comparación de precios | ILA-0052-R01 |
 
-**Total: 56 resueltos.**
+**Total: 66 resueltos.**
 
 ## Riesgos abiertos de mayor severidad (impacto ≥ 4 y probabilidad ≥ 50 %)
 
@@ -269,11 +274,6 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0012-R02 | Riesgo de anular un comprobante ya presentado ante la autoridad tributaria sin advertencia. |
 | ILA-0031-R01 | Desactivar una restricción deja sin protección una venta próxima. |
 | ILA-0033-R02 | `ENCRIPTAR(contrasena)` no precisa el mecanismo: un cifrado reversible permitiría recuperar las contraseñas si se filtra la base. |
-| ILA-0036-R01 | La baja física solo verifica ventas y devoluciones, pero `TBL_COTIZACIONES_PROVEEDOR.id_usuario` también referencia la cuenta: eliminar un usuario que solo registró cotizaciones viola la integridad referencial. |
-| ILA-0036-R02 | No existe ninguna ilación ni especificación de inicio de sesión: todas las precondiciones validan `SESION_USUARIO = ACTIVA` y ESP-0036 remite a un requisito "aún no redactado" que impida el ingreso de cuentas inactivas. |
-| ILA-0040-R01 | La baja física verifica productos y órdenes de devolución, pero no `TBL_LOTES.id_proveedor` (v05.00) ni `TBL_COTIZACIONES_PROVEEDOR.id_proveedor`: eliminar un proveedor con remesas o cotizaciones viola la integridad referencial. |
-| ILA-0043-R01 | El estado de la remesa es editable libremente: se puede pasar a 'Disponible' una remesa 'Bloqueado por devolucion', lo que evita la regla de ILA-0016 (alerta activa o remesa vencida). |
-| ILA-0045-R01 | El proceso periódico que agrega a la lista los medicamentos bajo `stock_minimo` no tiene especificación ni requisito no funcional (Anexo de 02-ilaciones, punto 4). |
 
 No queda ningún riesgo en estado **Retrasado**.
 
@@ -281,7 +281,7 @@ No queda ningún riesgo en estado **Retrasado**.
 
 | Bloque | Filas | Resuelto | En proceso | Pendiente |
 |---|---|---|---|---|
-| RG | 11 | 0 | 4 | 7 |
-| Módulos 1-8 | 89 | 54 | 3 | 32 |
-| Módulos 9-13 | 27 | 2 | 0 | 25 |
-| **Total** | **127** | **56** | **7** | **64** |
+| RG | 11 | 1 | 4 | 6 |
+| Módulos 1-8 | 89 | 55 | 3 | 31 |
+| Módulos 9-13 | 27 | 10 | 0 | 17 |
+| **Total** | **127** | **66** | **7** | **54** |

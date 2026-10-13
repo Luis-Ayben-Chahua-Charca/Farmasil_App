@@ -65,11 +65,12 @@ Comparación Precios → Inventario, Proveedores, Reabastecimiento
 
 ---
 
-## 5. Tres decisiones de diseño ya cerradas — no las reabras
+## 5. Cuatro decisiones de diseño ya cerradas — no las reabras
 
 1. **Ventas NO accede a Inventario directamente.** La cadena es `Ventas → Lotes → Inventario`. `TBL_DETALLE_VENTAS.id_lote` es FK a `TBL_LOTES`, no a `TBL_PRODUCTOS`. Al descontar stock en una venta, hazlo contra la remesa (`TBL_LOTES.stock_actual`), no contra el producto.
 2. **Lotes es su propia entidad, con proveedor propio.** `TBL_LOTES.id_proveedor` puede ser distinto del proveedor habitual del producto en `TBL_PRODUCTOS`. No asumas que son el mismo valor.
 3. **La selección de remesa en una venta sigue criterio FEFO** (primero en vencer, primero en salir) — es responsabilidad de Lotes exponerlo, no de Ventas calcularlo.
+4. **Las bajas condicionales no consultan tablas de otros módulos.** En ESP-0008, ESP-0020, ESP-0036, ESP-0040 y ESP-0044 la elección entre borrado físico y baja lógica la decide la base de datos: intenta el `DELETE` dentro de la transacción con un punto de guardado; si SQL Server lo rechaza por una clave foránea (error 547), revierte al punto de guardado y aplica la baja lógica. No implementes la verificación enumerando tablas: crearía dependencias inversas que la arquitectura no tiene (ver RG-011 en `riesgos/10-gestion-riesgos.md`).
 
 ---
 

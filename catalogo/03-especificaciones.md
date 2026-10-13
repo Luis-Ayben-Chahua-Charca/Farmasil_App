@@ -136,20 +136,20 @@
 | Código especificación | ESP-0008 |
 | --- | --- |
 | Nombre | Eliminación del producto de inventario |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0004, FUE-0005 |
 | Experto | Ninguno |
 | Código ilación | ILA-0008 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PRODUCTOS <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-INV-0004**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR producto EN INV-TBL-PRODUCTOS**<br>&nbsp;&nbsp;**PRESIONAR INV-BTN-ELIMINAR-PRODUCTO**<br>&nbsp;&nbsp;**MOSTRAR INV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR INV-TXT-MSJ = "¿Está seguro de dar de baja este producto?"**<br>&nbsp;&nbsp;**tieneMovimientos = EXISTE(DB_FARMASIL.TBL_LOTES, id_producto = producto) O EXISTE(DB_FARMASIL.TBL_RESTRICCIONES_VENTA, id_producto = producto)**<br>&nbsp;&nbsp;**SI PRESIONAR INV-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI tieneMovimientos = FALSO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ELIMINAR DB_FARMASIL.TBL_PRODUCTOS DONDE id_producto = producto**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SINO**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PRODUCTOS.estado_producto = 'Descontinuado'**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Producto dado de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR INV-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR INV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR INV-TBL-PRODUCTOS**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR producto EN INV-TBL-PRODUCTOS**<br>&nbsp;&nbsp;**PRESIONAR INV-BTN-ELIMINAR-PRODUCTO**<br>&nbsp;&nbsp;**MOSTRAR INV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR INV-TXT-MSJ = "¿Está seguro de dar de baja este producto?"**<br>&nbsp;&nbsp;**SI PRESIONAR INV-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**resultado = INTENTAR ELIMINAR DB_FARMASIL.TBL_PRODUCTOS DONDE id_producto = producto**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI resultado = RECHAZADO_POR_REFERENCIAS ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PRODUCTOS.estado_producto = 'Descontinuado'**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Producto dado de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR INV-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR INV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR INV-TBL-PRODUCTOS**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR BAJA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR PRODUCTO_CON_MOVIMIENTOS.estado_producto = 'Descontinuado'**<br>&nbsp;&nbsp;**VERIFICAR HISTORICO_VENTAS = INTACTO**<br>&nbsp;&nbsp;**VERIFICAR PRODUCTO NO DISPONIBLE EN VEN-CMB-PRODUCTO-VENTA**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-INV-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La versión anterior eliminaba físicamente el producto sin verificar sus referencias en tres tablas del modelo. Ahora la eliminación física solo procede cuando no hay movimientos, y en caso contrario se aplica baja lógica.<br>Depende de la incorporación del valor 'Descontinuado' al dominio de `estado_producto`, ya aplicada en el Diccionario de Datos v03.00 pero pendiente de reflejarse en el motor. |
+| Comentario | La versión anterior eliminaba físicamente el producto sin verificar sus referencias en tres tablas del modelo. Ahora la eliminación física solo procede cuando no hay movimientos, y en caso contrario se aplica baja lógica.<br>Depende de la incorporación del valor 'Descontinuado' al dominio de `estado_producto`, ya aplicada en el Diccionario de Datos v03.00 pero pendiente de reflejarse en el motor.<br>**Versión 03.00:** la decisión entre eliminación física y baja lógica la toma el motor de base de datos: se intenta el `ELIMINAR` y, si SQL Server lo rechaza porque una clave foránea referencia el registro, se revierte al punto de guardado de la transacción y se aplica la baja lógica. El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_LISTA_REABASTECIMIENTO` y `TBL_COTIZACIONES_PROVEEDOR`). |
 
 ---
 
@@ -234,8 +234,8 @@
 | Código especificación | ESP-0013 |
 | --- | --- |
 | Nombre | Consulta de alertas de productos vencidos |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0007 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | FUE-0005 |
@@ -247,7 +247,7 @@
 | Código de artefactos asociados | ART-MKP-ALV-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La generación automática de nuevas alertas la ejecuta un proceso programado del sistema según el umbral configurado, y se documenta como requisito no funcional aparte. Lo que esta especificación describe es la consulta del resultado consolidado. |
+| Comentario | La generación automática de nuevas alertas la ejecuta un proceso programado del sistema según el umbral configurado, y se documenta en la condición 1 de RNF-0010 (versión 03.00). Lo que esta especificación describe es la consulta del resultado consolidado. |
 
 | Código especificación | ESP-0014 |
 | --- | --- |
@@ -364,20 +364,20 @@
 | Código especificación | ESP-0020 |
 | --- | --- |
 | Nombre | Desactivación de método de pago |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
 | Experto | Ninguno |
 | Código ilación | ILA-0020 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_METODOS_PAGO <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0001**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR metodo EN PAG-TBL-METODOS-PAGO**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-ELIMINAR-METODO**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0004**<br>&nbsp;&nbsp;**MOSTRAR PAG-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR PAG-TXT-MSJ = "¿Está seguro de dar de baja este método de pago? Las ventas ya registradas con él no se verán afectadas."**<br>&nbsp;&nbsp;**tieneVentas = EXISTE(DB_FARMASIL.TBL_REGISTRO_VENTAS, id_metodo_pago = metodo)**<br>&nbsp;&nbsp;**SI PRESIONAR PAG-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI tieneVentas = FALSO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ELIMINAR DB_FARMASIL.TBL_METODOS_PAGO DONDE id_metodo_pago = metodo**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SINO**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_METODOS_PAGO.estado = 'Inactivo'**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Método de pago dado de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR PAG-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR PAG-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR PAG-TBL-METODOS-PAGO**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR metodo EN PAG-TBL-METODOS-PAGO**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-ELIMINAR-METODO**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0004**<br>&nbsp;&nbsp;**MOSTRAR PAG-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR PAG-TXT-MSJ = "¿Está seguro de dar de baja este método de pago? Las ventas ya registradas con él no se verán afectadas."**<br>&nbsp;&nbsp;**SI PRESIONAR PAG-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**resultado = INTENTAR ELIMINAR DB_FARMASIL.TBL_METODOS_PAGO DONDE id_metodo_pago = metodo**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI resultado = RECHAZADO_POR_REFERENCIAS ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_METODOS_PAGO.estado = 'Inactivo'**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Método de pago dado de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR PAG-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR PAG-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR PAG-TBL-METODOS-PAGO**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR BAJA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR METODO_CON_VENTAS.estado = 'Inactivo'**<br>&nbsp;&nbsp;**VERIFICAR METODO NO DISPONIBLE EN VEN-CMB-METODO-PAGO**<br>&nbsp;&nbsp;**VERIFICAR HISTORICO_VENTAS = INTACTO**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-PAG-0001, ART-MKP-PAG-0004 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La postcondición anterior era contradictoria: para una eliminación afirmaba que el método "queda registrado correctamente".<br>La eliminación física era además inviable, porque `id_metodo_pago` es clave foránea en **TBL_REGISTRO_VENTAS**. Se resolvió con baja lógica cuando existen ventas asociadas. |
+| Comentario | La postcondición anterior era contradictoria: para una eliminación afirmaba que el método "queda registrado correctamente".<br>La eliminación física era además inviable, porque `id_metodo_pago` es clave foránea en **TBL_REGISTRO_VENTAS**. Se resolvió con baja lógica cuando existen ventas asociadas.<br>**Versión 03.00:** la decisión entre eliminación física y baja lógica la toma el motor de base de datos: se intenta el `ELIMINAR` y, si SQL Server lo rechaza porque una clave foránea referencia el registro, se revierte al punto de guardado de la transacción y se aplica la baja lógica. El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía. |
 
 ---
 
@@ -480,8 +480,8 @@
 | Código especificación | ESP-0026 |
 | --- | --- |
 | Nombre | Consulta de orden de devolución |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0004 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -493,7 +493,7 @@
 | Código de artefactos asociados | ART-MKP-DEV-0001, ART-MKP-DEV-0002 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La postcondición anterior decía únicamente que "el sistema permanece invariable", sin declarar el resultado de la consulta.<br>El detalle se resuelve contra **TBL_DETALLE_DEVOLUCION**, y el lote se obtiene de **TBL_PRODUCTOS**, campo incorporado en el Diccionario de Datos v03.00. |
+| Comentario | La postcondición anterior decía únicamente que "el sistema permanece invariable", sin declarar el resultado de la consulta.<br>El detalle se resuelve contra **TBL_DETALLE_DEVOLUCION**, el número de lote de **TBL_LOTES** a través de `id_lote` y el nombre del medicamento de **TBL_PRODUCTOS** (Diccionario de Datos v04.00).<br>**Versión 03.00:** se corrige la referencia anterior, que situaba el lote en **TBL_PRODUCTOS**, donde ya no existe desde la incorporación de **TBL_LOTES**. |
 
 | Código especificación | ESP-0027 |
 | --- | --- |
@@ -668,20 +668,20 @@
 | Código especificación | ESP-0036 |
 | --- | --- |
 | Nombre | Desactivación de usuario |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
 | Experto | Ninguno |
 | Código ilación | ILA-0036 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_USUARIOS <> VACIA**<br>&nbsp;&nbsp;**VALIDAR cuenta <> SESION_USUARIO.id_usuario**<br>&nbsp;&nbsp;**CARGAR ART-MKP-USR-0004**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR cuenta EN USR-TBL-USUARIOS**<br>&nbsp;&nbsp;**PRESIONAR USR-BTN-ELIMINAR-USUARIO**<br>&nbsp;&nbsp;**SI cuenta = SESION_USUARIO.id_usuario ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "No es posible dar de baja la cuenta con la que se encuentra abierta la sesión"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**MOSTRAR USR-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR USR-TXT-MSJ = "¿Está seguro de dar de baja esta cuenta? El histórico de operaciones que registró se conservará."**<br>&nbsp;&nbsp;**tieneOperaciones = EXISTE(DB_FARMASIL.TBL_ORDENES_DEVOLUCION, id_usuario = cuenta) O EXISTE(DB_FARMASIL.TBL_REGISTRO_VENTAS, id_usuario = cuenta)**<br>&nbsp;&nbsp;**SI PRESIONAR USR-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI tieneOperaciones = FALSO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ELIMINAR DB_FARMASIL.TBL_USUARIOS DONDE id_usuario = cuenta**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SINO**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_USUARIOS.estado = 'Inactivo' DONDE id_usuario = cuenta**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Cuenta dada de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR USR-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR USR-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR USR-TBL-USUARIOS**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR cuenta EN USR-TBL-USUARIOS**<br>&nbsp;&nbsp;**PRESIONAR USR-BTN-ELIMINAR-USUARIO**<br>&nbsp;&nbsp;**SI cuenta = SESION_USUARIO.id_usuario ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "No es posible dar de baja la cuenta con la que se encuentra abierta la sesión"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**MOSTRAR USR-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR USR-TXT-MSJ = "¿Está seguro de dar de baja esta cuenta? El histórico de operaciones que registró se conservará."**<br>&nbsp;&nbsp;**SI PRESIONAR USR-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**resultado = INTENTAR ELIMINAR DB_FARMASIL.TBL_USUARIOS DONDE id_usuario = cuenta**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI resultado = RECHAZADO_POR_REFERENCIAS ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_USUARIOS.estado = 'Inactivo' DONDE id_usuario = cuenta**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Cuenta dada de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR USR-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR USR-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR USR-TBL-USUARIOS**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR BAJA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR CUENTA_CON_OPERACIONES.estado = 'Inactivo'**<br>&nbsp;&nbsp;**VERIFICAR TRAZABILIDAD DE VENTAS Y DEVOLUCIONES = CONSERVADA**<br>&nbsp;&nbsp;**VERIFICAR CUENTA NO PUEDE INICIAR SESION SEGUN CONDICION 1 DE RNF-0006**<br>&nbsp;&nbsp;**VERIFICAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-USR-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La baja lógica es obligatoria cuando la cuenta registró operaciones: eliminarla físicamente destruiría la verificación de identidad que la dueña solicitó.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0004** y por el requisito, aún no redactado, que impide el inicio de sesión de una cuenta inactiva. |
+| Comentario | La baja lógica es obligatoria cuando la cuenta registró operaciones: eliminarla físicamente destruiría la verificación de identidad que la dueña solicitó.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0004**. El rechazo del inicio de sesión de una cuenta inactiva lo establece la condición 1 de RNF-0006.<br>**Versión 02.00:** la decisión entre eliminación física y baja lógica la toma el motor de base de datos: se intenta el `ELIMINAR` y, si SQL Server lo rechaza porque una clave foránea referencia el registro, se revierte al punto de guardado de la transacción y se aplica la baja lógica. El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_COTIZACIONES_PROVEEDOR.id_usuario`). |
 
 ---
 
@@ -744,20 +744,20 @@
 | Código especificación | ESP-0040 |
 | --- | --- |
 | Nombre | Desactivación de proveedor |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0040 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PROVEEDORES <> VACIA**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_ORDENES_DEVOLUCION, id_proveedor = proveedor Y estado_orden = 'Pendiente')**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PRV-0004**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR proveedor EN PRV-TBL-PROVEEDORES**<br>&nbsp;&nbsp;**PRESIONAR PRV-BTN-ELIMINAR-PROVEEDOR**<br>&nbsp;&nbsp;**SI EXISTE(DB_FARMASIL.TBL_ORDENES_DEVOLUCION, id_proveedor = proveedor Y estado_orden = 'Pendiente') ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "El proveedor tiene órdenes de devolución pendientes de despacho"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**MOSTRAR PRV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR PRV-TXT-MSJ = "¿Está seguro de dar de baja este proveedor? Los productos y devoluciones ya registrados no se verán afectados."**<br>&nbsp;&nbsp;**tieneRegistros = EXISTE(DB_FARMASIL.TBL_PRODUCTOS, id_proveedor = proveedor) O EXISTE(DB_FARMASIL.TBL_ORDENES_DEVOLUCION, id_proveedor = proveedor)**<br>&nbsp;&nbsp;**SI PRESIONAR PRV-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI tieneRegistros = FALSO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ELIMINAR DB_FARMASIL.TBL_PROVEEDORES DONDE id_proveedor = proveedor**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SINO**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PROVEEDORES.estado = 'Inactivo' DONDE id_proveedor = proveedor**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Proveedor dado de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR PRV-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR PRV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR PRV-TBL-PROVEEDORES**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR proveedor EN PRV-TBL-PROVEEDORES**<br>&nbsp;&nbsp;**PRESIONAR PRV-BTN-ELIMINAR-PROVEEDOR**<br>&nbsp;&nbsp;**SI EXISTE(DB_FARMASIL.TBL_ORDENES_DEVOLUCION, id_proveedor = proveedor Y estado_orden = 'Pendiente') ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "El proveedor tiene órdenes de devolución pendientes de despacho"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**MOSTRAR PRV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR PRV-TXT-MSJ = "¿Está seguro de dar de baja este proveedor? Los productos y devoluciones ya registrados no se verán afectados."**<br>&nbsp;&nbsp;**SI PRESIONAR PRV-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**resultado = INTENTAR ELIMINAR DB_FARMASIL.TBL_PROVEEDORES DONDE id_proveedor = proveedor**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI resultado = RECHAZADO_POR_REFERENCIAS ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PROVEEDORES.estado = 'Inactivo' DONDE id_proveedor = proveedor**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Proveedor dado de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR PRV-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR PRV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR PRV-TBL-PROVEEDORES**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR BAJA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR PROVEEDOR_CON_REGISTROS.estado = 'Inactivo'**<br>&nbsp;&nbsp;**VERIFICAR PROVEEDOR NO DISPONIBLE EN INV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**VERIFICAR PROVEEDOR NO DISPONIBLE EN DEV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**VERIFICAR NINGUNA ORDEN PENDIENTE = SIN_DESTINATARIO**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-PRV-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Se aplica el mismo criterio de baja lógica del resto del catálogo, más una verificación adicional: un proveedor con una devolución aún no despachada no puede darse de baja, porque la orden quedaría sin destinatario.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-PRV-0004**. |
+| Comentario | Se aplica el mismo criterio de baja lógica del resto del catálogo, más una verificación adicional: un proveedor con una devolución aún no despachada no puede darse de baja, porque la orden quedaría sin destinatario.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-PRV-0004**.<br>**Versión 02.00:** la decisión entre eliminación física y baja lógica la toma el motor de base de datos: se intenta el `ELIMINAR` y, si SQL Server lo rechaza porque una clave foránea referencia el registro, se revierte al punto de guardado de la transacción y se aplica la baja lógica. El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_LOTES.id_proveedor` y `TBL_COTIZACIONES_PROVEEDOR.id_proveedor`). La verificación de órdenes pendientes se conserva porque es una regla de negocio, no de integridad. |
 
 ---
 
@@ -802,38 +802,38 @@
 | Código especificación | ESP-0043 |
 | --- | --- |
 | Nombre | Actualización de remesa |
-| Versión | 02.00 |
-| Fecha | 02/10/2026 |
+| Versión | 03.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0043 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_LOTES <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-LOT-0003**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR lote EN LOT-TBL-LOTES**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-ACTUALIZAR-LOTE**<br>&nbsp;&nbsp;**CARGAR ART-MKP-LOT-0003 CON INFORMACION VIGENTE**<br>&nbsp;&nbsp;**MOSTRAR lote.id_producto EN LOT-CMB-PRODUCTO = SOLO_LECTURA**<br>&nbsp;&nbsp;**numeroLote = LOT-TXT-NUMERO-LOTE**<br>&nbsp;&nbsp;**fechaVencimiento = LOT-FEC-FECHA-VENCIMIENTO**<br>&nbsp;&nbsp;**stock = LOT-NUM-STOCK-LOTE**<br>&nbsp;&nbsp;**estado = LOT-CMB-ESTADO-LOTE**<br>&nbsp;&nbsp;**proveedor = LOT-CMB-PROVEEDOR-LOTE**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_LOTES, id_producto = lote.id_producto Y numero_lote = numeroLote Y id_lote <> lote)**<br>&nbsp;&nbsp;**VALIDAR stock = ENTERO >= 0**<br>&nbsp;&nbsp;**VALIDAR proveedor EXISTE EN DB_FARMASIL.TBL_PROVEEDORES**<br>&nbsp;&nbsp;**comprometido = SUMA(DB_FARMASIL.TBL_DETALLE_DEVOLUCION.cantidad_devolver DONDE id_lote = lote Y orden.estado_orden = 'Pendiente')**<br>&nbsp;&nbsp;**SI stock < comprometido ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Las existencias no pueden ser inferiores a las unidades comprometidas en devoluciones pendientes"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_LOTES DONDE id_lote = lote**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR LOT-TBL-LOTES**<br>&nbsp;&nbsp;**MOSTRAR "Remesa actualizada correctamente"**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LOTES.id_lote = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LOTES.id_producto = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR REFERENCIAS(TBL_DETALLE_VENTAS, TBL_DETALLE_DEVOLUCION) = INTACTAS**<br>&nbsp;&nbsp;**SI estado <> 'Disponible' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR REMESA NO DISPONIBLE EN VEN-CMB-LOTE-VENTA**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**VERIFICAR LOT-TBL-LOTES = ACTUALIZADA**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR lote EN LOT-TBL-LOTES**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-ACTUALIZAR-LOTE**<br>&nbsp;&nbsp;**CARGAR ART-MKP-LOT-0003 CON INFORMACION VIGENTE**<br>&nbsp;&nbsp;**MOSTRAR lote.id_producto EN LOT-CMB-PRODUCTO = SOLO_LECTURA**<br>&nbsp;&nbsp;**numeroLote = LOT-TXT-NUMERO-LOTE**<br>&nbsp;&nbsp;**fechaVencimiento = LOT-FEC-FECHA-VENCIMIENTO**<br>&nbsp;&nbsp;**stock = LOT-NUM-STOCK-LOTE**<br>&nbsp;&nbsp;**MOSTRAR lote.estado_lote EN LOT-CMB-ESTADO-LOTE = SOLO_LECTURA**<br>&nbsp;&nbsp;**proveedor = LOT-CMB-PROVEEDOR-LOTE**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_LOTES, id_producto = lote.id_producto Y numero_lote = numeroLote Y id_lote <> lote)**<br>&nbsp;&nbsp;**VALIDAR stock = ENTERO >= 0**<br>&nbsp;&nbsp;**VALIDAR proveedor EXISTE EN DB_FARMASIL.TBL_PROVEEDORES**<br>&nbsp;&nbsp;**comprometido = SUMA(DB_FARMASIL.TBL_DETALLE_DEVOLUCION.cantidad_devolver DONDE id_lote = lote Y orden.estado_orden = 'Pendiente')**<br>&nbsp;&nbsp;**SI stock < comprometido ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Las existencias no pueden ser inferiores a las unidades comprometidas en devoluciones pendientes"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**SI lote.estado_lote = 'Bloqueado por devolucion' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**estadoNuevo = lote.estado_lote**<br>&nbsp;&nbsp;**SINO SI stock = 0 ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**estadoNuevo = 'Agotado'**<br>&nbsp;&nbsp;**SINO SI lote.estado_lote = 'Agotado' Y fechaVencimiento > FECHA_SISTEMA ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**estadoNuevo = 'Disponible'**<br>&nbsp;&nbsp;**SINO**<br>&nbsp;&nbsp;&nbsp;&nbsp;**estadoNuevo = lote.estado_lote**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_LOTES SET numero_lote, fecha_vencimiento, stock_actual, id_proveedor, estado_lote = estadoNuevo DONDE id_lote = lote**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR LOT-TBL-LOTES**<br>&nbsp;&nbsp;**MOSTRAR "Remesa actualizada correctamente"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LOTES.id_lote = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LOTES.id_producto = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR REFERENCIAS(TBL_DETALLE_VENTAS, TBL_DETALLE_DEVOLUCION) = INTACTAS**<br>&nbsp;&nbsp;**VERIFICAR estado_lote = DERIVADO DE stock_actual Y DEL ESTADO PREVIO**<br>&nbsp;&nbsp;**VERIFICAR REMESA 'Bloqueado por devolucion' = SIN_CAMBIO_DE_ESTADO**<br>&nbsp;&nbsp;**SI estadoNuevo <> 'Disponible' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR REMESA NO DISPONIBLE EN VEN-CMB-LOTE-VENTA**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**VERIFICAR LOT-TBL-LOTES = ACTUALIZADA**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-LOT-0003 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | El medicamento asociado se declara de solo lectura por la misma razón que el identificador: las ventas ya registradas apuntan a esta remesa, y reasignarla a otro medicamento reescribiría retroactivamente qué se vendió.<br>La verificación contra las unidades comprometidas evita que una corrección de inventario deje una orden de devolución reclamando existencias que ya no hay.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0003**.<br>**Versión 02.00:** el proveedor de la remesa (**LOT-CMB-PROVEEDOR-LOTE**) es editable y se persiste en `TBL_LOTES.id_proveedor` mediante el `ACTUALIZAR` (ver ILA-0043 v02.00). Requiere el componente en el mockup **ART-MKP-LOT-0003**. |
+| Comentario | El medicamento asociado se declara de solo lectura por la misma razón que el identificador: las ventas ya registradas apuntan a esta remesa, y reasignarla a otro medicamento reescribiría retroactivamente qué se vendió.<br>La verificación contra las unidades comprometidas evita que una corrección de inventario deje una orden de devolución reclamando existencias que ya no hay.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0003**.<br>**Versión 02.00:** el proveedor de la remesa (**LOT-CMB-PROVEEDOR-LOTE**) es editable y se persiste en `TBL_LOTES.id_proveedor` mediante el `ACTUALIZAR` (ver ILA-0043 v02.00). Requiere el componente en el mockup **ART-MKP-LOT-0003**.<br>**Versión 03.00:** el estado de la remesa deja de ser editable. Sus transiciones las gobiernan la venta (ESP-0001), las alertas (ESP-0014 y ESP-0016) y la baja (ESP-0044); editarlo a mano permitía devolver a la venta una remesa bloqueada por alerta o vencida. Aquí solo se deriva de las existencias: una remesa 'Bloqueado por devolucion' conserva su estado; en otro caso, cero pasa a 'Agotado', y una remesa 'Agotado' no vencida que recibe existencias vuelve a 'Disponible'. |
 
 | Código especificación | ESP-0044 |
 | --- | --- |
 | Nombre | Baja de remesa |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0044 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_LOTES <> VACIA**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_DETALLE_DEVOLUCION, id_lote = lote Y orden.estado_orden = 'Pendiente')**<br>&nbsp;&nbsp;**CARGAR ART-MKP-LOT-0004**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR lote EN LOT-TBL-LOTES**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-ELIMINAR-LOTE**<br>&nbsp;&nbsp;**SI EXISTE(DB_FARMASIL.TBL_DETALLE_DEVOLUCION, id_lote = lote Y orden.estado_orden = 'Pendiente') ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "La remesa está comprometida en una orden de devolución pendiente"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**MOSTRAR LOT-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR LOT-TXT-MSJ = "¿Está seguro de dar de baja esta remesa? El histórico de ventas que la involucra se conservará."**<br>&nbsp;&nbsp;**tieneMovimientos = EXISTE(DB_FARMASIL.TBL_DETALLE_VENTAS, id_lote = lote) O EXISTE(DB_FARMASIL.TBL_DETALLE_DEVOLUCION, id_lote = lote)**<br>&nbsp;&nbsp;**SI PRESIONAR LOT-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI tieneMovimientos = FALSO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ELIMINAR DB_FARMASIL.TBL_LOTES DONDE id_lote = lote**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SINO**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_LOTES SET estado_lote = 'Agotado', stock_actual = 0 DONDE id_lote = lote**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Remesa dada de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR LOT-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR LOT-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR LOT-TBL-LOTES**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR lote EN LOT-TBL-LOTES**<br>&nbsp;&nbsp;**PRESIONAR LOT-BTN-ELIMINAR-LOTE**<br>&nbsp;&nbsp;**SI EXISTE(DB_FARMASIL.TBL_DETALLE_DEVOLUCION, id_lote = lote Y orden.estado_orden = 'Pendiente') ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "La remesa está comprometida en una orden de devolución pendiente"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**MOSTRAR LOT-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR LOT-TXT-MSJ = "¿Está seguro de dar de baja esta remesa? El histórico de ventas que la involucra se conservará."**<br>&nbsp;&nbsp;**SI PRESIONAR LOT-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**resultado = INTENTAR ELIMINAR DB_FARMASIL.TBL_LOTES DONDE id_lote = lote**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI resultado = RECHAZADO_POR_REFERENCIAS ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_LOTES SET estado_lote = 'Agotado', stock_actual = 0 DONDE id_lote = lote**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Remesa dada de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR LOT-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR LOT-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR LOT-TBL-LOTES**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR BAJA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR REMESA_CON_MOVIMIENTOS.estado_lote = 'Agotado'**<br>&nbsp;&nbsp;**VERIFICAR TRAZABILIDAD DE VENTAS POR LOTE = CONSERVADA**<br>&nbsp;&nbsp;**VERIFICAR REMESA NO DISPONIBLE EN VEN-CMB-LOTE-VENTA**<br>&nbsp;&nbsp;**VERIFICAR STOCK_CONSOLIDADO(producto) = REDUCIDO**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-LOT-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**. |
+| Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**.<br>**Versión 02.00:** la decisión entre eliminación física y baja lógica la toma el motor de base de datos: se intenta el `ELIMINAR` y, si SQL Server lo rechaza porque una clave foránea referencia el registro, se revierte al punto de guardado de la transacción y se aplica la baja lógica. El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía. La verificación de devoluciones pendientes se conserva porque es una regla de negocio, no de integridad. Un retiro de `TBL_PRODUCTOS_RETIRADOS` no impide el borrado: su FK es `ON DELETE SET NULL`. |
 
 ---
 
@@ -842,8 +842,8 @@
 | Código especificación | ESP-0045 |
 | --- | --- |
 | Nombre | Incorporación manual de ítem a la lista de reabastecimiento |
-| Versión | 01.00 |
-| Fecha | 02/10/2026 |
+| Versión | 02.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 3 |
@@ -855,7 +855,7 @@
 | Código de artefactos asociados | ART-MKP-REA-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Especificación nueva, derivada de la Entrevista 3. Complementa la incorporación automática del proceso periódico del sistema (ver Anexo de `02-ilaciones.md`).<br>Queda Pendiente porque el mockup **ART-MKP-REA-0001** aún no ha sido diseñado. |
+| Comentario | Especificación nueva, derivada de la Entrevista 3. Complementa la incorporación automática del proceso periódico del sistema (condición 2 de RNF-0010, versión 02.00).<br>Queda Pendiente porque el mockup **ART-MKP-REA-0001** aún no ha sido diseñado. |
 
 | Código especificación | ESP-0046 |
 | --- | --- |

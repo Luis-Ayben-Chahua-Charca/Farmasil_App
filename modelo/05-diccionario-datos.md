@@ -242,7 +242,7 @@ Reglas de seguridad clínica para protección en el punto de venta.
 
 *Sin restricción de unicidad sobre `id_producto`: un medicamento puede reaparecer en la lista después de haber sido eliminado (por ejemplo, tras ser pedido y vuelto a caer bajo el umbral).*
 
-*Fuente: ESP-0045 (creación manual), ESP-0046 (consulta), ESP-0047 (actualización), ESP-0048 (eliminación). La escribe también el proceso periódico de generación automática, que aún no tiene requisito no funcional formal (ver `02-ilaciones.md`, Anexo, punto C.4).*
+*Fuente: ESP-0045 (creación manual), ESP-0046 (consulta), ESP-0047 (actualización), ESP-0048 (eliminación). La escribe también el proceso periódico de generación automática, documentado en la condición 2 de RNF-0010.*
 
 ## 16. TBL_COTIZACIONES_PROVEEDOR
 
@@ -345,6 +345,7 @@ Estos puntos no se modificaron porque implican decisiones de alcance, no correcc
 
 > **Aplicado en v06.00 (auditoría de coherencia, 12-13/10/2026):**
 >
+> - **Regla de integridad referencial.** Todas las claves foráneas se declaran sin borrado en cascada (`ON DELETE NO ACTION`), salvo `TBL_PRODUCTOS_RETIRADOS.id_lote` (`ON DELETE SET NULL`). Las bajas condicionales del catálogo (ESP-0008, ESP-0020, ESP-0036, ESP-0040, ESP-0044) dependen de esta regla: intentan el borrado físico y, si el motor lo rechaza por una referencia, aplican la baja lógica.
 > - `TBL_PRODUCTOS_RETIRADOS`: se agrega `id_lote` (FK a `TBL_LOTES`). ESP-0014 la registra y ESP-0016 la usa para restituir la remesa. Es anulable (`ON DELETE SET NULL`) para no crear una dependencia de Lotes hacia Alertas de Vencimiento.
 > - `TBL_REPORTES_VENTAS`: se agregan `formato` y `total_recaudado`, que ESP-0022 y ESP-0023 ya usaban, y se retira el ejemplo 'Mermas' de `tipo_reporte`.
 > - Se aclara que `usuario_responsable` es un valor calculado al generar el reporte y no una columna.

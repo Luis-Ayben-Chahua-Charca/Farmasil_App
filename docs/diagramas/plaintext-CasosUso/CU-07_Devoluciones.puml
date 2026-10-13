@@ -10,7 +10,7 @@ rectangle "Gestión de Devoluciones a Proveedores" {
   usecase "Consultar orden de devolución\n(ILA-0026)" as UC_Consultar
   usecase "Actualizar orden de devolución\n(ILA-0027)" as UC_Actualizar
   usecase "Eliminar orden de devolución\n(ILA-0028)" as UC_Eliminar
-  usecase "Confirmar eliminación de orden\n(DEV_MDL_CONFIRMAR_ELIMINACION)" as UC_Confirmar
+  usecase "Confirmar eliminación de orden\n(DEV-MDL-CONFIRMAR-ELIMINACION)" as UC_Confirmar
 }
 
 Duena --> UC_Registrar
