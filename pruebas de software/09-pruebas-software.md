@@ -2,10 +2,12 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 03.00 |
-| Fecha | 05/09/2026 |
+| Versión | 04.00 |
+| Fecha | 13/10/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 04.00.** Completa las especificaciones de los módulos 12 y 13 y los procesos programados de RNF-0010, con el mismo criterio de la versión 03.00: solo las pruebas que cubren una clase de defecto que ninguna otra cubre. Agrega además las pruebas de las reglas incorporadas en la auditoría de coherencia del 12-13/10/2026: bajas condicionales por rechazo del motor, estado de remesa derivado y no editable, y remesa vencida que no vuelve a la venta. Total: 256 pruebas.
+>
 > **Versión 03.00.** Reduce el plan a las pruebas que el sistema necesita. La versión 02.00 contenía 294 pruebas, de las cuales unas cuarenta repetían el mismo caso de verificación de rol en cada especificación, seis pruebas de carga estaban dispersas por los módulos cuando bastaban tres consolidadas, y varios tipos aparecían una sola vez con una etiqueta forzada, elegidos para que ningún tipo del catálogo quedara sin representar. Esta versión aplica el criterio de que el tipo de prueba lo determina el riesgo del sistema y no la extensión del catálogo.
 >
 > Sustituye también a la versión 01.00, derivada de especificaciones ya superadas: describía la venta de un único producto, no contemplaba el descuento de stock ni las restricciones sanitarias, y probaba operaciones que dejaron de existir.
@@ -19,7 +21,7 @@ Cada prueba de este documento existe porque cubre una clase de defecto que ningu
 - **T-006 integración**, el efecto que una operación produce sobre otro módulo. Es el tipo más denso del plan porque aquí está el riesgo real: el stock, los bloqueos por lote y la relación entre venta y comprobante.
 - **T-012 seguridad**, reservada a las transacciones y a los tres casos de control de acceso con lógica propia.
 
-**Verificación de rol.** Se prueba una vez por módulo y de forma sistemática en la sección de requisitos no funcionales, recorriendo las 44 operaciones contra la Matriz de Permisos. Repetirla en cada especificación producía cuarenta veces el mismo caso.
+**Verificación de rol.** Se prueba una vez por módulo y de forma sistemática en la sección de requisitos no funcionales, recorriendo las 52 operaciones contra la Matriz de Permisos. Repetirla en cada especificación producía cuarenta veces el mismo caso.
 
 **Rendimiento y concurrencia.** Se concentran en la sección de requisitos no funcionales. No son opcionales: RNF-0005 fija un máximo de 4 segundos por venta y RNF-0003 exige dos usuarios simultáneos, de modo que sin ellas esos dos requisitos quedarían sin forma de darse por aprobados. Pero una vez consolidadas, no necesitan repetirse por módulo.
 
@@ -77,10 +79,10 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Reducir la cantidad de una línea y verificar que la diferencia se devuelva al stock de la remesa. | T-007 |
 |  |  | Verificar que el monto_total resultante coincida con la suma del nuevo detalle. | T-004 |
 | ESP-0004 | Eliminación del registro de venta (Eliminar) | Camino básico: seleccionar venta sin comprobante, confirmar y verificar la eliminación en cascada. | T-002 |
-|  |  | Complejidad ciclomática: ramas de comprobante emitido, confirmación afirmativa y negativa. | T-003 |
+|  |  | Complejidad ciclomática: ramas de comprobante asociado, confirmación afirmativa y negativa. | T-003 |
 |  |  | Verificar que se restituya el stock de cada remesa antes de eliminar líneas y cabecera. | T-006 |
 |  |  | Verificar que no queden filas huérfanas en el detalle tras la eliminación. | T-007 |
-|  |  | Intentar eliminar una venta con comprobante 'Emitido' y verificar el rechazo. | T-006 |
+|  |  | Intentar eliminar una venta con comprobante 'Emitido' y otra con comprobante 'Anulado', y verificar el rechazo en ambos casos. | T-006 |
 |  |  | Presionar el botón de cancelar del modal y verificar que no se produzca ningún cambio. | T-001 |
 | Módulo 1 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que ESP-0001 y ESP-0002 se ejecuten y que ESP-0003 y ESP-0004 sean rechazadas. | T-012 |
 
@@ -104,6 +106,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Dar de baja un medicamento con remesas y verificar que se aplique baja lógica con estado 'Descontinuado'. | T-006 |
 |  |  | Dar de baja un medicamento sin remesas ni restricciones y verificar que se elimine físicamente. | T-001 |
 |  |  | Verificar que en ningún caso se produzca una violación de integridad referencial. | T-007 |
+|  |  | Dar de baja un producto que solo figura en la lista de reabastecimiento o en una cotización y verificar que el rechazo del motor derive en baja lógica 'Descontinuado'. | T-006 |
 | Módulo 2 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que solo ESP-0006 se ejecute y que las otras tres sean rechazadas, conforme a RNF-0006. | T-012 |
 
 ## Módulo 3 — Gestión de Documentación Tributaria (EDU-0003)
@@ -150,6 +153,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Complejidad ciclomática: ramas de devolución pendiente, confirmación afirmativa y negativa. | T-003 |
 |  |  | Intentar eliminar la alerta de una remesa comprometida en una devolución pendiente y verificar el rechazo. | T-006 |
 |  |  | Verificar que tras la eliminación la remesa vuelva a 'Disponible' y se ofrezca de nuevo en ventas. | T-006 |
+|  |  | Intentar eliminar la alerta de una remesa con fecha de vencimiento igual o anterior a la actual y verificar el rechazo y que la remesa no vuelva a 'Disponible'. | T-001 |
 | Módulo 4 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que ESP-0013 y ESP-0014 se ejecuten y que ESP-0015 y ESP-0016 sean rechazadas. | T-012 |
 
 ## Módulo 5 — Gestión de Métodos de Pago (EDU-0009)
@@ -184,6 +188,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Consultar un reporte cuyo archivo fue movido o borrado y verificar el manejo del error. | T-001 |
 | ESP-0023 | Actualización del intervalo de un reporte (Actualizar) | Camino básico: seleccionar reporte, modificar el intervalo, recalcular y actualizar el registro. | T-002 |
 |  |  | Comparar las dos tablas de origen antes y después de la operación y verificar que sean idénticas. | T-007 |
+|  |  | Verificar que el reporte regenerado conserve el formato original, recalcule el total recaudado e incluya el usuario responsable de cada venta. | T-006 |
 |  |  | Valores límite sobre el nuevo intervalo, incluyendo inicio posterior al fin. | T-001 |
 | ESP-0024 | Eliminación de un reporte generado (Eliminar) | Camino básico: seleccionar reporte, confirmar y verificar la eliminación del índice y del archivo. | T-002 |
 |  |  | Verificar que las ventas y su detalle permanezcan íntegros tras la eliminación. | T-007 |
@@ -245,13 +250,14 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Inspeccionar la tabla tras el registro y verificar que la contraseña no esté almacenada en texto plano. | T-012 |
 |  |  | Verificar que el campo de contraseña enmascare el contenido y que la tabla de la interfaz no tenga columna de contraseña. | T-012 |
 |  |  | Crear una cuenta 'Activo' y verificar que pueda iniciar sesión; crearla 'Inactivo' y verificar que no pueda. | T-006 |
+|  |  | Crear dos cuentas con la misma contraseña y verificar que sus hashes almacenados sean distintos, lo que confirma la sal individual. | T-012 |
 | ESP-0034 | Consulta de usuarios (Leer) | Camino básico: aplicar filtros por nombre y rol y desplegar el resultado. | T-002 |
-|  |  | Inspeccionar la respuesta y verificar que no incluya el campo de contraseña ni en su forma encriptada. | T-012 |
+|  |  | Inspeccionar la respuesta y verificar que no incluya el campo de contraseña ni su hash. | T-012 |
 |  |  | Verificar que el resultado muestre el estado de cada cuenta, para distinguir activas de dadas de baja. | T-004 |
 | ESP-0035 | Actualización de usuario (Actualizar) | Camino básico: seleccionar cuenta, modificar nombre, rol o estado y confirmar. | T-002 |
 |  |  | Complejidad ciclomática: ramas de contraseña vacía, contraseña nueva y bloqueo por último administrador. | T-003 |
 |  |  | Dejar el campo de contraseña vacío y verificar que la vigente se conserve intacta tras la actualización. | T-004 |
-|  |  | Ingresar una contraseña nueva y verificar que quede encriptada y que la anterior deje de ser válida. | T-012 |
+|  |  | Ingresar una contraseña nueva y verificar que se guarde un hash nuevo y que la anterior deje de ser válida. | T-012 |
 |  |  | Degradar a 'Tecnico' la única cuenta administradora activa y verificar que el sistema cancele la operación. | T-012 |
 |  |  | Desactivar la única cuenta administradora activa y verificar que el sistema cancele la operación. | T-012 |
 | ESP-0036 | Desactivación de usuario (Eliminar) | Camino básico: seleccionar cuenta ajena, confirmar y verificar la baja aplicada. | T-002 |
@@ -260,6 +266,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Dar de baja una cuenta que registró ventas y verificar que se aplique baja lógica, conservando la atribución. | T-006 |
 |  |  | Intentar iniciar sesión con una cuenta recién desactivada y credenciales correctas, y verificar la denegación. | T-012 |
 |  |  | Verificar que en ningún caso se produzca una violación de integridad referencial. | T-007 |
+|  |  | Dar de baja una cuenta que solo registró cotizaciones y verificar que se aplique baja lógica. | T-006 |
 | Módulo 9 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que las cuatro operaciones sean rechazadas. | T-012 |
 
 ## Módulo 10 — Gestión de Proveedores (EDU-0014)
@@ -281,6 +288,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Intentar dar de baja un proveedor con una orden 'Pendiente' y verificar el rechazo, para que ninguna orden quede sin destinatario. | T-006 |
 |  |  | Dar de baja un proveedor con productos asociados y verificar que se aplique baja lógica. | T-006 |
 |  |  | Verificar que no se produzca ninguna violación de integridad referencial. | T-007 |
+|  |  | Dar de baja un proveedor que solo tiene remesas o cotizaciones asociadas y verificar que se aplique baja lógica. | T-006 |
 | Módulo 10 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que las cuatro operaciones sean rechazadas. | T-012 |
 
 ## Módulo 11 — Gestión de Lotes (EDU-0015)
@@ -297,18 +305,52 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | ESP-0042 | Consulta de remesas (Leer) | Camino básico: aplicar filtros por medicamento, lote y estado, y desplegar el resultado. | T-002 |
 |  |  | Verificar que el resultado se muestre ordenado por vencimiento ascendente, como contraparte visual del criterio FEFO. | T-004 |
 |  |  | Partición sobre el filtro de estado: 'Disponible', 'Bloqueado por devolucion', 'Agotado' y sin filtro. | T-001 |
-| ESP-0043 | Actualización de remesa (Actualizar) | Camino básico: seleccionar remesa, modificar lote, vencimiento, existencias o estado, y confirmar. | T-002 |
+| ESP-0043 | Actualización de remesa (Actualizar) | Camino básico: seleccionar remesa, modificar lote, vencimiento, existencias o proveedor, y confirmar. | T-002 |
 |  |  | Verificar que el medicamento esté en solo lectura y que no exista ruta alguna para reasignar la remesa a otro. | T-012 |
 |  |  | Reducir las existencias por debajo de lo comprometido en una devolución pendiente y verificar que se cancele la operación. | T-006 |
 |  |  | Intentar asignar un número de lote que ya existe para el mismo medicamento y verificar el rechazo. | T-001 |
-|  |  | Cambiar el estado a 'Agotado' y verificar que la remesa deje de ofrecerse en ventas. | T-006 |
+|  |  | Llevar las existencias a cero y verificar que la remesa pase a 'Agotado' y deje de ofrecerse en ventas; repetir con una remesa 'Bloqueado por devolucion' y verificar que conserve su estado. | T-006 |
+|  |  | Verificar que el estado se muestre en solo lectura y que no exista ruta para modificarlo. | T-012 |
+|  |  | Cambiar la fecha de vencimiento a una fecha pasada y verificar el rechazo; editar otro campo de una remesa ya vencida sin tocar su fecha y verificar que se acepte. | T-001 |
 | ESP-0044 | Baja de remesa (Eliminar) | Camino básico: seleccionar remesa, confirmar y verificar la baja aplicada. | T-002 |
 |  |  | Complejidad ciclomática: ramas de devolución pendiente, con movimientos, sin movimientos y confirmación negativa. | T-003 |
 |  |  | Intentar dar de baja una remesa comprometida en una devolución pendiente y verificar el rechazo. | T-006 |
 |  |  | Dar de baja una remesa con ventas y verificar que se aplique baja lógica con estado 'Agotado' y existencias en cero. | T-006 |
 |  |  | Tras la baja lógica, consultar las ventas históricas de esa remesa y verificar que el rastreo por lote siga siendo posible. | T-012 |
 |  |  | Verificar que el stock consolidado del medicamento se reduzca en las existencias dadas de baja. | T-006 |
+|  |  | Dar de baja una remesa sin ventas ni devoluciones pero con un retiro registrado, y verificar el borrado físico y que el retiro conserve su histórico con `id_lote` nulo. | T-007 |
 | Módulo 11 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que solo ESP-0042 se ejecute y que las otras tres sean rechazadas. | T-012 |
+
+## Módulo 12 — Gestión de Reabastecimiento (EDU-0016)
+
+| Clave | Requisito (Nombre / Operación) | Descripción de la prueba | Tipo |
+| --- | --- | --- | --- |
+| ESP-0045 | Incorporación manual de ítem (Crear) | Camino básico: seleccionar medicamento y prioridad, y registrar el ítem con origen 'Manual' y fecha de inclusión automática. | T-002 |
+|  |  | Partición: medicamento que ya figura en la lista, medicamento nuevo y prioridad fuera de dominio. | T-001 |
+|  |  | Registrar un ítem 'Urgente' y verificar que aparezca primero y resaltado en rojo en la consulta. | T-006 |
+| ESP-0046 | Consulta de la lista de reabastecimiento (Leer) | Camino básico: aplicar filtros y desplegar la lista. | T-002 |
+|  |  | Partición sobre los filtros: por prioridad, por origen, combinados y sin filtro. | T-001 |
+| ESP-0047 | Actualización de ítem (Actualizar) | Camino básico: seleccionar ítem, cambiar la prioridad y confirmar. | T-002 |
+|  |  | Verificar que el medicamento y el origen se muestren en solo lectura y no puedan modificarse. | T-004 |
+| ESP-0048 | Eliminación de ítem (Eliminar) | Camino básico: seleccionar ítem, confirmar y verificar la eliminación; cancelar y verificar que no haya cambios. | T-002 |
+|  |  | Eliminar un ítem y verificar que las cotizaciones del mismo medicamento permanezcan intactas. | T-007 |
+| Módulo 12 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que las cuatro operaciones sean rechazadas. | T-012 |
+
+## Módulo 13 — Comparación de Precios de Proveedores (EDU-0017)
+
+| Clave | Requisito (Nombre / Operación) | Descripción de la prueba | Tipo |
+| --- | --- | --- | --- |
+| ESP-0049 | Registro de cotización (Crear) | Camino básico: seleccionar medicamento y proveedor, ingresar precio, fecha y promoción opcional, y registrar. | T-002 |
+|  |  | Valores límite sobre el precio y la fecha: precio negativo, cero, con tres decimales; fecha futura, actual y pasada. | T-001 |
+|  |  | Registrar dos cotizaciones del mismo medicamento y proveedor y verificar que la anterior se conserve en el historial. | T-007 |
+| ESP-0050 | Consulta comparativa y exportación (Leer) | Camino básico: filtrar por medicamento, desplegar la comparativa y exportar el CSV de un proveedor. | T-002 |
+|  |  | Con varias cotizaciones por proveedor, verificar que la comparativa tome la más reciente de cada uno y destaque el precio más bajo. | T-004 |
+|  |  | Verificar que el CSV contenga solo ítems pendientes de la lista de reabastecimiento y del proveedor elegido, y que exportar no registre ninguna fila en la base. | T-006 |
+| ESP-0051 | Actualización de cotización (Actualizar) | Camino básico: seleccionar cotización, corregir precio, fecha o promoción, y confirmar. | T-002 |
+|  |  | Verificar que el medicamento y el proveedor se muestren en solo lectura. | T-004 |
+| ESP-0052 | Eliminación de cotización (Eliminar) | Camino básico: seleccionar cotización, confirmar y verificar la eliminación; cancelar y verificar que no haya cambios. | T-002 |
+|  |  | Eliminar la cotización más reciente de un proveedor y verificar que la comparativa pase a usar la anterior. | T-006 |
+| Módulo 13 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que las cuatro operaciones sean rechazadas. | T-012 |
 
 ---
 
@@ -324,18 +366,21 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | RNF-0005 | Velocidad bajo volumen real | Repetir la medición anterior con el volumen de un año de operación cargado, para verificar que el límite de 4 segundos se mantenga. | T-008 |
 | RNF-0006 | Condición 1 — Autenticación | Iniciar sesión con credenciales válidas, con contraseña incorrecta, con usuario inexistente y con cuenta 'Inactivo'. | T-012 |
 | RNF-0006 | Condición 2 — Identificación en la trazabilidad | Registrar una venta y una devolución desde dos cuentas distintas y verificar que cada operación quede atribuida a su usuario. | T-012 |
-| RNF-0006 | Condición 3 — Autorización por rol | Recorrer las 44 operaciones con una sesión 'Tecnico' y verificar que las 35 restringidas sean rechazadas y las 9 permitidas se ejecuten, conforme a la Matriz de Permisos. | T-012 |
+| RNF-0006 | Condición 3 — Autorización por rol | Recorrer las 52 operaciones con una sesión 'Tecnico' y verificar que las 42 restringidas sean rechazadas y las 10 permitidas se ejecuten, conforme a la Matriz de Permisos. | T-012 |
 | RNF-0006 | Condición 3 — Verificación en el sistema | Invocar directamente una operación restringida sin pasar por la interfaz y verificar que el sistema la rechace igualmente. | T-012 |
 | RNF-0006 | Condición 4 — Operación no autorizada | Con sesión 'Tecnico', verificar que las opciones restringidas se muestren visibles pero deshabilitadas, indicando el motivo al intentar activarlas. | T-016 |
 | RNF-0006 | Condición 5 — Protección de credenciales | Inspeccionar la tabla, los resultados de consulta, los reportes y los archivos de registro, y verificar que la contraseña no aparezca en texto plano en ninguno. | T-012 |
 | RNF-0006 | Condición 6 — Continuidad de la administración | Intentar dejar el sistema sin cuenta administradora activa por las dos vías posibles: degradación y desactivación. | T-012 |
 | RNF-0007 | Funcionamiento en el equipo objetivo | Instalar y ejecutar el sistema en Windows 11 con la especificación declarada, sin instalar software adicional. | T-020 |
-| RNF-0007 | Visualización en el equipo objetivo | Verificar la visualización de los mockups de los once módulos en la resolución del equipo objetivo. | T-015 |
+| RNF-0007 | Visualización en el equipo objetivo | Verificar la visualización de los mockups de los trece módulos en la resolución del equipo objetivo. | T-015 |
 | RNF-0008 | Stack tecnológico | Verificar que los importes se manejen con el tipo decimal y no con float o double, comprobando que no aparezcan errores de redondeo en el monto total. | T-004 |
-| RNF-0009 | Integridad del esquema | Verificar que las catorce tablas existan con sus claves primarias, foráneas y restricciones de unicidad según el Diccionario de Datos v04.00. | T-018 |
+| RNF-0009 | Integridad del esquema | Verificar que las dieciséis tablas existan con sus claves primarias, foráneas, restricciones de unicidad y reglas de borrado según el Diccionario de Datos v06.00. | T-018 |
 | RNF-0009 | Atomicidad de las operaciones | Interrumpir cada una de las operaciones transaccionales del catálogo a mitad de ejecución y verificar que ninguna deje datos parciales. | T-012 |
 | RNF-0009 | Respaldo y restauración | Ejecutar una copia de respaldo, modificar datos, restaurar y verificar que el estado coincida con el del momento de la copia. | T-019 |
 | RNF-0009 | Crecimiento del volumen de datos | Cargar el volumen estimado de cinco años de operación y verificar que los tiempos de consulta y de registro se mantengan dentro de los límites, considerando el tamaño máximo de SQL Server Express. | T-010 |
+| RNF-0010 | Condición 1 — Evaluación de vencimientos | Con remesas que vencen dentro y fuera del umbral, iniciar la aplicación y verificar que el aviso cuente solo las primeras y no registre filas en la base. | T-001 |
+| RNF-0010 | Condición 2 — Lista de reabastecimiento | Llevar un medicamento bajo su stock mínimo y ejecutar el proceso: verificar un único ítem 'Automático' y 'Normal'; ejecutarlo de nuevo y verificar que no se duplique ni cambie una prioridad editada a mano. | T-006 |
+| RNF-0010 | Condición 2 — Reingreso de ítems | Eliminar un ítem automático cuyo medicamento sigue bajo el mínimo y verificar que reaparezca en la siguiente ejecución. | T-006 |
 
 ---
 
@@ -343,13 +388,13 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 
 | Verificación | Resultado |
 | --- | --- |
-| Pruebas definidas | 223 |
-| Especificaciones con al menos una prueba | 44 de 44 |
-| Especificaciones con prueba de camino básico (T-002) | 44 de 44 |
-| Módulos con verificación de rol | 11 de 11 |
+| Pruebas definidas | 256 |
+| Especificaciones con al menos una prueba | 52 de 52 |
+| Especificaciones con prueba de camino básico (T-002) | 52 de 52 |
+| Módulos con verificación de rol | 13 de 13 |
 | Especificaciones con prueba de complejidad ciclomática (T-003) | 10, las que tienen tres o más ramas |
 | Condiciones de RNF-0006 con prueba propia | 6 de 6 |
-| Requisitos no funcionales con al menos una prueba | 9 de 9 |
+| Requisitos no funcionales con al menos una prueba | 10 de 10 |
 | Tipos de prueba utilizados | 16 de 20, con el motivo documentado de los cuatro restantes |
 
 ## Orden de ejecución por riesgo
@@ -362,12 +407,12 @@ Si el tiempo obliga a escalonar la ejecución, este es el orden que concentra an
 | 2 | 4 Alertas de vencimiento, 7 Devoluciones | Operan sobre el estado de las remesas y sobre el stock. Dependen de que el módulo 11 sea correcto. |
 | 3 | 3 Documentación tributaria, 9 Usuarios | Un defecto tiene consecuencia legal en el primer caso y de seguridad en el segundo, pero no propaga corrupción al resto del modelo. |
 | 4 | 2 Inventario, 8 Restricciones, 10 Proveedores | Catálogos maestros. Sus defectos se detectan pronto durante el uso normal. |
-| 5 | 5 Métodos de pago, 6 Reportes | Menor acoplamiento y menor consecuencia. Los reportes son de solo lectura sobre datos ya validados. |
+| 5 | 5 Métodos de pago, 6 Reportes, 12 Reabastecimiento, 13 Comparación de precios | Menor acoplamiento y menor consecuencia. Los reportes son de solo lectura sobre datos ya validados, y reabastecimiento y comparación de precios apoyan decisiones de compra sin alterar stock ni ventas. |
 
 Las pruebas de los requisitos no funcionales se ejecutan al final, cuando el sistema está desplegado en el equipo objetivo, salvo las seis condiciones de RNF-0006, que deben verificarse antes de dar por aprobado cualquier módulo porque condicionan las precondiciones de las 44 operaciones.
 
 ## Pendientes
 
 1. **Datos de prueba.** Este documento define qué se prueba, no con qué juego de datos. Falta preparar la carga inicial: medicamentos, remesas con vencimientos escalonados, proveedores, cuentas de ambos roles y ventas históricas.
-2. **Pruebas de la generación automática de alertas.** No se incluyen porque el requisito no funcional que describe ese proceso programado aún no ha sido redactado.
+2. ~~**Pruebas de la generación automática de alertas.**~~ **Resuelto el 13/10/2026:** RNF-0010 documenta los procesos programados y tiene tres pruebas propias.
 3. **Criterio de aceptación de RNF-0002.** Se prueba por observación; conviene fijar con el cliente qué se considera aprobado, por ejemplo el tiempo máximo que una técnica sin entrenamiento debe tardar en completar una venta.

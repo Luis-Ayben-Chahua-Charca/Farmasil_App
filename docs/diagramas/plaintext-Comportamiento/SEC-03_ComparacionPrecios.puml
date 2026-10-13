@@ -1,0 +1,47 @@
+@startuml SEC-03_ComparacionPrecios
+autonumber
+skinparam sequence {
+  ArrowColor #444444
+  LifeLineBorderColor #8577E0
+  ParticipantBackgroundColor #EDECFB
+}
+
+actor "Duena\n(Administrador)" as U
+participant "Comparacion de precios" as COT
+participant "Reabastecimiento" as REA
+database "DB_FARMASIL" as D
+
+U -> COT : abrirComparacionPrecios()
+COT -> D : validar sesion, rol y conexion
+
+U -> COT : filtrarProducto(producto) [opcional]
+U -> COT : leerCotizacion() / ESP-0050
+COT -> D : SELECT TBL_COTIZACIONES_PROVEEDOR\n[WHERE id_producto = producto]
+D --> COT : cotizaciones
+
+loop por cada combinacion (producto, proveedor)
+  COT -> COT : vigente = cotizacion con\nfecha_cotizacion maxima
+end
+COT --> U : comparativa\n(precio mas bajo destacado por fila)
+
+U -> COT : seleccionarProveedorExportar(proveedor)
+U -> COT : exportarProveedor()
+COT -> REA : itemsPendientes(proveedor, comparativa)
+REA -> D : SELECT TBL_LISTA_REABASTECIMIENTO\nUNIENDO comparativa\nWHERE proveedor_seleccionado = proveedor
+D --> REA : itemsProveedor
+REA --> COT : itemsProveedor
+COT -> COT : generarArchivoCSV(itemsProveedor)
+COT --> U : archivo CSV disponible\npara descarga o impresion
+
+note right of COT
+  Operacion efimera: no persiste
+  ningun registro en DB_FARMASIL
+  (ESP-0050).
+end note
+
+note right of COT
+  Columnas y criterio exacto
+  del CSV: PEN-002, pendiente
+  con la duena.
+end note
+@enduml

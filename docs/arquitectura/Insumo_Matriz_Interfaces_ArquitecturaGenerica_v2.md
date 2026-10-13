@@ -122,7 +122,7 @@ Cada fila es una interfaz nombrada con el prefijo `I` seguido del nombre del mó
 
 ### IDevoluciones (provista por Devoluciones)
 - **Expone:** consulta de órdenes de devolución pendientes por remesa.
-- **Requerida por:** Alertas de Vencimiento (ESP-0016: `VALIDAR NO EXISTE(TBL_DETALLE_DEVOLUCION, id_lote = alerta.lote Y orden.estado_orden = 'Pendiente')` antes de permitir eliminar una alerta).
+- **Requerida por:** Alertas de Vencimiento (ESP-0016: `VALIDAR NO EXISTE(TBL_DETALLE_DEVOLUCION, id_lote = alerta.id_lote Y orden.estado_orden = 'Pendiente')` antes de permitir eliminar una alerta).
 - **Confianza:** alta.
 - **Nota de arquitectura:** esta es la única arista donde un módulo "más viejo" en el orden del catálogo (Alertas, EDU-0004) depende de uno "más nuevo" (Devoluciones, EDU-0011). No es un error: el orden de las educciones no implica orden de dependencia arquitectónica.
 
@@ -167,4 +167,4 @@ El diagrama de componentes en FigJam (13 módulos) ya fue construido y verificad
 ## 8. Ambigüedades detectadas en la auditoría final (no bloquean el cierre de este issue)
 
 1. **`usuario_responsable` de Reportes de Ventas no es una columna de BD.** Ver la nota en la explicación de `IUsuarios` (Sección 5). Si en algún momento se decide persistir quién generó cada reporte (hoy no se persiste, `TBL_REPORTES_VENTAS` no tiene FKs), eso sería un cambio al diccionario de datos, no a esta arquitectura.
-2. **El valor `'Mermas'` de `TBL_REPORTES_VENTAS.tipo_reporte` no tiene una fuente de datos distinta documentada.** ESP-0021 consulta siempre `TBL_REGISTRO_VENTAS` + `TBL_DETALLE_VENTAS` + `TBL_USUARIOS`, sin importar el `tipo_reporte` elegido — nunca toca `TBL_PRODUCTOS_RETIRADOS` ni `TBL_ALERTAS_VENCIMIENTO`. Si un reporte de mermas debe reflejar retiros reales de producto, falta esa rama en ESP-0021 y, arquitectónicamente, una arista nueva `Reportes de Ventas → Alertas de Vencimiento` que hoy no existe en ningún documento. Es una decisión de producto pendiente (confirmar con la dueña/el profesor), no un error de esta matriz — se deja registrado aquí para no perderlo de vista.
+2. ~~**El valor `'Mermas'` de `TBL_REPORTES_VENTAS.tipo_reporte` no tiene una fuente de datos distinta documentada.**~~ **Resuelto el 13/10/2026:** se descartó el tipo 'Mermas', que no tenía respaldo en ningún requisito (ESP-0021 v04.00, Diccionario de Datos v06.00). No hace falta la arista `Reportes de Ventas → Alertas de Vencimiento`.

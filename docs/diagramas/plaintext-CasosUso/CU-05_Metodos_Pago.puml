@@ -2,7 +2,7 @@
 left to right direction
 skinparam packageStyle rectangle
 
-actor "Administradora" as admin
+actor "Dueña de la farmacia\n<<Administrador>>" as admin
 
 rectangle "FARMASIL - Gestión de Métodos de Pago" {
     usecase "Actualizar Método de Pago" as UC_Actualizar

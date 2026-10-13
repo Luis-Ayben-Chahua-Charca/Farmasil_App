@@ -8,7 +8,7 @@ Almacena las credenciales y perfiles del personal de la farmacia que accede al s
 | --- | --- | --- | --- |
 | id_usuario | INT | PK, Auto-increment | Identificador único del usuario. |
 | nombre_usuario | NVARCHAR(50) | NOT NULL, UNIQUE | Nombre de usuario para el inicio de sesión. |
-| contrasena | NVARCHAR(255) | NOT NULL | Contraseña encriptada por seguridad, conforme a RNF-0006. |
+| contrasena | NVARCHAR(255) | NOT NULL | Hash con sal de la contraseña (PBKDF2, bcrypt o equivalente), nunca reversible, conforme a RNF-0006. |
 | rol | NVARCHAR(20) | NOT NULL | Rol en el sistema: 'Administrador' o 'Tecnico'. |
 | estado | NVARCHAR(10) | DEFAULT 'Activo' | Estado de la cuenta: 'Activo' o 'Inactivo'. |
 
@@ -65,7 +65,7 @@ Remesas físicas de cada medicamento. Un producto del catálogo puede tener vari
 
 Restricción adicional: `UNIQUE (id_producto, numero_lote)`. El mismo laboratorio no repite número de lote para un mismo medicamento, y admitir duplicados haría ambiguo el rastreo sanitario.
 
-*Educción asociada: EDU-0015. El estado 'Bloqueado por devolucion' lo asigna ILA-0014 y lo restituye ILA-0016.*
+*Educción asociada: EDU-0015. El estado 'Bloqueado por devolucion' lo asigna ILA-0014 y lo restituye ILA-0016, salvo que la remesa ya esté vencida (v06.00).*
 
 *Cambio en v05.00: se agrega `id_proveedor`, que resuelve la limitación del modelo para el caso de remesas de un mismo medicamento provenientes de proveedores distintos. Exige corregir ESP-0025 (que hasta v02.00 validaba el proveedor contra `TBL_PRODUCTOS` en vez de contra la remesa) y ampliar ESP-0041/ESP-0043 para capturarlo.*
 
@@ -147,6 +147,7 @@ Historial de mermas y productos removidos de la venta por vencimiento, daño o a
 | Campo | Tipo de dato | Restricciones | Descripción |
 | --- | --- | --- | --- |
 | id_retiro | INT | PK, Auto-increment | Identificador único del registro de retiro. |
+| **id_lote** | **INT** | **FK (TBL_LOTES), ON DELETE SET NULL** | **Remesa retirada. Campo agregado en v06.00: ILA-0014 bloquea esta remesa e ILA-0016 la restituye, y sin el identificador ninguna de las dos podía localizarla. Queda nulo si la remesa se elimina físicamente (ILA-0044).** |
 | nombre_producto | NVARCHAR(100) | NOT NULL | Copia del nombre del producto, conservada deliberadamente como texto para mantener el histórico aunque el producto maestro se elimine. |
 | **numero_lote** | **NVARCHAR(30)** | **NOT NULL** | **Copia del número de lote afectado. Campo agregado en v04.00, con el mismo criterio de conservación que el nombre.** |
 | fecha_vencimiento | DATE | NOT NULL | Fecha de expiración que causó el retiro. |
@@ -154,7 +155,9 @@ Historial de mermas y productos removidos de la venta por vencimiento, daño o a
 | alerta_digemid | NVARCHAR(100) | Opcional | Código de resolución o alerta sanitaria de DIGEMID. |
 | fecha_registro | DATE | NOT NULL | Fecha en la que el sistema procesó la baja o retiro. |
 
-*Educción asociada: EDU-0004. La ausencia de `id_producto` es una decisión de diseño ya evaluada, no un error pendiente.*
+*Educción asociada: EDU-0004. La ausencia de `id_producto` es una decisión de diseño ya evaluada, no un error pendiente: el medicamento se obtiene navegando `id_lote` → `TBL_LOTES.id_producto`, y las copias de texto se conservan para la lectura histórica.*
+
+*Cambio en v06.00: se agrega `id_lote`. Es anulable a propósito: si ILA-0044 elimina físicamente una remesa sin ventas ni devoluciones, el retiro conserva su histórico gracias a las copias de texto, y el módulo de Lotes no necesita consultar esta tabla (lo que habría creado una dependencia Lotes → Alertas de Vencimiento que la arquitectura no tiene).*
 
 ## 11. TBL_ORDENES_DEVOLUCION
 
@@ -209,13 +212,19 @@ Reglas de seguridad clínica para protección en el punto de venta.
 | Campo | Tipo de dato | Restricciones | Descripción |
 | --- | --- | --- | --- |
 | id_reporte | INT | PK, Auto-increment | Identificador único del reporte emitido. |
-| tipo_reporte | NVARCHAR(50) | NOT NULL | Criterio de agrupación, por ejemplo 'Ventas Diarias' o 'Mermas'. |
+| tipo_reporte | NVARCHAR(50) | NOT NULL | Criterio de agrupación de las ventas consolidadas, por ejemplo 'Ventas Diarias'. El dominio cerrado está pendiente de confirmación por la dueña (ver ESP-0021). |
+| **formato** | **NVARCHAR(10)** | **NOT NULL** | **Formato del archivo generado: 'PDF', 'Excel' o 'HTML'. Campo agregado en v06.00: ESP-0023 regenera el reporte en este formato.** |
 | fecha_inicio | DATE | NOT NULL | Fecha desde la cual se extrajeron los datos consolidados. |
 | fecha_fin | DATE | NOT NULL | Fecha hasta la cual se extrajeron los datos consolidados. |
+| **total_recaudado** | **DECIMAL(10,2)** | **NOT NULL** | **Suma de `monto_total` de las ventas del intervalo. Campo agregado en v06.00: ESP-0022 lo muestra en REP-TBL-REPORTES y ESP-0023 lo recalcula.** |
 | fecha_generacion | DATETIME2 | NOT NULL | Auditoría de cuándo se procesó el archivo. |
 | ruta_archivo | NVARCHAR(255) | NOT NULL | Dirección física o URL de descarga del documento. |
 
 *Educción asociada: EDU-0010. Es un log de salida sin referencias foráneas, por lo que su eliminación física en ILA-0024 es legítima.*
+
+*Aclaración sobre `usuario_responsable`: el reporte incluye la identificación del personal que realizó cada venta (EDU-0010), pero **`usuario_responsable` no es una columna de esta tabla ni de ninguna otra**. Es un valor calculado al vuelo, que ESP-0021 obtiene al generar el reporte uniendo `TBL_REGISTRO_VENTAS.id_usuario` con `TBL_USUARIOS`, y que solo existe dentro del archivo de salida (`ruta_archivo`). Nunca se persiste en `TBL_REPORTES_VENTAS`, que conserva únicamente el índice del reporte.*
+
+*Cambio en v06.00: se descarta el tipo 'Mermas', que no tenía respaldo en ningún requisito, y se agregan `formato` y `total_recaudado`, que ESP-0022 y ESP-0023 ya usaban sin que existieran en la tabla.*
 
 ## 15. TBL_LISTA_REABASTECIMIENTO
 
@@ -233,7 +242,7 @@ Reglas de seguridad clínica para protección en el punto de venta.
 
 *Sin restricción de unicidad sobre `id_producto`: un medicamento puede reaparecer en la lista después de haber sido eliminado (por ejemplo, tras ser pedido y vuelto a caer bajo el umbral).*
 
-*Fuente: ESP-0045 (creación manual), ESP-0046 (consulta), ESP-0047 (actualización), ESP-0048 (eliminación). La escribe también el proceso periódico de generación automática, que aún no tiene requisito no funcional formal (ver `02-ilaciones.md`, Anexo, punto C.4).*
+*Fuente: ESP-0045 (creación manual), ESP-0046 (consulta), ESP-0047 (actualización), ESP-0048 (eliminación). La escribe también el proceso periódico de generación automática, documentado en la condición 2 de RNF-0010.*
 
 ## 16. TBL_COTIZACIONES_PROVEEDOR
 
@@ -272,7 +281,7 @@ Esta tabla es el criterio único para decidir el tipo de un campo en las tres ca
 | Valor lógico | `BIT` | `bool` | CheckBox | **CHK** |
 | Dominio cerrado de valores | `NVARCHAR(n)` con restricción CHECK | `string` o `enum` | ComboBox | **CMB** |
 | Referencia a otra entidad | `INT` con clave foránea | `int` | ComboBox | **CMB** |
-| Contraseña | `NVARCHAR(255)` con el valor ya encriptado | `string` | PasswordBox | **PWD** |
+| Contraseña | `NVARCHAR(255)` con el hash de la contraseña | `string` | PasswordBox | **PWD** |
 | Valor calculado por el sistema | No se persiste, o se persiste sin captura | según el cálculo | TextBlock | **LBL** |
 
 **Nunca usar `float` ni `double` para importes.** `DECIMAL(10,2)` corresponde a `decimal` en C#, y cualquier otra elección introduce errores de redondeo en `monto_total` y `precio_unitario`.
@@ -302,8 +311,9 @@ Esta tabla es el criterio único para decidir el tipo de un campo en las tres ca
 | `TBL_PRODUCTOS` → `TBL_COTIZACIONES_PROVEEDOR` | No identificadora, 1:N | Nueva en v05.00. Un medicamento acumula cotizaciones de varios proveedores y en varias fechas. |
 | `TBL_PROVEEDORES` → `TBL_COTIZACIONES_PROVEEDOR` | No identificadora, 1:N | Nueva en v05.00. Un proveedor ofrece muchas cotizaciones. |
 | `TBL_USUARIOS` → `TBL_COTIZACIONES_PROVEEDOR` | No identificadora, 1:N | Nueva en v05.00. Un usuario registra muchas cotizaciones. |
+| `TBL_LOTES` → `TBL_PRODUCTOS_RETIRADOS` | No identificadora, 1:N | Nueva en v06.00. Una remesa puede acumular varios retiros sanitarios a lo largo del tiempo. |
 
-`TBL_ALERTAS_VENCIMIENTO`, `TBL_PRODUCTOS_RETIRADOS` y `TBL_REPORTES_VENTAS` no participan en relaciones foráneas, por las razones documentadas en cada tabla.
+`TBL_ALERTAS_VENCIMIENTO` y `TBL_REPORTES_VENTAS` no participan en relaciones foráneas, por las razones documentadas en cada tabla.
 
 ---
 
@@ -328,10 +338,19 @@ Estos puntos no se modificaron porque implican decisiones de alcance, no correcc
 5. **Gestión de la configuración de alertas.** `TBL_ALERTAS_VENCIMIENTO` no tiene ninguna educción que la administre: el umbral es hoy un valor fijo que nadie puede cambiar desde el sistema.
 
 
-**Versión:** 05.00
-**Fecha:** 02/10/2026
+**Versión:** 07.00
+**Fecha:** 13/10/2026
 **Autor:** AUT-0001
 **Origen:** Diccionario de Datos v02.00, `Cambios_Modelo_ER_DB_FARMASIL.md` y Entrevista 3 (v05.00)
+
+> **Aplicado en v07.00 (13/10/2026):** `TBL_USUARIOS.contrasena` guarda un hash con sal y no un valor encriptado, conforme a RNF-0006 v05.00.
+
+> **Aplicado en v06.00 (auditoría de coherencia, 12-13/10/2026):**
+>
+> - **Regla de integridad referencial.** Todas las claves foráneas se declaran sin borrado en cascada (`ON DELETE NO ACTION`), salvo `TBL_PRODUCTOS_RETIRADOS.id_lote` (`ON DELETE SET NULL`). Las bajas condicionales del catálogo (ESP-0008, ESP-0020, ESP-0036, ESP-0040, ESP-0044) dependen de esta regla: intentan el borrado físico y, si el motor lo rechaza por una referencia, aplican la baja lógica.
+> - `TBL_PRODUCTOS_RETIRADOS`: se agrega `id_lote` (FK a `TBL_LOTES`). ESP-0014 la registra y ESP-0016 la usa para restituir la remesa. Es anulable (`ON DELETE SET NULL`) para no crear una dependencia de Lotes hacia Alertas de Vencimiento.
+> - `TBL_REPORTES_VENTAS`: se agregan `formato` y `total_recaudado`, que ESP-0022 y ESP-0023 ya usaban, y se retira el ejemplo 'Mermas' de `tipo_reporte`.
+> - Se aclara que `usuario_responsable` es un valor calculado al generar el reporte y no una columna.
 
 > **Aplicado en v05.00 (módulo de reabastecimiento y comparación de precios de proveedores, derivado de la Entrevista 3, 02/10/2026):**
 >

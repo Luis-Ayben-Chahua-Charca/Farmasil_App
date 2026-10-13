@@ -3,7 +3,7 @@ left to right direction
 skinparam actorStyle awesome
 title Módulo: Proveedores\n«FarmasilApp» · EDU-0014 / ILA-0037 - ILA-0040 · Prefijo: PRV
 
-actor "Dueña de la Farmacia" as Duena
+actor "Dueña de la farmacia\n<<Administrador>>" as Duena
 
 rectangle "Gestión de Proveedores" {
   usecase "Registrar proveedor\n(ILA-0037)" as UC_Registrar

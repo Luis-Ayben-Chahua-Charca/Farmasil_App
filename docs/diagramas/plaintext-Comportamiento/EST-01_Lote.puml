@@ -1,0 +1,36 @@
+@startuml EST-01_Lote
+hide empty description
+skinparam state {
+  BackgroundColor #EDECFB
+  BorderColor #8577E0
+}
+
+[*] --> Disponible : T1 registrarRemesa() / ESP-0041
+
+state "Bloqueado por devolucion" as Bloqueado
+
+Disponible --> Agotado : T2 confirmarVenta()\n[stock_actual = 0] / ESP-0001
+Disponible --> Bloqueado : T3 registrarAlerta() / ESP-0014
+Bloqueado --> Disponible : T4 eliminarAlerta()\n[sin devolucion Pendiente, no vencida] / ESP-0016
+Disponible --> Agotado : T5 darDeBaja()\n[con movimientos] / ESP-0044
+Bloqueado --> Agotado : T5 darDeBaja()\n[con movimientos] / ESP-0044
+Agotado --> Agotado : T5 darDeBaja()\n[con movimientos] / ESP-0044
+Agotado --> Disponible : T6 corregirEstado()\n[stock > 0, no vencida] / ESP-0043
+Disponible --> [*] : T7 darDeBaja()\n[sin movimientos] / ESP-0044
+Bloqueado --> [*] : T7 darDeBaja()\n[sin movimientos] / ESP-0044
+
+note right of Bloqueado
+  No seleccionable en venta
+  (rechazo de linea, ESP-0001).
+  Los cambios de stock_actual
+  no alteran este estado
+  (ESP-0043 v03.00, DEC-010).
+end note
+
+note left of Agotado
+  T4 y T6 no restituyen una
+  remesa vencida a la venta
+  (ESP-0016/ESP-0043 v03.00,
+  DEC-008).
+end note
+@enduml

@@ -65,58 +65,58 @@
 
 | Módulo | Educción | Ilación | Fase CRUD | Especificación | Rol autorizado | Estado | Tipos de prueba |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | EDU-0001 | ILA-0001 | Crear | ESP-0001 | A y T | Pendiente | T-001, T-002, T-004, T-005, T-008, T-012 |
-| 1 | EDU-0001 | ILA-0002 | Leer | ESP-0002 | A y T | Pendiente | T-001, T-002, T-008 |
-| 1 | EDU-0001 | ILA-0003 | Actualizar | ESP-0003 | A | Pendiente | T-001, T-002, T-005, T-015 |
-| 1 | EDU-0001 | ILA-0004 | Eliminar | ESP-0004 | A | Pendiente | T-001, T-002, T-007 |
-| 2 | EDU-0002 | ILA-0005 | Crear | ESP-0005 | A | Pendiente | T-001, T-002, T-004, T-005, T-015 |
-| 2 | EDU-0002 | ILA-0006 | Leer | ESP-0006 | A y T | Concluido | T-001, T-002, T-008 |
-| 2 | EDU-0002 | ILA-0007 | Actualizar | ESP-0007 | A | Pendiente | T-001, T-002, T-005, T-015 |
-| 2 | EDU-0002 | ILA-0008 | Eliminar | ESP-0008 | A | Pendiente | T-001, T-002, T-007 |
-| 3 | EDU-0003 | ILA-0009 | Crear | ESP-0009 | A y T | Pendiente | T-001, T-002, T-004, T-005, T-012 |
-| 3 | EDU-0003 | ILA-0010 | Leer | ESP-0010 | A y T | Concluido | T-001, T-002, T-008 |
-| 3 | EDU-0003 | ILA-0011 | Actualizar | ESP-0011 | A | Concluido | T-001, T-002, T-005 |
-| 3 | EDU-0003 | ILA-0012 | Eliminar | ESP-0012 | A | Concluido | T-001, T-002, T-013 |
-| 4 | EDU-0004 | ILA-0013 | Leer | ESP-0013 | A y T | Concluido | T-002, T-008, T-013 |
-| 4 | EDU-0004 | ILA-0014 | Crear | ESP-0014 | A y T | Concluido | T-001, T-002, T-004, T-005 |
-| 4 | EDU-0004 | ILA-0015 | Actualizar | ESP-0015 | A | Concluido | T-001, T-002, T-005 |
-| 4 | EDU-0004 | ILA-0016 | Eliminar | ESP-0016 | A | Concluido | T-001, T-002, T-007 |
-| 5 | EDU-0009 | ILA-0017 | Crear | ESP-0017 | A | Concluido | T-001, T-002, T-005 |
-| 5 | EDU-0009 | ILA-0018 | Leer | ESP-0018 | A y T | Concluido | T-002, T-008 |
-| 5 | EDU-0009 | ILA-0019 | Actualizar | ESP-0019 | A | Concluido | T-001, T-002, T-005 |
-| 5 | EDU-0009 | ILA-0020 | Eliminar | ESP-0020 | A | Concluido | T-001, T-002, T-007 |
-| 6 | EDU-0010 | ILA-0021 | Crear | ESP-0021 | A | Pendiente | T-001, T-002, T-005, T-008, T-013 |
-| 6 | EDU-0010 | ILA-0022 | Leer | ESP-0022 | A | Concluido | T-002, T-008, T-015 |
-| 6 | EDU-0010 | ILA-0023 | Actualizar | ESP-0023 | A | Concluido | T-001, T-002, T-007 |
-| 6 | EDU-0010 | ILA-0024 | Eliminar | ESP-0024 | A | Concluido | T-001, T-002, T-007 |
-| 7 | EDU-0011 | ILA-0025 | Crear | ESP-0025 | A | Pendiente | T-001, T-002, T-005, T-006 |
-| 7 | EDU-0011 | ILA-0026 | Leer | ESP-0026 | A | Concluido | T-002, T-008 |
-| 7 | EDU-0011 | ILA-0027 | Actualizar | ESP-0027 | A | Pendiente | T-002, T-005, T-006 |
-| 7 | EDU-0011 | ILA-0028 | Eliminar | ESP-0028 | A | Concluido | T-001, T-002, T-007 |
-| 8 | EDU-0012 | ILA-0029 | Crear | ESP-0029 | A | Concluido | T-001, T-002, T-005, T-012 |
-| 8 | EDU-0012 | ILA-0030 | Leer | ESP-0030 | A y T | Concluido | T-002, T-008 |
-| 8 | EDU-0012 | ILA-0031 | Actualizar | ESP-0031 | A | Concluido | T-001, T-002, T-005 |
-| 8 | EDU-0012 | ILA-0032 | Eliminar | ESP-0032 | A | Concluido | T-001, T-002, T-007, T-020 |
-| 9 | EDU-0013 | ILA-0033 | Crear | ESP-0033 | A | Pendiente | **sin pruebas** |
-| 9 | EDU-0013 | ILA-0034 | Leer | ESP-0034 | A | Pendiente | **sin pruebas** |
-| 9 | EDU-0013 | ILA-0035 | Actualizar | ESP-0035 | A | Pendiente | **sin pruebas** |
-| 9 | EDU-0013 | ILA-0036 | Eliminar | ESP-0036 | A | Pendiente | **sin pruebas** |
-| 10 | EDU-0014 | ILA-0037 | Crear | ESP-0037 | A | Pendiente | **sin pruebas** |
-| 10 | EDU-0014 | ILA-0038 | Leer | ESP-0038 | A | Pendiente | **sin pruebas** |
-| 10 | EDU-0014 | ILA-0039 | Actualizar | ESP-0039 | A | Pendiente | **sin pruebas** |
-| 10 | EDU-0014 | ILA-0040 | Eliminar | ESP-0040 | A | Pendiente | **sin pruebas** |
-| 11 | EDU-0015 | ILA-0041 | Crear | ESP-0041 | A | Pendiente | **sin pruebas** |
-| 11 | EDU-0015 | ILA-0042 | Leer | ESP-0042 | A y T | Pendiente | **sin pruebas** |
-| 11 | EDU-0015 | ILA-0043 | Actualizar | ESP-0043 | A | Pendiente | **sin pruebas** |
-| 11 | EDU-0015 | ILA-0044 | Eliminar | ESP-0044 | A | Pendiente | **sin pruebas** |
-| 12 | EDU-0016 | ILA-0045 | Crear | ESP-0045 | A | Pendiente | **sin pruebas** |
-| 12 | EDU-0016 | ILA-0046 | Leer | ESP-0046 | A | Pendiente | **sin pruebas** |
-| 12 | EDU-0016 | ILA-0047 | Actualizar | ESP-0047 | A | Pendiente | **sin pruebas** |
-| 12 | EDU-0016 | ILA-0048 | Eliminar | ESP-0048 | A | Pendiente | **sin pruebas** |
-| 13 | EDU-0017 | ILA-0049 | Crear | ESP-0049 | A | Pendiente | **sin pruebas** |
-| 13 | EDU-0017 | ILA-0050 | Leer | ESP-0050 | A | Pendiente | **sin pruebas** |
-| 13 | EDU-0017 | ILA-0051 | Actualizar | ESP-0051 | A | Pendiente | **sin pruebas** |
-| 13 | EDU-0017 | ILA-0052 | Eliminar | ESP-0052 | A | Pendiente | **sin pruebas** |
+| 1 | EDU-0001 | ILA-0001 | Crear | ESP-0001 | A y T | Pendiente | T-001, T-002, T-004, T-005, T-006, T-008, T-012 |
+| 1 | EDU-0001 | ILA-0002 | Leer | ESP-0002 | A y T | Pendiente | T-001, T-002, T-006, T-008 |
+| 1 | EDU-0001 | ILA-0003 | Actualizar | ESP-0003 | A | Pendiente | T-001, T-002, T-003, T-004, T-005, T-006, T-007, T-015 |
+| 1 | EDU-0001 | ILA-0004 | Eliminar | ESP-0004 | A | Pendiente | T-001, T-002, T-003, T-006, T-007 |
+| 2 | EDU-0002 | ILA-0005 | Crear | ESP-0005 | A | Pendiente | T-001, T-002, T-004, T-005, T-006, T-015 |
+| 2 | EDU-0002 | ILA-0006 | Leer | ESP-0006 | A y T | Concluido | T-001, T-002, T-006, T-007, T-008 |
+| 2 | EDU-0002 | ILA-0007 | Actualizar | ESP-0007 | A | Pendiente | T-001, T-002, T-005, T-006, T-007, T-015 |
+| 2 | EDU-0002 | ILA-0008 | Eliminar | ESP-0008 | A | Pendiente | T-001, T-002, T-003, T-006, T-007 |
+| 3 | EDU-0003 | ILA-0009 | Crear | ESP-0009 | A y T | Pendiente | T-001, T-002, T-004, T-005, T-006, T-012 |
+| 3 | EDU-0003 | ILA-0010 | Leer | ESP-0010 | A y T | Concluido | T-001, T-002, T-006, T-008 |
+| 3 | EDU-0003 | ILA-0011 | Actualizar | ESP-0011 | A | Concluido | T-001, T-002, T-004, T-005 |
+| 3 | EDU-0003 | ILA-0012 | Eliminar | ESP-0012 | A | Concluido | T-001, T-002, T-006, T-007, T-013 |
+| 4 | EDU-0004 | ILA-0013 | Leer | ESP-0013 | A y T | Concluido | T-001, T-002, T-006, T-008, T-013, T-018 |
+| 4 | EDU-0004 | ILA-0014 | Crear | ESP-0014 | A y T | Concluido | T-001, T-002, T-004, T-005, T-006, T-007, T-012 |
+| 4 | EDU-0004 | ILA-0015 | Actualizar | ESP-0015 | A | Concluido | T-001, T-002, T-004, T-005, T-007 |
+| 4 | EDU-0004 | ILA-0016 | Eliminar | ESP-0016 | A | Concluido | T-001, T-002, T-003, T-006, T-007 |
+| 5 | EDU-0009 | ILA-0017 | Crear | ESP-0017 | A | Concluido | T-001, T-002, T-005, T-006 |
+| 5 | EDU-0009 | ILA-0018 | Leer | ESP-0018 | A y T | Concluido | T-001, T-002, T-008 |
+| 5 | EDU-0009 | ILA-0019 | Actualizar | ESP-0019 | A | Concluido | T-001, T-002, T-005, T-007 |
+| 5 | EDU-0009 | ILA-0020 | Eliminar | ESP-0020 | A | Concluido | T-001, T-002, T-003, T-006, T-007 |
+| 6 | EDU-0010 | ILA-0021 | Crear | ESP-0021 | A | Pendiente | T-001, T-002, T-005, T-006, T-007, T-008, T-013 |
+| 6 | EDU-0010 | ILA-0022 | Leer | ESP-0022 | A | Concluido | T-001, T-002, T-004, T-008, T-015 |
+| 6 | EDU-0010 | ILA-0023 | Actualizar | ESP-0023 | A | Concluido | T-001, T-002, T-006, T-007 |
+| 6 | EDU-0010 | ILA-0024 | Eliminar | ESP-0024 | A | Concluido | T-001, T-002, T-006, T-007 |
+| 7 | EDU-0011 | ILA-0025 | Crear | ESP-0025 | A | Pendiente | T-001, T-002, T-004, T-005, T-006 |
+| 7 | EDU-0011 | ILA-0026 | Leer | ESP-0026 | A | Concluido | T-001, T-002, T-006, T-008 |
+| 7 | EDU-0011 | ILA-0027 | Actualizar | ESP-0027 | A | Pendiente | T-001, T-002, T-003, T-005, T-006, T-012 |
+| 7 | EDU-0011 | ILA-0028 | Eliminar | ESP-0028 | A | Concluido | T-001, T-002, T-006, T-007 |
+| 8 | EDU-0012 | ILA-0029 | Crear | ESP-0029 | A | Concluido | T-001, T-002, T-005, T-006, T-012 |
+| 8 | EDU-0012 | ILA-0030 | Leer | ESP-0030 | A y T | Concluido | T-001, T-002, T-008, T-016 |
+| 8 | EDU-0012 | ILA-0031 | Actualizar | ESP-0031 | A | Concluido | T-001, T-002, T-005, T-006 |
+| 8 | EDU-0012 | ILA-0032 | Eliminar | ESP-0032 | A | Concluido | T-001, T-002, T-006, T-007, T-020 |
+| 9 | EDU-0013 | ILA-0033 | Crear | ESP-0033 | A | Pendiente | T-001, T-002, T-006, T-012 |
+| 9 | EDU-0013 | ILA-0034 | Leer | ESP-0034 | A | Pendiente | T-002, T-004, T-012 |
+| 9 | EDU-0013 | ILA-0035 | Actualizar | ESP-0035 | A | Pendiente | T-002, T-003, T-004, T-012 |
+| 9 | EDU-0013 | ILA-0036 | Eliminar | ESP-0036 | A | Pendiente | T-002, T-003, T-006, T-007, T-012 |
+| 10 | EDU-0014 | ILA-0037 | Crear | ESP-0037 | A | Pendiente | T-001, T-002, T-004, T-006 |
+| 10 | EDU-0014 | ILA-0038 | Leer | ESP-0038 | A | Pendiente | T-001, T-002 |
+| 10 | EDU-0014 | ILA-0039 | Actualizar | ESP-0039 | A | Pendiente | T-001, T-002, T-007 |
+| 10 | EDU-0014 | ILA-0040 | Eliminar | ESP-0040 | A | Pendiente | T-002, T-003, T-006, T-007 |
+| 11 | EDU-0015 | ILA-0041 | Crear | ESP-0041 | A | Pendiente | T-001, T-002, T-005, T-006, T-012 |
+| 11 | EDU-0015 | ILA-0042 | Leer | ESP-0042 | A y T | Pendiente | T-001, T-002, T-004 |
+| 11 | EDU-0015 | ILA-0043 | Actualizar | ESP-0043 | A | Pendiente | T-001, T-002, T-006, T-012 |
+| 11 | EDU-0015 | ILA-0044 | Eliminar | ESP-0044 | A | Pendiente | T-002, T-003, T-006, T-007, T-012 |
+| 12 | EDU-0016 | ILA-0045 | Crear | ESP-0045 | A | Pendiente | T-001, T-002, T-006 |
+| 12 | EDU-0016 | ILA-0046 | Leer | ESP-0046 | A | Pendiente | T-001, T-002 |
+| 12 | EDU-0016 | ILA-0047 | Actualizar | ESP-0047 | A | Pendiente | T-002, T-004 |
+| 12 | EDU-0016 | ILA-0048 | Eliminar | ESP-0048 | A | Pendiente | T-002, T-007 |
+| 13 | EDU-0017 | ILA-0049 | Crear | ESP-0049 | A | Pendiente | T-001, T-002, T-007 |
+| 13 | EDU-0017 | ILA-0050 | Leer | ESP-0050 | A | Pendiente | T-002, T-004, T-006 |
+| 13 | EDU-0017 | ILA-0051 | Actualizar | ESP-0051 | A | Pendiente | T-002, T-004 |
+| 13 | EDU-0017 | ILA-0052 | Eliminar | ESP-0052 | A | Pendiente | T-002, T-006 |
 
 `A` = Administrador (ACT-0001) · `T` = Técnico (ACT-0002). Los tipos de prueba corresponden al catálogo del capítulo 10 del Catálogo de Requisitos, según `09-pruebas-software.md`.
 
@@ -135,6 +135,7 @@
 | RNF-0007 Funcionamiento en el equipo objetivo | Compatibilidad | Todos los módulos | Verificado por las pruebas T-015 y T-011. |
 | RNF-0008 Stack tecnológico | Restricción de implementación | Todos los módulos | Determina la correspondencia de tipos de la sección de tipos del Diccionario de Datos v04.00. |
 | RNF-0009 Integridad y respaldo de DB_FARMASIL | Integridad | Las 16 tablas de `DB_FARMASIL` | Las 52 especificaciones operan sobre el esquema declarado en este requisito. Las transacciones declaradas en cada especificación son el mecanismo por el que se cumple la parte de integridad. |
+| RNF-0010 Procesos programados del sistema | Adecuación funcional | ESP-0013, ESP-0045 a ESP-0048, `TBL_LOTES`, `TBL_LISTA_REABASTECIMIENTO` | Evaluación diaria de vencimientos y generación quincenal de la lista de reabastecimiento. Cubierto por T-001 y T-006. |
 
 **Educciones reclasificadas.** Los requisitos que ocupaban EDU-0005 a EDU-0008 se trasladaron al catálogo de requisitos no funcionales. Su trazabilidad se conserva por la nota de códigos reservados de `01-educciones.md` y por esta matriz.
 
@@ -175,10 +176,12 @@
 | Correspondencia uno a uno EDU→ILA→ESP | Sin huecos ni duplicados |
 | Ilaciones con rol autorizado declarado | 52 de 52 |
 | Estado coincidente entre ilación y especificación | 52 de 52 |
-| Especificaciones con pruebas definidas | 44 de 52 |
+| Especificaciones con pruebas definidas | 52 de 52 |
 | Mockups referenciados que existen | **28 de 48** |
 
 ### Huecos abiertos
+
+> Desde el 13/10/2026, los huecos abiertos se siguen como cuestiones `PEN-NNN` en `seguimiento/11-registro-pendientes.md`.
 
 1. ~~**Faltan pruebas y las existentes están desactualizadas.**~~ **Resuelto el 05/09/2026.** `09-pruebas-software.md` v03.00 cubre las 44 especificaciones con 223 pruebas, más las seis condiciones de RNF-0006 y los nueve requisitos no funcionales.
 2. **Faltan los datos de prueba.** El documento define qué se prueba, no con qué juego de datos de carga inicial.
@@ -186,17 +189,17 @@
 4. **`TBL_ALERTAS_VENCIMIENTO` sin CRUD**, según la sección 4.
 5. **Catálogo de fuentes inexistente.** FUE-0001 a FUE-0005 se citan en 26 artefactos sin que ningún documento los defina. Siete ilaciones citan la Entrevista 1 y cuatro la consulta posterior al cliente, ambas sin código.
 6. ~~**RNF-0006 pendiente de actualizar.**~~ **Resuelto el 05/09/2026.** Refundido en la versión 03.00, que cubre autenticación, identificación en la trazabilidad, autorización por rol, comportamiento ante intento no autorizado, protección de credenciales y continuidad de la administración. Ver `08-requisitos-no-funcionales.md`.
-7. **Falta el requisito de la generación automática de alertas de vencimiento**, al que ILA-0013 remite sin que exista.
+7. ~~**Falta el requisito de la generación automática de alertas de vencimiento.**~~ **Resuelto el 13/10/2026** con la condición 1 de RNF-0010.
 8. **Veinte mockups sin diseñar** (antes doce): se suman `ART-MKP-REA-0001` a `0004` y `ART-MKP-COT-0001` a `0004` a los ya pendientes de `02-ilaciones.md`.
-9. **Generación automática de la lista de reabastecimiento sin requisito no funcional formal**, en la misma situación que el punto 7 (generación automática de alertas de vencimiento, a la que ILA-0013 remite sin que exista). Se recomienda resolver ambos en un mismo RNF de "procesos programados del sistema".
+9. ~~**Generación automática de la lista de reabastecimiento sin requisito no funcional formal.**~~ **Resuelto el 13/10/2026** con la condición 2 de RNF-0010. Texto original:, en la misma situación que el punto 7 (generación automática de alertas de vencimiento, a la que ILA-0013 remite sin que exista). Se recomienda resolver ambos en un mismo RNF de "procesos programados del sistema".
 
 
-**Versión:** 03.00
-**Fecha:** 02/10/2026
+**Versión:** 04.00
+**Fecha:** 13/10/2026
 **Autor:** AUT-0001
 
 Sigue la estructura de la plantilla oficial de trazabilidad de la asignatura (Educción, Ilación, Especificación, Otros artefactos), ampliada con las columnas que el catálogo necesita para verificarse: rol autorizado, estado y cobertura de pruebas.
 
-Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificaciones.md`, `05-diccionario-datos.md` v05.00, `06-guia-nomenclatura-mockups.md` v04.00, `07-matriz-permisos.md` v03.00, `08-requisitos-no-funcionales.md` y `09-pruebas-software.md`.
+Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificaciones.md`, `05-diccionario-datos.md` v06.00, `06-guia-nomenclatura-mockups.md` v04.00, `07-matriz-permisos.md` v03.00, `08-requisitos-no-funcionales.md` y `09-pruebas-software.md`.
 
 ---

@@ -1,0 +1,14 @@
+@startuml EST-02_OrdenDevolucion
+hide empty description
+skinparam state {
+  BackgroundColor #EDECFB
+  BorderColor #8577E0
+}
+
+[*] --> Pendiente : T1 registrarOrden() / ESP-0025
+Pendiente --> Pendiente : T2 actualizarOrden()\n[detalle no vacio] / ESP-0027
+Pendiente --> Completada : T3 actualizarOrden(estado=Completada)\n/ stock_actual -= cantidad_devolver / ESP-0027
+Pendiente --> Eliminada : T4 eliminarOrden()\n[confirmacion = Si] / ESP-0028
+Completada --> [*]
+Eliminada --> [*]
+@enduml

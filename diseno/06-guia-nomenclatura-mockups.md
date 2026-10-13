@@ -9,6 +9,7 @@
 | 05/09/2026 | 03.00 | Se incorporan los módulos 9 (usuarios, prefijo **USR**) y 10 (proveedores, prefijo **PRV**). Se resuelve la contradicción entre la regla de mayúsculas y los ejemplos de la versión anterior. Se oficializan los tipos de componente **FEC**, **NUM** y **PWD**. Se incorpora la regla de correspondencia entre el tipo del campo en la base de datos y el tipo del componente, y el inventario completo por módulo. | AUT-0001 |
 
 | 05/09/2026 | 04.00 | Se incorpora el módulo 11 (lotes, prefijo **LOT**), derivado de la incorporación de `TBL_LOTES` al Diccionario de Datos v04.00. Los componentes de lote, vencimiento y stock se trasladan del módulo de inventario al nuevo módulo, y los módulos 1, 4 y 7 pasan a operar sobre la remesa en lugar del medicamento. | AUT-0001 |
+| 13/10/2026 | 05.00 | La contraseña se describe como hash con sal, conforme a RNF-0006 v05.00. | AUT-0001 |
 
 ---
 
@@ -98,7 +99,7 @@ El tipo del componente no se elige por criterio visual: lo determina el tipo del
 | Valor lógico | `BIT` | `bool` | CheckBox | **CHK** |
 | Dominio cerrado de valores | `NVARCHAR(n)` con CHECK | `string` o `enum` | ComboBox | **CMB** |
 | Referencia a otra entidad | `INT` con clave foránea | `int` | ComboBox | **CMB** |
-| Contraseña | `NVARCHAR(255)` encriptada | `string` | PasswordBox | **PWD** |
+| Contraseña | `NVARCHAR(255)` con hash | `string` | PasswordBox | **PWD** |
 | Valor calculado o autogenerado | no se captura | según el cálculo | TextBlock | **LBL** |
 
 Dos consecuencias prácticas de esta regla:

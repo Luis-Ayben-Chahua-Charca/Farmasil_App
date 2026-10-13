@@ -59,16 +59,18 @@ Comparación Precios → Inventario, Proveedores, Reabastecimiento
 `Usuarios` **no aparece en el grafo de la Sección 3** a propósito. Su relación con otros módulos es transversal: todo módulo que registra una acción de un usuario lleva un campo `id_usuario` de auditoría (quién hizo la operación), pero ningún módulo le "pregunta" a Usuarios una regla de negocio para poder operar. Al implementar:
 
 - No crees un servicio `UsuarioService` que otros módulos consulten como parte de su lógica de negocio.
-- Sí usa el usuario de la sesión activa (autenticación/autorización, válido para **todas** las pantallas, no solo las que tienen FK) para rellenar el campo `id_usuario` donde la tabla lo tenga: `TBL_REGISTRO_VENTAS`, `TBL_ORDENES_DEVOLUCION`, `TBL_REPORTES_VENTAS` (como `usuario_responsable`), `TBL_COTIZACIONES_PROVEEDOR`.
+- Sí usa el usuario de la sesión activa (autenticación/autorización, válido para **todas** las pantallas, no solo las que tienen FK) para rellenar el campo `id_usuario` donde la tabla lo tenga: `TBL_REGISTRO_VENTAS`, `TBL_ORDENES_DEVOLUCION`, `TBL_COTIZACIONES_PROVEEDOR`.
+- `TBL_REPORTES_VENTAS` **no tiene `id_usuario` ni ninguna otra FK**. El `usuario_responsable` que exige EDU-0010 es un valor calculado: ESP-0021 lo obtiene al generar el reporte uniendo `TBL_REGISTRO_VENTAS.id_usuario` con `TBL_USUARIOS`, y solo existe dentro del archivo de salida. No agregues esa columna a la tabla.
 - Control de acceso por rol (Dueña vs. Técnica, columna "Accede" de la Sección 2) es una preocupación transversal de autorización (RNF-0006), no de dominio — impleméntalo como middleware/guard, no como dependencia entre módulos.
 
 ---
 
-## 5. Tres decisiones de diseño ya cerradas — no las reabras
+## 5. Cuatro decisiones de diseño ya cerradas — no las reabras
 
 1. **Ventas NO accede a Inventario directamente.** La cadena es `Ventas → Lotes → Inventario`. `TBL_DETALLE_VENTAS.id_lote` es FK a `TBL_LOTES`, no a `TBL_PRODUCTOS`. Al descontar stock en una venta, hazlo contra la remesa (`TBL_LOTES.stock_actual`), no contra el producto.
 2. **Lotes es su propia entidad, con proveedor propio.** `TBL_LOTES.id_proveedor` puede ser distinto del proveedor habitual del producto en `TBL_PRODUCTOS`. No asumas que son el mismo valor.
 3. **La selección de remesa en una venta sigue criterio FEFO** (primero en vencer, primero en salir) — es responsabilidad de Lotes exponerlo, no de Ventas calcularlo.
+4. **Las bajas condicionales no consultan tablas de otros módulos.** En ESP-0008, ESP-0020, ESP-0036, ESP-0040 y ESP-0044 la elección entre borrado físico y baja lógica la decide la base de datos: intenta el `DELETE` dentro de la transacción con un punto de guardado; si SQL Server lo rechaza por una clave foránea (error 547), revierte al punto de guardado y aplica la baja lógica. No implementes la verificación enumerando tablas: crearía dependencias inversas que la arquitectura no tiene (ver RG-011 en `riesgos/10-gestion-riesgos.md`).
 
 ---
 
@@ -88,11 +90,13 @@ Comparación Precios → Inventario, Proveedores, Reabastecimiento
 | Trazabilidad EDU↔ILA↔ESP | `catalogo/04-trazabilidad.md` |
 | Esquema de base de datos completo (tablas, FKs, tipos) | `modelo/05-diccionario-datos.md` |
 | Quién puede hacer qué (permisos por actor) | `diseno/07-matriz-permisos.md` |
-| Requisitos no funcionales (RNF-0001 a RNF-0009: operación local, un solo equipo, control de acceso, tiempos de respuesta) | `08-requisitos-no-funcionales.md` (si no está en este repo, está en el Proyecto de Claude) |
+| Requisitos no funcionales (RNF-0001 a RNF-0010: operación local, un solo equipo, control de acceso, tiempos de respuesta) | `catalogo/08-requisitos-no-funcionales.md` |
 | Diagrama de arquitectura genérica (visual) | `docs/arquitectura/ArquitecturaGenerica_Nivel1.png` (vista simplificada) y `ArquitecturaGenerica_Nivel2.png` (13 componentes con interfaces) |
 | Matriz de dependencias e interfaces (texto, la fuente de este documento) | `docs/arquitectura/Insumo_Matriz_Interfaces_ArquitecturaGenerica_v2.md` |
 | Mockups de pantallas | `diseno/Mockups/` |
 | Diagramas de casos de uso | `docs/diagramas/` |
+| Riesgos identificados y su estado | `riesgos/10-gestion-riesgos.md` |
+| Cuestiones abiertas y decisiones ya tomadas (no reabrir sin revisar) | `seguimiento/11-registro-pendientes.md` |
 | Reglas para agentes de IA trabajando en este repo (commits, git add, atribución) | `AGENTS.md` (raíz del repo) |
 
 ---

@@ -1,0 +1,49 @@
+@startuml SEC-02_ReabastecimientoAutomatico
+autonumber
+skinparam sequence {
+  ArrowColor #444444
+  LifeLineBorderColor #8577E0
+  ParticipantBackgroundColor #EDECFB
+}
+
+actor "Sistema\n(proceso programado)" as S
+participant "Reabastecimiento" as REA
+participant "Inventario" as I
+participant "Lotes" as L
+database "DB_FARMASIL" as D
+participant "Configuracion local" as C
+
+S -> C : leerFechaUltimaEjecucion()
+C --> S : fechaUltimaEjecucion
+
+alt han pasado >= 15 dias desde fechaUltimaEjecucion (o nunca se ejecuto)
+  S -> REA : ejecutarGeneracionAutomatica() / RNF-0010 cond. 2
+  REA -> I : productosDisponibles()
+  I -> D : SELECT TBL_PRODUCTOS\nWHERE estado_producto = 'Disponible'
+  D --> I : productos (con stock_minimo)
+  I --> REA : productos
+
+  loop por cada producto
+    REA -> L : stockConsolidado(producto)
+    L -> D : SELECT SUM(stock_actual)\nWHERE id_producto = producto\nAND estado_lote = 'Disponible'
+    D --> L : stockConsolidado
+    L --> REA : stockConsolidado
+
+    alt stockConsolidado < producto.stock_minimo
+      REA -> D : SELECT TBL_LISTA_REABASTECIMIENTO\nWHERE id_producto = producto
+      D --> REA : itemExistente
+      alt itemExistente no existe
+        REA -> D : INSERT (producto, 'Automatico',\n'Normal', FECHA_SISTEMA) EN\nTBL_LISTA_REABASTECIMIENTO
+      else itemExistente ya existe
+        note right of REA : no se modifica prioridad\nni origen del item existente
+      end
+    else stockConsolidado >= producto.stock_minimo
+      note right of REA : el producto no se agrega
+    end
+  end
+
+  REA -> C : actualizarFechaUltimaEjecucion(FECHA_SISTEMA)
+else no han pasado 15 dias
+  note right of S : el proceso no se\nejecuta en este ciclo
+end
+@enduml

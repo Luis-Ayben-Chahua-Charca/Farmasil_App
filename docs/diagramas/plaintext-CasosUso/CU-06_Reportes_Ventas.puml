@@ -1,7 +1,7 @@
 @startuml
 left to right direction
 
-actor "Administrador" as Admin
+actor "Dueña de la farmacia\n<<Administrador>>" as Admin
 
 rectangle "Módulo de reportes de ventas (EDU-0010)" {
 
@@ -13,7 +13,7 @@ rectangle "Módulo de reportes de ventas (EDU-0010)" {
     RV2 ..> RV3 : <<include>>
     RV4 ..> RV3 : <<include>>
 
-    note "Rol autorizado según la Matriz de Trazabilidad:\nAdministrador (ACT-0001)" as N1
+    note "Rol autorizado según la Matriz de Permisos:\nAdministrador (ACT-0001)" as N1
 }
 
 Admin -- RV1

@@ -1,14 +1,13 @@
 @startuml
 left to right direction
 
-actor "Técnica" as Tecnica
+actor "Técnica farmacéutica\n<<Tecnico>>" as Tecnica
 
 rectangle "Sistema FARMASIL" {
 
     rectangle "Gestión de ventas" {
         usecase "Registrar venta" as V1
         usecase "Consultar ventas" as V2
-        usecase "Anular venta" as V3
         usecase "Generar comprobante\nde venta" as V4
 
         usecase "Buscar producto" as V5
@@ -18,24 +17,20 @@ rectangle "Sistema FARMASIL" {
         V1 ..> V6 : <<include>>
     }
 
+    note "Rol Técnico (ACT-0002) según la Matriz de Permisos:\nno anula ventas (ILA-0004) ni accede a reportes (ILA-0021 a ILA-0024, RNF-0006)" as N1
+
     rectangle "Consulta de inventario" {
         usecase "Consultar stock\nde productos" as I1
         usecase "Ver detalle de producto" as I2
     }
 
-    rectangle "Reportes" {
-        usecase "Generar reporte de ventas" as R1
-    }
 }
 
 Tecnica -- V1
 Tecnica -- V2
-Tecnica -- V3
 Tecnica -- V4
 
 Tecnica -- I1
 Tecnica -- I2
-
-Tecnica -- R1
 
 @enduml
