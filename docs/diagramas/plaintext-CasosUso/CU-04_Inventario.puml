@@ -2,8 +2,8 @@
 left to right direction
 skinparam packageStyle rectangle
 
-actor "Técnica\n(Operador)" as Tecnica
-actor "Dueña\n(Administrador)" as Duena
+actor "Técnica farmacéutica\n<<Tecnico>>" as Tecnica
+actor "Dueña de la farmacia\n<<Administrador>>" as Duena
 
 rectangle "Sistema FARMASIL" {
     usecase "Registrar Producto\n(Incluye Lote y Fecha de Vencimiento)" as UC_Registrar

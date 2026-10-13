@@ -1,7 +1,7 @@
 @startuml
 left to right direction
 
-actor "Dueña\n<<Administrador>>" as Duena
+actor "Dueña de la farmacia\n<<Administrador>>" as Duena
 
 rectangle "FARMASIL\nSistema de Gestión de Farmacia" {
 

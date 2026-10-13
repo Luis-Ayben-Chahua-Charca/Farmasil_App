@@ -1,7 +1,7 @@
 @startuml
 left to right direction
 
-actor "Técnica" as Tecnica
+actor "Técnica farmacéutica\n<<Tecnico>>" as Tecnica
 
 rectangle "Sistema FARMASIL" {
 
