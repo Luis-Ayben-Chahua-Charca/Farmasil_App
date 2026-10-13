@@ -15,7 +15,7 @@ Sistema de gestión para farmacia. Universidad Nacional de San Agustín, Ingenie
 | `07-matriz-permisos.md` | v03.00 | Actores, roles y permisos por operación. |
 | `08-requisitos-no-funcionales.md` | — | 10 requisitos no funcionales. RNF-0006 refundido en seguridad; RNF-0010 documenta los procesos programados. |
 | `09-pruebas-software.md` | v04.00 | 254 pruebas sobre las 52 especificaciones y los 10 requisitos no funcionales. |
-| `10-gestion-riesgos.md` | v04.00 | 127 riesgos (11 generales y 116 de las 52 ilaciones), 66 resueltos, con su estado verificado contra el catálogo vigente. Insumo de la plantilla GRI_0002. |
+| `10-gestion-riesgos.md` | v05.00 | 127 riesgos (11 generales y 116 de las 52 ilaciones), 67 resueltos, con su estado verificado contra el catálogo vigente. Insumo de la plantilla GRI_0002. |
 
 ## Estructura del catálogo
 

@@ -1,6 +1,6 @@
 # Gestión de Riesgos — FARMASIL
 
-**Versión:** 04.00 · **Fecha:** 13/10/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
+**Versión:** 05.00 · **Fecha:** 13/10/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
 
 Insumo para la plantilla de gestión de riesgos GRI_0002: el equipo revisa, ajusta y traslada estas
 filas a la hoja de cálculo. Cubre **las 52 ilaciones de los 13 módulos** más un bloque de **riesgos
@@ -14,8 +14,9 @@ generales (RG)**, según la observación del profesor.
 | 02.00 | 12/10/2026 | Reevaluación contra el catálogo vigente: 44 riesgos pasan a Resuelto, ningún riesgo queda Retrasado, se corrige el total declarado (94 → 85 filas reales) y se agregan 4 riesgos nuevos de coherencia. |
 | 03.00 | 13/10/2026 | Primera versión en el repositorio. Se resuelven los 4 riesgos nuevos (ILA-0016-R03, ILA-0016-R04, ILA-0022-R03, ILA-0023-R04) con el Diccionario de Datos v06.00; se descarta el tipo de reporte 'Mermas'; se agregan los riesgos de los módulos 9 a 13 y RG-011. |
 | 04.00 | 13/10/2026 | Se resuelven RG-011 (bajas condicionales por rechazo del motor), ILA-0036-R01, ILA-0036-R02, ILA-0040-R01, ILA-0043-R01 y, con RNF-0010, ILA-0013-R03, ILA-0045-R01, ILA-0045-R02, ILA-0047-R01 e ILA-0048-R01. |
+| 05.00 | 13/10/2026 | Se resuelve ILA-0004-R03: la venta con cualquier comprobante asociado no puede eliminarse. |
 
-En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"** o **"v04 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
+En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"** o **"v05 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
 
 ## Criterio usado para el campo Estado
 
@@ -72,7 +73,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0003-R03 | El recálculo de cantidad no valida disponibilidad actual de stock. | Baja | 10% | 3 | Resuelto | v02 — ESP-0003 valida `diferencia <= linea.lote.stock_actual` y ajusta el stock por diferencia. | ESP-0003 |
 | ILA-0004-R01 | No se define si la eliminación de una venta es física o lógica. | Baja | 10% | 4 | Resuelto | v02 — ESP-0004 v03.00 define eliminación física en cascada (detalle y cabecera) con restitución del stock, permitida solo si no hay comprobante 'Emitido'. | ESP-0004 |
 | ILA-0004-R02 | Falta de validación sobre si una venta con comprobante emitido puede eliminarse. | Baja | 10% | 4 | Resuelto | v02 — ESP-0004 bloquea la eliminación si existe comprobante 'Emitido'. | ESP-0004 |
-| ILA-0004-R03 | Una venta con comprobante **'Anulado'** sí puede eliminarse físicamente, pero `TBL_COMPROBANTES_TRIBUTARIOS.id_venta` sigue apuntando a ella: violación de integridad referencial y pérdida del vínculo que la auditoría tributaria necesita. | Media | 50% | 4 | Pendiente | Recomendación de la instancia maestra (13/10/2026): bloquear la eliminación si existe cualquier comprobante asociado, 'Emitido' o 'Anulado'. Pendiente de decisión de Leyni. | ESP-0004, ESP-0012 |
+| ILA-0004-R03 | Una venta con comprobante **'Anulado'** sí puede eliminarse físicamente, pero `TBL_COMPROBANTES_TRIBUTARIOS.id_venta` sigue apuntando a ella: violación de integridad referencial y pérdida del vínculo que la auditoría tributaria necesita. | Baja | 10% | 4 | Resuelto | v05 — ESP-0004 v04.00 e ILA-0004 v07.00 bloquean la eliminación ante cualquier comprobante asociado, 'Emitido' o 'Anulado'; la corrección se hace con ESP-0003. Prueba T-006 ampliada. | ESP-0004, ESP-0012 |
 
 ## Módulo 2 — Gestión de Inventario (EDU-0002) · ILA-0005 a ILA-0008 · prefijo INV
 
@@ -246,7 +247,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | Bloque | Claves |
 |---|---|
 | Generales | RG-011 |
-| 1 Ventas | ILA-0001-R03, ILA-0001-R04, ILA-0002-R02, ILA-0003-R01, ILA-0003-R03, ILA-0004-R01, ILA-0004-R02 |
+| 1 Ventas | ILA-0001-R03, ILA-0001-R04, ILA-0002-R02, ILA-0003-R01, ILA-0003-R03, ILA-0004-R01, ILA-0004-R02, ILA-0004-R03 |
 | 2 Inventario | ILA-0005-R01, ILA-0005-R03, ILA-0005-R04, ILA-0007-R01, ILA-0007-R02, ILA-0007-R03, ILA-0008-R01, ILA-0008-R02 |
 | 3 Documentación | ILA-0009-R01, ILA-0009-R02, ILA-0009-R03, ILA-0011-R02, ILA-0012-R01, ILA-0012-R03 |
 | 4 Alertas de vencimiento | ILA-0013-R01, ILA-0013-R03, ILA-0014-R02, ILA-0015-R01, ILA-0015-R02, ILA-0016-R01, ILA-0016-R03, ILA-0016-R04 |
@@ -260,7 +261,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | 12 Reabastecimiento | ILA-0045-R01, ILA-0045-R02, ILA-0047-R01, ILA-0048-R01 |
 | 13 Comparación de precios | ILA-0052-R01 |
 
-**Total: 66 resueltos.**
+**Total: 67 resueltos.**
 
 ## Riesgos abiertos de mayor severidad (impacto ≥ 4 y probabilidad ≥ 50 %)
 
@@ -269,7 +270,6 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | RG-006 | Acceso no autorizado al equipo, exponiendo datos tributarios y de ventas. |
 | RG-007 | Corrupción de la BD por cierre inesperado del sistema mientras una transacción está en curso. |
 | RG-010 | Pérdida de información por ausencia de copias de seguridad periódicas de DB_FARMASIL. |
-| ILA-0004-R03 | Una venta con comprobante 'Anulado' sí puede eliminarse físicamente, pero `TBL_COMPROBANTES_TRIBUTARIOS.id_venta` sigue apuntando a ella: violación de integridad referencial y pérdida del vínculo que la auditoría tributaria necesita. |
 | ILA-0011-R01 | No se define si un comprobante ya reportado en declaración tributaria puede modificarse (solo existe 'Emitido'/'Anulado'). |
 | ILA-0012-R02 | Riesgo de anular un comprobante ya presentado ante la autoridad tributaria sin advertencia. |
 | ILA-0031-R01 | Desactivar una restricción deja sin protección una venta próxima. |
@@ -282,6 +282,6 @@ No queda ningún riesgo en estado **Retrasado**.
 | Bloque | Filas | Resuelto | En proceso | Pendiente |
 |---|---|---|---|---|
 | RG | 11 | 1 | 4 | 6 |
-| Módulos 1-8 | 89 | 55 | 3 | 31 |
+| Módulos 1-8 | 89 | 56 | 3 | 30 |
 | Módulos 9-13 | 27 | 10 | 0 | 17 |
-| **Total** | **127** | **66** | **7** | **54** |
+| **Total** | **127** | **67** | **7** | **53** |

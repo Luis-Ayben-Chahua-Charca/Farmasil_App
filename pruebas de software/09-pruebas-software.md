@@ -79,10 +79,10 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Reducir la cantidad de una línea y verificar que la diferencia se devuelva al stock de la remesa. | T-007 |
 |  |  | Verificar que el monto_total resultante coincida con la suma del nuevo detalle. | T-004 |
 | ESP-0004 | Eliminación del registro de venta (Eliminar) | Camino básico: seleccionar venta sin comprobante, confirmar y verificar la eliminación en cascada. | T-002 |
-|  |  | Complejidad ciclomática: ramas de comprobante emitido, confirmación afirmativa y negativa. | T-003 |
+|  |  | Complejidad ciclomática: ramas de comprobante asociado, confirmación afirmativa y negativa. | T-003 |
 |  |  | Verificar que se restituya el stock de cada remesa antes de eliminar líneas y cabecera. | T-006 |
 |  |  | Verificar que no queden filas huérfanas en el detalle tras la eliminación. | T-007 |
-|  |  | Intentar eliminar una venta con comprobante 'Emitido' y verificar el rechazo. | T-006 |
+|  |  | Intentar eliminar una venta con comprobante 'Emitido' y otra con comprobante 'Anulado', y verificar el rechazo en ambos casos. | T-006 |
 |  |  | Presionar el botón de cancelar del modal y verificar que no se produzca ningún cambio. | T-001 |
 | Módulo 1 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que ESP-0001 y ESP-0002 se ejecuten y que ESP-0003 y ESP-0004 sean rechazadas. | T-012 |
 

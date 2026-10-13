@@ -62,21 +62,21 @@
 | Código ilación | ILA-0004 |
 | --- | --- |
 | Nombre | Eliminación del registro de venta |
-| Versión | 06.00 |
-| Fecha | 05/09/2026 |
+| Versión | 07.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0001 |
 | Experto | Ninguno |
 | Código educción | EDU-0001 |
 | Código especificación | ESP-0004 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_REGISTRO_VENTAS** tiene entradas válidas.<br>5. La venta seleccionada no tiene un comprobante tributario asociado en estado 'Emitido' en **DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS**.<br>6. **VEN-TBL-REGISTRO-VENTAS** está habilitada para seleccionar una entrada. |
-| Procedimiento | 1. El usuario selecciona un registro de venta en **VEN-TBL-REGISTRO-VENTAS**.<br>2. El usuario presiona **VEN-BTN-ELIMINAR-VENTA**.<br>3. El sistema verifica que la venta no tenga comprobante tributario emitido. Si lo tiene, cancela la operación e indica que el comprobante debe anularse primero según ILA-0012.<br>4. El sistema carga el mockup **ART-MKP-VEN-0004** y muestra el modal **VEN-MDL-CONFIRMAR-ELIMINACION** con el mensaje **VEN-TXT-MSJ**: "¿Está seguro de eliminar este registro de venta? El stock de los productos será restituido."<br>5. Si el usuario presiona **VEN-BTN-CONFIRMAR-SI**, el sistema inicia una transacción, restituye al `stock_actual` de **DB_FARMASIL.TBL_LOTES** las cantidades de cada línea, elimina las líneas asociadas en **DB_FARMASIL.TBL_DETALLE_VENTAS**, elimina la cabecera en **DB_FARMASIL.TBL_REGISTRO_VENTAS** y confirma la transacción.<br>6. Si el usuario presiona **VEN-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>7. El sistema actualiza **VEN-TBL-REGISTRO-VENTAS**. |
-| Postcondición | 1. La cabecera de la venta y todas sus líneas de detalle quedan eliminadas de **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS**, sin dejar detalle huérfano.<br>2. El `stock_actual` de las remesas involucradas queda restituido en **DB_FARMASIL.TBL_LOTES**.<br>3. La venta deja de mostrarse en **VEN-TBL-REGISTRO-VENTAS**.<br>4. Ninguna venta con comprobante tributario emitido resulta eliminada. |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_REGISTRO_VENTAS** tiene entradas válidas.<br>5. La venta seleccionada no tiene ningún comprobante tributario asociado en **DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS**, ni 'Emitido' ni 'Anulado'.<br>6. **VEN-TBL-REGISTRO-VENTAS** está habilitada para seleccionar una entrada. |
+| Procedimiento | 1. El usuario selecciona un registro de venta en **VEN-TBL-REGISTRO-VENTAS**.<br>2. El usuario presiona **VEN-BTN-ELIMINAR-VENTA**.<br>3. El sistema verifica que la venta no tenga ningún comprobante tributario asociado. Si lo tiene, cancela la operación e indica que, si la venta requiere corrección, debe anularse el comprobante (ILA-0012) y actualizarse la venta (ILA-0003).<br>4. El sistema carga el mockup **ART-MKP-VEN-0004** y muestra el modal **VEN-MDL-CONFIRMAR-ELIMINACION** con el mensaje **VEN-TXT-MSJ**: "¿Está seguro de eliminar este registro de venta? El stock de los productos será restituido."<br>5. Si el usuario presiona **VEN-BTN-CONFIRMAR-SI**, el sistema inicia una transacción, restituye al `stock_actual` de **DB_FARMASIL.TBL_LOTES** las cantidades de cada línea, elimina las líneas asociadas en **DB_FARMASIL.TBL_DETALLE_VENTAS**, elimina la cabecera en **DB_FARMASIL.TBL_REGISTRO_VENTAS** y confirma la transacción.<br>6. Si el usuario presiona **VEN-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>7. El sistema actualiza **VEN-TBL-REGISTRO-VENTAS**. |
+| Postcondición | 1. La cabecera de la venta y todas sus líneas de detalle quedan eliminadas de **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS**, sin dejar detalle huérfano.<br>2. El `stock_actual` de las remesas involucradas queda restituido en **DB_FARMASIL.TBL_LOTES**.<br>3. La venta deja de mostrarse en **VEN-TBL-REGISTRO-VENTAS**.<br>4. Ninguna venta con comprobante tributario asociado, emitido o anulado, resulta eliminada. |
 | Código de artefactos asociados | ART-MKP-VEN-0001, ART-MKP-VEN-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | El procedimiento cargaba **ART-MKP-VEN-0003** mientras la fila de artefactos declaraba **ART-MKP-VEN-0004**; se corrigió a favor del mockup de eliminación.<br>Se agregó la eliminación en cascada del detalle, que de otro modo quedaba huérfano y rompía la integridad referencial, la restitución del stock y el bloqueo de la eliminación cuando existe comprobante tributario emitido. |
+| Comentario | El procedimiento cargaba **ART-MKP-VEN-0003** mientras la fila de artefactos declaraba **ART-MKP-VEN-0004**; se corrigió a favor del mockup de eliminación.<br>Se agregó la eliminación en cascada del detalle, que de otro modo quedaba huérfano y rompía la integridad referencial, la restitución del stock y el bloqueo de la eliminación cuando existe comprobante tributario emitido.<br>**Versión 07.00:** el bloqueo se extiende a los comprobantes 'Anulado': un documento tributario anulado debe conservarse junto con su venta. La vía de corrección es la actualización (ILA-0003). |
 
 ---
 
