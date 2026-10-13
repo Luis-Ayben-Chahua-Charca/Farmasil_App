@@ -150,6 +150,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Complejidad ciclomática: ramas de devolución pendiente, confirmación afirmativa y negativa. | T-003 |
 |  |  | Intentar eliminar la alerta de una remesa comprometida en una devolución pendiente y verificar el rechazo. | T-006 |
 |  |  | Verificar que tras la eliminación la remesa vuelva a 'Disponible' y se ofrezca de nuevo en ventas. | T-006 |
+|  |  | Intentar eliminar la alerta de una remesa con fecha de vencimiento igual o anterior a la actual y verificar el rechazo y que la remesa no vuelva a 'Disponible'. | T-001 |
 | Módulo 4 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que ESP-0013 y ESP-0014 se ejecuten y que ESP-0015 y ESP-0016 sean rechazadas. | T-012 |
 
 ## Módulo 5 — Gestión de Métodos de Pago (EDU-0009)
@@ -184,6 +185,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Consultar un reporte cuyo archivo fue movido o borrado y verificar el manejo del error. | T-001 |
 | ESP-0023 | Actualización del intervalo de un reporte (Actualizar) | Camino básico: seleccionar reporte, modificar el intervalo, recalcular y actualizar el registro. | T-002 |
 |  |  | Comparar las dos tablas de origen antes y después de la operación y verificar que sean idénticas. | T-007 |
+|  |  | Verificar que el reporte regenerado conserve el formato original, recalcule el total recaudado e incluya el usuario responsable de cada venta. | T-006 |
 |  |  | Valores límite sobre el nuevo intervalo, incluyendo inicio posterior al fin. | T-001 |
 | ESP-0024 | Eliminación de un reporte generado (Eliminar) | Camino básico: seleccionar reporte, confirmar y verificar la eliminación del índice y del archivo. | T-002 |
 |  |  | Verificar que las ventas y su detalle permanezcan íntegros tras la eliminación. | T-007 |

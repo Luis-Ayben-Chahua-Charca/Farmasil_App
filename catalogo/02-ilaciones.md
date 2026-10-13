@@ -263,8 +263,8 @@
 | Código ilación | ILA-0014 |
 | --- | --- |
 | Nombre | Registro manual de alerta de producto vencido |
-| Versión | 07.00 |
-| Fecha | 05/09/2026 |
+| Versión | 08.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0007 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | FUE-0005 |
@@ -272,12 +272,12 @@
 | Código educción | EDU-0004 |
 | Código especificación | ESP-0014 |
 | Precondición | 1. La base de datos **DB_FARMASIL** debe encontrarse operativa.<br>2. El usuario tiene una sesión activa con rol 'Administrador' o 'Tecnico'.<br>3. La tabla **DB_FARMASIL.TBL_LOTES** debe encontrarse disponible y la remesa reportada debe existir en el inventario.<br>4. El sistema carga el mockup **ART-MKP-ALV-0001**.<br>5. **ALV-CMB-LOTE-ALERTA**, **ALV-CHK-LOTE-DEFECTUOSO** y **ALV-TXT-ALERTA-DIGEMID** se encuentran habilitados.<br>6. **ALV-BTN-CREAR-ALERTA** se encuentra activo. |
-| Procedimiento | 1. El usuario accede al módulo de gestión de alertas de productos vencidos.<br>2. El usuario selecciona la remesa afectada en **ALV-CMB-LOTE-ALERTA**, que lista las remesas del inventario identificadas por su medicamento y su número de lote.<br>3. El sistema muestra la fecha de vencimiento de la remesa en **ALV-LBL-FECHA-VENCIMIENTO**, que no es editable.<br>4. El usuario marca **ALV-CHK-LOTE-DEFECTUOSO** si el lote falló el control de calidad físico.<br>5. El usuario registra el código de la resolución sanitaria en **ALV-TXT-ALERTA-DIGEMID**, si la alerta proviene de DIGEMID.<br>6. El usuario verifica la información ingresada y presiona **ALV-BTN-CREAR-ALERTA**.<br>7. El sistema valida que los campos obligatorios contengan información correcta. Si algún campo es inválido, lo señala y permite corregirlo antes de reintentar.<br>8. El sistema inicia una transacción, registra la alerta en **DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS**, conservando el nombre del medicamento y el número de lote, actualiza el `estado_lote` de la remesa afectada a 'Bloqueado por devolucion' en **DB_FARMASIL.TBL_LOTES**, y confirma la transacción.<br>9. El sistema actualiza **ALV-TBL-ALERTAS-VENCIMIENTO** y confirma el registro exitoso. |
+| Procedimiento | 1. El usuario accede al módulo de gestión de alertas de productos vencidos.<br>2. El usuario selecciona la remesa afectada en **ALV-CMB-LOTE-ALERTA**, que lista las remesas del inventario identificadas por su medicamento y su número de lote.<br>3. El sistema muestra la fecha de vencimiento de la remesa en **ALV-LBL-FECHA-VENCIMIENTO**, que no es editable.<br>4. El usuario marca **ALV-CHK-LOTE-DEFECTUOSO** si el lote falló el control de calidad físico.<br>5. El usuario registra el código de la resolución sanitaria en **ALV-TXT-ALERTA-DIGEMID**, si la alerta proviene de DIGEMID.<br>6. El usuario verifica la información ingresada y presiona **ALV-BTN-CREAR-ALERTA**.<br>7. El sistema valida que los campos obligatorios contengan información correcta. Si algún campo es inválido, lo señala y permite corregirlo antes de reintentar.<br>8. El sistema inicia una transacción, registra la alerta en **DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS** vinculada a la remesa por su identificador, conservando además el nombre del medicamento y el número de lote como copia histórica, actualiza el `estado_lote` de la remesa afectada a 'Bloqueado por devolucion' en **DB_FARMASIL.TBL_LOTES**, y confirma la transacción.<br>9. El sistema actualiza **ALV-TBL-ALERTAS-VENCIMIENTO** y confirma el registro exitoso. |
 | Postcondición | 1. La alerta queda almacenada en **DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS**.<br>2. La remesa afectada queda con `estado_lote` = 'Bloqueado por devolucion' y deja de ofrecerse en **VEN-CMB-LOTE-VENTA**. Las demás remesas del mismo medicamento continúan disponibles para la venta.<br>3. La alerta aparece en **ALV-TBL-ALERTAS-VENCIMIENTO**.<br>4. La remesa queda disponible para ser incluida en una orden de devolución según ILA-0025. |
 | Código de artefactos asociados | ART-MKP-ALV-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | EDU-0004 exige que el sistema no solo emita la alerta sino que además **bloquee para la venta** el lote afectado. La versión anterior registraba la alerta pero dejaba el producto plenamente vendible, incumpliendo el requisito. Se incorporó la actualización del estado del producto dentro de la misma transacción.<br>Permite registrar preventivamente productos reportados por DIGEMID o con lote defectuoso, con opción explícita de corregir un campo erróneo antes de confirmar. |
+| Comentario | EDU-0004 exige que el sistema no solo emita la alerta sino que además **bloquee para la venta** el lote afectado. La versión anterior registraba la alerta pero dejaba el producto plenamente vendible, incumpliendo el requisito. Se incorporó la actualización del estado del producto dentro de la misma transacción.<br>Permite registrar preventivamente productos reportados por DIGEMID o con lote defectuoso, con opción explícita de corregir un campo erróneo antes de confirmar.<br>**Versión 08.00:** el retiro queda vinculado a la remesa por `id_lote` (Diccionario de Datos v06.00), que es lo que permite a ILA-0016 restituirla. |
 
 | Código ilación | ILA-0015 |
 | --- | --- |
@@ -301,8 +301,8 @@
 | Código ilación | ILA-0016 |
 | --- | --- |
 | Nombre | Eliminación de alerta de producto vencido |
-| Versión | 07.00 |
-| Fecha | 05/09/2026 |
+| Versión | 08.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0007 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -310,12 +310,12 @@
 | Código educción | EDU-0004 |
 | Código especificación | ESP-0016 |
 | Precondición | 1. La base de datos **DB_FARMASIL** debe encontrarse operativa.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. La tabla **DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS** debe encontrarse disponible y debe existir al menos una alerta registrada.<br>4. La alerta seleccionada no forma parte de una orden de devolución vigente en **DB_FARMASIL.TBL_DETALLE_DEVOLUCION**.<br>5. **ALV-TBL-ALERTAS-VENCIMIENTO** debe encontrarse disponible y **ALV-BTN-ELIMINAR-ALERTA** activo. |
-| Procedimiento | 1. El usuario selecciona una alerta desde **ALV-TBL-ALERTAS-VENCIMIENTO**.<br>2. El usuario presiona **ALV-BTN-ELIMINAR-ALERTA**.<br>3. El sistema carga el mockup **ART-MKP-ALV-0003** y muestra el modal **ALV-MDL-CONFIRMAR-ELIMINACION** con el mensaje **ALV-TXT-MSJ**: "¿Está seguro de eliminar esta alerta? La remesa volverá a estar disponible para la venta."<br>4. El sistema verifica que la alerta no esté asociada a una orden de devolución vigente.<br>5. Si el usuario presiona **ALV-BTN-CONFIRMAR-SI**, el sistema inicia una transacción, elimina el registro de **DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS**, restituye el `estado_lote` de la remesa afectada a 'Disponible' en **DB_FARMASIL.TBL_LOTES** y confirma la transacción.<br>6. Si el usuario presiona **ALV-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>7. El sistema actualiza **ALV-TBL-ALERTAS-VENCIMIENTO**. |
-| Postcondición | 1. El registro es eliminado de **DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS**.<br>2. La remesa recupera el estado 'Disponible' y vuelve a ofrecerse en **VEN-CMB-LOTE-VENTA**.<br>3. La alerta deja de mostrarse en **ALV-TBL-ALERTAS-VENCIMIENTO**. |
+| Procedimiento | 1. El usuario selecciona una alerta desde **ALV-TBL-ALERTAS-VENCIMIENTO**.<br>2. El usuario presiona **ALV-BTN-ELIMINAR-ALERTA**.<br>3. El sistema carga el mockup **ART-MKP-ALV-0003** y muestra el modal **ALV-MDL-CONFIRMAR-ELIMINACION** con el mensaje **ALV-TXT-MSJ**: "¿Está seguro de eliminar esta alerta? La remesa volverá a estar disponible para la venta."<br>4. El sistema verifica que la alerta no esté asociada a una orden de devolución vigente.<br>5. El sistema verifica que la remesa no esté vencida. Si su fecha de vencimiento es igual o anterior a la fecha actual, cancela la operación e informa que la remesa debe gestionarse por devolución (ILA-0025) o darse de baja (ILA-0044).<br>6. Si el usuario presiona **ALV-BTN-CONFIRMAR-SI**, el sistema inicia una transacción, elimina el registro de **DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS**, restituye el `estado_lote` de la remesa afectada a 'Disponible' en **DB_FARMASIL.TBL_LOTES** y confirma la transacción.<br>7. Si el usuario presiona **ALV-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>8. El sistema actualiza **ALV-TBL-ALERTAS-VENCIMIENTO**. |
+| Postcondición | 1. El registro es eliminado de **DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS**.<br>2. La remesa recupera el estado 'Disponible' y vuelve a ofrecerse en **VEN-CMB-LOTE-VENTA**.<br>3. La alerta deja de mostrarse en **ALV-TBL-ALERTAS-VENCIMIENTO**.<br>4. Una remesa vencida nunca recupera el estado 'Disponible'. |
 | Código de artefactos asociados | ART-MKP-ALV-0001, ART-MKP-ALV-0003 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | El campo Fuente decía "Ninguno" pese a que el requisito proviene del Registro de Entrevista 1, igual que el resto del módulo; se corrigió y queda pendiente asignarle su código FUE definitivo.<br>Se agregó la restitución del estado del producto, que es la contraparte lógica del bloqueo aplicado en ILA-0014: sin ella, eliminar la alerta dejaba el producto bloqueado de forma permanente. También se agregó la verificación de que la alerta no esté comprometida en una devolución en curso. |
+| Comentario | El campo Fuente decía "Ninguno" pese a que el requisito proviene del Registro de Entrevista 1, igual que el resto del módulo; se corrigió y queda pendiente asignarle su código FUE definitivo.<br>Se agregó la restitución del estado del producto, que es la contraparte lógica del bloqueo aplicado en ILA-0014: sin ella, eliminar la alerta dejaba el producto bloqueado de forma permanente. También se agregó la verificación de que la alerta no esté comprometida en una devolución en curso.<br>**Versión 08.00:** se agrega la verificación de vencimiento (paso 5). Sin ella, eliminar la alerta de una remesa ya vencida la devolvía a la venta, en contra de EDU-0004. |
 ---
 
 # Módulo 5 — Gestión de métodos de pago (EDU-0009)
@@ -403,8 +403,8 @@
 | Código ilación | ILA-0021 |
 | --- | --- |
 | Nombre | Generación de reportes de ventas |
-| Versión | 08.00 |
-| Fecha | 12/10/2026 |
+| Versión | 09.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0005 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
@@ -412,12 +412,12 @@
 | Código educción | EDU-0010 |
 | Código especificación | ESP-0021 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_REGISTRO_VENTAS** contiene registros válidos.<br>5. La tabla **DB_FARMASIL.TBL_DETALLE_VENTAS** contiene el detalle de productos vendidos.<br>6. La tabla **DB_FARMASIL.TBL_REPORTES_VENTAS** está disponible para almacenar el índice del reporte.<br>7. Se carga el mockup **ART-MKP-REP-0001**. |
-| Procedimiento | 1. El usuario accede al módulo de reportes de ventas.<br>2. El usuario selecciona el tipo de reporte en **REP-CMB-TIPO-REPORTE**.<br>3. El usuario selecciona el formato de salida en **REP-CMB-FORMATO-REPORTE**.<br>4. El usuario registra la fecha de inicio en **REP-FEC-FECHA-INICIO** y la fecha de fin en **REP-FEC-FECHA-FIN**.<br>5. El usuario presiona **REP-BTN-GENERAR-REPORTE**.<br>6. El sistema valida que la fecha de inicio no sea posterior a la fecha de fin.<br>7. El sistema consolida la información de **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS**, uniéndola con **DB_FARMASIL.TBL_USUARIOS** a partir de `id_usuario`, para el intervalo indicado, obteniendo el monto recaudado, la cantidad de productos vendidos, las fechas de las transacciones y el usuario responsable de cada venta.<br>8. El sistema registra el índice del nuevo reporte en **DB_FARMASIL.TBL_REPORTES_VENTAS**.<br>9. El sistema actualiza **REP-TBL-REPORTES**. |
+| Procedimiento | 1. El usuario accede al módulo de reportes de ventas.<br>2. El usuario selecciona el tipo de reporte en **REP-CMB-TIPO-REPORTE**.<br>3. El usuario selecciona el formato de salida en **REP-CMB-FORMATO-REPORTE**.<br>4. El usuario registra la fecha de inicio en **REP-FEC-FECHA-INICIO** y la fecha de fin en **REP-FEC-FECHA-FIN**.<br>5. El usuario presiona **REP-BTN-GENERAR-REPORTE**.<br>6. El sistema valida que la fecha de inicio no sea posterior a la fecha de fin.<br>7. El sistema consolida la información de **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS**, uniéndola con **DB_FARMASIL.TBL_USUARIOS** a partir de `id_usuario`, para el intervalo indicado, obteniendo el monto recaudado, la cantidad de productos vendidos, las fechas de las transacciones y el usuario responsable de cada venta.<br>8. El sistema registra el índice del nuevo reporte en **DB_FARMASIL.TBL_REPORTES_VENTAS**, con el tipo, el formato, el intervalo y el total recaudado.<br>9. El sistema actualiza **REP-TBL-REPORTES**. |
 | Postcondición | 1. El sistema genera el reporte con la información consolidada del intervalo solicitado.<br>2. El reporte queda registrado en **DB_FARMASIL.TBL_REPORTES_VENTAS**.<br>3. El reporte queda disponible para su descarga y para consultas posteriores.<br>4. Las ventas de origen permanecen sin modificación. |
 | Código de artefactos asociados | ART-MKP-REP-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Corresponde a la fase Crear del CRUD. La consulta de un reporte existente, antes mezclada aquí, se separó hacia ILA-0022.<br>La identificación del personal que realizó la venta, que EDU-0010 exige y que la dueña confirmó, se resuelve con el campo `id_usuario` que el Diccionario de Datos v03.00 incorporó a **TBL_REGISTRO_VENTAS**: el responsable se obtiene al generar el reporte uniendo con **TBL_USUARIOS** y no se persiste en **TBL_REPORTES_VENTAS** (ver ESP-0021 v03.00). Ver Anexo.<br>v08.00: el paso 7 explicita la unión con **TBL_USUARIOS**, que la especificación ya realizaba, y se actualiza este comentario, que aún daba por ausente el campo `id_usuario`.<br>Queda Pendiente porque no está definido el dominio de valores de `tipo_reporte` y el valor 'Mermas' no tiene respaldo en EDU-0010; se requiere la confirmación de la dueña. |
+| Comentario | Corresponde a la fase Crear del CRUD. La consulta de un reporte existente, antes mezclada aquí, se separó hacia ILA-0022.<br>La identificación del personal que realizó la venta, que EDU-0010 exige y que la dueña confirmó, se resuelve con el campo `id_usuario` que el Diccionario de Datos v03.00 incorporó a **TBL_REGISTRO_VENTAS**: el responsable se obtiene al generar el reporte uniendo con **TBL_USUARIOS** y no se persiste en **TBL_REPORTES_VENTAS** (ver ESP-0021 v03.00). Ver Anexo.<br>v08.00: el paso 7 explicita la unión con **TBL_USUARIOS**, que la especificación ya realizaba, y se actualiza este comentario, que aún daba por ausente el campo `id_usuario`.<br>v09.00: se descarta el tipo 'Mermas', que no tenía respaldo en EDU-0010 ni había sido solicitado por la dueña, y el índice pasa a guardar el formato y el total recaudado (Diccionario de Datos v06.00).<br>Queda Pendiente porque el dominio cerrado de `tipo_reporte` (criterios de agrupación de las ventas) aún debe confirmarlo la dueña. |
 
 | Código ilación | ILA-0022 |
 | --- | --- |
@@ -441,8 +441,8 @@
 | Código ilación | ILA-0023 |
 | --- | --- |
 | Nombre | Actualización del intervalo de un reporte de ventas |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 13/10/2026 |
 | Autor de la plantilla | AUT-0005 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
@@ -450,12 +450,12 @@
 | Código educción | EDU-0010 |
 | Código especificación | ESP-0023 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. La tabla **DB_FARMASIL.TBL_REPORTES_VENTAS** contiene al menos un reporte generado.<br>4. Se carga el mockup **ART-MKP-REP-0002**.<br>5. **REP-BTN-ACTUALIZAR-REPORTE** se encuentra activo. |
-| Procedimiento | 1. El usuario selecciona un reporte desde **REP-TBL-REPORTES**.<br>2. El usuario presiona **REP-BTN-ACTUALIZAR-REPORTE**.<br>3. El sistema carga el mockup **ART-MKP-REP-0003** con el intervalo actual del reporte.<br>4. El usuario modifica **REP-FEC-FECHA-INICIO** o **REP-FEC-FECHA-FIN**.<br>5. El usuario presiona **REP-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida el nuevo intervalo.<br>7. El sistema recalcula el reporte consultando en modo de solo lectura **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS**.<br>8. El sistema actualiza únicamente el registro del reporte en **DB_FARMASIL.TBL_REPORTES_VENTAS**.<br>9. El sistema actualiza **REP-TBL-REPORTES**. |
+| Procedimiento | 1. El usuario selecciona un reporte desde **REP-TBL-REPORTES**.<br>2. El usuario presiona **REP-BTN-ACTUALIZAR-REPORTE**.<br>3. El sistema carga el mockup **ART-MKP-REP-0003** con el intervalo actual del reporte.<br>4. El usuario modifica **REP-FEC-FECHA-INICIO** o **REP-FEC-FECHA-FIN**.<br>5. El usuario presiona **REP-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida el nuevo intervalo.<br>7. El sistema recalcula el reporte consultando en modo de solo lectura **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS**, unidas con **DB_FARMASIL.TBL_USUARIOS** para conservar el responsable de cada venta, y lo regenera en el formato con el que fue creado.<br>8. El sistema actualiza únicamente el registro del reporte en **DB_FARMASIL.TBL_REPORTES_VENTAS**: intervalo, total recaudado, fecha de generación y ruta del archivo.<br>9. El sistema actualiza **REP-TBL-REPORTES**. |
 | Postcondición | 1. El reporte queda actualizado con el nuevo intervalo en **DB_FARMASIL.TBL_REPORTES_VENTAS**.<br>2. **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS** permanecen sin ninguna modificación.<br>3. Los cambios son visibles en **REP-TBL-REPORTES**. |
 | Código de artefactos asociados | ART-MKP-REP-0002, ART-MKP-REP-0003 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Reemplaza a la antigua ilación "Restricción de modificación", que no describía una operación sino la ausencia de ella, dejando incompleta la fase Actualizar del CRUD. Solo actualiza el índice y los parámetros del reporte, nunca las ventas de origen.<br>Los campos Versión y Código educción contenían texto explicativo entre paréntesis; se trasladó a este comentario para que ambos campos conserven únicamente su valor codificado.<br>EDU-0010 v05.00 amplió formalmente el alcance del módulo para autorizar la administración de los reportes generados, por lo que esta ilación ya no contradice a su requisito padre. |
+| Comentario | Reemplaza a la antigua ilación "Restricción de modificación", que no describía una operación sino la ausencia de ella, dejando incompleta la fase Actualizar del CRUD. Solo actualiza el índice y los parámetros del reporte, nunca las ventas de origen.<br>Los campos Versión y Código educción contenían texto explicativo entre paréntesis; se trasladó a este comentario para que ambos campos conserven únicamente su valor codificado.<br>EDU-0010 v05.00 amplió formalmente el alcance del módulo para autorizar la administración de los reportes generados, por lo que esta ilación ya no contradice a su requisito padre.<br>**Versión 03.00:** la regeneración consolida los mismos datos que ILA-0021, incluido el responsable de cada venta, y conserva el formato original del reporte. |
 
 | Código ilación | ILA-0024 |
 | --- | --- |
