@@ -1,0 +1,73 @@
+@startuml SEC-01_Venta
+autonumber
+skinparam sequence {
+  ArrowColor #444444
+  LifeLineBorderColor #8577E0
+  ParticipantBackgroundColor #EDECFB
+}
+
+actor "Usuario" as U
+participant "Ventas" as V
+participant "Lotes" as L
+participant "Restricciones" as R
+participant "Inventario" as I
+participant "Metodos de pago" as M
+database "DB_FARMASIL" as D
+
+U -> V : abrirVentas()
+V -> D : validar sesion, rol y conexion
+V -> M : metodosActivos()
+M -> D : SELECT estado Activo
+D --> M : metodos
+M --> V : metodos
+V --> U : formulario con detalle vacio
+
+loop mientras agregue productos
+  U -> V : seleccionarProducto(producto)
+  V -> L : sugerirFEFO(producto)
+  L -> D : SELECT lotes Disponible, stock > 0\nORDER BY fecha_vencimiento
+  D --> L : lotes
+  L --> V : lote sugerido
+  U -> V : agregarProducto(lote, cantidad)
+  alt cantidad invalida o mayor al stock
+    V --> U : error de validacion
+  else lote no Disponible
+    V --> U : "remesa con alerta activa,\nno puede venderse"
+  else lote valido
+    V -> R : consultarRestriccion(producto)
+    R -> D : SELECT restriccion Activo
+    D --> R : restriccion
+    R --> V : tipo_restriccion
+    alt Bloqueante
+      V --> U : motivo_advertencia,\nlinea rechazada
+    else Informativa o sin restriccion
+      V -> I : precioVenta(producto)
+      I --> V : precio_venta
+      V --> U : linea agregada,\nmonto total actualizado
+    end
+  end
+end
+
+U -> V : crearVenta(metodoPago)
+alt detalle vacio o metodo no valido
+  V --> U : error de validacion
+else datos validos
+  V -> D : BEGIN TRANSACTION
+  V -> D : INSERT TBL_REGISTRO_VENTAS
+  D --> V : idVenta
+  loop cada linea del detalle
+    V -> D : INSERT TBL_DETALLE_VENTAS
+    V -> D : UPDATE TBL_LOTES stock_actual
+    opt stock_actual = 0
+      V -> D : UPDATE estado_lote Agotado
+    end
+  end
+  alt sin error
+    V -> D : COMMIT
+    V --> U : "Venta registrada correctamente"
+  else error en la transaccion
+    V -> D : ROLLBACK
+    V --> U : error, venta no registrada
+  end
+end
+@enduml
