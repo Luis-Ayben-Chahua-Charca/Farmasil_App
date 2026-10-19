@@ -1,0 +1,151 @@
+@startuml VL-04_MVC_Ventas
+' Vista lógica FARMASIL_APP — Ejemplo Modelo-Vista-Controlador aplicado al módulo
+' Ventas (ESP-0001), realizado en WPF con la variante MVVM (RNF-0008) (v01.00).
+' La VistaModelo cumple el rol de Controlador del patrón MVC.
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam defaultFontSize 11
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  ArrowColor #444444
+  StereotypeFontColor #555555
+}
+skinparam package {
+  BorderColor #8577E0
+}
+hide empty members
+
+package "Vista" <<layer>> #FAFAFA {
+  class VentaView <<view, XAML>> {
+    VEN-LBL-FECHA-VENTA
+    VEN-CMB-PRODUCTO-VENTA
+    VEN-CMB-LOTE-VENTA
+    VEN-NUM-CANTIDAD-VENTA
+    VEN-BTN-AGREGAR-PRODUCTO
+    VEN-BTN-QUITAR-PRODUCTO
+    VEN-TBL-DETALLE-VENTA
+    VEN-CMB-METODO-PAGO
+    VEN-LBL-MONTO-TOTAL
+    VEN-BTN-CREAR-VENTA
+  }
+}
+
+package "Controlador (VistaModelo)" <<layer>> #FAFAFA {
+  abstract class ViewModelBase {
+    + PropertyChanged : event
+    # notificar(propiedad : string) : void
+  }
+  class VentaViewModel <<viewmodel>> {
+    + Medicamentos : ObservableCollection<MedicamentoVendibleDto>
+    + RemesasSugeridas : ObservableCollection<RemesaVendibleDto>
+    + MetodosPago : ObservableCollection<MetodoPagoDto>
+    + Lineas : ObservableCollection<LineaVentaDto>
+    + MontoTotal : decimal
+    + Mensaje : string
+    --
+    + AgregarLineaCommand : ICommand
+    + QuitarLineaCommand : ICommand
+    + CrearVentaCommand : ICommand
+    - seleccionarMedicamento(id : int) : void
+  }
+  interface ICommand <<.NET>>
+}
+
+package "Modelo" <<layer>> #FAFAFA {
+  package "Ventas (VEN)" {
+    interface IVentas <<provista>> {
+      + consultarVentas(filtro) : IList<Venta>
+    }
+    class VentaServicio <<service>> {
+      + medicamentosVendibles() : IList<MedicamentoVendibleDto>
+      + remesasSugeridas(idProducto : int) : IList<RemesaVendibleDto>
+      + metodosPagoActivos() : IList<MetodoPagoDto>
+      + validarLinea(idLote : int, cantidad : int) : ResultadoLinea
+      + crearVenta(lineas, idMetodoPago : int) : int
+      + consultarVentas(filtro) : IList<Venta>
+    }
+    interface IVentaRepositorio {
+      + agregar(v : Venta) : void
+      + obtener(id : int) : Venta
+    }
+    class Venta <<entity>>
+    class DetalleVenta <<entity>>
+  }
+  package "Lotes (LOT)" {
+    interface ILotes <<provista>> {
+      + medicamentosVendibles() : IList<MedicamentoVendibleDto>
+      + sugerirFEFO(idProducto : int) : IList<RemesaVendibleDto>
+      + descontar(idLote : int, cantidad : int) : void
+    }
+  }
+  package "RestriccionesVenta (RES)" {
+    interface IRestricciones <<provista>> {
+      + restriccionActiva(idProducto : int) : RestriccionDto [0..1]
+    }
+  }
+  package "MetodosPago (PAG)" {
+    interface IPagos <<provista>> {
+      + metodosActivos() : IList<MetodoPagoDto>
+    }
+  }
+  package "Seguridad (transversal)" {
+    interface ISesion {
+      + UsuarioActual : Usuario
+      + exigirRol(rol : Rol) : void
+    }
+  }
+}
+
+package "Persistencia" <<layer>> #FAFAFA {
+  class VentaRepositorio <<data mapper>> {
+    + agregar(v : Venta) : void
+    + obtener(id : int) : Venta
+  }
+  class UnidadDeTrabajo <<unit of work>> {
+    + iniciar() : void
+    + confirmar() : void
+    + revertir() : void
+  }
+  class DB_FARMASIL <<database, SQL Server Express>>
+}
+
+VentaView ..> VentaViewModel : DataContext\n(enlace de datos)
+VentaView ..> ICommand : enlaza botones
+ViewModelBase <|-- VentaViewModel
+VentaViewModel --> ICommand
+VentaViewModel ..> VentaServicio : invoca operaciones\ndel modelo
+
+IVentas <|.. VentaServicio
+VentaServicio ..> ILotes : FEFO y descuento
+VentaServicio ..> IRestricciones : Bloqueante / Informativa
+VentaServicio ..> IPagos : métodos activos
+VentaServicio ..> ISesion : autoría
+VentaServicio ..> IVentaRepositorio
+VentaServicio ..> UnidadDeTrabajo : transacción única
+VentaServicio ..> Venta : crea
+Venta "1" *-- "1..*" DetalleVenta
+
+IVentaRepositorio <|.. VentaRepositorio
+VentaRepositorio ..> DB_FARMASIL
+UnidadDeTrabajo ..> DB_FARMASIL
+
+note right of VentaView
+  La Vista no conoce el Modelo:
+  solo se enlaza a la VistaModelo.
+end note
+
+note right of IVentas
+  Interfaz provista a
+  DocumentacionTributaria
+  y ReportesVentas
+end note
+
+note bottom of VentaServicio
+  Ventas solo usa las interfaces de los paquetes de los que depende
+  (PAG, RES, LOT). El precio y el nombre del medicamento llegan en
+  RemesaVendibleDto a través de ILotes (LOT → INV), sin dependencia
+  directa Ventas → Inventario.
+end note
+@enduml

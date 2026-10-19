@@ -1,0 +1,175 @@
+@startuml VL-03_MecanismosComunes
+' Vista lógica FARMASIL_APP — Mecanismos comunes: generalización, realización,
+' enumeraciones (estereotipos) y procesos programados (v01.00)
+' Fuente: Diccionario de Datos v07.00 (dominios cerrados), RNF-0006, RNF-0010.
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam defaultFontSize 11
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  ArrowColor #444444
+  StereotypeFontColor #555555
+}
+skinparam package {
+  BorderColor #8577E0
+}
+hide empty members
+
+package "Comun" #F5F5F5 {
+  abstract class RegistroDesactivable {
+    # estado : EstadoRegistro = Activo
+    --
+    + desactivar() : void
+    + estaActivo() : bool
+  }
+
+  interface IAuditable {
+    + RegistradoPor : Usuario
+  }
+
+  abstract class ProcesoProgramado {
+    # periodicidad : TimeSpan
+    # ultimaEjecucion : DateTime [0..1]
+    --
+    + debeEjecutarse(ahora : DateTime) : bool
+    + {abstract} ejecutar(hoy : DateOnly) : void
+  }
+}
+
+package "Seguridad (transversal)" #F5F5F5 {
+  class Usuario <<entity>> {
+    - idUsuario : int
+    - nombreUsuario : string {unique}
+    - contrasenaHash : string
+    - rol : Rol
+    --
+    + verificarContrasena(clave : string) : bool
+    + tieneRol(rol : Rol) : bool
+  }
+}
+
+class MetodoPago <<entity>>
+class Proveedor <<entity>>
+class RestriccionVenta <<entity>>
+class Venta <<entity>>
+class OrdenDevolucion <<entity>>
+class CotizacionProveedor <<entity>>
+
+package "AlertasVencimiento (ALV)" {
+  class EvaluacionVencimientos <<service>> {
+    {periodicidad = 24 h y al iniciar}
+    --
+    + ejecutar(hoy : DateOnly) : void
+    -- responsabilidades --
+    Contar remesas Disponible con vencimiento
+    <= hoy + umbralMeses y avisar (no persiste)
+  }
+}
+
+package "Reabastecimiento (REA)" {
+  class GeneracionListaReabastecimiento <<service>> {
+    {periodicidad = 15 días}
+    --
+    + ejecutar(hoy : DateOnly) : void
+    -- responsabilidades --
+    Agregar ítems 'Automático' para productos
+    Disponible con stock consolidado < stockMinimo
+  }
+}
+
+RegistroDesactivable <|-- Usuario
+RegistroDesactivable <|-- MetodoPago
+RegistroDesactivable <|-- Proveedor
+RegistroDesactivable <|-- RestriccionVenta
+
+IAuditable <|.. Venta
+IAuditable <|.. OrdenDevolucion
+IAuditable <|.. CotizacionProveedor
+IAuditable "0..*" --> "1" Usuario : registradoPor
+
+ProcesoProgramado <|-- EvaluacionVencimientos
+ProcesoProgramado <|-- GeneracionListaReabastecimiento
+
+note bottom of ProcesoProgramado
+  RNF-0010: se ejecutan sin intervención
+  del usuario y de forma local (RNF-0001).
+end note
+
+note right of IAuditable
+  La autoría se toma de la sesión
+  activa; ningún módulo consulta
+  reglas de negocio a Usuarios.
+end note
+
+package "Enumeraciones (dominios cerrados del diccionario)" #FAFAFA {
+  enum Rol <<enumeration>> {
+    Administrador
+    Tecnico
+  }
+  enum EstadoRegistro <<enumeration>> {
+    Activo
+    Inactivo
+  }
+  enum EstadoProducto <<enumeration>> {
+    Disponible
+    Descontinuado
+  }
+  enum EstadoLote <<enumeration>> {
+    Disponible
+    BloqueadoPorDevolucion
+    Agotado
+  }
+  enum TipoComprobante <<enumeration>> {
+    Boleta
+    Factura
+  }
+  enum EstadoDocumento <<enumeration>> {
+    Emitido
+    Anulado
+  }
+  enum MotivoDevolucion <<enumeration>> {
+    PorVencimiento
+    PorDepuracionDeError
+  }
+  enum EstadoOrden <<enumeration>> {
+    Pendiente
+    Completada
+    Eliminada
+  }
+  enum TipoRestriccion <<enumeration>> {
+    Informativa
+    Bloqueante
+  }
+  enum OrigenReabastecimiento <<enumeration>> {
+    Automatico
+    Manual
+  }
+  enum Prioridad <<enumeration>> {
+    Normal
+    Urgente
+  }
+  enum FormatoReporte <<enumeration>> {
+    PDF
+    Excel
+    HTML
+  }
+}
+
+Rol -[hidden]right- EstadoRegistro
+EstadoRegistro -[hidden]right- EstadoProducto
+EstadoProducto -[hidden]right- EstadoLote
+Rol -[hidden]down- TipoComprobante
+TipoComprobante -[hidden]right- EstadoDocumento
+EstadoDocumento -[hidden]right- MotivoDevolucion
+MotivoDevolucion -[hidden]right- EstadoOrden
+TipoComprobante -[hidden]down- TipoRestriccion
+TipoRestriccion -[hidden]right- OrigenReabastecimiento
+OrigenReabastecimiento -[hidden]right- Prioridad
+Prioridad -[hidden]right- FormatoReporte
+Usuario -[hidden]down- Rol
+
+note "tipoReporte queda como string: su dominio\ncerrado está pendiente de la dueña (ESP-0021)." as NTR
+NTR .. FormatoReporte
+@enduml

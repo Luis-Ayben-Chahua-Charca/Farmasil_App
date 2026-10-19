@@ -1,0 +1,269 @@
+@startuml VL-02_ModeloDominio
+' Vista lógica FARMASIL_APP — Diagrama de clases del dominio (v01.00)
+' Fuente: Diccionario de Datos v07.00, ESP-0001..ESP-0052, RNF-0006, RNF-0010.
+' Tipos según la tabla de correspondencia del diccionario (C# / .NET 8).
+' Navegabilidad: cada asociación se recorre solo en el sentido de la dependencia
+' entre paquetes de VL-01 (el dependiente conoce al proveedor, nunca al revés).
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam defaultFontSize 11
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  ArrowColor #444444
+  StereotypeFontColor #555555
+}
+skinparam package {
+  BorderColor #8577E0
+  FontColor #333333
+}
+hide empty members
+left to right direction
+
+' =================== CATALOGO BASE ===================
+package "MetodosPago (PAG)" {
+  class MetodoPago <<entity, desactivable>> {
+    - idMetodoPago : int
+    - nombreMetodo : string {unique}
+  }
+}
+
+package "Proveedores (PRV)" {
+  class Proveedor <<entity, desactivable>> {
+    - idProveedor : int
+    - ruc : string {unique, 11 dígitos}
+    - razonSocial : string
+    - telefono : string [0..1]
+  }
+}
+
+' =================== INVENTARIO FISICO ===================
+package "Inventario (INV)" {
+  class Producto <<entity>> {
+    - idProducto : int
+    - nombre : string
+    - accionTerapeutica : string
+    - precioVenta : decimal
+    - estadoProducto : EstadoProducto = Disponible
+    - stockMinimo : int = 0
+    --
+    + descontinuar() : void
+    -- responsabilidades --
+    Catálogo del medicamento; no
+    conoce sus remesas ni su stock
+  }
+}
+
+package "Lotes (LOT)" {
+  class Lote <<entity>> {
+    - idLote : int
+    - numeroLote : string
+    - fechaVencimiento : DateOnly
+    - stockActual : int = 0
+    - estadoLote : EstadoLote = Disponible
+    - fechaIngreso : DateOnly
+    --
+    + descontar(cantidad : int) : void
+    + restituir(cantidad : int) : void
+    + bloquear() : void
+    + desbloquear(hoy : DateOnly) : void
+    + darDeBajaLogica() : void
+    + estaVencido(hoy : DateOnly) : bool
+    + esVendible(hoy : DateOnly) : bool
+    -- responsabilidades --
+    Existencias reales y vencimiento de una
+    remesa; criterio FEFO (ESP-0001, 0041-0044)
+  }
+}
+
+' =================== OPERACION DIARIA ===================
+package "Ventas (VEN)" {
+  class Venta <<entity, auditable>> {
+    - idVenta : int
+    - fechaHora : DateTime
+    - montoTotal : decimal
+    --
+    + agregarLinea(lote : Lote, cantidad : int, precio : decimal) : void
+    + calcularMontoTotal() : decimal
+    -- responsabilidades --
+    Registrar la venta de varias líneas
+    en una sola transacción (ESP-0001)
+  }
+  class DetalleVenta <<entity>> {
+    - idDetalleVenta : int
+    - cantidad : int
+    - precioUnitario : decimal
+    --
+    + subtotal() : decimal
+  }
+}
+
+package "RestriccionesVenta (RES)" {
+  class RestriccionVenta <<entity, desactivable>> {
+    - idRestriccion : int
+    - condicionCliente : string
+    - tipoRestriccion : TipoRestriccion
+    - motivoAdvertencia : string
+    --
+    + esBloqueante() : bool
+  }
+}
+
+' =================== DERIVADOS ===================
+package "DocumentacionTributaria (DOC)" {
+  class ComprobanteTributario <<entity>> {
+    - idComprobante : int
+    - numeroComprobante : string {unique}
+    - tipoComprobante : TipoComprobante
+    - fechaEmision : DateOnly
+    - estadoDocumento : EstadoDocumento = Emitido
+    --
+    + anular() : void
+    + esModificable() : bool
+  }
+}
+
+package "ReportesVentas (REP)" {
+  class ReporteVentas <<entity>> {
+    - idReporte : int
+    - tipoReporte : string
+    - formato : FormatoReporte
+    - fechaInicio : DateOnly
+    - fechaFin : DateOnly
+    - totalRecaudado : decimal
+    - fechaGeneracion : DateTime
+    - rutaArchivo : string
+    -- responsabilidades --
+    Índice de reportes generados; sin
+    referencias a otras entidades (log)
+  }
+}
+
+' =================== GESTION DE PROVEEDORES ===================
+package "Devoluciones (DEV)" {
+  class OrdenDevolucion <<entity, auditable>> {
+    - idDevolucion : int
+    - fechaCreacion : DateOnly
+    - motivoDevolucion : MotivoDevolucion
+    - comentario : string [0..1]
+    - estadoOrden : EstadoOrden = Pendiente
+    --
+    + agregarLinea(lote : Lote, cantidad : int) : void
+    + completar() : void
+    + eliminar() : void
+    + esModificable() : bool
+  }
+  class DetalleDevolucion <<entity>> {
+    - idDetalleDev : int
+    - cantidadDevolver : int
+  }
+}
+
+package "AlertasVencimiento (ALV)" {
+  class ReglaAlertaVencimiento <<entity>> {
+    - idAlerta : int
+    - descripcion : string
+    - umbralMeses : int = 2
+    - estado : EstadoRegistro
+    - fechaUltimaVerif : DateTime
+    --
+    + fechaLimite(hoy : DateOnly) : DateOnly
+  }
+  class ProductoRetirado <<entity>> {
+    - idRetiro : int
+    - nombreProducto : string
+    - numeroLote : string
+    - fechaVencimiento : DateOnly
+    - esLoteDefectuoso : bool = false
+    - alertaDigemid : string [0..1]
+    - fechaRegistro : DateOnly
+    -- responsabilidades --
+    Histórico del retiro; conserva copias
+    de texto aunque la remesa se elimine
+  }
+}
+
+' =================== ABASTECIMIENTO ===================
+package "Reabastecimiento (REA)" {
+  class ItemReabastecimiento <<entity>> {
+    - idReabastecimiento : int
+    - origen : OrigenReabastecimiento = Automatico
+    - prioridad : Prioridad = Normal
+    - fechaInclusion : DateOnly
+    --
+    + cambiarPrioridad(p : Prioridad) : void
+  }
+}
+
+package "ComparacionPrecios (COT)" {
+  class CotizacionProveedor <<entity, auditable>> {
+    - idCotizacion : int
+    - precioCotizado : decimal
+    - fechaCotizacion : DateOnly
+    - promocion : string [0..1]
+    --
+    + esMasRecienteQue(otra : CotizacionProveedor) : bool
+  }
+}
+
+' =================== COMPOSICIONES (cabecera-detalle) ===================
+Venta "1" *-- "1..*" DetalleVenta : líneas
+OrdenDevolucion "1" *-- "0..*" DetalleDevolucion : líneas
+
+' =================== ASOCIACIONES (navegables en el sentido de la dependencia) ===================
+Venta "0..*" --> "1" MetodoPago : pagadaCon
+DetalleVenta "0..*" --> "1" Lote : remesaVendida
+ComprobanteTributario "0..*" --> "1" Venta : documenta
+Lote "0..*" --> "1" Producto : medicamento
+Lote "0..*" --> "1" Proveedor : entregadoPor
+Producto "0..*" --> "1" Proveedor : proveedorHabitual
+RestriccionVenta "0..*" --> "1" Producto : aplicaA
+OrdenDevolucion "0..*" --> "1" Proveedor : remitidaA
+DetalleDevolucion "0..*" --> "1" Lote : remesaDevuelta
+ProductoRetirado "0..*" --> "0..1" Lote : remesaRetirada
+ItemReabastecimiento "0..*" --> "1" Producto : aReabastecer
+CotizacionProveedor "0..*" --> "1" Producto : cotiza
+CotizacionProveedor "0..*" --> "1" Proveedor : ofrecidaPor
+
+' =================== RESTRICCIONES ===================
+note as NLegend
+  <b>Mecanismos comunes (detalle en VL-03)</b>
+  «desactivable»: hereda de RegistroDesactivable (estado Activo/Inactivo)
+  «auditable»: realiza IAuditable (registradoPor : Usuario, RNF-0006)
+  Tipos enumerados (EstadoLote, TipoComprobante, ...): ver VL-03
+end note
+
+note top of Lote
+  {stockActual >= 0}
+  {unique (medicamento, numeroLote)}
+  {al registrar: stockActual > 0}
+  {desbloquear solo si no estaVencido(hoy)}
+  {stockActual = 0 implica estadoLote = Agotado}
+end note
+
+note right of Venta
+  {montoTotal = líneas->sum(cantidad * precioUnitario)}
+  {cada línea: remesaVendida.esVendible(hoy)
+   y cantidad <= remesaVendida.stockActual}
+end note
+
+note left of ComprobanteTributario
+  {por cada Venta, a lo sumo un
+   comprobante con estadoDocumento = Emitido}
+  {Anulado no es modificable (ESP-0011)}
+end note
+
+note bottom of OrdenDevolucion
+  {motivo = PorDepuracionDeError implica comentario no vacío}
+  {cada línea: remesaDevuelta.entregadoPor = remitidaA}
+  {estadoOrden <> Eliminada implica líneas->notEmpty()}
+  {eliminar(): borra las líneas y marca Eliminada (ESP-0028)}
+  {Completada no es modificable ni eliminable (ESP-0027, 0028)}
+end note
+
+note bottom of ProductoRetirado
+  remesaRetirada queda nula si la remesa
+  se elimina (ON DELETE SET NULL)
+end note
+@enduml

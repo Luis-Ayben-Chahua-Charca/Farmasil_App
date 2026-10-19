@@ -1,0 +1,126 @@
+@startuml VL-01_Paquetes
+' Vista lógica FARMASIL_APP — Diagrama de paquetes (v01.00)
+' Cada componente de la arquitectura genérica se convierte en un paquete lógico.
+' Las 18 dependencias son exactamente las aristas de la arquitectura genérica cerrada.
+skinparam packageStyle folder
+skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam package {
+  BackgroundColor #EDECFB
+  BorderColor #8577E0
+}
+skinparam ArrowColor #444444
+left to right direction
+hide members
+hide circle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+}
+
+package "Seguridad\n(transversal)" as USR <<aspecto>> #F5F5F5 {
+    class "Usuario" as USR_0
+}
+
+package "Comun" as COM <<transversal>> #F5F5F5 {
+    class "IAuditable" as COM_0
+    class "RegistroDesactivable" as COM_1
+    class "ProcesoProgramado" as COM_2
+    class "Enumeraciones" as COM_3 <<enumeration>>
+}
+
+package "Catálogo base" as G1 #FFFFFF {
+  package "MetodosPago (PAG)" as PAG {
+    class "MetodoPago" as PAG_0
+  }
+  package "Proveedores (PRV)" as PRV {
+    class "Proveedor" as PRV_0
+  }
+}
+
+package "Inventario físico" as G2 #FFFFFF {
+  package "Inventario (INV)" as INV {
+    class "Producto" as INV_0
+  }
+  package "Lotes (LOT)" as LOT {
+    class "Lote" as LOT_0
+  }
+}
+
+package "Operación diaria" as G3 #FFFFFF {
+  package "Ventas (VEN)" as VEN {
+    class "Venta" as VEN_0
+    class "DetalleVenta" as VEN_1
+  }
+  package "RestriccionesVenta (RES)" as RES {
+    class "RestriccionVenta" as RES_0
+  }
+}
+
+package "Derivados de la operación diaria" as G4 #FFFFFF {
+  package "DocumentacionTributaria (DOC)" as DOC {
+    class "ComprobanteTributario" as DOC_0
+  }
+  package "ReportesVentas (REP)" as REP {
+    class "ReporteVentas" as REP_0
+  }
+}
+
+package "Gestión de proveedores" as G5 #FFFFFF {
+  package "Devoluciones (DEV)" as DEV {
+    class "OrdenDevolucion" as DEV_0
+    class "DetalleDevolucion" as DEV_1
+  }
+  package "AlertasVencimiento (ALV)" as ALV {
+    class "ReglaAlertaVencimiento" as ALV_0
+    class "ProductoRetirado" as ALV_1
+    class "VerificacionVencimientos" as ALV_2
+  }
+}
+
+package "Abastecimiento" as G6 #FFFFFF {
+  package "Reabastecimiento (REA)" as REA {
+    class "ItemReabastecimiento" as REA_0
+    class "GeneracionReabastecimiento" as REA_1
+  }
+  package "ComparacionPrecios (COT)" as COT {
+    class "CotizacionProveedor" as COT_0
+  }
+}
+
+VEN ..> PAG : <<use>>
+VEN ..> RES : <<use>>
+VEN ..> LOT : <<use>>
+DOC ..> VEN : <<use>>
+REP ..> VEN : <<use>>
+ALV ..> DEV : <<use>>
+ALV ..> LOT : <<use>>
+DEV ..> PRV : <<use>>
+DEV ..> LOT : <<use>>
+RES ..> INV : <<use>>
+INV ..> PRV : <<use>>
+LOT ..> INV : <<use>>
+LOT ..> PRV : <<use>>
+REA ..> INV : <<use>>
+REA ..> LOT : <<use>>
+COT ..> INV : <<use>>
+COT ..> PRV : <<use>>
+COT ..> REA : <<use>>
+
+note as N1
+  <b>Seguridad</b> (Usuarios, EDU-0013) y <b>Comun</b>
+  (enumeraciones, IAuditable, RegistroDesactivable,
+  ProcesoProgramado) son importados por todos los
+  paquetes de negocio. No se dibujan esas flechas:
+  autoría y control de acceso (RNF-0006) son
+  aspectos transversales, no lógica de negocio.
+end note
+N1 .. USR
+N1 .. COM
+
+note as N2
+  Restricción: el grafo de dependencias
+  es acíclico. Un paquete solo usa clases de
+  los paquetes a los que apunta.
+end note
+@enduml
