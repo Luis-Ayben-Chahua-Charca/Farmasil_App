@@ -1,6 +1,6 @@
 # Vista Lógica — FARMASIL_APP (v01.00)
 
-> Primera versión de la vista lógica. Fuentes: arquitectura genérica cerrada (13 componentes, 18 dependencias; `Contexto_Arquitectura_FARMASIL_ParaAgentesIA.md`), Diccionario de Datos v07.00, ESP-0001 a ESP-0052, RNF-0006, RNF-0008 y RNF-0010. Las fuentes de los diagramas están en `docs/diagramas/plaintext-VistaLogica/` y sus imágenes en `docs/diagramas/`.
+> Primera versión de la vista lógica. Fuentes: arquitectura genérica cerrada (13 componentes, 18 dependencias; `Contexto_Arquitectura_FARMASIL_ParaAgentesIA.md`), Diccionario de Datos v08.00, ESP-0001 a ESP-0052, RNF-0006, RNF-0008 y RNF-0010. Las fuentes de los diagramas están en `docs/diagramas/plaintext-VistaLogica/` y sus imágenes en `docs/diagramas/`.
 
 ## 1. Artefactos
 
@@ -89,7 +89,7 @@ Patrones según Fowler, *Patterns of Enterprise Application Architecture*: *Iden
 ## 5. Observaciones (insumo para la sección 9)
 
 1. **Generalizaciones del dominio.** El dominio no tiene jerarquías naturales de herencia entre entidades de negocio. Las dos generalizaciones del modelo son mecanismos compartidos (baja lógica y procesos programados), y no se introdujeron jerarquías artificiales para ilustrar la relación.
-2. **Comprobantes por venta.** La relación venta–comprobante del Diccionario de Datos (1:1 identificadora) no coincide con ESP-0009, que admite varios comprobantes por venta con uno solo emitido (PEN-014).
+2. **Comprobantes por venta.** VL-02 modela varios comprobantes por venta, con uno solo emitido, como admite ESP-0009. El Diccionario de Datos v08.00 corrigió la relación, que declaraba 1:1 identificadora (PEN-014, cerrado).
 3. **SEC-01 frente a la vista lógica.** El diagrama de secuencia SEC-01 consulta el precio a Inventario desde Ventas, mientras que la vista lógica lo obtiene a través de Lotes (PEN-013).
-4. **Fecha de última verificación.** `fecha_ultima_verif` es obligatoria, pero ningún requisito establece quién la actualiza (PEN-015).
+4. **Fecha de última verificación.** `fecha_ultima_verif` la actualiza el proceso de evaluación de vencimientos al terminar cada ejecución (RNF-0010 v02.00; PEN-015, cerrado).
 5. **Configuración de alertas.** `ReglaAlertaVencimiento` no tiene operaciones de administración, porque ninguna educción la gestiona (PEN-011).

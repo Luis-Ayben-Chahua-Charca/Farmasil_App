@@ -128,7 +128,7 @@
 | --- | --- | --- | --- |
 | RNF-0001 Funcionamiento sin conexión permanente | Disponibilidad | Todos los módulos | El catálogo completo opera sobre una base local `DB_FARMASIL`; ninguna especificación requiere un servicio remoto. |
 | RNF-0002 Facilidad de uso sin capacitación | Usabilidad | Los mockups de los trece módulos | Verificado por las pruebas T-016 y T-005. |
-| RNF-0003 Soporte de usuarios simultáneos | Concurrencia | ESP-0001, ESP-0003, ESP-0004, ESP-0041, ESP-0043 | Operaciones transaccionales que pueden ejecutarse en paralelo sobre el mismo lote o la misma venta. Cubierto por T-008 y T-012. |
+| RNF-0003 Operación de un solo usuario por vez | Restricción de operación | Todos los módulos, RNF-0010 | Una sola sesión activa en el único equipo. La única ejecución concurrente es la de los procesos programados de RNF-0010 en segundo plano. Cubierto por T-006. |
 | RNF-0004 Tiempo de recuperación del servicio | Fiabilidad | `DB_FARMASIL` completa | Sin ilación asociada: es un procedimiento de operación, no una función de usuario. |
 | RNF-0005 Velocidad en el registro de ventas | Rendimiento | ESP-0001 | Fija el límite de 4 segundos para la transacción completa, incluido el descuento de stock de la remesa. Cubierto por T-017 y T-008. |
 | RNF-0006 Control de acceso, autorización y protección de credenciales | Seguridad | EDU-0013, ILA-0033 a ILA-0036, ESP-0033 a ESP-0036, y las 52 precondiciones | El módulo 9 hace implementable a este requisito. Sus seis condiciones se verifican en: autenticación e identificación en ESP-0001 y ESP-0025 mediante `id_usuario`; autorización en las 44 precondiciones según la Matriz de Permisos; cuenta inactiva en ESP-0036; credenciales en ESP-0033 y ESP-0034; continuidad de la administración en ESP-0035. |
@@ -200,6 +200,6 @@
 
 Sigue la estructura de la plantilla oficial de trazabilidad de la asignatura (Educción, Ilación, Especificación, Otros artefactos), ampliada con las columnas que el catálogo necesita para verificarse: rol autorizado, estado y cobertura de pruebas.
 
-Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificaciones.md`, `05-diccionario-datos.md` v06.00, `06-guia-nomenclatura-mockups.md` v04.00, `07-matriz-permisos.md` v03.00, `08-requisitos-no-funcionales.md` y `09-pruebas-software.md`.
+Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificaciones.md`, `05-diccionario-datos.md` v08.00, `06-guia-nomenclatura-mockups.md` v04.00, `07-matriz-permisos.md` v03.00, `08-requisitos-no-funcionales.md` y `09-pruebas-software.md`.
 
 ---

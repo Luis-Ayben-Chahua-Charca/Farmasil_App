@@ -90,12 +90,12 @@ Desglosa los productos vendidos dentro de cada transacción. Es la tabla que per
 | Campo | Tipo de dato | Restricciones | Descripción |
 | --- | --- | --- | --- |
 | id_detalle_venta | INT | PK, Auto-increment | Identificador único de la línea de detalle. |
-| id_venta | INT | FK (TBL_REGISTRO_VENTAS) | Enlace a la cabecera de la venta. |
+| id_venta | INT | NOT NULL, FK (TBL_REGISTRO_VENTAS) | Enlace a la cabecera de la venta. |
 | id_lote | INT | NOT NULL, FK (TBL_LOTES) | Remesa exacta de la que salió el producto vendido. |
 | cantidad | INT | NOT NULL | Cantidad de unidades vendidas. |
 | precio_unitario | DECIMAL(10,2) | NOT NULL | Precio del producto al momento de la venta. |
 
-*Relación identificadora: el detalle no existe sin su cabecera. La eliminación de una venta arrastra sus líneas, según ILA-0004.*
+*Dependencia de existencia: el detalle no existe sin su cabecera, y la eliminación de una venta arrastra sus líneas, según ILA-0004. La relación es no identificadora porque el detalle tiene clave propia (`id_detalle_venta`).*
 
 *Cambio en v04.00: `id_producto` se sustituyó por `id_lote`. El medicamento se obtiene navegando `TBL_LOTES.id_producto`, y a cambio el sistema puede responder qué se vendió de una remesa concreta cuando DIGEMID retira un lote.*
 
@@ -112,7 +112,7 @@ Documentos fiscales emitidos formalmente por cada venta efectuada.
 | id_venta | INT | FK (TBL_REGISTRO_VENTAS) | Enlace directo a la venta que originó el documento. |
 | estado_documento | NVARCHAR(25) | DEFAULT 'Emitido' | Estados: 'Emitido', 'Anulado'. |
 
-*Relación uno a uno con la venta. Un comprobante emitido nunca se elimina físicamente: ILA-0012 lo anula.*
+*Relación uno a muchos con la venta: una venta puede acumular comprobantes anulados, pero tiene a lo sumo uno 'Emitido' (ESP-0009). Un comprobante emitido nunca se elimina físicamente: ILA-0012 lo anula.*
 
 ## 8. TBL_METODOS_PAGO
 
@@ -136,7 +136,7 @@ Configuración del motor de alertas automáticas de vida útil de los medicament
 | descripcion | NVARCHAR(150) | NOT NULL | Nombre de la regla, por ejemplo 'Alerta Base Cuarentena'. |
 | umbral_meses | INT | NOT NULL, DEFAULT 2 | Margen crítico de vida útil, en meses. |
 | estado | NVARCHAR(10) | DEFAULT 'Activo' | Define si el motor de alertas ejecuta esta regla. |
-| fecha_ultima_verif | DATETIME2 | NOT NULL | Registro de cuándo se ejecutó el último escaneo automático. |
+| fecha_ultima_verif | DATETIME2 | NOT NULL | Fecha y hora de la última evaluación de vencimientos. La actualiza el proceso 1 de RNF-0010 al terminar cada evaluación. |
 
 *Tabla de configuración global, sin claves foráneas. Actualmente ninguna educción gestiona su contenido: ILA-0013 solo lee `umbral_meses`. Ver la sección final.*
 
@@ -182,11 +182,11 @@ Desglosa qué medicamentos van dentro de una orden de devolución.
 | Campo | Tipo de dato | Restricciones | Descripción |
 | --- | --- | --- | --- |
 | id_detalle_dev | INT | PK, Auto-increment | Identificador de la línea de devolución. |
-| id_devolucion | INT | FK (TBL_ORDENES_DEVOLUCION) | Enlace a la cabecera de la devolución. |
+| id_devolucion | INT | NOT NULL, FK (TBL_ORDENES_DEVOLUCION) | Enlace a la cabecera de la devolución. |
 | id_lote | INT | NOT NULL, FK (TBL_LOTES) | Remesa que se extraerá del almacén. |
 | cantidad_devolver | INT | NOT NULL | Unidades físicas devueltas al proveedor. |
 
-*Relación identificadora: el detalle no existe sin su cabecera.*
+*Dependencia de existencia: el detalle no existe sin su cabecera. La relación es no identificadora porque el detalle tiene clave propia (`id_detalle_dev`).*
 
 *Cambio en v04.00: `id_producto` se sustituyó por `id_lote`. El proveedor tramita la devolución contra un número de lote; una orden que solo nombrara el medicamento no servía para el trámite real.*
 
@@ -294,10 +294,10 @@ Esta tabla es el criterio único para decidir el tipo de un campo en las tres ca
 
 | Relación | Tipo | Justificación |
 | --- | --- | --- |
-| `TBL_PRODUCTOS` → `TBL_LOTES` | Identificadora, 1:N | Nueva en v04.00. Un medicamento tiene varias remesas; una remesa no existe sin su medicamento. |
-| `TBL_REGISTRO_VENTAS` → `TBL_DETALLE_VENTAS` | Identificadora, 1:N | El detalle no existe sin la venta cabecera. |
-| `TBL_ORDENES_DEVOLUCION` → `TBL_DETALLE_DEVOLUCION` | Identificadora, 1:N | El detalle no existe sin la orden cabecera. |
-| `TBL_REGISTRO_VENTAS` ↔ `TBL_COMPROBANTES_TRIBUTARIOS` | Identificadora, 1:1 | Un comprobante corresponde siempre a una venta específica. |
+| `TBL_PRODUCTOS` → `TBL_LOTES` | No identificadora obligatoria, 1:N | Nueva en v04.00. Un medicamento tiene varias remesas; una remesa no existe sin su medicamento (FK obligatoria), pero tiene clave propia (`id_lote`). |
+| `TBL_REGISTRO_VENTAS` → `TBL_DETALLE_VENTAS` | No identificadora obligatoria, 1:N | El detalle no existe sin la venta cabecera (dependencia de existencia), pero tiene clave propia. |
+| `TBL_ORDENES_DEVOLUCION` → `TBL_DETALLE_DEVOLUCION` | No identificadora obligatoria, 1:N | El detalle no existe sin la orden cabecera (dependencia de existencia), pero tiene clave propia. |
+| `TBL_REGISTRO_VENTAS` → `TBL_COMPROBANTES_TRIBUTARIOS` | No identificadora, 1:N | Un comprobante corresponde siempre a una venta, y una venta puede tener varios comprobantes con a lo sumo uno 'Emitido' (ESP-0009). El comprobante tiene clave propia. |
 | `TBL_USUARIOS` → `TBL_REGISTRO_VENTAS` | No identificadora, 1:N | Nueva en v03.00. Un usuario registra muchas ventas. |
 | `TBL_USUARIOS` → `TBL_ORDENES_DEVOLUCION` | No identificadora, 1:N | Un usuario registra muchas órdenes de devolución. |
 | `TBL_PROVEEDORES` → `TBL_PRODUCTOS` | No identificadora, 1:N | Un proveedor abastece muchos productos. |
@@ -338,10 +338,12 @@ Estos puntos no se modificaron porque implican decisiones de alcance, no correcc
 5. **Gestión de la configuración de alertas.** `TBL_ALERTAS_VENCIMIENTO` no tiene ninguna educción que la administre: el umbral es hoy un valor fijo que nadie puede cambiar desde el sistema.
 
 
-**Versión:** 07.00
-**Fecha:** 13/10/2026
+**Versión:** 08.00
+**Fecha:** 18/10/2026
 **Autor:** AUT-0001
 **Origen:** Diccionario de Datos v02.00, `Cambios_Modelo_ER_DB_FARMASIL.md` y Entrevista 3 (v05.00)
+
+> **Aplicado en v08.00 (18/10/2026):** las relaciones con clave propia del hijo pasan a no identificadoras (`TBL_PRODUCTOS` → `TBL_LOTES`, cabeceras → detalles); la relación venta–comprobante pasa de 1:1 a 1:N, con a lo sumo un comprobante 'Emitido' por venta (PEN-014); `id_venta` e `id_devolucion` de los detalles pasan a NOT NULL; `fecha_ultima_verif` la actualiza el proceso 1 de RNF-0010 (PEN-015).
 
 > **Aplicado en v07.00 (13/10/2026):** `TBL_USUARIOS.contrasena` guarda un hash con sal y no un valor encriptado, conforme a RNF-0006 v05.00.
 

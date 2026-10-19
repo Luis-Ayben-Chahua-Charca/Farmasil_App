@@ -2,8 +2,8 @@
 
 | Artefacto | Registro de pendientes y decisiones |
 | --- | --- |
-| Versión | 01.00 |
-| Fecha | 13/10/2026 |
+| Versión | 02.00 |
+| Fecha | 18/10/2026 |
 | Responsable | AUT-0001 |
 
 ## 1. Para qué existe y por qué tiene esta forma
@@ -52,10 +52,8 @@ No se duplica el backlog ni los riesgos: un pendiente que se convierte en trabaj
 | PEN-009 | Juego de datos de prueba: medicamentos, remesas con vencimientos escalonados, proveedores, cuentas de ambos roles y ventas históricas. | Documentación | Equipo | Ejecución del plan de pruebas | Alta | Abierto | Script o archivo de carga inicial versionado en el repositorio | Pendiente 1 de `09-pruebas-software.md`, hueco 2 de `04-trazabilidad.md` | — |
 | PEN-010 | Alcance: registro de clientes e historial de compras, y tipo y presentación del producto (genérico o comercial, precio por unidad o por conjunto), pedidos por la dueña en la Entrevista 1. | Alcance | Leyni con la dueña | Modelo de datos si se incorporan | Media | Abierto | Decisión registrada en la sección 5 y, si entran, educción nueva | Vacíos 2 y 4 del Diccionario de Datos | — |
 | PEN-011 | Configuración del umbral de alertas: `TBL_ALERTAS_VENCIMIENTO` no tiene ninguna operación que la administre, y el umbral queda fijo. | Equipo | Leyni | Ninguno (hay un valor vigente) | Baja | Abierto | Decisión de mantenerlo fijo (documentada) o especificación de su administración | ILA-0013-R02, vacío 5 del Diccionario de Datos, hueco 4 de `04-trazabilidad.md` | — |
-| PEN-012 | Revisar los 57 riesgos aún abiertos (50 Pendiente y 7 En proceso) antes de implementar cada módulo. La mayoría son mejoras de detalle: paginación, búsqueda parcial, validación del RUC. | Equipo | Leyni | Implementación de cada módulo | Media | Abierto | Cada riesgo del módulo resuelto o aceptado de forma explícita al iniciar su sprint | `riesgos/10-gestion-riesgos.md` v06.00 | — |
+| PEN-012 | Revisar los 53 riesgos aún abiertos (46 Pendiente y 7 En proceso) antes de implementar cada módulo. La mayoría son mejoras de detalle: paginación, búsqueda parcial, validación del RUC. | Equipo | Leyni | Implementación de cada módulo | Media | Abierto | Cada riesgo del módulo resuelto o aceptado de forma explícita al iniciar su sprint | `riesgos/10-gestion-riesgos.md` v07.00 | — |
 | PEN-013 | SEC-01 dibuja la llamada `precioVenta(producto)` de Ventas a Inventario, dependencia que la arquitectura genérica cerrada no tiene (la cadena es Ventas → Lotes → Inventario). La vista lógica obtiene el precio y el nombre del medicamento a través de la interfaz de Lotes. | Documentación | Equipo | Coherencia entre SEC-01 y VL-04 | Media | Abierto | SEC-01 sin línea de vida de Inventario, con el precio entregado por Lotes | Vista lógica v01.00 (VL-04) | — |
-| PEN-014 | "Resumen de relaciones" del Diccionario de Datos: declara `TBL_REGISTRO_VENTAS` ↔ `TBL_COMPROBANTES_TRIBUTARIOS` como 1:1 identificadora, pero ESP-0009 admite varios comprobantes por venta con a lo sumo uno 'Emitido', y el comprobante tiene clave propia. También marca `TBL_PRODUCTOS` → `TBL_LOTES` como identificadora, aunque `TBL_LOTES` tiene clave propia. | Documentación | Equipo | Coherencia entre Diccionario de Datos y VL-02 | Media | Abierto | Relaciones corregidas a 1:N no identificadoras, con la regla de un solo comprobante 'Emitido' | Vista lógica v01.00 (VL-02) | — |
-| PEN-015 | `TBL_ALERTAS_VENCIMIENTO.fecha_ultima_verif` es NOT NULL, pero ni RNF-0010 ni ninguna especificación indica quién la actualiza; el proceso 2 de RNF-0010 guarda su última ejecución en la configuración local. | Equipo | Leyni | Ninguno (no bloquea la vista lógica) | Baja | Abierto | RNF-0010 indica que el proceso 1 la actualiza, o la columna se retira | Vista lógica v01.00 (VL-03) | — |
 
 ## 4. Agenda para la próxima reunión con la dueña
 
@@ -88,6 +86,9 @@ Preguntas en el orden en que conviene hacerlas, para salir de la reunión con to
 | DEC-013 | 13/10/2026 | No se puede eliminar una venta con cualquier comprobante asociado, emitido o anulado. | Un comprobante anulado es un documento tributario que se conserva con su venta; la corrección se hace actualizando la venta. | Leyni | ESP-0004, ILA-0004 |
 | DEC-014 | 13/10/2026 | La contraseña se guarda como hash irreversible con sal individual. | "Encriptada" admitía un cifrado reversible. | Leyni | RNF-0006, ESP-0033, ESP-0035, Diccionario de Datos |
 | DEC-015 | 13/10/2026 | Las pruebas cubren solo lo necesario para demostrar calidad, sin sobreingeniería. | Criterio del equipo para el plan de pruebas. | Leyni | `09-pruebas-software.md` |
+| DEC-016 | 18/10/2026 | El sistema lo usa una sola persona a la vez en un único equipo; no se diseñan mecanismos de concurrencia entre usuarios. | RNF-0003 exigía por error dos usuarios simultáneos. | Leyni | RNF-0003, 09-pruebas, riesgos |
+| DEC-017 | 18/10/2026 | Las relaciones cuyo hijo tiene clave propia son no identificadoras; venta–comprobante es 1:N con a lo sumo uno 'Emitido'. | Coherencia con ESP-0009 y con VL-02. | Instancia maestra | Diccionario de Datos v08.00 |
+| DEC-018 | 18/10/2026 | `fecha_ultima_verif` la actualiza el proceso 1 de RNF-0010. | Columna obligatoria sin quién la alimentara; sirve para detectar si el proceso de fondo dejó de ejecutarse. | Instancia maestra | RNF-0010 v02.00, Diccionario de Datos v08.00 |
 
 ## 6. Cuestiones cerradas
 
@@ -95,4 +96,5 @@ Se registran aquí las cuestiones que tenían un `PEN-NNN` asignado al cerrarse.
 
 | Código | Pendiente | Fecha de cierre | Decisión | Commit |
 | --- | --- | --- | --- | --- |
-| — | — | — | — | — |
+| PEN-014 | Relaciones venta–comprobante y producto–lote mal tipificadas en el Diccionario de Datos. | 18/10/2026 | DEC-017 | Este commit |
+| PEN-015 | `fecha_ultima_verif` sin quién la actualice. | 18/10/2026 | DEC-018 | Este commit |

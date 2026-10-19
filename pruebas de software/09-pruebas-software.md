@@ -23,7 +23,7 @@ Cada prueba de este documento existe porque cubre una clase de defecto que ningu
 
 **Verificación de rol.** Se prueba una vez por módulo y de forma sistemática en la sección de requisitos no funcionales, recorriendo las 52 operaciones contra la Matriz de Permisos. Repetirla en cada especificación producía cuarenta veces el mismo caso.
 
-**Rendimiento y concurrencia.** Se concentran en la sección de requisitos no funcionales. No son opcionales: RNF-0005 fija un máximo de 4 segundos por venta y RNF-0003 exige dos usuarios simultáneos, de modo que sin ellas esos dos requisitos quedarían sin forma de darse por aprobados. Pero una vez consolidadas, no necesitan repetirse por módulo.
+**Rendimiento y volumen.** Se concentran en la sección de requisitos no funcionales. No son opcionales: RNF-0005 fija un máximo de 4 segundos por venta, de modo que sin ellas ese requisito quedaría sin forma de darse por aprobado. No se prueba concurrencia entre usuarios, porque el sistema lo usa una sola persona a la vez (RNF-0003). Pero una vez consolidadas, no necesitan repetirse por módulo.
 
 **Sobre la priorización.** Se evaluó marcar cada prueba como crítica o secundaria, y se descartó: al aplicar el criterio de "sin esta prueba no puede afirmarse que el requisito se cumple", 198 de las 223 quedaban como críticas, con lo que la distinción no discriminaba nada. La razón es que en un sistema transaccional casi toda prueba custodia la integridad de los datos: el stock, el bloqueo por remesa, la relación entre venta y comprobante o la atomicidad de una transacción no admiten quedar sin verificar. La priorización útil aquí es por módulo, y está al final del documento.
 
@@ -38,7 +38,7 @@ Cada prueba de este documento existe porque cubre una clase de defecto que ningu
 | T-005 | Prueba de aceptación | Demostración al cliente de las funciones que solicitó |
 | T-006 | Prueba de integración | Efectos entre módulos |
 | T-007 | Prueba de regresión | Integridad referencial e histórico tras bajas y cambios |
-| T-008 | Prueba de carga | Concurrencia y volumen de datos |
+| T-008 | Prueba de carga | Volumen de datos |
 | T-010 | Prueba de escalabilidad | Crecimiento del volumen a varios años |
 | T-012 | Prueba de seguridad | Transacciones, control de acceso y credenciales |
 | T-015 | Prueba de compatibilidad | Visualización en el equipo objetivo |
@@ -48,7 +48,7 @@ Cada prueba de este documento existe porque cubre una clase de defecto que ningu
 | T-019 | Prueba de conversión | Restauración de la base desde respaldo |
 | T-020 | Prueba de instalación | Despliegue en el equipo objetivo |
 
-**Tipos del catálogo que no se utilizan, con su motivo.** T-009 prueba de estrés: el sistema opera con dos usuarios en un solo equipo según RNF-0003 y RNF-0007, de modo que no existe un escenario de sobrecarga que probar más allá de la prueba de carga. T-011 portabilidad: el despliegue es sobre un único equipo definido, ya cubierto por T-020. T-013 interoperabilidad: el sistema no intercambia información con ningún sistema externo. T-014 componente: la arquitectura no se compone de módulos desarrollados por terceros.
+**Tipos del catálogo que no se utilizan, con su motivo.** T-009 prueba de estrés: el sistema lo opera una sola persona a la vez en un solo equipo según RNF-0003 y RNF-0007, de modo que no existe un escenario de sobrecarga que probar más allá de la prueba de carga. T-011 portabilidad: el despliegue es sobre un único equipo definido, ya cubierto por T-020. T-013 interoperabilidad: el sistema no intercambia información con ningún sistema externo. T-014 componente: la arquitectura no se compone de módulos desarrollados por terceros.
 
 T-019 se emplea para la restauración desde respaldo por ser el tipo más cercano disponible; el catálogo del capítulo 10 no contempla una prueba de recuperación específica.
 
@@ -360,7 +360,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | --- | --- | --- | --- |
 | RNF-0001 | Funcionamiento sin conexión permanente | Desconectar el equipo de la red y ejecutar el registro de una venta, la consulta de inventario y la generación de un reporte. | T-001 |
 | RNF-0002 | Facilidad de uso sin capacitación | Sesión con una técnica sin entrenamiento previo, midiendo si completa un registro de venta y una consulta de stock sin asistencia. | T-016 |
-| RNF-0003 | Soporte de usuarios simultáneos | Dos sesiones registrando ventas de la misma remesa en paralelo, verificando que no se produzcan lecturas sucias ni stock negativo. | T-008 |
+| RNF-0003 | Operación de un solo usuario por vez | Registrar una venta mientras se ejecutan los procesos programados de RNF-0010 y verificar que la interfaz no se bloquee y que ningún dato quede inconsistente. | T-006 |
 | RNF-0004 | Tiempo de recuperación del servicio | Restaurar la base desde una copia de respaldo en un equipo nuevo y medir el tiempo total hasta dejar el sistema operativo. | T-019 |
 | RNF-0005 | Velocidad en el registro de ventas | Medir el tiempo desde la confirmación de la venta hasta el fin de la transacción, incluido el descuento de stock, sobre el equipo objetivo. | T-017 |
 | RNF-0005 | Velocidad bajo volumen real | Repetir la medición anterior con el volumen de un año de operación cargado, para verificar que el límite de 4 segundos se mantenga. | T-008 |
@@ -378,7 +378,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | RNF-0009 | Atomicidad de las operaciones | Interrumpir cada una de las operaciones transaccionales del catálogo a mitad de ejecución y verificar que ninguna deje datos parciales. | T-012 |
 | RNF-0009 | Respaldo y restauración | Ejecutar una copia de respaldo, modificar datos, restaurar y verificar que el estado coincida con el del momento de la copia. | T-019 |
 | RNF-0009 | Crecimiento del volumen de datos | Cargar el volumen estimado de cinco años de operación y verificar que los tiempos de consulta y de registro se mantengan dentro de los límites, considerando el tamaño máximo de SQL Server Express. | T-010 |
-| RNF-0010 | Condición 1 — Evaluación de vencimientos | Con remesas que vencen dentro y fuera del umbral, iniciar la aplicación y verificar que el aviso cuente solo las primeras y no registre filas en la base. | T-001 |
+| RNF-0010 | Condición 1 — Evaluación de vencimientos | Con remesas que vencen dentro y fuera del umbral, iniciar la aplicación y verificar que el aviso cuente solo las primeras, que no se registren filas de alerta y que se actualice `fecha_ultima_verif`. | T-001 |
 | RNF-0010 | Condición 2 — Lista de reabastecimiento | Llevar un medicamento bajo su stock mínimo y ejecutar el proceso: verificar un único ítem 'Automático' y 'Normal'; ejecutarlo de nuevo y verificar que no se duplique ni cambie una prioridad editada a mano. | T-006 |
 | RNF-0010 | Condición 2 — Reingreso de ítems | Eliminar un ítem automático cuyo medicamento sigue bajo el mínimo y verificar que reaparezca en la siguiente ejecución. | T-006 |
 
