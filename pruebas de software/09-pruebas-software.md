@@ -2,10 +2,12 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 04.00 |
-| Fecha | 13/10/2026 |
+| Versión | 05.00 |
+| Fecha | 01/11/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 05.00.** Alinea las pruebas de devoluciones y de la lista de reabastecimiento con DEC-019, DEC-020 y DEC-023: el combo de remesas de ESP-0025 ya no usa el umbral de vencimiento, ESP-0027 rechaza completar una orden cuya remesa no conserva stock suficiente, y el proceso 2 de RNF-0010 continúa cuando la restricción de unicidad rechaza un ítem que ya figura. Se agrega una prueba. Total: 257 pruebas.
+>
 > **Versión 04.00.** Completa las especificaciones de los módulos 12 y 13 y los procesos programados de RNF-0010, con el mismo criterio de la versión 03.00: solo las pruebas que cubren una clase de defecto que ninguna otra cubre. Agrega además las pruebas de las reglas incorporadas en la auditoría de coherencia del 12-13/10/2026: bajas condicionales por rechazo del motor, estado de remesa derivado y no editable, y remesa vencida que no vuelve a la venta. Total: 256 pruebas.
 >
 > **Versión 03.00.** Reduce el plan a las pruebas que el sistema necesita. La versión 02.00 contenía 294 pruebas, de las cuales unas cuarenta repetían el mismo caso de verificación de rol en cada especificación, seis pruebas de carga estaban dispersas por los módulos cuando bastaban tres consolidadas, y varios tipos aparecían una sola vez con una etiqueta forzada, elegidos para que ningún tipo del catálogo quedara sin representar. Esta versión aplica el criterio de que el tipo de prueba lo determina el riesgo del sistema y no la extensión del catálogo.
@@ -23,7 +25,7 @@ Cada prueba de este documento existe porque cubre una clase de defecto que ningu
 
 **Verificación de rol.** Se prueba una vez por módulo y de forma sistemática en la sección de requisitos no funcionales, recorriendo las 52 operaciones contra la Matriz de Permisos. Repetirla en cada especificación producía cuarenta veces el mismo caso.
 
-**Rendimiento y concurrencia.** Se concentran en la sección de requisitos no funcionales. No son opcionales: RNF-0005 fija un máximo de 4 segundos por venta y RNF-0003 exige dos usuarios simultáneos, de modo que sin ellas esos dos requisitos quedarían sin forma de darse por aprobados. Pero una vez consolidadas, no necesitan repetirse por módulo.
+**Rendimiento y volumen.** Se concentran en la sección de requisitos no funcionales. No son opcionales: RNF-0005 fija un máximo de 4 segundos por venta, de modo que sin ellas ese requisito quedaría sin forma de darse por aprobado. No se prueba concurrencia entre usuarios, porque el sistema lo usa una sola persona a la vez (RNF-0003). Pero una vez consolidadas, no necesitan repetirse por módulo.
 
 **Sobre la priorización.** Se evaluó marcar cada prueba como crítica o secundaria, y se descartó: al aplicar el criterio de "sin esta prueba no puede afirmarse que el requisito se cumple", 198 de las 223 quedaban como críticas, con lo que la distinción no discriminaba nada. La razón es que en un sistema transaccional casi toda prueba custodia la integridad de los datos: el stock, el bloqueo por remesa, la relación entre venta y comprobante o la atomicidad de una transacción no admiten quedar sin verificar. La priorización útil aquí es por módulo, y está al final del documento.
 
@@ -38,7 +40,7 @@ Cada prueba de este documento existe porque cubre una clase de defecto que ningu
 | T-005 | Prueba de aceptación | Demostración al cliente de las funciones que solicitó |
 | T-006 | Prueba de integración | Efectos entre módulos |
 | T-007 | Prueba de regresión | Integridad referencial e histórico tras bajas y cambios |
-| T-008 | Prueba de carga | Concurrencia y volumen de datos |
+| T-008 | Prueba de carga | Volumen de datos |
 | T-010 | Prueba de escalabilidad | Crecimiento del volumen a varios años |
 | T-012 | Prueba de seguridad | Transacciones, control de acceso y credenciales |
 | T-015 | Prueba de compatibilidad | Visualización en el equipo objetivo |
@@ -48,7 +50,7 @@ Cada prueba de este documento existe porque cubre una clase de defecto que ningu
 | T-019 | Prueba de conversión | Restauración de la base desde respaldo |
 | T-020 | Prueba de instalación | Despliegue en el equipo objetivo |
 
-**Tipos del catálogo que no se utilizan, con su motivo.** T-009 prueba de estrés: el sistema opera con dos usuarios en un solo equipo según RNF-0003 y RNF-0007, de modo que no existe un escenario de sobrecarga que probar más allá de la prueba de carga. T-011 portabilidad: el despliegue es sobre un único equipo definido, ya cubierto por T-020. T-013 interoperabilidad: el sistema no intercambia información con ningún sistema externo. T-014 componente: la arquitectura no se compone de módulos desarrollados por terceros.
+**Tipos del catálogo que no se utilizan, con su motivo.** T-009 prueba de estrés: el sistema lo opera una sola persona a la vez en un solo equipo según RNF-0003 y RNF-0007, de modo que no existe un escenario de sobrecarga que probar más allá de la prueba de carga. T-011 portabilidad: el despliegue es sobre un único equipo definido, ya cubierto por T-020. T-013 interoperabilidad: el sistema no intercambia información con ningún sistema externo. T-014 componente: la arquitectura no se compone de módulos desarrollados por terceros.
 
 T-019 se emplea para la restauración desde respaldo por ser el tipo más cercano disponible; el catálogo del capítulo 10 no contempla una prueba de recuperación específica.
 
@@ -200,7 +202,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | Clave | Requisito (Nombre / Operación) | Descripción de la prueba | Tipo |
 | --- | --- | --- | --- |
 | ESP-0025 | Registro de orden de devolución (Crear) | Camino básico: registrar fecha, proveedor y motivo, agregar remesas con sus cantidades, comentario y confirmar. | T-002 |
-|  |  | Verificar que el combo de remesas liste únicamente las del proveedor seleccionado y en condición de cuarentena o por vencer. | T-004 |
+|  |  | Verificar que el combo de remesas liste únicamente las del proveedor seleccionado con existencias, en estado 'Bloqueado por devolucion' o 'Disponible', y ordenadas por fecha de vencimiento. | T-004 |
 |  |  | Partición sobre la cantidad a devolver: menor al stock, igual al stock, mayor al stock, cero y negativa. | T-001 |
 |  |  | Registrar una orden con tres remesas y verificar que se creen tres líneas de detalle, cada una con su id_lote. | T-006 |
 |  |  | Seleccionar el motivo 'Por Depuracion de Error' con el comentario vacío y verificar que el sistema exija completarlo. | T-001 |
@@ -212,7 +214,8 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | ESP-0027 | Actualización de orden de devolución (Actualizar) | Camino básico: seleccionar orden 'Pendiente', modificar cabecera y líneas, y confirmar. | T-002 |
 |  |  | Complejidad ciclomática: ramas de orden completada, cambio de estado a 'Completada' y actualización sin cambio de estado. | T-003 |
 |  |  | Intentar modificar una orden 'Completada' y verificar que la operación se cancele. | T-001 |
-|  |  | Marcar una orden como 'Completada' y verificar que el stock de cada remesa se descuente y que las que lleguen a cero pasen a 'Agotado'. | T-006 |
+|  |  | Marcar una orden como 'Completada' y verificar que el stock de cada remesa se descuente y que las remesas 'Disponible' que lleguen a cero pasen a 'Agotado'. | T-006 |
+|  |  | Registrar una orden de 8 unidades sobre una remesa de 10, vender 5 de esa remesa y completar la orden: verificar el rechazo con la remesa indicada y que ningún stock se descuente. | T-001 |
 |  |  | Verificar que el descuento de stock y el cambio de estado ocurran dentro de la misma transacción. | T-012 |
 | ESP-0028 | Eliminación de orden de devolución (Eliminar) | Camino básico: seleccionar orden 'Pendiente', confirmar y verificar el cambio a estado 'Eliminada'. | T-002 |
 |  |  | Intentar eliminar una orden 'Completada' y verificar el rechazo, ya que la mercancía fue despachada. | T-001 |
@@ -360,7 +363,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | --- | --- | --- | --- |
 | RNF-0001 | Funcionamiento sin conexión permanente | Desconectar el equipo de la red y ejecutar el registro de una venta, la consulta de inventario y la generación de un reporte. | T-001 |
 | RNF-0002 | Facilidad de uso sin capacitación | Sesión con una técnica sin entrenamiento previo, midiendo si completa un registro de venta y una consulta de stock sin asistencia. | T-016 |
-| RNF-0003 | Soporte de usuarios simultáneos | Dos sesiones registrando ventas de la misma remesa en paralelo, verificando que no se produzcan lecturas sucias ni stock negativo. | T-008 |
+| RNF-0003 | Operación de un solo usuario por vez | Registrar una venta mientras se ejecutan los procesos programados de RNF-0010 y verificar que la interfaz no se bloquee y que ningún dato quede inconsistente. | T-006 |
 | RNF-0004 | Tiempo de recuperación del servicio | Restaurar la base desde una copia de respaldo en un equipo nuevo y medir el tiempo total hasta dejar el sistema operativo. | T-019 |
 | RNF-0005 | Velocidad en el registro de ventas | Medir el tiempo desde la confirmación de la venta hasta el fin de la transacción, incluido el descuento de stock, sobre el equipo objetivo. | T-017 |
 | RNF-0005 | Velocidad bajo volumen real | Repetir la medición anterior con el volumen de un año de operación cargado, para verificar que el límite de 4 segundos se mantenga. | T-008 |
@@ -374,12 +377,12 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | RNF-0007 | Funcionamiento en el equipo objetivo | Instalar y ejecutar el sistema en Windows 11 con la especificación declarada, sin instalar software adicional. | T-020 |
 | RNF-0007 | Visualización en el equipo objetivo | Verificar la visualización de los mockups de los trece módulos en la resolución del equipo objetivo. | T-015 |
 | RNF-0008 | Stack tecnológico | Verificar que los importes se manejen con el tipo decimal y no con float o double, comprobando que no aparezcan errores de redondeo en el monto total. | T-004 |
-| RNF-0009 | Integridad del esquema | Verificar que las dieciséis tablas existan con sus claves primarias, foráneas, restricciones de unicidad y reglas de borrado según el Diccionario de Datos v06.00. | T-018 |
+| RNF-0009 | Integridad del esquema | Verificar que las dieciséis tablas existan con sus claves primarias, foráneas, restricciones de unicidad y reglas de borrado según el Diccionario de Datos v09.00, incluidos `CHECK (stock_actual >= 0)` en `TBL_LOTES` y el UNIQUE de `TBL_LISTA_REABASTECIMIENTO.id_producto`. | T-018 |
 | RNF-0009 | Atomicidad de las operaciones | Interrumpir cada una de las operaciones transaccionales del catálogo a mitad de ejecución y verificar que ninguna deje datos parciales. | T-012 |
 | RNF-0009 | Respaldo y restauración | Ejecutar una copia de respaldo, modificar datos, restaurar y verificar que el estado coincida con el del momento de la copia. | T-019 |
 | RNF-0009 | Crecimiento del volumen de datos | Cargar el volumen estimado de cinco años de operación y verificar que los tiempos de consulta y de registro se mantengan dentro de los límites, considerando el tamaño máximo de SQL Server Express. | T-010 |
-| RNF-0010 | Condición 1 — Evaluación de vencimientos | Con remesas que vencen dentro y fuera del umbral, iniciar la aplicación y verificar que el aviso cuente solo las primeras y no registre filas en la base. | T-001 |
-| RNF-0010 | Condición 2 — Lista de reabastecimiento | Llevar un medicamento bajo su stock mínimo y ejecutar el proceso: verificar un único ítem 'Automático' y 'Normal'; ejecutarlo de nuevo y verificar que no se duplique ni cambie una prioridad editada a mano. | T-006 |
+| RNF-0010 | Condición 1 — Evaluación de vencimientos | Con remesas que vencen dentro y fuera del umbral, iniciar la aplicación y verificar que el aviso cuente solo las primeras, que no se registren filas de alerta y que se actualice `fecha_ultima_verif`. | T-001 |
+| RNF-0010 | Condición 2 — Lista de reabastecimiento | Llevar un medicamento bajo su stock mínimo y ejecutar el proceso: verificar un único ítem 'Automático' y 'Normal'; ejecutarlo de nuevo y verificar que no se duplique ni cambie una prioridad editada a mano; con un ítem ya incorporado a mano, verificar que el rechazo por unicidad no detenga el proceso. | T-006 |
 | RNF-0010 | Condición 2 — Reingreso de ítems | Eliminar un ítem automático cuyo medicamento sigue bajo el mínimo y verificar que reaparezca en la siguiente ejecución. | T-006 |
 
 ---

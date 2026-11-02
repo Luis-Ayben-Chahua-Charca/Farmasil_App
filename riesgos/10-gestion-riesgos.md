@@ -1,6 +1,6 @@
 # Gestión de Riesgos — FARMASIL
 
-**Versión:** 06.00 · **Fecha:** 13/10/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
+**Versión:** 07.00 · **Fecha:** 18/10/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
 
 Insumo para la plantilla de gestión de riesgos GRI_0002: el equipo revisa, ajusta y traslada estas
 filas a la hoja de cálculo. Cubre **las 52 ilaciones de los 13 módulos** más un bloque de **riesgos
@@ -16,8 +16,9 @@ generales (RG)**, según la observación del profesor.
 | 04.00 | 13/10/2026 | Se resuelven RG-011 (bajas condicionales por rechazo del motor), ILA-0036-R01, ILA-0036-R02, ILA-0040-R01, ILA-0043-R01 y, con RNF-0010, ILA-0013-R03, ILA-0045-R01, ILA-0045-R02, ILA-0047-R01 e ILA-0048-R01. |
 | 05.00 | 13/10/2026 | Se resuelve ILA-0004-R03: la venta con cualquier comprobante asociado no puede eliminarse. |
 | 06.00 | 13/10/2026 | Se resuelven ILA-0033-R02 (contraseña como hash con sal), ILA-0041-R01 (remesa nueva con existencias mayores que cero) e ILA-0043-R02 (validación de la nueva fecha de vencimiento). |
+| 07.00 | 18/10/2026 | Se cierran por no aplicar los cuatro riesgos de concurrencia entre usuarios (ILA-0001-R02, ILA-0003-R02, ILA-0023-R03, ILA-0031-R02): RNF-0003 v02.00 establece un solo usuario por vez. |
 
-En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"**, **"v05 —"** o **"v06 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
+En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"**, **"v05 —"**, **"v06 —"** o **"v07 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
 
 ## Criterio usado para el campo Estado
 
@@ -63,14 +64,14 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | Clave | Riesgo identificado | Prob. | % | Impacto | Estado | Plan de mitigación | Artefactos |
 |---|---|---|---|---|---|---|---|
 | ILA-0001-R01 | Fallo de conexión con DB_FARMASIL impide crear la venta pese a validaciones previas. | Media | 50% | 2 | Pendiente | Reintento automático y mensaje de error de conexión. | ESP-0001 |
-| ILA-0001-R02 | El stock de la remesa (`TBL_LOTES.stock_actual`) se valida al agregar cada línea, fuera de la transacción: otra venta simultánea puede agotarlo antes de confirmar (condición de carrera). | Baja | 10% | 3 | Pendiente | Revalidar `stock_actual` de cada remesa dentro de la misma transacción antes de descontar. | ESP-0001 |
+| ILA-0001-R02 | El stock de la remesa (`TBL_LOTES.stock_actual`) se valida al agregar cada línea, fuera de la transacción: otra venta simultánea puede agotarlo antes de confirmar (condición de carrera). | Baja | 10% | 3 | Resuelto | v07 — No aplica: el sistema lo usa una sola persona a la vez (RNF-0003 v02.00), así que no hay otra venta que pueda agotar la remesa entre la validación y la confirmación. | ESP-0001 |
 | ILA-0001-R03 | Ambigüedad sobre si la cantidad vendida valida contra el stock disponible. | Baja | 10% | 3 | Resuelto | v02 — ESP-0001 v04.00 valida `cantidad <= lote.stock_actual` y descuenta por remesa (FEFO). | ESP-0001 |
 | ILA-0001-R04 | No se especifica rango de fechas permitido para la fecha de venta. | Baja | 10% | 1 | Resuelto | v02 — ESP-0001 toma `FECHA_HORA_SISTEMA` y la muestra en VEN-LBL-FECHA-VENTA: el usuario no la captura. | ESP-0001 |
 | ILA-0002-R01 | No se define comportamiento cuando el filtro por fecha/producto no arroja resultados. | Media | 50% | 1 | Pendiente | Mensaje "Sin resultados" en vez de tabla vacía. | ESP-0002 |
 | ILA-0002-R02 | Ambigüedad sobre si la búsqueda por producto admite coincidencia parcial o exacta. | Baja | 10% | 2 | Resuelto | v02 — ESP-0002 v03.00 selecciona el producto desde VEN-CMB-PRODUCTO-VENTA y filtra por `id_producto` (coincidencia exacta). | ESP-0002 |
 | ILA-0002-R03 | No se define límite de registros mostrados (rendimiento). | Media-alta | 75% | 2 | Pendiente | Implementar paginación. | ART-MKP-VEN-0002 |
 | ILA-0003-R01 | No se define si se puede editar una venta cuyo comprobante ya fue emitido. | Baja | 10% | 4 | Resuelto | v02 — ESP-0003 v03.00 bloquea la edición si existe comprobante con `estado_documento = 'Emitido'`. | ESP-0003, ESP-0009 |
-| ILA-0003-R02 | Conflicto si dos usuarios actualizan el mismo registro simultáneamente sin bloqueo optimista. | Media | 50% | 2 | Pendiente | Control de concurrencia por versión de fila. | ESP-0003 |
+| ILA-0003-R02 | Conflicto si dos usuarios actualizan el mismo registro simultáneamente sin bloqueo optimista. | Baja | 10% | 2 | Resuelto | v07 — No aplica: una sola sesión activa (RNF-0003 v02.00). | ESP-0003 |
 | ILA-0003-R03 | El recálculo de cantidad no valida disponibilidad actual de stock. | Baja | 10% | 3 | Resuelto | v02 — ESP-0003 valida `diferencia <= linea.lote.stock_actual` y ajusta el stock por diferencia. | ESP-0003 |
 | ILA-0004-R01 | No se define si la eliminación de una venta es física o lógica. | Baja | 10% | 4 | Resuelto | v02 — ESP-0004 v03.00 define eliminación física en cascada (detalle y cabecera) con restitución del stock, permitida solo si no hay comprobante 'Emitido'. | ESP-0004 |
 | ILA-0004-R02 | Falta de validación sobre si una venta con comprobante emitido puede eliminarse. | Baja | 10% | 4 | Resuelto | v02 — ESP-0004 bloquea la eliminación si existe comprobante 'Emitido'. | ESP-0004 |
@@ -151,7 +152,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0022-R03 | ESP-0022 cargaba `total_recaudado` en REP-TBL-REPORTES, pero esa columna no existía en `TBL_REPORTES_VENTAS`. | Baja | 10% | 3 | Resuelto | v03 — Diccionario v06.00 agrega `total_recaudado`; ESP-0021 v04.00 lo registra y ESP-0023 v03.00 lo recalcula. | ESP-0022, ILA-0022, Diccionario de datos |
 | ILA-0023-R01 | La especificación dependía de una versión ampliada de EDU-0010. | Baja | 10% | 5 | Resuelto | v02 — EDU-0010 v05.00 autoriza Actualizar y Eliminar los reportes generados. | ESP-0023, EDU-0010 |
 | ILA-0023-R02 | No se define un límite para el nuevo intervalo de fechas al recalcular. | Media | 50% | 2 | Pendiente | Definir rango máximo permitido (ej. 12 meses). | ESP-0023 |
-| ILA-0023-R03 | Inconsistencia si el recálculo se ejecuta mientras se registran nuevas ventas. | Media | 50% | 2 | Pendiente | Tomar una fotografía (snapshot) consistente de los datos al recalcular. | ESP-0023 |
+| ILA-0023-R03 | Inconsistencia si el recálculo se ejecuta mientras se registran nuevas ventas. | Baja | 10% | 2 | Resuelto | v07 — No aplica: con un solo usuario no se registran ventas mientras se recalcula un reporte, y los procesos de RNF-0010 no escriben ventas. | ESP-0023 |
 | ILA-0023-R04 | ESP-0023 regeneraba con `reporte.formato`, que no se persistía, y su consulta no unía `TBL_USUARIOS`: el reporte regenerado perdía el `usuario_responsable` que exige EDU-0010. | Baja | 10% | 3 | Resuelto | v03 — Diccionario v06.00 agrega `formato`; ESP-0023 v03.00 e ILA-0023 v03.00 unen `TBL_USUARIOS` y consolidan igual que ESP-0021. Prueba T-006 agregada en 09-pruebas. | ESP-0023, ESP-0021, Diccionario de datos |
 | ILA-0024-R01 | La especificación dependía de la ampliación de EDU-0010. | Baja | 10% | 5 | Resuelto | v02 — EDU-0010 v05.00. | ESP-0024, EDU-0010 |
 | ILA-0024-R02 | No se define si eliminar un reporte también elimina el archivo físico. | Baja | 10% | 2 | Resuelto | v02 — ESP-0024 ejecuta `ELIMINAR ARCHIVO(reporte.ruta_archivo)` dentro de la transacción. | ESP-0024 |
@@ -182,7 +183,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0030-R01 | Ambigüedad sobre si la búsqueda por medicamento es parcial o exacta. | Baja | 10% | 2 | Resuelto | v02 — ESP-0030 selecciona el medicamento desde RES-CMB-MEDICAMENTO y filtra por `id_producto`. | ESP-0030 |
 | ILA-0030-R02 | La consulta no distingue restricciones activas de inactivas. | Baja | 10% | 2 | Resuelto | v02 — ESP-0030 muestra `estado_alerta` en RES-TBL-RESTRICCIONES-VENTA. | ESP-0030 |
 | ILA-0031-R01 | Desactivar una restricción deja sin protección una venta próxima. | Media | 50% | 4 | Pendiente | Exigir confirmación adicional y registro de auditoría al desactivar. | ESP-0031 |
-| ILA-0031-R02 | Falta de bloqueo optimista si dos usuarios modifican la misma restricción. | Baja | 10% | 1 | Pendiente | Control de concurrencia por versión de fila. | ESP-0031 |
+| ILA-0031-R02 | Falta de bloqueo optimista si dos usuarios modifican la misma restricción. | Baja | 10% | 1 | Resuelto | v07 — No aplica: una sola sesión activa (RNF-0003 v02.00). | ESP-0031 |
 | ILA-0032-R01 | Física o lógica. | Baja | 10% | 1 | Resuelto | ESP-0032 aplica baja lógica `estado_alerta = 'Inactivo'`. | ESP-0032 |
 | ILA-0032-R02 | Ambigüedad sobre si una restricción inactiva sigue visible en la tabla principal o solo en un histórico. | Media | 50% | 1 | Pendiente | Filtro por estado con "Activo" por defecto, igual que ESP-0018. | ESP-0032, ESP-0030 |
 | ILA-0032-R03 | Desactivar la única restricción de un medicamento sensible no genera advertencia adicional. | Media | 50% | 3 | Pendiente | Mostrar advertencia si se desactiva la última restricción activa. | ESP-0032 |
@@ -248,21 +249,21 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | Bloque | Claves |
 |---|---|
 | Generales | RG-011 |
-| 1 Ventas | ILA-0001-R03, ILA-0001-R04, ILA-0002-R02, ILA-0003-R01, ILA-0003-R03, ILA-0004-R01, ILA-0004-R02, ILA-0004-R03 |
+| 1 Ventas | ILA-0001-R02, ILA-0001-R03, ILA-0001-R04, ILA-0002-R02, ILA-0003-R01, ILA-0003-R02, ILA-0003-R03, ILA-0004-R01, ILA-0004-R02, ILA-0004-R03 |
 | 2 Inventario | ILA-0005-R01, ILA-0005-R03, ILA-0005-R04, ILA-0007-R01, ILA-0007-R02, ILA-0007-R03, ILA-0008-R01, ILA-0008-R02 |
 | 3 Documentación | ILA-0009-R01, ILA-0009-R02, ILA-0009-R03, ILA-0011-R02, ILA-0012-R01, ILA-0012-R03 |
 | 4 Alertas de vencimiento | ILA-0013-R01, ILA-0013-R03, ILA-0014-R02, ILA-0015-R01, ILA-0015-R02, ILA-0016-R01, ILA-0016-R03, ILA-0016-R04 |
 | 5 Métodos de pago | ILA-0017-R01, ILA-0017-R02, ILA-0018-R01, ILA-0019-R01, ILA-0019-R02, ILA-0020-R01, ILA-0020-R02 |
-| 6 Reportes | ILA-0021-R02, ILA-0022-R03, ILA-0023-R01, ILA-0023-R04, ILA-0024-R01, ILA-0024-R02, ILA-0024-R03 |
+| 6 Reportes | ILA-0021-R02, ILA-0022-R03, ILA-0023-R01, ILA-0023-R03, ILA-0023-R04, ILA-0024-R01, ILA-0024-R02, ILA-0024-R03 |
 | 7 Devoluciones | ILA-0025-R01, ILA-0025-R02, ILA-0026-R02, ILA-0027-R01, ILA-0027-R02, ILA-0028-R01, ILA-0028-R02, ILA-0028-R03 |
-| 8 Restricciones | ILA-0029-R03, ILA-0030-R01, ILA-0030-R02, ILA-0032-R01 |
+| 8 Restricciones | ILA-0029-R03, ILA-0030-R01, ILA-0030-R02, ILA-0031-R02, ILA-0032-R01 |
 | 9 Usuarios | ILA-0033-R02, ILA-0035-R01, ILA-0036-R01, ILA-0036-R02 |
 | 10 Proveedores | ILA-0040-R01 |
 | 11 Lotes | ILA-0041-R01, ILA-0043-R01, ILA-0043-R02 |
 | 12 Reabastecimiento | ILA-0045-R01, ILA-0045-R02, ILA-0047-R01, ILA-0048-R01 |
 | 13 Comparación de precios | ILA-0052-R01 |
 
-**Total: 70 resueltos.**
+**Total: 74 resueltos.**
 
 ## Riesgos abiertos de mayor severidad (impacto ≥ 4 y probabilidad ≥ 50 %)
 
@@ -282,6 +283,6 @@ No queda ningún riesgo en estado **Retrasado**.
 | Bloque | Filas | Resuelto | En proceso | Pendiente |
 |---|---|---|---|---|
 | RG | 11 | 1 | 4 | 6 |
-| Módulos 1-8 | 89 | 56 | 3 | 30 |
+| Módulos 1-8 | 89 | 60 | 3 | 26 |
 | Módulos 9-13 | 27 | 13 | 0 | 14 |
-| **Total** | **127** | **70** | **7** | **50** |
+| **Total** | **127** | **74** | **7** | **46** |

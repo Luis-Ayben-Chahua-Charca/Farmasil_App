@@ -95,6 +95,8 @@ Comparación Precios → Inventario, Proveedores, Reabastecimiento
 | Matriz de dependencias e interfaces (texto, la fuente de este documento) | `docs/arquitectura/Insumo_Matriz_Interfaces_ArquitecturaGenerica_v2.md` |
 | Mockups de pantallas | `diseno/Mockups/` |
 | Diagramas de casos de uso | `docs/diagramas/` |
+| Vista lógica (paquetes, clases, mecanismos comunes, MVC) | `docs/arquitectura/VistaLogica_v01.md` y `docs/diagramas/plaintext-VistaLogica/VL-01` a `VL-04` (`.puml`), con sus PNG en `docs/diagramas/` |
+| **No usar para implementar** | `docs/diagramas/VL_01_Trazabilidad.png` y `docs/diagramas/Vista Logica.png`: imágenes hechas a mano solo para la exposición, sin fuente PlantUML. Ignóralas al generar código; si difieren de los `.puml`, prevalecen los `.puml` (DEC-024). |
 | Riesgos identificados y su estado | `riesgos/10-gestion-riesgos.md` |
 | Cuestiones abiertas y decisiones ya tomadas (no reabrir sin revisar) | `seguimiento/11-registro-pendientes.md` |
 | Reglas para agentes de IA trabajando en este repo (commits, git add, atribución) | `AGENTS.md` (raíz del repo) |

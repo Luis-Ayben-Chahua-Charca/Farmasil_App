@@ -58,10 +58,12 @@ Remesas físicas de cada medicamento. Un producto del catálogo puede tener vari
 | id_producto | INT | NOT NULL, FK (TBL_PRODUCTOS) | Medicamento al que pertenece la remesa. |
 | numero_lote | NVARCHAR(30) | NOT NULL | Número de lote impreso por el laboratorio. |
 | fecha_vencimiento | DATE | NOT NULL | Fecha de caducidad de esta remesa. |
-| stock_actual | INT | NOT NULL, DEFAULT 0 | Unidades físicas disponibles de esta remesa. |
+| stock_actual | INT | NOT NULL, DEFAULT 0, CHECK (stock_actual >= 0) | Unidades físicas disponibles de esta remesa. Nunca negativo: ESP-0027 valida el stock antes de completar una devolución. |
 | estado_lote | NVARCHAR(25) | DEFAULT 'Disponible' | Estados: 'Disponible', 'Bloqueado por devolucion', 'Agotado'. |
 | fecha_ingreso | DATE | NOT NULL | Fecha en que la remesa ingresó al almacén. |
 | id_proveedor | INT | FK (TBL_PROVEEDORES) | Proveedor que efectivamente entregó esta remesa. Puede diferir del proveedor habitual declarado en `TBL_PRODUCTOS.id_proveedor` cuando el medicamento se compra a más de un proveedor. |
+
+Restricción adicional: `CHECK (stock_actual >= 0)`, que impide en el motor un descuento que deje la remesa en negativo; una remesa 'Disponible' cuyo stock llega a cero pasa a 'Agotado' (ESP-0001, ESP-0027).
 
 Restricción adicional: `UNIQUE (id_producto, numero_lote)`. El mismo laboratorio no repite número de lote para un mismo medicamento, y admitir duplicados haría ambiguo el rastreo sanitario.
 
@@ -90,12 +92,12 @@ Desglosa los productos vendidos dentro de cada transacción. Es la tabla que per
 | Campo | Tipo de dato | Restricciones | Descripción |
 | --- | --- | --- | --- |
 | id_detalle_venta | INT | PK, Auto-increment | Identificador único de la línea de detalle. |
-| id_venta | INT | FK (TBL_REGISTRO_VENTAS) | Enlace a la cabecera de la venta. |
+| id_venta | INT | NOT NULL, FK (TBL_REGISTRO_VENTAS) | Enlace a la cabecera de la venta. |
 | id_lote | INT | NOT NULL, FK (TBL_LOTES) | Remesa exacta de la que salió el producto vendido. |
 | cantidad | INT | NOT NULL | Cantidad de unidades vendidas. |
 | precio_unitario | DECIMAL(10,2) | NOT NULL | Precio del producto al momento de la venta. |
 
-*Relación identificadora: el detalle no existe sin su cabecera. La eliminación de una venta arrastra sus líneas, según ILA-0004.*
+*Dependencia de existencia: el detalle no existe sin su cabecera, y la eliminación de una venta arrastra sus líneas, según ILA-0004. La relación es no identificadora porque el detalle tiene clave propia (`id_detalle_venta`).*
 
 *Cambio en v04.00: `id_producto` se sustituyó por `id_lote`. El medicamento se obtiene navegando `TBL_LOTES.id_producto`, y a cambio el sistema puede responder qué se vendió de una remesa concreta cuando DIGEMID retira un lote.*
 
@@ -112,7 +114,7 @@ Documentos fiscales emitidos formalmente por cada venta efectuada.
 | id_venta | INT | FK (TBL_REGISTRO_VENTAS) | Enlace directo a la venta que originó el documento. |
 | estado_documento | NVARCHAR(25) | DEFAULT 'Emitido' | Estados: 'Emitido', 'Anulado'. |
 
-*Relación uno a uno con la venta. Un comprobante emitido nunca se elimina físicamente: ILA-0012 lo anula.*
+*Relación uno a muchos con la venta: una venta puede acumular comprobantes anulados, pero tiene a lo sumo uno 'Emitido' (ESP-0009). Un comprobante emitido nunca se elimina físicamente: ILA-0012 lo anula.*
 
 ## 8. TBL_METODOS_PAGO
 
@@ -136,7 +138,7 @@ Configuración del motor de alertas automáticas de vida útil de los medicament
 | descripcion | NVARCHAR(150) | NOT NULL | Nombre de la regla, por ejemplo 'Alerta Base Cuarentena'. |
 | umbral_meses | INT | NOT NULL, DEFAULT 2 | Margen crítico de vida útil, en meses. |
 | estado | NVARCHAR(10) | DEFAULT 'Activo' | Define si el motor de alertas ejecuta esta regla. |
-| fecha_ultima_verif | DATETIME2 | NOT NULL | Registro de cuándo se ejecutó el último escaneo automático. |
+| fecha_ultima_verif | DATETIME2 | NOT NULL | Fecha y hora de la última evaluación de vencimientos. La actualiza el proceso 1 de RNF-0010 al terminar cada evaluación. |
 
 *Tabla de configuración global, sin claves foráneas. Actualmente ninguna educción gestiona su contenido: ILA-0013 solo lee `umbral_meses`. Ver la sección final.*
 
@@ -182,11 +184,11 @@ Desglosa qué medicamentos van dentro de una orden de devolución.
 | Campo | Tipo de dato | Restricciones | Descripción |
 | --- | --- | --- | --- |
 | id_detalle_dev | INT | PK, Auto-increment | Identificador de la línea de devolución. |
-| id_devolucion | INT | FK (TBL_ORDENES_DEVOLUCION) | Enlace a la cabecera de la devolución. |
+| id_devolucion | INT | NOT NULL, FK (TBL_ORDENES_DEVOLUCION) | Enlace a la cabecera de la devolución. |
 | id_lote | INT | NOT NULL, FK (TBL_LOTES) | Remesa que se extraerá del almacén. |
 | cantidad_devolver | INT | NOT NULL | Unidades físicas devueltas al proveedor. |
 
-*Relación identificadora: el detalle no existe sin su cabecera.*
+*Dependencia de existencia: el detalle no existe sin su cabecera. La relación es no identificadora porque el detalle tiene clave propia (`id_detalle_dev`).*
 
 *Cambio en v04.00: `id_producto` se sustituyó por `id_lote`. El proveedor tramita la devolución contra un número de lote; una orden que solo nombrara el medicamento no servía para el trámite real.*
 
@@ -233,14 +235,14 @@ Reglas de seguridad clínica para protección en el punto de venta.
 | Campo | Tipo de dato | Restricciones | Descripción |
 | --- | --- | --- | --- |
 | id_reabastecimiento | INT | PK, Auto-increment | Identificador único del ítem de la lista. |
-| id_producto | INT | FK (TBL_PRODUCTOS) | Medicamento a reabastecer. |
+| id_producto | INT | NOT NULL, FK (TBL_PRODUCTOS), UNIQUE | Medicamento a reabastecer. Un medicamento figura a lo sumo una vez en la lista. |
 | origen | NVARCHAR(20) | NOT NULL, DEFAULT 'Automático' | Valores: 'Automático' (generado por el proceso periódico), 'Manual' (agregado por la dueña, ESP-0045). |
 | prioridad | NVARCHAR(10) | NOT NULL, DEFAULT 'Normal' | Valores: 'Normal', 'Urgente'. Determina el resaltado visual en rojo. |
 | fecha_inclusion | DATE | NOT NULL | Fecha en que el ítem entró a la lista. |
 
 *Educción asociada: EDU-0016. Ilaciones: ILA-0045 a ILA-0048.*
 
-*Sin restricción de unicidad sobre `id_producto`: un medicamento puede reaparecer en la lista después de haber sido eliminado (por ejemplo, tras ser pedido y vuelto a caer bajo el umbral).*
+*Restricción de unicidad sobre `id_producto`: un medicamento figura a lo sumo una vez en la lista. La restricción no impide que reaparezca después de que su fila se eliminó (por ejemplo, tras ser pedido y volver a caer bajo el umbral), porque la fila anterior ya no existe. ESP-0045 valida que el medicamento no figure antes de agregarlo, y el proceso 2 de RNF-0010, que se ejecuta en segundo plano y es la única ejecución concurrente del sistema, trata el rechazo por duplicado como "ya figura" y continúa con el siguiente medicamento.*
 
 *Fuente: ESP-0045 (creación manual), ESP-0046 (consulta), ESP-0047 (actualización), ESP-0048 (eliminación). La escribe también el proceso periódico de generación automática, documentado en la condición 2 de RNF-0010.*
 
@@ -294,10 +296,10 @@ Esta tabla es el criterio único para decidir el tipo de un campo en las tres ca
 
 | Relación | Tipo | Justificación |
 | --- | --- | --- |
-| `TBL_PRODUCTOS` → `TBL_LOTES` | Identificadora, 1:N | Nueva en v04.00. Un medicamento tiene varias remesas; una remesa no existe sin su medicamento. |
-| `TBL_REGISTRO_VENTAS` → `TBL_DETALLE_VENTAS` | Identificadora, 1:N | El detalle no existe sin la venta cabecera. |
-| `TBL_ORDENES_DEVOLUCION` → `TBL_DETALLE_DEVOLUCION` | Identificadora, 1:N | El detalle no existe sin la orden cabecera. |
-| `TBL_REGISTRO_VENTAS` ↔ `TBL_COMPROBANTES_TRIBUTARIOS` | Identificadora, 1:1 | Un comprobante corresponde siempre a una venta específica. |
+| `TBL_PRODUCTOS` → `TBL_LOTES` | No identificadora obligatoria, 1:N | Nueva en v04.00. Un medicamento tiene varias remesas; una remesa no existe sin su medicamento (FK obligatoria), pero tiene clave propia (`id_lote`). |
+| `TBL_REGISTRO_VENTAS` → `TBL_DETALLE_VENTAS` | No identificadora obligatoria, 1:N | El detalle no existe sin la venta cabecera (dependencia de existencia), pero tiene clave propia. |
+| `TBL_ORDENES_DEVOLUCION` → `TBL_DETALLE_DEVOLUCION` | No identificadora obligatoria, 1:N | El detalle no existe sin la orden cabecera (dependencia de existencia), pero tiene clave propia. |
+| `TBL_REGISTRO_VENTAS` → `TBL_COMPROBANTES_TRIBUTARIOS` | No identificadora, 1:N | Un comprobante corresponde siempre a una venta, y una venta puede tener varios comprobantes con a lo sumo uno 'Emitido' (ESP-0009). El comprobante tiene clave propia. |
 | `TBL_USUARIOS` → `TBL_REGISTRO_VENTAS` | No identificadora, 1:N | Nueva en v03.00. Un usuario registra muchas ventas. |
 | `TBL_USUARIOS` → `TBL_ORDENES_DEVOLUCION` | No identificadora, 1:N | Un usuario registra muchas órdenes de devolución. |
 | `TBL_PROVEEDORES` → `TBL_PRODUCTOS` | No identificadora, 1:N | Un proveedor abastece muchos productos. |
@@ -338,10 +340,14 @@ Estos puntos no se modificaron porque implican decisiones de alcance, no correcc
 5. **Gestión de la configuración de alertas.** `TBL_ALERTAS_VENCIMIENTO` no tiene ninguna educción que la administre: el umbral es hoy un valor fijo que nadie puede cambiar desde el sistema.
 
 
-**Versión:** 07.00
-**Fecha:** 13/10/2026
+**Versión:** 09.00
+**Fecha:** 01/11/2026
 **Autor:** AUT-0001
 **Origen:** Diccionario de Datos v02.00, `Cambios_Modelo_ER_DB_FARMASIL.md` y Entrevista 3 (v05.00)
+
+> **Aplicado en v09.00 (01/11/2026):** `TBL_LOTES.stock_actual` incorpora `CHECK (stock_actual >= 0)`, y ESP-0027 valida el stock de cada remesa antes de completar una devolución (DEC-019). `TBL_LISTA_REABASTECIMIENTO.id_producto` pasa a NOT NULL y UNIQUE, y se corrige la nota que justificaba su ausencia (DEC-020).
+
+> **Aplicado en v08.00 (18/10/2026):** las relaciones con clave propia del hijo pasan a no identificadoras (`TBL_PRODUCTOS` → `TBL_LOTES`, cabeceras → detalles); la relación venta–comprobante pasa de 1:1 a 1:N, con a lo sumo un comprobante 'Emitido' por venta (PEN-014); `id_venta` e `id_devolucion` de los detalles pasan a NOT NULL; `fecha_ultima_verif` la actualiza el proceso 1 de RNF-0010 (PEN-015).
 
 > **Aplicado en v07.00 (13/10/2026):** `TBL_USUARIOS.contrasena` guarda un hash con sal y no un valor encriptado, conforme a RNF-0006 v05.00.
 

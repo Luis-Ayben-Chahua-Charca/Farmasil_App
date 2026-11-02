@@ -47,7 +47,7 @@ Agrupados por el entregable/fase del curso al que pertenecen realmente, para no 
 | 5 | **Diagrama de estados** | Alta | Resuelve directamente el bloqueante documentado en `Insumo_Gestion_Riesgos_FARMASIL.md`: ILA-0028 tiene marcado **"PENDIENTE DE DECISIÓN"** entre eliminación física o lógica de una orden de devolución. También aplica a `estado_lote` (Disponible/Agotado) y `estado_producto` (Disponible/Bloqueado por devolución/Descontinuado). | Pendiente |
 | 6 | **Diagrama de secuencia** | Alta | Formaliza el orden exacto de la validación cruzada en "crear venta" (Ventas → Alertas de Restricción → Alertas de Vencimiento → descuento en Lotes), hoy solo implícito en el pseudocódigo de ESP-0001. También cubre el riesgo ILA-0025-R02 (atomicidad entre `TBL_ORDENES_DEVOLUCION` y `TBL_DETALLE_DEVOLUCION`). | Pendiente |
 | 7 | **Diagrama de casos de uso** | Media | Vista de escenario del 4+1: actores (ACT-0001, ACT-0002) contra las 44 operaciones. En gran parte ya está cubierto en forma tabular por `07-matriz-permisos.md`, así que su valor aquí es más de presentación que de resolver una ambigüedad nueva. | Pendiente |
-| 8 | **Diagrama de actividades** | Media | Útil para procesos con ramificaciones y decisiones, como el flujo completo de devoluciones (ILA-0025 a ILA-0028), que hoy tiene tres riesgos abiertos sobre validaciones no definidas (stock suficiente, proveedor activo, edición de orden ya enviada). | Pendiente |
+| 8 | **Diagrama de actividades** | Media | Útil para procesos con ramificaciones y decisiones, como el flujo completo de devoluciones (ILA-0025 a ILA-0028), que hoy tiene tres riesgos abiertos sobre validaciones no definidas (stock suficiente, proveedor activo, edición de orden ya enviada). | Pasa a la Fase 2: se elabora como parte de la Vista de Procesos (DEC-021) |
 | 9 | **Diagrama de comunicación / interacción** | Baja | Mismo contenido que el de secuencia con otro layout (énfasis en objetos en vez de en el tiempo). Redundante si ya se construye el de secuencia; no priorizar. | — |
 | 10 | **Diagrama de tiempos** | Baja / nicho | Solo tendría sentido si se quiere documentar formalmente RNF-0005 (venta en ≤4s) como restricción temporal explícita. Opcional, poco común en un catálogo de este tamaño. | — |
 
@@ -76,7 +76,8 @@ Para que quede constancia de que se revisaron y se descartaron a propósito, no 
 - **Arquitectura de pizarra (blackboard).** Pensada para sistemas con reconocimiento de voz, patrones o IA — FARMASIL no tiene ningún componente de ese tipo.
 - **Maestro-esclavo.** Resuelve tolerancia a fallos en sistemas distribuidos; FARMASIL es mono-usuario-local sobre un solo equipo (RNF-0007).
 - **Subrutina principal.** Es un patrón de reutilización de código de bajo nivel (típico de C++), no un nivel de abstracción arquitectónica útil para este catálogo.
-- **Arquitectura de comunicación asíncrona / invocación implícita.** Pensada para desacoplar eventos entre componentes gráficos interactivos o IDEs; no hay evidencia en el catálogo de que FARMASIL necesite ese desacoplamiento — sus operaciones son transacciones síncronas de mostrador.
+- **Arquitectura de comunicación asíncrona con buffer (cola de mensajes).** Resuelve el problema productor–consumidor entre componentes que no se ejecutan al mismo tiempo; FARMASIL no tiene esa situación — sus operaciones son transacciones síncronas de mostrador.
+- **Readmitida de forma parcial: invocación implícita sin buffer.** Se usa en un solo caso: el proceso de evaluación de vencimientos (condición 1 de RNF-0010) corre en un hilo de fondo y publica el aviso como un evento que la interfaz escucha, sin que el proceso conozca a la pantalla. Se documenta en la Vista de Procesos (DEC-021). El maestro-esclavo sigue descartado.
 
 ---
 

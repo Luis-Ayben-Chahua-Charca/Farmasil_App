@@ -2,8 +2,8 @@
 
 | Artefacto | Registro de pendientes y decisiones |
 | --- | --- |
-| Versión | 01.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 01/11/2026 |
 | Responsable | AUT-0001 |
 
 ## 1. Para qué existe y por qué tiene esta forma
@@ -34,7 +34,7 @@ No se duplica el backlog ni los riesgos: un pendiente que se convierte en trabaj
 5. **Revisar.** Al cierre de cada sprint se recorre la tabla: lo que siga bloqueando un entregable del sprint siguiente sube de prioridad.
 
 **Tipos:** *Cliente* (requiere respuesta de la dueña), *Equipo* (decisión interna), *Documentación* (trabajo sin decisión pendiente), *Diseño UI* (mockups), *Alcance* (entra o no en el producto).
-**Estados:** *Abierto*, *En espera del cliente*, *En curso*, *Cerrado*.
+**Estados:** *Abierto*, *En espera del cliente*, *Decidido, por aplicar* (la decisión ya está tomada y registrada; solo falta aplicarla cuando Leyni lo indique, así que no hace falta volver a plantearla), *En curso*, *Cerrado*.
 **Prioridad:** *Alta* si bloquea la implementación (sprint 7, desde el 25/10/2026); *Media* si bloquea el cierre de un artefacto del catálogo; *Baja* en otro caso.
 
 ## 3. Cuestiones abiertas
@@ -52,7 +52,8 @@ No se duplica el backlog ni los riesgos: un pendiente que se convierte en trabaj
 | PEN-009 | Juego de datos de prueba: medicamentos, remesas con vencimientos escalonados, proveedores, cuentas de ambos roles y ventas históricas. | Documentación | Equipo | Ejecución del plan de pruebas | Alta | Abierto | Script o archivo de carga inicial versionado en el repositorio | Pendiente 1 de `09-pruebas-software.md`, hueco 2 de `04-trazabilidad.md` | — |
 | PEN-010 | Alcance: registro de clientes e historial de compras, y tipo y presentación del producto (genérico o comercial, precio por unidad o por conjunto), pedidos por la dueña en la Entrevista 1. | Alcance | Leyni con la dueña | Modelo de datos si se incorporan | Media | Abierto | Decisión registrada en la sección 5 y, si entran, educción nueva | Vacíos 2 y 4 del Diccionario de Datos | — |
 | PEN-011 | Configuración del umbral de alertas: `TBL_ALERTAS_VENCIMIENTO` no tiene ninguna operación que la administre, y el umbral queda fijo. | Equipo | Leyni | Ninguno (hay un valor vigente) | Baja | Abierto | Decisión de mantenerlo fijo (documentada) o especificación de su administración | ILA-0013-R02, vacío 5 del Diccionario de Datos, hueco 4 de `04-trazabilidad.md` | — |
-| PEN-012 | Revisar los 57 riesgos aún abiertos (50 Pendiente y 7 En proceso) antes de implementar cada módulo. La mayoría son mejoras de detalle: paginación, búsqueda parcial, validación del RUC. | Equipo | Leyni | Implementación de cada módulo | Media | Abierto | Cada riesgo del módulo resuelto o aceptado de forma explícita al iniciar su sprint | `riesgos/10-gestion-riesgos.md` v06.00 | — |
+| PEN-012 | Revisar los 53 riesgos aún abiertos (46 Pendiente y 7 En proceso) antes de implementar cada módulo. La mayoría son mejoras de detalle: paginación, búsqueda parcial, validación del RUC. | Equipo | Leyni | Implementación de cada módulo | Media | Abierto | Cada riesgo del módulo resuelto o aceptado de forma explícita al iniciar su sprint | `riesgos/10-gestion-riesgos.md` v07.00 | — |
+| PEN-019 | Alcance y convenciones de los diagramas de la Vista de Procesos. Alternativa elegida de forma provisional: **C+**, es decir, VP-00 (ciclo de vida de la aplicación: arranque, sesión e hilos de los procesos programados de RNF-0010, con eventos de tiempo e invocación implícita), VP-B (subactividad reutilizable de baja condicional con `SAVE TRANSACTION`, DEC-022), VP-01 a VP-13 (un diagrama de actividades por módulo, derivado de la vista lógica), un diagrama de tiempos (RNF-0005 y periodicidades de RNF-0010) y una matriz de recursos compartidos y preocupaciones. Convenciones propuestas: prefijo `VP-`, fuentes en `docs/diagramas/plaintext-VistaProcesos/`, solo PlantUML + PNG, particiones alineadas con los paquetes de VL-04 (Actor · Vista y Controlador (hilo de UI) · Modelo · Persistencia), acciones redactadas en lenguaje de arquitectura (sin firmas de métodos ni SQL; interfaces y tablas en una leyenda de trazabilidad), bifurcación y unión donde hay ejecución simultánea y región transaccional explícita. Queda pendiente de confirmación mientras se valida la comprensión de los diagramas con el borrador de VP-01 (registro de venta). Los diagramas y el documento de la vista se suben en su propio issue. | Equipo | Leyni | Elaboración de los diagramas VP-00 a VP-13 | Media | Abierto | Alternativa confirmada y registrada como DEC, o reemplazada por otra | Revisión de la vista de procesos del 23/10/2026 | — |
 
 ## 4. Agenda para la próxima reunión con la dueña
 
@@ -85,6 +86,15 @@ Preguntas en el orden en que conviene hacerlas, para salir de la reunión con to
 | DEC-013 | 13/10/2026 | No se puede eliminar una venta con cualquier comprobante asociado, emitido o anulado. | Un comprobante anulado es un documento tributario que se conserva con su venta; la corrección se hace actualizando la venta. | Leyni | ESP-0004, ILA-0004 |
 | DEC-014 | 13/10/2026 | La contraseña se guarda como hash irreversible con sal individual. | "Encriptada" admitía un cifrado reversible. | Leyni | RNF-0006, ESP-0033, ESP-0035, Diccionario de Datos |
 | DEC-015 | 13/10/2026 | Las pruebas cubren solo lo necesario para demostrar calidad, sin sobreingeniería. | Criterio del equipo para el plan de pruebas. | Leyni | `09-pruebas-software.md` |
+| DEC-016 | 18/10/2026 | El sistema lo usa una sola persona a la vez en un único equipo; no se diseñan mecanismos de concurrencia entre usuarios. | RNF-0003 exigía por error dos usuarios simultáneos. | Leyni | RNF-0003, 09-pruebas, riesgos |
+| DEC-017 | 18/10/2026 | Las relaciones cuyo hijo tiene clave propia son no identificadoras; venta–comprobante es 1:N con a lo sumo uno 'Emitido'. | Coherencia con ESP-0009 y con VL-02. | Instancia maestra | Diccionario de Datos v08.00 |
+| DEC-018 | 18/10/2026 | `fecha_ultima_verif` la actualiza el proceso 1 de RNF-0010. | Columna obligatoria sin quién la alimentara; sirve para detectar si el proceso de fondo dejó de ejecutarse. | Instancia maestra | RNF-0010 v02.00, Diccionario de Datos v08.00 |
+| DEC-019 | 23/10/2026 | Al completar una orden de devolución (ESP-0027) se valida que el stock de cada remesa alcance para la cantidad a devolver; si no alcanza, se rechaza y se pide ajustar el detalle. El filtro del combo de ESP-0025 se resolvió en DEC-023. `CHECK (stock_actual >= 0)` en `TBL_LOTES`. Una remesa 'Disponible' que queda en cero pasa a 'Agotado'. Aplicada el 01/11/2026. | Se descartó que Ventas descuente lo reservado, porque crearía una dependencia Ventas → Devoluciones; y se descartó limitar las órdenes a remesas bloqueadas, porque contradice EDU-0011 (remesas por vencer) y FEFO, que prefiere vender antes que devolver. | Leyni | PEN-016 |
+| DEC-020 | 23/10/2026 | UNIQUE en `TBL_LISTA_REABASTECIMIENTO.id_producto` y corrección de la nota del diccionario; el proceso 2 de RNF-0010 trata el duplicado como "ya figura" y continúa. Aplicada el 01/11/2026. | Un UNIQUE no impide reinsertar un producto cuya fila se borró; es la única ejecución concurrente del sistema. | Leyni | PEN-017 |
+| DEC-021 | 23/10/2026 | Se readmite solo la invocación implícita (aviso de vencimientos como evento desde el hilo de fondo); el maestro-esclavo sigue descartado; el diagrama de actividades pasa a la Fase 2. La Vista Lógica v02 §2 añade: "La única ejecución concurrente del sistema, la de los procesos programados de RNF-0010, se trata en la Vista de Procesos." Aplicada el 01/11/2026. | Coherencia con RNF-0010 y RNF-0003 v02.00. | Leyni | PEN-018 |
+| DEC-022 | 23/10/2026 | La baja condicional (DEC-009) se implementa con `SAVE TRANSACTION`: con `XACT_ABORT ON`, el error 547 anularía toda la transacción y la baja lógica posterior fallaría. No cambia el catálogo. | Nota de diseño para la vista de procesos (subactividad VP-B) y la implementación. | Instancia maestra | DEC-009 |
+| DEC-023 | 01/11/2026 | El combo de remesas de ESP-0025 lista las del proveedor con stock mayor que cero, en estado 'Bloqueado por devolucion' o 'Disponible', ordenadas por fecha de vencimiento, sin aplicar el umbral de `TBL_ALERTAS_VENCIMIENTO`; ILA-0025 se alinea. | Leer el umbral desde Devoluciones crearía la dependencia Devoluciones → Alertas de Vencimiento, que con la existente Alertas → Devoluciones forma un ciclo en la arquitectura genérica cerrada. Las remesas por vencer siguen pudiendo devolverse (EDU-0011) y aparecen primero. | Leyni | ESP-0025, ILA-0025, `09-pruebas-software.md`, `04-trazabilidad.md` |
+| DEC-024 | 01/11/2026 | `docs/diagramas/VL_01_Trazabilidad.png` y `docs/diagramas/Vista Logica.png` son imágenes hechas a mano solo para la exposición: no tienen fuente PlantUML, no se corrigen y los agentes las ignoran al implementar; prevalecen los `.puml` de `plaintext-VistaLogica/`. | Se elaboraron para el informe y la exposición; la fuente de diseño debe ser una sola. | Leyni | `AGENTS.md` §8, `Contexto_Arquitectura_FARMASIL_ParaAgentesIA.md` §7, `VistaLogica_v01.md` |
 
 ## 6. Cuestiones cerradas
 
@@ -92,4 +102,9 @@ Se registran aquí las cuestiones que tenían un `PEN-NNN` asignado al cerrarse.
 
 | Código | Pendiente | Fecha de cierre | Decisión | Commit |
 | --- | --- | --- | --- | --- |
-| — | — | — | — | — |
+| PEN-014 | Relaciones venta–comprobante y producto–lote mal tipificadas en el Diccionario de Datos. | 18/10/2026 | DEC-017 | a7bd758 |
+| PEN-015 | `fecha_ultima_verif` sin quién la actualice. | 18/10/2026 | DEC-018 | a7bd758 |
+| PEN-013 | SEC-01 consultaba el precio a Inventario desde Ventas, dependencia que la arquitectura genérica no tiene. | 01/11/2026 | — (decisión del 23/10/2026: corregir dentro del issue #50) | Este commit |
+| PEN-016 | Stock reservado en órdenes de devolución pendientes y filtro de remesas de ESP-0025. | 01/11/2026 | DEC-019, DEC-023 | Este commit |
+| PEN-017 | `TBL_LISTA_REABASTECIMIENTO.id_producto` sin UNIQUE. | 01/11/2026 | DEC-020 | Este commit |
+| PEN-018 | Frase de la Vista Lógica v02 §2 e insumo de diagramas (documentos fuera del repositorio). | 01/11/2026 | DEC-021 | Este commit (`docs/arquitectura/Insumo_Diagramas_Arquitectura_FARMASIL.md`); la frase de la VL v02 se aplica en Google Docs |

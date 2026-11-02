@@ -9,8 +9,8 @@ skinparam sequence {
 actor "Usuario" as U
 participant "Ventas" as V
 participant "Lotes" as L
-participant "Restricciones" as R
 participant "Inventario" as I
+participant "Restricciones" as R
 participant "Metodos de pago" as M
 database "DB_FARMASIL" as D
 
@@ -27,7 +27,9 @@ loop mientras agregue productos
   V -> L : sugerirFEFO(producto)
   L -> D : SELECT lotes Disponible, stock > 0\nORDER BY fecha_vencimiento
   D --> L : lotes
-  L --> V : lote sugerido
+  L -> I : datosProducto(producto)
+  I --> L : nombre, precio_venta
+  L --> V : remesa sugerida\n(con nombre y precio_venta)
   U -> V : agregarProducto(lote, cantidad)
   alt cantidad invalida o mayor al stock
     V --> U : error de validacion
@@ -41,9 +43,7 @@ loop mientras agregue productos
     alt Bloqueante
       V --> U : motivo_advertencia,\nlinea rechazada
     else Informativa o sin restriccion
-      V -> I : precioVenta(producto)
-      I --> V : precio_venta
-      V --> U : linea agregada,\nmonto total actualizado
+      V --> U : linea agregada con precio_venta,\nmonto total actualizado
     end
   end
 end
@@ -57,9 +57,10 @@ else datos validos
   D --> V : idVenta
   loop cada linea del detalle
     V -> D : INSERT TBL_DETALLE_VENTAS
-    V -> D : UPDATE TBL_LOTES stock_actual
+    V -> L : descontar(lote, cantidad)
+    L -> D : UPDATE TBL_LOTES stock_actual
     opt stock_actual = 0
-      V -> D : UPDATE estado_lote Agotado
+      L -> D : UPDATE estado_lote Agotado
     end
   end
   alt sin error
@@ -70,4 +71,9 @@ else datos validos
     V --> U : error, venta no registrada
   end
 end
+
+note over V, I
+  Ventas no consulta a Inventario: el nombre y el precio
+  llegan con la remesa sugerida por Lotes (Ventas -> Lotes -> Inventario).
+end note
 @enduml
