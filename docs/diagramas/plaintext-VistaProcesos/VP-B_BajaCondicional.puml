@@ -1,0 +1,100 @@
+@startuml VP-B_BajaCondicional
+' Vista de procesos FARMASIL_APP — VP-B_BajaCondicional (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-B — Subactividad: baja condicional
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+  La invocan VP-02, VP-05, VP-10, la baja
+  de usuarios (ESP-0036) y la baja de
+  remesas (ESP-0044), después de sus
+  verificaciones propias.
+end note
+:Seleccionar el registro y pedir su baja;
+
+|Vista y Controlador (hilo de UI)|
+:Mostrar el modal de confirmación
+con su mensaje;
+
+|Actor|
+if (¿Confirma la baja?) then (no)
+  |Vista y Controlador (hilo de UI)|
+  :Cerrar el modal sin cambios;
+  stop
+else (sí)
+endif
+
+|Modelo|
+:Verificar el rol del usuario;
+
+|Persistencia|
+:Iniciar la transacción;
+:Fijar un punto de guardado;
+:Intentar el borrado físico;
+if (¿El motor lo rechaza
+por referencias de otras tablas?) then (sí)
+  :Volver al punto de guardado;
+  :Aplicar la baja lógica
+  (estado de baja del registro);
+else (no)
+endif
+note right
+  DEC-009: se intenta el borrado físico y,
+  si una clave foránea lo impide, se aplica
+  la baja lógica. DEC-022: el punto de
+  guardado evita que el rechazo anule toda
+  la transacción.
+end note
+if (¿Todo se registró sin error?) then (sí)
+  :Confirmar la transacción;
+else (no)
+  :Revertir la transacción;
+endif
+
+|Vista y Controlador (hilo de UI)|
+if (¿Baja confirmada?) then (sí)
+  :Informar la baja y actualizar la tabla;
+else (no)
+  :Informar que la baja no se realizó;
+endif
+stop
+
+legend right
+  Estado de baja según la tabla:
+  TBL_PRODUCTOS → 'Descontinuado' · TBL_METODOS_PAGO, TBL_PROVEEDORES,
+  TBL_USUARIOS → 'Inactivo' · TBL_LOTES → 'Agotado' con stock en cero
+  Trazabilidad: ESP-0008, ESP-0020, ESP-0036, ESP-0040, ESP-0044 ·
+  DEC-009, DEC-022 · RNF-0006 (cond. 3) · RNF-0009 ·
+  VL-03: RegistroDesactivable · VL-04: UnidadDeTrabajo
+endlegend
+@enduml

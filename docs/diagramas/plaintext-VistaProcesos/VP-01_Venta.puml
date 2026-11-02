@@ -1,0 +1,151 @@
+@startuml VP-01_Venta
+' Vista de procesos FARMASIL_APP — VP-01_Venta (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+' Vista y Controlador (VistaModelo) comparten partición porque se ejecutan en el mismo hilo de UI de WPF.
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+
+title VP-01 — Registro de venta (ESP-0001)
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador» o
+  Técnica farmacéutica «Tecnico», con
+  sesión activa (VP-00).
+end note
+:Abrir el registro de venta;
+
+|Vista y Controlador (hilo de UI)|
+:Mostrar la fecha y hora del sistema;
+
+|Modelo|
+:Obtener los medicamentos vendibles
+y los métodos de pago activos;
+
+|Persistencia|
+:Leer el catálogo de venta;
+
+|Actor|
+repeat
+  :Seleccionar el medicamento
+  (VEN-CMB-PRODUCTO-VENTA);
+
+  |Modelo|
+  :Sugerir la remesa por FEFO;
+
+  |Persistencia|
+  :Leer las remesas disponibles;
+
+  |Vista y Controlador (hilo de UI)|
+  :Proponer la remesa que vence primero,
+  con su precio;
+
+  |Actor|
+  :Confirmar la remesa y la cantidad
+  (VEN-BTN-AGREGAR-PRODUCTO);
+
+  |Modelo|
+  :Validar la línea y consultar
+  la restricción de venta;
+  if (¿La línea puede venderse?) then (no: cantidad inválida,\nremesa no disponible o\nrestricción bloqueante)
+    |Vista y Controlador (hilo de UI)|
+    :Rechazar la línea con su motivo;
+  else (sí)
+    |Vista y Controlador (hilo de UI)|
+    :Agregar la línea, mostrar la advertencia
+    informativa si existe y recalcular el total;
+  endif
+
+  |Actor|
+repeat while (¿Agrega otro medicamento?) is (sí) not (no)
+
+:Elegir el método de pago y confirmar
+(VEN-BTN-CREAR-VENTA);
+
+|Vista y Controlador (hilo de UI)|
+if (¿Detalle y método de pago completos?) then (no)
+  :Señalar el dato faltante;
+  stop
+else (sí)
+endif
+
+fork
+  :Mostrar el progreso y mantener
+  la ventana disponible;
+  note left
+    RNF-0005: la venta completa
+    tarda 4 s como máximo desde
+    VEN-BTN-CREAR-VENTA.
+  end note
+fork again
+  |Modelo|
+  :Verificar el rol del usuario;
+
+  |Persistencia|
+  :Iniciar la transacción;
+  :Registrar la cabecera de la venta
+  con el usuario de la sesión;
+  note right
+    Región transaccional: todo lo que
+    se registra desde aquí se confirma
+    o se revierte como una unidad.
+    Sin esperas del usuario dentro.
+  end note
+  repeat
+    :Registrar la línea de detalle;
+    :Descontar el stock de la remesa;
+    if (¿La remesa quedó en cero?) then (sí)
+      :Marcar la remesa como agotada;
+    else (no)
+    endif
+  repeat while (¿Quedan líneas?) is (sí) not (no)
+  note right
+    Las remesas se actualizan en orden de
+    identificador; los procesos programados
+    solo leen remesas: no hay espera circular.
+  end note
+
+  if (¿Todo se registró sin error?) then (sí)
+    :Confirmar la transacción;
+  else (no)
+    :Revertir la transacción;
+  endif
+end fork
+
+|Vista y Controlador (hilo de UI)|
+if (¿Venta confirmada?) then (sí)
+  :Mostrar la venta registrada
+  en el historial;
+else (no)
+  :Informar que la venta no se registró
+  y conservar el detalle capturado;
+endif
+stop
+
+legend right
+  Trazabilidad
+  ESP-0001 · RNF-0005 · RNF-0006 (cond. 2 y 3) · RNF-0009
+  VL-04: VentaView, VentaViewModel, VentaServicio (IVentas),
+  ILotes, IRestricciones, IPagos, ISesion,
+  VentaRepositorio, UnidadDeTrabajo
+  Tablas: TBL_REGISTRO_VENTAS, TBL_DETALLE_VENTAS, TBL_LOTES,
+  TBL_PRODUCTOS, TBL_RESTRICCIONES_VENTA, TBL_METODOS_PAGO
+endlegend
+@enduml

@@ -1,0 +1,106 @@
+@startuml VP-11_ActualizacionRemesa
+' Vista de procesos FARMASIL_APP — VP-11_ActualizacionRemesa (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-11 — Lotes: actualización de remesa (ESP-0043)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+end note
+:Seleccionar la remesa en LOT-TBL-LOTES
+y presionar LOT-BTN-ACTUALIZAR-LOTE;
+
+|Vista y Controlador (hilo de UI)|
+:Cargar la remesa, con el medicamento
+y el estado de solo lectura;
+
+|Actor|
+:Modificar el número de lote, el vencimiento,
+el stock o el proveedor, y confirmar;
+
+|Modelo|
+:Verificar el rol del usuario;
+|Persistencia|
+:Leer las remesas del mismo medicamento
+y las unidades comprometidas en órdenes pendientes;
+|Modelo|
+if (¿Número de lote no repetido, stock entero no negativo,
+vencimiento futuro si cambió y proveedor existente?) then (no)
+  |Vista y Controlador (hilo de UI)|
+  :Señalar el dato inválido;
+  stop
+else (sí)
+endif
+|Modelo|
+if (¿El stock es menor que lo comprometido?) then (sí)
+  |Vista y Controlador (hilo de UI)|
+  :Informar que el stock no puede ser inferior
+  a lo comprometido en devoluciones pendientes;
+  stop
+else (no)
+endif
+
+|Modelo|
+:Derivar el estado de la remesa;
+note right
+  Estado 'Bloqueado por devolución': se conserva.
+  Stock 0: pasa a 'Agotado'.
+  Estado 'Agotado' con stock y vencimiento
+  futuro: pasa a 'Disponible'.
+  En otro caso, se conserva.
+  El estado no se edita (DEC-010).
+end note
+
+|Persistencia|
+:Iniciar la transacción;
+:Actualizar la remesa con el estado derivado;
+if (¿Todo se registró sin error?) then (sí)
+  :Confirmar la transacción;
+else (no)
+  :Revertir la transacción;
+endif
+
+|Vista y Controlador (hilo de UI)|
+if (¿Remesa actualizada?) then (sí)
+  :Actualizar LOT-TBL-LOTES;
+else (no)
+  :Informar que la remesa no se actualizó;
+endif
+stop
+
+legend right
+  Estados coherentes con EST-01. La baja de remesa (ESP-0044) usa VP-B.
+  Trazabilidad: ESP-0043 · DEC-010, DEC-019 · RNF-0006 (cond. 3)
+  VL-02: Lote · Tablas: TBL_LOTES, TBL_DETALLE_DEVOLUCION, TBL_ORDENES_DEVOLUCION,
+  TBL_PROVEEDORES
+endlegend
+@enduml

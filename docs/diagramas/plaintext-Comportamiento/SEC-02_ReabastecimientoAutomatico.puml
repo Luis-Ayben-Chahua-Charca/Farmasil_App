@@ -34,6 +34,12 @@ alt han pasado >= 15 dias desde fechaUltimaEjecucion (o nunca se ejecuto)
       D --> REA : itemExistente
       alt itemExistente no existe
         REA -> D : INSERT (producto, 'Automatico',\n'Normal', FECHA_SISTEMA) EN\nTBL_LISTA_REABASTECIMIENTO
+        alt insercion correcta
+          D --> REA : item registrado
+        else rechazo por la restriccion de unicidad\nde TBL_LISTA_REABASTECIMIENTO.id_producto
+          D --> REA : error de unicidad
+          note right of REA : se trata como "ya figura"\n(p. ej., la duena lo agrego a mano\nen ese momento, ESP-0045) y se\ncontinua con el siguiente medicamento
+        end
       else itemExistente ya existe
         note right of REA : no se modifica prioridad\nni origen del item existente
       end

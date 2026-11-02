@@ -1,0 +1,97 @@
+@startuml VP-09_ActualizacionUsuario
+' Vista de procesos FARMASIL_APP — VP-09_ActualizacionUsuario (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-09 — Usuarios: actualización de cuenta (ESP-0035)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+end note
+:Seleccionar la cuenta en USR-TBL-USUARIOS
+y presionar USR-BTN-ACTUALIZAR-USUARIO;
+
+|Vista y Controlador (hilo de UI)|
+:Cargar el nombre, el rol y el estado,
+con la contraseña en blanco;
+
+|Actor|
+:Modificar los datos, escribir una contraseña
+nueva si se cambia, y confirmar;
+
+|Modelo|
+:Verificar el rol del usuario;
+|Persistencia|
+:Buscar el nombre de usuario en otras cuentas
+y contar los demás administradores activos;
+|Modelo|
+if (¿Nombre informado y no repetido?) then (no)
+  |Vista y Controlador (hilo de UI)|
+  :Señalar el nombre inválido;
+  stop
+else (sí)
+endif
+|Modelo|
+if (¿La cuenta deja de ser administradora activa
+y no queda otra?) then (sí)
+  |Vista y Controlador (hilo de UI)|
+  :Informar que el sistema debe conservar
+  al menos una cuenta administradora activa;
+  stop
+else (no)
+endif
+
+|Persistencia|
+:Iniciar la transacción;
+:Actualizar el nombre, el rol y el estado;
+if (¿Se escribió una contraseña nueva?) then (sí)
+  :Guardar el hash con sal de la contraseña;
+else (no)
+endif
+if (¿Todo se registró sin error?) then (sí)
+  :Confirmar la transacción;
+else (no)
+  :Revertir la transacción;
+endif
+
+|Vista y Controlador (hilo de UI)|
+if (¿Cuenta actualizada?) then (sí)
+  :Actualizar USR-TBL-USUARIOS;
+else (no)
+  :Informar que la cuenta no se actualizó;
+endif
+stop
+
+legend right
+  Trazabilidad: ESP-0035 · RNF-0006 (cond. 5 y 6) · DEC-014
+  VL-03: Usuario · Tabla: TBL_USUARIOS
+endlegend
+@enduml

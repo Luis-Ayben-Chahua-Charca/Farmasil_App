@@ -1,0 +1,96 @@
+@startuml VP-03_RegistroComprobante
+' Vista de procesos FARMASIL_APP — VP-03_RegistroComprobante (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-03 — Documentación tributaria: registro de comprobante (ESP-0009)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador» o
+  Técnica farmacéutica «Tecnico».
+end note
+:Presionar DOC-BTN-CREAR-COMPROBANTE
+y seleccionar la venta (DOC-CMB-CODIGO-VENTA);
+
+|Modelo|
+:Obtener el monto total de la venta;
+|Persistencia|
+:Leer la venta;
+|Vista y Controlador (hilo de UI)|
+:Mostrar el monto en DOC-LBL-MONTO-TOTAL;
+
+|Actor|
+:Registrar el tipo, el número y la fecha
+de emisión, y confirmar (DOC-BTN-CONFIRMAR-SI);
+
+|Modelo|
+:Verificar el rol del usuario;
+:Validar el tipo (Boleta o Factura),
+el número y la fecha de emisión;
+|Persistencia|
+:Buscar el número de comprobante y
+los comprobantes 'Emitido' de la venta;
+|Modelo|
+if (¿Número libre y venta sin comprobante 'Emitido'?) then (no)
+  |Vista y Controlador (hilo de UI)|
+  :Señalar el motivo del rechazo;
+  stop
+else (sí)
+endif
+
+|Persistencia|
+:Iniciar la transacción;
+:Registrar el comprobante como 'Emitido';
+if (¿Todo se registró sin error?) then (sí)
+  :Confirmar la transacción;
+else (no)
+  :Revertir la transacción;
+endif
+note right
+  La unicidad del número de comprobante
+  también la garantiza la base de datos.
+end note
+
+|Vista y Controlador (hilo de UI)|
+if (¿Comprobante registrado?) then (sí)
+  :Actualizar DOC-TBL-COMPROBANTES;
+else (no)
+  :Informar que el comprobante
+  no se registró;
+endif
+stop
+
+legend right
+  Trazabilidad: ESP-0009 · DEC-017 (a lo sumo un comprobante 'Emitido' por venta)
+  RNF-0006 (cond. 3) · VL-02: ComprobanteTributario, Venta
+  Tablas: TBL_COMPROBANTES_TRIBUTARIOS, TBL_REGISTRO_VENTAS
+endlegend
+@enduml

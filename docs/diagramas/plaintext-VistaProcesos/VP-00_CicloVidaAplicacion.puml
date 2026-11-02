@@ -1,0 +1,122 @@
+@startuml VP-00_CicloVidaAplicacion
+' Vista de procesos FARMASIL_APP — VP-00_CicloVidaAplicacion (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-00 — Ciclo de vida de la aplicación: sesión y procesos programados
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+|Hilo de fondo|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador» o
+  Técnica farmacéutica «Tecnico».
+end note
+:Abrir la aplicación;
+
+|Vista y Controlador (hilo de UI)|
+repeat
+  :Mostrar el inicio de sesión;
+  |Actor|
+  :Ingresar el nombre de usuario
+  y la contraseña;
+  |Modelo|
+  :Verificar las credenciales contra
+  el hash con sal y el estado de la cuenta;
+  |Persistencia|
+  :Leer la cuenta del usuario;
+  |Modelo|
+repeat while (¿Credenciales válidas y cuenta 'Activo'?) is (no: rechazar el ingreso) not (sí)
+:Abrir la sesión con el rol de la cuenta;
+note right
+  RNF-0006 cond. 1 y 2: la sesión
+  identifica al usuario y su id queda
+  en cada operación que registre.
+end note
+
+|Vista y Controlador (hilo de UI)|
+:Mostrar el menú principal con las opciones
+que el rol no permite visibles y deshabilitadas;
+
+fork
+  |Vista y Controlador (hilo de UI)|
+  :Atender las operaciones del usuario
+  (VP-01 a VP-13)|
+  |Actor|
+  :Cerrar la aplicación;
+fork again
+  |Vista y Controlador (hilo de UI)|
+  repeat
+    :Recibir el aviso de vencimientos<
+    :Mostrar el aviso con la cantidad de remesas
+    por vencer, que conduce a ALV-TBL-ALERTAS-VENCIMIENTO;
+  repeat while (¿La aplicación sigue abierta?) is (sí) not (no)
+fork again
+  |Hilo de fondo|
+  repeat
+    :Evaluar los vencimientos (VP-04)|
+    :Enviar el aviso de vencimientos>
+    :Esperar 24 horas;
+  repeat while (¿La aplicación sigue abierta?) is (sí) not (no)
+fork again
+  |Hilo de fondo|
+  :Leer la fecha de la última generación
+  (configuración local);
+  repeat
+    if (¿Pasaron 15 días o más desde
+    la última generación?) then (sí)
+      :Generar la lista de reabastecimiento (VP-12)|
+      :Registrar la fecha de esta generación
+      en la configuración local;
+    else (no)
+    endif
+    :Esperar hasta la siguiente comprobación;
+  repeat while (¿La aplicación sigue abierta?) is (sí) not (no)
+end fork
+
+|Vista y Controlador (hilo de UI)|
+:Cerrar la sesión y detener
+los procesos programados;
+stop
+
+legend right
+  Concurrencia (RNF-0003 v02.00): una sola sesión activa; la única ejecución
+  simultánea es la de los dos procesos programados de RNF-0010, en hilos de fondo
+  que no bloquean la interfaz. El aviso llega a la interfaz como evento
+  (invocación implícita, DEC-021).
+  Recursos compartidos: los hilos de fondo solo leen remesas; escriben
+  fecha_ultima_verif (VP-04) y la lista de reabastecimiento (VP-12), protegida
+  por unicidad (DEC-020). No hay espera circular.
+  Tolerancia a errores: si un proceso programado falla, se reintenta en el
+  siguiente ciclo sin interrumpir la operación del usuario.
+  Trazabilidad: RNF-0001, RNF-0003, RNF-0006 (cond. 1 a 4), RNF-0010 ·
+  VL-03: ProcesoProgramado, EvaluacionVencimientos,
+  GeneracionListaReabastecimiento · VL-04: ISesion · Tabla: TBL_USUARIOS
+endlegend
+@enduml

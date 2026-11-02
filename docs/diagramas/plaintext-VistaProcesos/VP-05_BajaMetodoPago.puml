@@ -1,0 +1,57 @@
+@startuml VP-05_BajaMetodoPago
+' Vista de procesos FARMASIL_APP — VP-05_BajaMetodoPago (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-05 — Métodos de pago: baja de método de pago (ESP-0020)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+end note
+:Seleccionar el método en PAG-TBL-METODOS-PAGO
+y presionar PAG-BTN-ELIMINAR-METODO;
+
+:Ejecutar la baja condicional (VP-B)
+con baja lógica 'Inactivo'|
+note right
+  Si alguna venta usa el método, el motor rechaza
+  el borrado y el método queda 'Inactivo': las ventas
+  registradas no se modifican y el método deja de
+  ofrecerse en VEN-CMB-METODO-PAGO (VP-01).
+end note
+
+|Vista y Controlador (hilo de UI)|
+:Actualizar PAG-TBL-METODOS-PAGO;
+stop
+
+legend right
+  Trazabilidad: ESP-0020 · DEC-009, DEC-022 · RNF-0006 (cond. 3)
+  VL-02: MetodoPago · Tablas: TBL_METODOS_PAGO (referenciada por TBL_REGISTRO_VENTAS)
+endlegend
+@enduml

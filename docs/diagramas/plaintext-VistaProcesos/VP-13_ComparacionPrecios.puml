@@ -1,0 +1,89 @@
+@startuml VP-13_ComparacionPrecios
+' Vista de procesos FARMASIL_APP — VP-13_ComparacionPrecios (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-13 — Comparación de precios: consulta y exportación por proveedor (ESP-0050)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+end note
+:Elegir el medicamento (COT-CMB-FILTRO-PRODUCTO)
+y presionar COT-BTN-LEER-COTIZACION;
+
+|Modelo|
+:Verificar el rol del usuario;
+|Persistencia|
+:Leer las cotizaciones del medicamento;
+|Modelo|
+:Tomar la cotización más reciente
+de cada proveedor;
+|Vista y Controlador (hilo de UI)|
+:Mostrar COT-TBL-COMPARATIVA-PRECIOS
+destacando el precio más bajo;
+
+|Actor|
+if (¿Exporta para un proveedor?) then (no)
+  stop
+else (sí)
+endif
+:Elegir el proveedor (COT-CMB-PROVEEDOR-EXPORTAR)
+y presionar COT-BTN-EXPORTAR-PROVEEDOR;
+
+|Vista y Controlador (hilo de UI)|
+fork
+  :Mostrar el progreso y mantener
+  la ventana disponible;
+fork again
+  |Persistencia|
+  :Leer los ítems de la lista
+  de reabastecimiento;
+  |Modelo|
+  :Cruzar los ítems con la comparativa
+  del proveedor elegido;
+  :Generar el archivo CSV;
+end fork
+
+|Vista y Controlador (hilo de UI)|
+if (¿Archivo generado?) then (sí)
+  :Poner el archivo CSV a disposición;
+else (no)
+  :Informar que no se pudo generar el archivo;
+endif
+stop
+
+legend right
+  Solo lectura: la exportación no registra filas en DB_FARMASIL. Es la continuación de VP-12.
+  Qué ítems y columnas entran en el CSV está pendiente con la dueña (PEN-002).
+  Trazabilidad: ESP-0050 · RNF-0006 (cond. 3) · VL-02: CotizacionProveedor, ItemReabastecimiento
+  Tablas: TBL_COTIZACIONES_PROVEEDOR, TBL_LISTA_REABASTECIMIENTO
+endlegend
+@enduml
