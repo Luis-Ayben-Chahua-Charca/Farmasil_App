@@ -1,0 +1,162 @@
+@startuml VP-07_OrdenDevolucion
+' Vista de procesos FARMASIL_APP — VP-07_OrdenDevolucion (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-07 — Devoluciones a proveedores: registro y completado de la orden (ESP-0025, ESP-0027)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+end note
+:Elegir el proveedor (DEV-CMB-PROVEEDOR);
+
+|Modelo|
+:Obtener las remesas del proveedor con stock,
+en estado 'Disponible' o 'Bloqueado por devolución';
+|Persistencia|
+:Leer las remesas ordenadas por vencimiento;
+|Vista y Controlador (hilo de UI)|
+:Listar las remesas en DEV-CMB-LOTE-DEVOLUCION;
+
+|Actor|
+repeat
+  :Elegir la remesa y la cantidad a devolver;
+  |Modelo|
+  if (¿Remesa del proveedor, estado admitido y
+  cantidad entera entre 1 y el stock?) then (no)
+    |Vista y Controlador (hilo de UI)|
+    :Rechazar la línea con su motivo;
+  else (sí)
+    |Vista y Controlador (hilo de UI)|
+    :Agregar la línea a DEV-TBL-DETALLE-DEVOLUCION;
+  endif
+  |Actor|
+repeat while (¿Agrega otra remesa?) is (sí) not (no)
+:Elegir el motivo, registrar el comentario
+y presionar DEV-BTN-CREAR-DEVOLUCION;
+
+|Modelo|
+:Verificar el rol del usuario;
+if (¿Detalle no vacío, motivo válido y comentario
+presente si es por depuración de error?) then (no)
+  |Vista y Controlador (hilo de UI)|
+  :Señalar el dato faltante;
+  stop
+else (sí)
+endif
+
+|Persistencia|
+:Iniciar la transacción;
+:Registrar la orden 'Pendiente'
+con el usuario de la sesión;
+:Registrar las líneas del detalle;
+if (¿Todo se registró sin error?) then (sí)
+  :Confirmar la transacción;
+else (no)
+  :Revertir la transacción;
+  |Vista y Controlador (hilo de UI)|
+  :Informar que la orden no se registró;
+  stop
+endif
+note right
+  Registrar la orden no descuenta stock:
+  las unidades quedan comprometidas hasta
+  que la orden se completa.
+end note
+
+|Actor|
+:Más tarde, seleccionar la orden y presionar
+DEV-BTN-ACTUALIZAR-DEVOLUCION;
+|Modelo|
+if (¿La orden está 'Completada'?) then (sí)
+  |Vista y Controlador (hilo de UI)|
+  :Informar que la orden ya fue
+  despachada y no admite cambios;
+  stop
+else (no)
+endif
+
+|Actor|
+:Ajustar el detalle, elegir el estado
+('Pendiente' o 'Completada') y confirmar;
+
+|Modelo|
+:Verificar el rol del usuario;
+if (¿Se completa la orden?) then (sí)
+  |Persistencia|
+  :Leer el stock vigente de cada remesa;
+  |Modelo|
+  if (¿El stock alcanza para cada línea?) then (no)
+    |Vista y Controlador (hilo de UI)|
+    :Indicar la remesa sin stock suficiente
+    y pedir ajustar el detalle;
+    stop
+  else (sí)
+  endif
+else (no)
+endif
+
+|Persistencia|
+:Iniciar la transacción;
+:Actualizar la orden y sincronizar su detalle;
+if (¿Se completa la orden?) then (sí)
+  repeat
+    :Descontar el stock de la remesa;
+    if (¿Quedó en cero y estaba 'Disponible'?) then (sí)
+      :Marcar la remesa como agotada;
+    else (no)
+    endif
+  repeat while (¿Quedan líneas?) is (sí) not (no)
+else (no)
+endif
+if (¿Todo se registró sin error?) then (sí)
+  :Confirmar la transacción;
+else (no)
+  :Revertir la transacción;
+endif
+
+|Vista y Controlador (hilo de UI)|
+if (¿Orden actualizada?) then (sí)
+  :Actualizar DEV-TBL-ORDENES-DEVOLUCION;
+else (no)
+  :Informar que la orden no se actualizó;
+endif
+stop
+
+legend right
+  Estados de la orden coherentes con EST-02: 'Pendiente' → 'Completada' (final). La eliminación
+  de una orden pendiente (ESP-0028) no descuenta stock.
+  Tolerancia a errores: CHECK (stock_actual >= 0) en TBL_LOTES como red de seguridad (DEC-019).
+  Trazabilidad: ESP-0025, ESP-0027 · DEC-019, DEC-023 · RNF-0006 (cond. 2 y 3)
+  VL-02: OrdenDevolucion, DetalleDevolucion, Lote · Tablas: TBL_ORDENES_DEVOLUCION,
+  TBL_DETALLE_DEVOLUCION, TBL_LOTES
+endlegend
+@enduml

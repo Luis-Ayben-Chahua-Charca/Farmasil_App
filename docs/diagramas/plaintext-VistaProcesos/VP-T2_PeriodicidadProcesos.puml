@@ -1,0 +1,159 @@
+@startuml VP-T2_PeriodicidadProcesos
+' Vista de procesos FARMASIL_APP — VP-T2_PeriodicidadProcesos (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam defaultFontSize 11
+
+title VP-T2 — Periodicidad de los procesos programados (RNF-0010)
+
+scale 24 as 40 pixels
+robust "Hilo de UI" as UI
+robust "Evaluación de vencimientos" as EV
+robust "Generación de la lista de reabastecimiento" as GL
+
+@0
+EV is Ejecuta
+GL is Ejecuta
+UI is "Sesión abierta"
+@2
+EV is Espera
+GL is Espera
+@24
+EV is Ejecuta
+@26
+EV is Espera
+@48
+EV is Ejecuta
+@50
+EV is Espera
+@72
+EV is Ejecuta
+@74
+EV is Espera
+@96
+EV is Ejecuta
+@98
+EV is Espera
+@120
+EV is Ejecuta
+@122
+EV is Espera
+@144
+EV is Ejecuta
+@146
+EV is Espera
+@168
+EV is Ejecuta
+@170
+EV is Espera
+@192
+EV is Ejecuta
+@194
+EV is Espera
+@216
+EV is Ejecuta
+@218
+EV is Espera
+@240
+EV is Ejecuta
+@242
+EV is Espera
+@264
+EV is Ejecuta
+@266
+EV is Espera
+@288
+EV is Ejecuta
+@290
+EV is Espera
+@312
+EV is Ejecuta
+@314
+EV is Espera
+@336
+EV is Ejecuta
+@338
+EV is Espera
+@360
+EV is Ejecuta
+GL is Ejecuta
+@362
+EV is Espera
+GL is Espera
+@384
+EV is Ejecuta
+@386
+EV is Espera
+@408
+EV is Ejecuta
+@410
+EV is Espera
+@432
+EV is Ejecuta
+@434
+EV is Espera
+@456
+EV is Ejecuta
+@458
+EV is Espera
+@480
+EV is Ejecuta
+@482
+EV is Espera
+@504
+EV is Ejecuta
+@506
+EV is Espera
+@528
+EV is Ejecuta
+@530
+EV is Espera
+@552
+EV is Ejecuta
+@554
+EV is Espera
+@576
+EV is Ejecuta
+@578
+EV is Espera
+@600
+EV is Ejecuta
+@602
+EV is Espera
+@624
+EV is Ejecuta
+@626
+EV is Espera
+@648
+EV is Ejecuta
+@650
+EV is Espera
+@672
+EV is Ejecuta
+@674
+EV is Espera
+@696
+EV is Ejecuta
+@698
+EV is Espera
+@720
+EV is Ejecuta
+GL is Ejecuta
+@722
+EV is Espera
+GL is Espera
+@744
+UI is "Sesión abierta"
+
+EV@0 <-> @24 : 24 h
+GL@0 <-> @360 : 15 días
+
+legend bottom
+  Eje en horas desde el inicio de la aplicación (24 h = 1 día; se muestran 31 días).
+  Evaluación de vencimientos: al iniciar la aplicación y luego cada 24 horas mientras
+  permanezca abierta; registra fecha_ultima_verif (DEC-018).
+  Generación de la lista: cada 15 días; si al iniciar la aplicación pasaron 15 días o
+  más desde la última generación, se ejecuta en ese momento.
+  La duración de cada ejecución es ilustrativa. Ambos procesos corren en hilos de
+  fondo y no bloquean la sesión (RNF-0003 v02.00). Detalle en VP-00, VP-04 y VP-12.
+endlegend
+@enduml

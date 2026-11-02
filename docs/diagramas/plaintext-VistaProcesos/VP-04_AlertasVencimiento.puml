@@ -1,0 +1,114 @@
+@startuml VP-04_AlertasVencimiento
+' Vista de procesos FARMASIL_APP — VP-04_AlertasVencimiento (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-04 — Alertas de vencimiento: evaluación automática y retiro de remesa (RNF-0010.1, ESP-0014)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+|Hilo de fondo|
+
+|Hilo de fondo|
+start
+:Evento de tiempo: inicio de la aplicación
+o 24 horas desde la última evaluación;
+|Persistencia|
+:Leer el umbral de la regla activa;
+:Leer las remesas 'Disponible' que vencen
+dentro del umbral;
+|Hilo de fondo|
+:Contar las remesas encontradas;
+|Persistencia|
+:Registrar la fecha y hora de la evaluación
+(fecha_ultima_verif);
+|Hilo de fondo|
+:Enviar el aviso de vencimientos>
+note right
+  El hilo de fondo solo lee remesas y escribe
+  fecha_ultima_verif (DEC-018). No genera
+  registros de alerta. Si falla, se reintenta
+  en el siguiente ciclo sin afectar la interfaz.
+end note
+
+|Vista y Controlador (hilo de UI)|
+:Recibir el aviso de vencimientos<
+:Mostrar el aviso con la cantidad encontrada;
+
+|Actor|
+note right
+  Dueña de la farmacia «Administrador» o
+  Técnica farmacéutica «Tecnico».
+end note
+if (¿Abre el aviso?) then (no)
+  stop
+else (sí)
+endif
+
+|Vista y Controlador (hilo de UI)|
+:Mostrar ALV-TBL-ALERTAS-VENCIMIENTO
+(remesas por vencer y retiros registrados);
+
+|Actor|
+if (¿Retira una remesa?) then (no)
+  stop
+else (sí)
+endif
+:Seleccionar la remesa (ALV-CMB-LOTE-ALERTA),
+marcar lote defectuoso o alerta DIGEMID
+y presionar ALV-BTN-CREAR-ALERTA;
+
+|Modelo|
+:Verificar el rol del usuario
+y que la remesa exista;
+
+|Persistencia|
+:Iniciar la transacción;
+:Registrar el retiro en productos retirados;
+:Bloquear la remesa
+('Bloqueado por devolución');
+if (¿Todo se registró sin error?) then (sí)
+  :Confirmar la transacción;
+else (no)
+  :Revertir la transacción;
+endif
+
+|Vista y Controlador (hilo de UI)|
+if (¿Retiro registrado?) then (sí)
+  :Actualizar ALV-TBL-ALERTAS-VENCIMIENTO;
+else (no)
+  :Informar que el retiro no se registró;
+endif
+stop
+
+legend right
+  Efecto: la remesa bloqueada deja de proponerse en ventas (VP-01)
+  y puede incluirse en una orden de devolución (VP-07).
+  Trazabilidad: RNF-0010 (proceso 1), ESP-0013, ESP-0014 · DEC-018, DEC-021
+  VL-03: EvaluacionVencimientos, ReglaAlertaVencimiento · VL-02: ProductoRetirado, Lote
+  Tablas: TBL_ALERTAS_VENCIMIENTO, TBL_LOTES, TBL_PRODUCTOS_RETIRADOS
+endlegend
+@enduml

@@ -1,0 +1,159 @@
+@startuml VP-06_GeneracionReporte
+' Vista de procesos FARMASIL_APP — VP-06_GeneracionReporte (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-06 — Reportes de ventas: generación y regeneración de reporte (ESP-0021, ESP-0023)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+end note
+:Elegir el tipo, el formato y el intervalo de fechas,
+y presionar REP-BTN-GENERAR-REPORTE;
+
+|Vista y Controlador (hilo de UI)|
+if (¿Fecha inicial no posterior a la final,
+tipo y formato elegidos?) then (no)
+  :Señalar el dato inválido;
+  stop
+else (sí)
+endif
+
+fork
+  :Mostrar el progreso y mantener
+  la ventana disponible;
+fork again
+  |Modelo|
+  :Verificar el rol del usuario;
+  |Persistencia|
+  :Leer las ventas del intervalo
+  con su detalle y su responsable;
+  |Modelo|
+  :Consolidar montos, cantidades y responsables,
+  y calcular el total recaudado;
+  :Generar el archivo en el formato elegido
+  (PDF, Excel o HTML);
+  |Persistencia|
+  :Iniciar la transacción;
+  :Registrar el reporte con su intervalo,
+  formato, total y ruta del archivo;
+  if (¿Todo se registró sin error?) then (sí)
+    :Confirmar la transacción;
+  else (no)
+    :Revertir la transacción;
+    |Modelo|
+    :Eliminar el archivo generado;
+    note right
+      Evita un archivo sin registro
+      que lo indexe.
+    end note
+  endif
+end fork
+
+|Vista y Controlador (hilo de UI)|
+if (¿Reporte registrado?) then (sí)
+  :Actualizar REP-TBL-REPORTES;
+else (no)
+  :Informar que el reporte no se generó;
+endif
+stop
+
+|Actor|
+start
+note right
+  Regeneración: flujo independiente.
+  Dueña de la farmacia «Administrador».
+end note
+:Seleccionar el reporte en REP-TBL-REPORTES, presionar
+REP-BTN-ACTUALIZAR-REPORTE, cambiar el intervalo y confirmar;
+
+|Vista y Controlador (hilo de UI)|
+if (¿Fecha inicial no posterior a la final?) then (no)
+  :Señalar el intervalo inválido;
+  stop
+else (sí)
+endif
+
+fork
+  :Mostrar el progreso y mantener
+  la ventana disponible;
+fork again
+  |Modelo|
+  :Verificar el rol del usuario;
+  |Persistencia|
+  :Leer las ventas del nuevo intervalo
+  con su detalle y su responsable;
+  |Modelo|
+  :Consolidar y recalcular el total recaudado;
+  :Generar un archivo nuevo en el formato
+  del reporte, sin tocar el anterior;
+  |Persistencia|
+  :Iniciar la transacción;
+  :Actualizar el reporte con el intervalo, el total,
+  la fecha de generación y la ruta del archivo nuevo;
+  if (¿Todo se registró sin error?) then (sí)
+    :Confirmar la transacción;
+  else (no)
+    :Revertir la transacción;
+  endif
+  |Modelo|
+  if (¿Registro actualizado?) then (sí)
+    :Eliminar el archivo anterior;
+  else (no)
+    :Eliminar el archivo nuevo
+    y conservar el anterior;
+  endif
+  note right
+    El archivo nuevo reemplaza al anterior
+    solo después de actualizar el registro:
+    el reporte nunca queda sin archivo.
+  end note
+end fork
+
+|Vista y Controlador (hilo de UI)|
+if (¿Reporte actualizado?) then (sí)
+  :Actualizar REP-TBL-REPORTES;
+else (no)
+  :Informar que el reporte no se actualizó
+  y que se conserva la versión anterior;
+endif
+stop
+
+legend right
+  Tiempo de respuesta: la consulta y la creación del archivo se ejecutan fuera del hilo de UI.
+  El dominio de tipo de reporte está pendiente con la dueña (PEN-001).
+  Tolerancia a errores: el archivo generado se elimina si el registro falla; en la regeneración,
+  el archivo nuevo reemplaza al anterior solo tras actualizar el registro (DEC-026, RG-007).
+  Trazabilidad: ESP-0021, ESP-0023 · DEC-001, DEC-007, DEC-026 · RNF-0006 (cond. 3)
+  VL-02: ReporteVentas · Tablas: TBL_REGISTRO_VENTAS, TBL_DETALLE_VENTAS,
+  TBL_USUARIOS, TBL_REPORTES_VENTAS
+endlegend
+@enduml

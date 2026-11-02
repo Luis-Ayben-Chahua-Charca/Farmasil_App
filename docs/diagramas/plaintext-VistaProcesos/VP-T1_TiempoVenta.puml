@@ -1,0 +1,48 @@
+@startuml VP-T1_TiempoVenta
+' Vista de procesos FARMASIL_APP — VP-T1_TiempoVenta (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam defaultFontSize 11
+
+title VP-T1 — Tiempo de respuesta del registro de venta (RNF-0005)
+
+concise "Actor" as A
+robust "Vista y Controlador (hilo de UI)" as UI
+concise "Modelo" as M
+concise "Persistencia" as P
+
+@0
+A is "Confirma la venta"
+UI is "Espera la confirmación"
+M is "Inactivo"
+P is "Inactiva"
+
+@200
+A is "Espera el resultado"
+UI is "Muestra el progreso (ventana disponible)"
+M is "Verifica el rol"
+
+@600
+M is "Espera a Persistencia"
+P is "Transacción abierta"
+
+@3200
+P is "Confirma o revierte"
+
+@3600
+M is "Inactivo"
+P is "Inactiva"
+UI is "Muestra el resultado"
+A is "Ve el resultado"
+
+@4000
+M is "Inactivo"
+
+UI@0 <-> @4000 : RNF-0005: 4 s como máximo desde VEN-BTN-CREAR-VENTA
+P@600 <-> @3600 : región transaccional
+
+legend bottom
+  Eje en milisegundos desde la confirmación de la venta. Los instantes intermedios
+  son ilustrativos: el único valor exigido es el límite de 4 s de RNF-0005.
+  El hilo de UI permanece disponible mientras la transacción se ejecuta (VP-01).
+endlegend
+@enduml

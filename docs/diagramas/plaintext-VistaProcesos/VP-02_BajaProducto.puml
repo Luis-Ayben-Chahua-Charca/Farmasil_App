@@ -1,0 +1,59 @@
+@startuml VP-02_BajaProducto
+' Vista de procesos FARMASIL_APP — VP-02_BajaProducto (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-02 — Inventario: baja de producto (ESP-0008)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+end note
+:Seleccionar el producto en INV-TBL-PRODUCTOS
+y presionar INV-BTN-ELIMINAR-PRODUCTO;
+
+:Ejecutar la baja condicional (VP-B)
+con baja lógica 'Descontinuado'|
+note right
+  El borrado físico solo procede si el producto
+  no tiene remesas, restricciones de venta, ítems
+  de reabastecimiento ni cotizaciones; si alguna
+  de esas tablas lo referencia, el producto queda
+  en estado 'Descontinuado' y conserva su historial (DEC-009).
+end note
+
+|Vista y Controlador (hilo de UI)|
+:Actualizar INV-TBL-PRODUCTOS;
+stop
+
+legend right
+  Trazabilidad: ESP-0008 · DEC-009, DEC-022 · RNF-0006 (cond. 3)
+  VL-02: Producto · Tablas: TBL_PRODUCTOS (referenciada por TBL_LOTES,
+  TBL_RESTRICCIONES_VENTA, TBL_LISTA_REABASTECIMIENTO, TBL_COTIZACIONES_PROVEEDOR)
+endlegend
+@enduml

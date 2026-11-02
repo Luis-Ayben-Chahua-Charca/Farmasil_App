@@ -1,0 +1,78 @@
+@startuml VP-08_RegistroRestriccion
+' Vista de procesos FARMASIL_APP — VP-08_RegistroRestriccion (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-08 — Restricciones de venta: registro de restricción (ESP-0029)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+end note
+:Elegir el medicamento, el tipo, la condición del cliente,
+el motivo y el estado, y presionar RES-BTN-CREAR-RESTRICCION;
+
+|Modelo|
+:Verificar el rol del usuario;
+|Persistencia|
+:Verificar que el medicamento exista;
+|Modelo|
+if (¿Medicamento existente, tipo y estado válidos,
+condición y motivo informados?) then (no)
+  |Vista y Controlador (hilo de UI)|
+  :Señalar el dato inválido;
+  stop
+else (sí)
+endif
+
+|Persistencia|
+:Iniciar la transacción;
+:Registrar la restricción;
+if (¿Todo se registró sin error?) then (sí)
+  :Confirmar la transacción;
+else (no)
+  :Revertir la transacción;
+endif
+
+|Vista y Controlador (hilo de UI)|
+if (¿Restricción registrada?) then (sí)
+  :Actualizar RES-TBL-RESTRICCIONES-VENTA;
+else (no)
+  :Informar que la restricción no se registró;
+endif
+stop
+
+legend right
+  Efecto en VP-01: una restricción 'Activo' de tipo 'Bloqueante' rechaza la línea de venta;
+  una 'Informativa' muestra la advertencia y permite agregarla.
+  Trazabilidad: ESP-0029 · RNF-0006 (cond. 3) · VL-02: RestriccionVenta
+  Tablas: TBL_RESTRICCIONES_VENTA, TBL_PRODUCTOS
+endlegend
+@enduml

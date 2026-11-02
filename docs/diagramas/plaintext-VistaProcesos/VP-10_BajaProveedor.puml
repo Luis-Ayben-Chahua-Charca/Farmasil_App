@@ -1,0 +1,70 @@
+@startuml VP-10_BajaProveedor
+' Vista de procesos FARMASIL_APP — VP-10_BajaProveedor (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-10 — Proveedores: baja de proveedor (ESP-0040)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+end note
+:Seleccionar el proveedor en PRV-TBL-PROVEEDORES
+y presionar PRV-BTN-ELIMINAR-PROVEEDOR;
+
+|Modelo|
+:Consultar las órdenes de devolución
+pendientes del proveedor;
+|Persistencia|
+:Leer las órdenes 'Pendiente' del proveedor;
+|Modelo|
+if (¿Tiene órdenes pendientes de despacho?) then (sí)
+  |Vista y Controlador (hilo de UI)|
+  :Informar que el proveedor tiene
+  órdenes de devolución pendientes;
+  stop
+else (no)
+endif
+
+|Actor|
+:Ejecutar la baja condicional (VP-B)
+con baja lógica 'Inactivo'|
+
+|Vista y Controlador (hilo de UI)|
+:Actualizar PRV-TBL-PROVEEDORES;
+stop
+
+legend right
+  Si el proveedor tiene productos, remesas, órdenes o cotizaciones registradas, queda en
+  estado 'Inactivo' y esos registros no se modifican.
+  Trazabilidad: ESP-0040 · DEC-009, DEC-022 · RNF-0006 (cond. 3)
+  VL-02: Proveedor · Tablas: TBL_PROVEEDORES, TBL_ORDENES_DEVOLUCION
+endlegend
+@enduml

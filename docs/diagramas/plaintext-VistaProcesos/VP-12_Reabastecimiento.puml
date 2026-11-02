@@ -1,0 +1,107 @@
+@startuml VP-12_Reabastecimiento
+' Vista de procesos FARMASIL_APP — VP-12_Reabastecimiento (v01.00).
+' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam ArrowColor #444444
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  DiamondBackgroundColor #EDECFB
+  DiamondBorderColor #8577E0
+  BarColor #444444
+}
+skinparam swimlane {
+  BorderColor #8577E0
+  TitleFontColor #333333
+}
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #AAAAAA
+}
+skinparam legend {
+  BackgroundColor #F5F5F5
+  BorderColor #AAAAAA
+}
+
+title VP-12 — Reabastecimiento: generación automática e incorporación manual (RNF-0010.2, ESP-0045)
+
+|Actor|
+|Vista y Controlador (hilo de UI)|
+|Modelo|
+|Persistencia|
+|Hilo de fondo|
+
+|Hilo de fondo|
+start
+:Evento de tiempo: 15 días desde la última
+generación, o al iniciar si ya pasaron;
+|Persistencia|
+:Leer los medicamentos 'Disponible' con su stock
+consolidado en remesas 'Disponible';
+|Hilo de fondo|
+repeat
+  if (¿Stock consolidado menor que el mínimo?) then (sí)
+    |Persistencia|
+    :Insertar el ítem (origen 'Automático',
+    prioridad 'Normal', fecha actual);
+    if (¿La unicidad lo rechaza?) then (sí)
+      |Hilo de fondo|
+      :Tratar el medicamento como "ya figura";
+    else (no)
+    endif
+  else (no)
+  endif
+  |Hilo de fondo|
+repeat while (¿Quedan medicamentos?) is (sí) not (no)
+:Registrar la fecha de esta generación
+en la configuración local;
+stop
+
+|Actor|
+start
+note right
+  Dueña de la farmacia «Administrador».
+  Este flujo es independiente y puede
+  coincidir en el tiempo con el anterior.
+end note
+:Elegir el medicamento y la prioridad,
+y presionar REA-BTN-CREAR-ITEM;
+|Modelo|
+:Verificar el rol del usuario;
+|Persistencia|
+:Buscar el medicamento en la lista;
+|Modelo|
+if (¿Medicamento existente, prioridad válida
+y no figura en la lista?) then (no)
+  |Vista y Controlador (hilo de UI)|
+  :Señalar el motivo del rechazo;
+  stop
+else (sí)
+endif
+|Persistencia|
+:Iniciar la transacción;
+:Registrar el ítem (origen 'Manual');
+if (¿Todo se registró sin error?) then (sí)
+  :Confirmar la transacción;
+else (no: p. ej., la unicidad lo rechaza
+porque el proceso automático lo agregó)
+  :Revertir la transacción;
+endif
+|Vista y Controlador (hilo de UI)|
+if (¿Ítem registrado?) then (sí)
+  :Actualizar REA-TBL-LISTA-REABASTECIMIENTO;
+else (no)
+  :Informar que el medicamento ya figura
+  o que el ítem no se registró;
+endif
+stop
+
+legend right
+  Concurrencia: es la única escritura simultánea del sistema; la restricción de unicidad
+  sobre el medicamento evita duplicados (DEC-020). El proceso automático no cambia la
+  prioridad ni retira ítems: los retira la dueña tras el pedido (ESP-0048).
+  Trazabilidad: RNF-0010 (proceso 2), ESP-0045 · DEC-020 · VL-03: GeneracionListaReabastecimiento
+  VL-02: ItemReabastecimiento · Tablas: TBL_LISTA_REABASTECIMIENTO, TBL_PRODUCTOS, TBL_LOTES
+endlegend
+@enduml
