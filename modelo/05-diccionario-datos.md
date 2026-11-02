@@ -58,10 +58,12 @@ Remesas físicas de cada medicamento. Un producto del catálogo puede tener vari
 | id_producto | INT | NOT NULL, FK (TBL_PRODUCTOS) | Medicamento al que pertenece la remesa. |
 | numero_lote | NVARCHAR(30) | NOT NULL | Número de lote impreso por el laboratorio. |
 | fecha_vencimiento | DATE | NOT NULL | Fecha de caducidad de esta remesa. |
-| stock_actual | INT | NOT NULL, DEFAULT 0 | Unidades físicas disponibles de esta remesa. |
+| stock_actual | INT | NOT NULL, DEFAULT 0, CHECK (stock_actual >= 0) | Unidades físicas disponibles de esta remesa. Nunca negativo: ESP-0027 valida el stock antes de completar una devolución. |
 | estado_lote | NVARCHAR(25) | DEFAULT 'Disponible' | Estados: 'Disponible', 'Bloqueado por devolucion', 'Agotado'. |
 | fecha_ingreso | DATE | NOT NULL | Fecha en que la remesa ingresó al almacén. |
 | id_proveedor | INT | FK (TBL_PROVEEDORES) | Proveedor que efectivamente entregó esta remesa. Puede diferir del proveedor habitual declarado en `TBL_PRODUCTOS.id_proveedor` cuando el medicamento se compra a más de un proveedor. |
+
+Restricción adicional: `CHECK (stock_actual >= 0)`, que impide en el motor un descuento que deje la remesa en negativo; una remesa 'Disponible' cuyo stock llega a cero pasa a 'Agotado' (ESP-0001, ESP-0027).
 
 Restricción adicional: `UNIQUE (id_producto, numero_lote)`. El mismo laboratorio no repite número de lote para un mismo medicamento, y admitir duplicados haría ambiguo el rastreo sanitario.
 
@@ -233,14 +235,14 @@ Reglas de seguridad clínica para protección en el punto de venta.
 | Campo | Tipo de dato | Restricciones | Descripción |
 | --- | --- | --- | --- |
 | id_reabastecimiento | INT | PK, Auto-increment | Identificador único del ítem de la lista. |
-| id_producto | INT | FK (TBL_PRODUCTOS) | Medicamento a reabastecer. |
+| id_producto | INT | NOT NULL, FK (TBL_PRODUCTOS), UNIQUE | Medicamento a reabastecer. Un medicamento figura a lo sumo una vez en la lista. |
 | origen | NVARCHAR(20) | NOT NULL, DEFAULT 'Automático' | Valores: 'Automático' (generado por el proceso periódico), 'Manual' (agregado por la dueña, ESP-0045). |
 | prioridad | NVARCHAR(10) | NOT NULL, DEFAULT 'Normal' | Valores: 'Normal', 'Urgente'. Determina el resaltado visual en rojo. |
 | fecha_inclusion | DATE | NOT NULL | Fecha en que el ítem entró a la lista. |
 
 *Educción asociada: EDU-0016. Ilaciones: ILA-0045 a ILA-0048.*
 
-*Sin restricción de unicidad sobre `id_producto`: un medicamento puede reaparecer en la lista después de haber sido eliminado (por ejemplo, tras ser pedido y vuelto a caer bajo el umbral).*
+*Restricción de unicidad sobre `id_producto`: un medicamento figura a lo sumo una vez en la lista. La restricción no impide que reaparezca después de que su fila se eliminó (por ejemplo, tras ser pedido y volver a caer bajo el umbral), porque la fila anterior ya no existe. ESP-0045 valida que el medicamento no figure antes de agregarlo, y el proceso 2 de RNF-0010, que se ejecuta en segundo plano y es la única ejecución concurrente del sistema, trata el rechazo por duplicado como "ya figura" y continúa con el siguiente medicamento.*
 
 *Fuente: ESP-0045 (creación manual), ESP-0046 (consulta), ESP-0047 (actualización), ESP-0048 (eliminación). La escribe también el proceso periódico de generación automática, documentado en la condición 2 de RNF-0010.*
 
@@ -338,10 +340,12 @@ Estos puntos no se modificaron porque implican decisiones de alcance, no correcc
 5. **Gestión de la configuración de alertas.** `TBL_ALERTAS_VENCIMIENTO` no tiene ninguna educción que la administre: el umbral es hoy un valor fijo que nadie puede cambiar desde el sistema.
 
 
-**Versión:** 08.00
-**Fecha:** 18/10/2026
+**Versión:** 09.00
+**Fecha:** 01/11/2026
 **Autor:** AUT-0001
 **Origen:** Diccionario de Datos v02.00, `Cambios_Modelo_ER_DB_FARMASIL.md` y Entrevista 3 (v05.00)
+
+> **Aplicado en v09.00 (01/11/2026):** `TBL_LOTES.stock_actual` incorpora `CHECK (stock_actual >= 0)`, y ESP-0027 valida el stock de cada remesa antes de completar una devolución (DEC-019). `TBL_LISTA_REABASTECIMIENTO.id_producto` pasa a NOT NULL y UNIQUE, y se corrige la nota que justificaba su ausencia (DEC-020).
 
 > **Aplicado en v08.00 (18/10/2026):** las relaciones con clave propia del hijo pasan a no identificadoras (`TBL_PRODUCTOS` → `TBL_LOTES`, cabeceras → detalles); la relación venta–comprobante pasa de 1:1 a 1:N, con a lo sumo un comprobante 'Emitido' por venta (PEN-014); `id_venta` e `id_devolucion` de los detalles pasan a NOT NULL; `fecha_ultima_verif` la actualiza el proceso 1 de RNF-0010 (PEN-015).
 

@@ -1,6 +1,8 @@
 # Vista Lógica — FARMASIL_APP (v01.00)
 
-> Primera versión de la vista lógica. Fuentes: arquitectura genérica cerrada (13 componentes, 18 dependencias; `Contexto_Arquitectura_FARMASIL_ParaAgentesIA.md`), Diccionario de Datos v08.00, ESP-0001 a ESP-0052, RNF-0006, RNF-0008 y RNF-0010. Las fuentes de los diagramas están en `docs/diagramas/plaintext-VistaLogica/` y sus imágenes en `docs/diagramas/`.
+> Primera versión de la vista lógica. Fuentes: arquitectura genérica cerrada (13 componentes, 18 dependencias; `Contexto_Arquitectura_FARMASIL_ParaAgentesIA.md`), Diccionario de Datos v09.00, ESP-0001 a ESP-0052, RNF-0006, RNF-0008 y RNF-0010. Las fuentes de los diagramas están en `docs/diagramas/plaintext-VistaLogica/` y sus imágenes en `docs/diagramas/`.
+
+> **Imágenes solo para exposición.** `docs/diagramas/VL_01_Trazabilidad.png` (paquetes con las especificaciones de cada clase) y `docs/diagramas/Vista Logica.png` (modelo de dominio) se elaboraron a mano para exponer el artefacto y no tienen fuente PlantUML. No son fuente de diseño: para implementar se usan únicamente los `.puml` de `docs/diagramas/plaintext-VistaLogica/` y sus PNG generados (VL-01 a VL-04). Si una de esas imágenes difiere de los `.puml`, prevalecen los `.puml` (DEC-024).
 
 ## 1. Artefactos
 
@@ -90,6 +92,7 @@ Patrones según Fowler, *Patterns of Enterprise Application Architecture*: *Iden
 
 1. **Generalizaciones del dominio.** El dominio no tiene jerarquías naturales de herencia entre entidades de negocio. Las dos generalizaciones del modelo son mecanismos compartidos (baja lógica y procesos programados), y no se introdujeron jerarquías artificiales para ilustrar la relación.
 2. **Comprobantes por venta.** VL-02 modela varios comprobantes por venta, con uno solo emitido, como admite ESP-0009. El Diccionario de Datos v08.00 corrigió la relación, que declaraba 1:1 identificadora (PEN-014, cerrado).
-3. **SEC-01 frente a la vista lógica.** El diagrama de secuencia SEC-01 consulta el precio a Inventario desde Ventas, mientras que la vista lógica lo obtiene a través de Lotes (PEN-013).
+3. **SEC-01 frente a la vista lógica.** SEC-01 consultaba el precio a Inventario desde Ventas. Corregido: el nombre y el precio llegan con la remesa sugerida por Lotes, y el descuento de stock lo hace Lotes, como en VL-04 (PEN-013, cerrado).
 4. **Fecha de última verificación.** `fecha_ultima_verif` la actualiza el proceso de evaluación de vencimientos al terminar cada ejecución (RNF-0010 v02.00; PEN-015, cerrado).
 5. **Configuración de alertas.** `ReglaAlertaVencimiento` no tiene operaciones de administración, porque ninguna educción la gestiona (PEN-011).
+6. **Restricciones incorporadas en la versión 09.00 del diccionario.** VL-02 declara que una orden solo se completa si cada remesa conserva stock suficiente (DEC-019) y que un medicamento figura a lo sumo una vez en la lista de reabastecimiento (DEC-020). El combo de remesas de ESP-0025 no usa el umbral de vencimiento, para no crear una dependencia Devoluciones → Alertas de Vencimiento (DEC-023).

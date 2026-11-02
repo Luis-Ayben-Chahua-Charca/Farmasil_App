@@ -1,6 +1,6 @@
 @startuml VL-02_ModeloDominio
 ' Vista lógica FARMASIL_APP — Diagrama de clases del dominio (v01.00)
-' Fuente: Diccionario de Datos v07.00, ESP-0001..ESP-0052, RNF-0006, RNF-0010.
+' Fuente: Diccionario de Datos v09.00, ESP-0001..ESP-0052, RNF-0006, RNF-0010.
 ' Tipos según la tabla de correspondencia del diccionario (C# / .NET 8).
 ' Navegabilidad: cada asociación se recorre solo en el sentido de la dependencia
 ' entre paquetes de VL-01 (el dependiente conoce al proveedor, nunca al revés).
@@ -169,6 +169,7 @@ package "AlertasVencimiento (ALV)" {
     - fechaUltimaVerif : DateTime
     --
     + fechaLimite(hoy : DateOnly) : DateOnly
+    + registrarVerificacion(ahora : DateTime) : void
   }
   class ProductoRetirado <<entity>> {
     - idRetiro : int
@@ -239,7 +240,8 @@ note top of Lote
   {unique (medicamento, numeroLote)}
   {al registrar: stockActual > 0}
   {desbloquear solo si no estaVencido(hoy)}
-  {stockActual = 0 implica estadoLote = Agotado}
+  {estadoLote = Disponible y stockActual = 0
+   implica estadoLote = Agotado}
 end note
 
 note right of Venta
@@ -259,7 +261,14 @@ note bottom of OrdenDevolucion
   {cada línea: remesaDevuelta.entregadoPor = remitidaA}
   {estadoOrden <> Eliminada implica líneas->notEmpty()}
   {eliminar(): borra las líneas y marca Eliminada (ESP-0028)}
+  {completar(): cada línea cantidadDevolver
+   <= remesaDevuelta.stockActual (ESP-0027)}
   {Completada no es modificable ni eliminable (ESP-0027, 0028)}
+end note
+
+note bottom of ItemReabastecimiento
+  {unique (aReabastecer)}: un medicamento
+  figura a lo sumo una vez en la lista
 end note
 
 note bottom of ProductoRetirado

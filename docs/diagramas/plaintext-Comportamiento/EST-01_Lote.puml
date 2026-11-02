@@ -17,6 +17,7 @@ Bloqueado --> Agotado : T5 darDeBaja()\n[con movimientos] / ESP-0044
 Agotado --> Agotado : T5 darDeBaja()\n[con movimientos] / ESP-0044
 Agotado --> Disponible : T6 corregirEstado()\n[stock > 0, no vencida] / ESP-0043
 Disponible --> [*] : T7 darDeBaja()\n[sin movimientos] / ESP-0044
+Disponible --> Agotado : T8 completarDevolucion()\n[stock_actual = 0] / ESP-0027
 Bloqueado --> [*] : T7 darDeBaja()\n[sin movimientos] / ESP-0044
 
 note right of Bloqueado

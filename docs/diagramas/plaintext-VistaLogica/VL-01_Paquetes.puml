@@ -74,14 +74,14 @@ package "Gestión de proveedores" as G5 #FFFFFF {
   package "AlertasVencimiento (ALV)" as ALV {
     class "ReglaAlertaVencimiento" as ALV_0
     class "ProductoRetirado" as ALV_1
-    class "VerificacionVencimientos" as ALV_2
+    class "EvaluacionVencimientos" as ALV_2
   }
 }
 
 package "Abastecimiento" as G6 #FFFFFF {
   package "Reabastecimiento (REA)" as REA {
     class "ItemReabastecimiento" as REA_0
-    class "GeneracionReabastecimiento" as REA_1
+    class "GeneracionListaReabastecimiento" as REA_1
   }
   package "ComparacionPrecios (COT)" as COT {
     class "CotizacionProveedor" as COT_0

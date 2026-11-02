@@ -1,7 +1,7 @@
 @startuml VL-03_MecanismosComunes
 ' Vista lógica FARMASIL_APP — Mecanismos comunes: generalización, realización,
 ' enumeraciones (estereotipos) y procesos programados (v01.00)
-' Fuente: Diccionario de Datos v07.00 (dominios cerrados), RNF-0006, RNF-0010.
+' Fuente: Diccionario de Datos v09.00 (dominios cerrados), RNF-0006, RNF-0010.
 skinparam shadowing false
 skinparam classAttributeIconSize 0
 skinparam defaultFontSize 11
@@ -64,8 +64,10 @@ package "AlertasVencimiento (ALV)" {
     + ejecutar(hoy : DateOnly) : void
     -- responsabilidades --
     Contar remesas Disponible con vencimiento
-    <= hoy + umbralMeses y avisar (no persiste)
+    <= hoy + umbralMeses, avisar y registrar
+    fechaUltimaVerif (no genera alertas)
   }
+  class ReglaAlertaVencimiento <<entity>>
 }
 
 package "Reabastecimiento (REA)" {
@@ -91,6 +93,7 @@ IAuditable "0..*" --> "1" Usuario : registradoPor
 
 ProcesoProgramado <|-- EvaluacionVencimientos
 ProcesoProgramado <|-- GeneracionListaReabastecimiento
+EvaluacionVencimientos ..> ReglaAlertaVencimiento : lee umbral y\nregistra verificación
 
 note bottom of ProcesoProgramado
   RNF-0010: se ejecutan sin intervención
