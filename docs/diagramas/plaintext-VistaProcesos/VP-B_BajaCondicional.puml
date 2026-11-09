@@ -1,5 +1,6 @@
 @startuml VP-B_BajaCondicional
-' Vista de procesos FARMASIL_APP — VP-B_BajaCondicional (v01.00).
+' Vista de procesos FARMASIL_APP — VP-B_BajaCondicional (v02.00).
+' v02.00 (08/11/2026, issue #63): corrección de DEC-022 por DEC-029 (XACT_ABORT OFF y XACT_STATE).
 ' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
 skinparam shadowing false
 skinparam defaultFontSize 11
@@ -58,23 +59,37 @@ endif
 :Verificar el rol del usuario;
 
 |Persistencia|
-:Iniciar la transacción;
+:Iniciar la transacción
+con XACT_ABORT OFF;
 :Fijar un punto de guardado;
 :Intentar el borrado físico;
-if (¿El motor lo rechaza
-por referencias de otras tablas?) then (sí)
-  :Volver al punto de guardado;
-  :Aplicar la baja lógica
-  (estado de baja del registro);
-else (no)
-endif
 note right
   DEC-009: se intenta el borrado físico y,
   si una clave foránea lo impide, se aplica
-  la baja lógica. DEC-022: el punto de
-  guardado evita que el rechazo anule toda
-  la transacción.
+  la baja lógica. DEC-022 (corregida por
+  DEC-029): con XACT_ABORT OFF, el punto
+  de guardado permite revertir solo el
+  borrado rechazado; si XACT_STATE() es -1
+  se revierte toda la transacción y se
+  informa el error, sin reintentar la baja
+  en otra transacción.
 end note
+if (¿El motor lo rechaza por
+referencias de otras tablas (error 547)?) then (sí)
+  if (¿La transacción sigue
+confirmable (XACT_STATE() = 1)?) then (sí)
+    :Volver al punto de guardado;
+    :Aplicar la baja lógica
+    (estado de baja del registro);
+  else (no, XACT_STATE() = -1)
+    :Revertir toda la transacción;
+    |Vista y Controlador (hilo de UI)|
+    :Informar el error
+    (la baja no se realizó);
+    stop
+  endif
+else (no)
+endif
 if (¿Todo se registró sin error?) then (sí)
   :Confirmar la transacción;
 else (no)
@@ -94,7 +109,7 @@ legend right
   TBL_PRODUCTOS → 'Descontinuado' · TBL_METODOS_PAGO, TBL_PROVEEDORES,
   TBL_USUARIOS → 'Inactivo' · TBL_LOTES → 'Agotado' con stock en cero
   Trazabilidad: ESP-0008, ESP-0020, ESP-0036, ESP-0040, ESP-0044 ·
-  DEC-009, DEC-022 · RNF-0006 (cond. 3) · RNF-0009 ·
+  DEC-009, DEC-022 (corregida por DEC-029) · RNF-0006 (cond. 3) · RNF-0009 ·
   VL-03: RegistroDesactivable · VL-04: UnidadDeTrabajo
 endlegend
 @enduml
