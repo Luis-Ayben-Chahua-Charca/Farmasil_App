@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ART-MKP-DOC-0002 - Documentación Tributaria (v002)</title>
+  <style>
+    * { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    body { background-color: #f0f2f5; color: #333; padding: 20px; }
+    .element-wrapper { display: flex; flex-direction: column; margin-bottom: 10px; width: 100%; }
+    .ui-tag { font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: bold; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 2px 5px; border-radius: 3px; margin-top: 3px; display: inline-block; width: fit-content; }
+    .ui-tag-btn { font-family: 'Courier New', Courier, monospace; font-size: 10px; font-weight: bold; background: #cce5ff; color: #004085; border: 1px solid #b8daff; padding: 2px 5px; border-radius: 3px; margin-top: 3px; text-align: center; }
+    header { display: flex; gap: 15px; background-color: #0d6efd; padding: 15px; border-radius: 6px; color: white; align-items: flex-start; margin-bottom: 20px; }
+    .layout { display: grid; grid-template-columns: 320px 1fr 360px; gap: 20px; }
+    .panel { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .sales-list { max-height: 500px; overflow-y: auto; padding-right: 5px; }
+    .sale-img { width: 60px; height: 60px; background: #e8f5e9; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #2e7d32; border: 1px dashed #81c784; flex-shrink: 0; }
+    input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+    button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .card { border: 1px solid #ddd; padding: 10px; border-radius: 4px; background: #fafafa; margin-bottom: 10px; display: flex; gap: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
+    table th, table td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+    table th { background: #f8f9fa; }
+    .monto-box { background: #e8f5e9; border: 1px solid #2e7d32; padding: 10px; border-radius: 4px; margin-top: 10px; }
+    .btn-actions { display: flex; gap: 10px; margin-top: 15px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+    .modal.show { display: flex; }
+    #DOC-MDL-PREVISUALIZAR-COMPROBANTE { z-index: 10; }
+    #DOC-MDL-PREVISUALIZAR-COMPROBANTE .modal-content { width: 720px; max-height: 92vh; overflow-y: auto; text-align: left; padding: 0; border-radius: 12px; }
+    .doc-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; background: linear-gradient(135deg, #0d6efd, #6610f2); color: white; border-radius: 12px 12px 0 0; }
+    .doc-modal-header h3 { font-size: 16px; }
+    .doc-preview-wrap { padding: 22px; background: #f0f2f5; }
+    .doc-paper { background: #ffffff; border: 1px solid #d0d4da; border-radius: 8px; padding: 26px 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); position: relative; font-family: 'Courier New', Courier, monospace; color: #1a1a1a; font-size: 12px; }
+    .doc-paper::before { content: "PREVISUALIZACIÓN"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-28deg); font-family: Arial, sans-serif; font-size: 72px; font-weight: 900; color: rgba(220, 53, 69, 0.08); pointer-events: none; letter-spacing: 4px; white-space: nowrap; z-index: 1; }
+    .doc-emisor { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px dashed #999; padding-bottom: 14px; margin-bottom: 14px; position: relative; z-index: 2; }
+    .doc-emisor-info h2 { font-family: Arial, sans-serif; font-size: 18px; color: #0d6efd; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .doc-emisor-info p { font-size: 11px; color: #555; line-height: 1.5; }
+    .doc-tipo-badge { background: #0d6efd; color: white; padding: 10px 18px; border-radius: 8px; text-align: center; min-width: 150px; }
+    .doc-tipo-badge .tipo { font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; }
+    .doc-tipo-badge .numero { font-size: 15px; font-weight: bold; margin-top: 4px; letter-spacing: 1px; }
+    .doc-cliente-box { background: #f8f9fa; border: 1px solid #e0e3e8; border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; position: relative; z-index: 2; font-size: 11.5px; }
+    .doc-cliente-box .linea { margin: 3px 0; }
+    .doc-cliente-box .linea b { display: inline-block; min-width: 80px; color: #333; }
+    .doc-detalle { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 11.5px; position: relative; z-index: 2; }
+    .doc-detalle th { background: #0d6efd; color: white; text-align: left; padding: 7px 8px; font-family: Arial, sans-serif; font-size: 11px; border: none; }
+    .doc-detalle td { padding: 7px 8px; border-bottom: 1px solid #eee; }
+    .doc-detalle tr:nth-child(even) td { background: #fafbfc; }
+    .doc-detalle .num { text-align: right; }
+    .doc-detalle .money { text-align: right; font-family: 'Courier New', monospace; }
+    .doc-totales { display: flex; justify-content: flex-end; margin-top: 8px; position: relative; z-index: 2; }
+    .doc-totales table { width: 55%; }
+    .doc-totales td { padding: 4px 8px; font-size: 12px; border: none; }
+    .doc-totales td.label { text-align: right; color: #555; }
+    .doc-totales td.valor { text-align: right; font-family: 'Courier New', monospace; min-width: 90px; }
+    .doc-totales .total-final td { border-top: 2px solid #0d6efd; font-size: 16px; font-weight: bold; color: #0d6efd; padding-top: 8px; }
+    .doc-footer { border-top: 2px dashed #999; margin-top: 16px; padding-top: 10px; font-size: 10px; color: #666; text-align: center; line-height: 1.6; position: relative; z-index: 2; }
+    .doc-hash { font-family: 'Courier New', monospace; font-size: 9px; color: #999; word-break: break-all; margin-top: 4px; }
+    .doc-cliente-edit { background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 12px 14px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+    .doc-cliente-edit label { font-size: 11px; font-weight: bold; color: #856404; display: block; margin-bottom: 3px; font-family: Arial, sans-serif; }
+    .doc-cliente-edit input { padding: 6px 8px; font-size: 12px; border: 1px solid #ffe082; border-radius: 4px; width: 100%; background: white; }
+    .doc-modal-actions { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; background: #f8f9fa; border-top: 1px solid #e9ecef; border-radius: 0 0 12px 12px; }
+    .doc-modal-actions .left { display: flex; gap: 10px; }
+    .doc-modal-actions .right { display: flex; gap: 10px; }
+    .doc-modal-actions button { font-size: 13px; padding: 10px 16px; }
+    .doc-warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 14px; border-radius: 4px; font-size: 11px; color: #856404; margin-bottom: 14px; font-family: Arial, sans-serif; }
+    #DOC-MDL-CONFIRMAR-EMISION { z-index: 20; }
+    #DOC-MDL-CONFIRMAR-EMISION .modal-content { width: 460px; text-align: center; padding: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
+    .confirm-header { background: linear-gradient(135deg, #dc3545, #b02a37); color: white; padding: 20px; }
+    .confirm-icon { width: 64px; height: 64px; margin: 0 auto 10px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; }
+    .confirm-header h3 { font-size: 17px; }
+    .confirm-header p { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+    .confirm-body { padding: 20px 24px; }
+    .confirm-summary { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; text-align: left; font-size: 12.5px; }
+    .confirm-summary .row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #e0e3e8; }
+    .confirm-summary .row:last-child { border-bottom: none; }
+    .confirm-summary .row .k { color: #6c757d; }
+    .confirm-summary .row .v { font-weight: bold; color: #333; }
+    .confirm-summary .row.total { margin-top: 6px; padding-top: 8px; border-top: 2px solid #0d6efd; border-bottom: none; }
+    .confirm-summary .row.total .v { color: #0d6efd; font-size: 15px; }
+    .confirm-warning { background: #fff3cd; border: 1px solid #ffe082; color: #856404; border-radius: 6px; padding: 10px 14px; font-size: 11.5px; text-align: left; line-height: 1.5; margin-bottom: 16px; }
+    .confirm-warning code { background: rgba(0,0,0,0.06); padding: 1px 4px; border-radius: 3px; font-size: 11px; }
+    .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+    .confirm-actions button { flex: 1; padding: 11px 16px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="element-wrapper" style="flex: 1;">
+      <select><option>-- Tipo de Comprobante --</option></select>
+      <span class="ui-tag">ComboBox: DOC-CMB-TIPO-COMPROBANTE</span>
+    </div>
+    <div class="element-wrapper" style="flex: 2;">
+      <input type="text" placeholder="Buscar por N° Comprobante...">
+      <span class="ui-tag">Campo Texto: DOC-TXT-NUMERO-COMPROBANTE</span>
+    </div>
+    <div class="element-wrapper" style="width: auto;">
+      <button style="background: #198754; color: white;">Consultar</button>
+      <span class="ui-tag-btn">Botón: DOC-BTN-LEER-COMPROBANTE</span>
+    </div>
+  </header>
+  <div class="layout">
+    <div class="panel">
+      <h3>Ventas Disponibles</h3>
+      <div class="element-wrapper" style="margin-top: 5px;">
+        <select><option>Filtrar Venta por Código o Fecha</option></select>
+        <span class="ui-tag">Filtro: DOC-CMB-CODIGO-VENTA</span>
+      </div>
+      <hr style="margin-bottom: 10px;">
+      <div class="sales-list">
+        <div class="card">
+          <div class="sale-img">[ TICKET ]</div>
+          <div style="flex: 1;">
+            <div class="element-wrapper">
+              <h4 style="color: #0d6efd;">Venta #VEN-2026-091</h4>
+              <span class="ui-tag">DOC-CMB-CODIGO-VENTA</span>
+            </div>
+            <div class="element-wrapper">
+              <p style="font-weight: bold; font-size: 12px;">Monto: S/ 45.50</p>
+              <span class="ui-tag">DOC-LBL-MONTO-TOTAL</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="sale-img">[ TICKET ]</div>
+          <div style="flex: 1;">
+            <div class="element-wrapper">
+              <h4 style="color: #0d6efd;">Venta #VEN-2026-092</h4>
+              <span class="ui-tag">DOC-CMB-CODIGO-VENTA</span>
+            </div>
+            <div class="element-wrapper">
+              <p style="font-weight: bold; font-size: 12px;">Monto: S/ 120.00</p>
+              <span class="ui-tag">DOC-LBL-MONTO-TOTAL</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="sale-img">[ TICKET ]</div>
+          <div style="flex: 1;">
+            <div class="element-wrapper">
+              <h4 style="color: #0d6efd;">Venta #VEN-2026-093</h4>
+              <span class="ui-tag">DOC-CMB-CODIGO-VENTA</span>
+            </div>
+            <div class="element-wrapper">
+              <p style="font-weight: bold; font-size: 12px;">Monto: S/ 88.00</p>
+              <span class="ui-tag">DOC-LBL-MONTO-TOTAL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Emisión de Comprobante</h3>
+      <hr style="margin-bottom: 10px;">
+      <div class="element-wrapper">
+        <label><b>Venta Seleccionada:</b></label>
+        <select><option>VEN-2026-091 (S/ 45.50)</option></select>
+        <span class="ui-tag">ComboBox: DOC-CMB-CODIGO-VENTA</span>
+      </div>
+      <div class="element-wrapper">
+        <label><b>Tipo de Comprobante:</b></label>
+        <select>
+          <option>Boleta Electrónica</option>
+          <option>Factura Electrónica</option>
+        </select>
+        <span class="ui-tag">ComboBox: DOC-CMB-TIPO-COMPROBANTE</span>
+      </div>
+      <div class="element-wrapper">
+        <label><b>Número de Comprobante:</b></label>
+        <input type="text" value="B001-00001284">
+        <span class="ui-tag">Campo Texto: DOC-TXT-NUMERO-COMPROBANTE</span>
+      </div>
+      <div class="element-wrapper">
+        <label><b>Fecha de Emisión:</b></label>
+        <input type="date" value="2026-09-27">
+        <span class="ui-tag">Fecha: DOC-FEC-FECHA-EMISION</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Historial de Emisión</h3>
+      <hr style="margin-bottom: 10px;">
+      <div class="element-wrapper">
+        <table>
+          <thead><tr><th>N° Comp.</th><th>Tipo</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr><td>B001-001284</td><td>Boleta</td><td>S/ 45.50</td></tr>
+          </tbody>
+        </table>
+        <span class="ui-tag">Tabla: DOC-TBL-COMPROBANTES</span>
+      </div>
+      <div class="monto-box">
+        <div class="element-wrapper" style="margin-bottom:0;">
+          <p style="font-size: 12px; font-weight: bold;">Monto Total Calculado:</p>
+          <div style="font-size: 18px; font-weight: bold; color: #2e7d32;">S/ 45.50</div>
+          <span class="ui-tag">Label Solo Lectura: DOC-LBL-MONTO-TOTAL</span>
+        </div>
+      </div>
+      <div class="btn-actions">
+        <div class="element-wrapper">
+          <button style="background: #198754; color: white;" onclick="abrirPreview()">Emitir</button>
+          <span class="ui-tag-btn">DOC-BTN-CREAR-COMPROBANTE</span>
+        </div>
+        <div class="element-wrapper">
+          <button style="background: #ffc107; color: #333;">Modificar</button>
+          <span class="ui-tag-btn">DOC-BTN-ACTUALIZAR-COMPROBANTE</span>
+        </div>
+        <div class="element-wrapper">
+          <button style="background: #dc3545; color: white;" onclick="abrirModal('DOC-MDL-CONFIRMAR-ELIMINACION')">Anular</button>
+          <span class="ui-tag-btn">DOC-BTN-ELIMINAR-COMPROBANTE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="DOC-MDL-PREVISUALIZAR-COMPROBANTE">
+    <div class="modal-content">
+      <div class="doc-modal-header">
+        <h3>Vista Previa del Comprobante Electrónico</h3>
+        <span style="font-size:11px;opacity:0.85;">Paso 1 de 2 · Revisa los datos antes de emitir</span>
+      </div>
+      <div class="doc-preview-wrap">
+        <div class="doc-warning">
+          Atención: Este es un <b>borrador de previsualización</b>. Al confirmar se generará el comprobante oficial y se enviará al OSE/SUNAT. No se podrá modificar después.
+        </div>
+        <div class="doc-cliente-edit">
+          <div>
+            <label>DNI / RUC del cliente</label>
+            <input type="text" id="DOC-TXT-PREVIEW-DNI-CLIENTE" value="45678912" placeholder="Opcional en boleta" oninput="syncDNI(this.value)">
+          </div>
+          <div>
+            <label>Nombre / Razón Social</label>
+            <input type="text" id="DOC-TXT-PREVIEW-NOMBRE-CLIENTE" value="Consumidor Final" placeholder="Opcional en boleta" oninput="syncNombre(this.value)">
+          </div>
+        </div>
+        <div class="doc-paper" id="DOC-PNL-PREVIEW-COMPROBANTE">
+          <div class="doc-emisor">
+            <div class="doc-emisor-info">
+              <h2>FARMASIL</h2>
+              <p>
+                Droguería y Botica<br>
+                RUC: 20512345678<br>
+                Av. Los Farmacéuticos 456, Lima<br>
+                Tel: (01) 555-1234
+              </p>
+            </div>
+            <div class="doc-tipo-badge">
+              <div class="tipo" id="DOC-LBL-PREVIEW-TIPO">BOLETA ELECTRÓNICA</div>
+              <div class="numero" id="DOC-LBL-PREVIEW-NUMERO">B001-00001284</div>
+              <div style="font-size:10px;margin-top:4px;opacity:0.85;">RUC: 20512345678</div>
+            </div>
+          </div>
+          <div class="doc-cliente-box">
+            <div class="linea"><b>Cliente:</b> <span id="DOC-LBL-PREVIEW-CLIENTE-NOMBRE">Consumidor Final</span></div>
+            <div class="linea"><b>DNI/RUC:</b> <span id="DOC-LBL-PREVIEW-CLIENTE-DNI">45678912</span></div>
+            <div class="linea"><b>Fecha Emisión:</b> 27/09/2026 14:32</div>
+            <div class="linea"><b>Venta Ref.:</b> VEN-2026-091 &nbsp;·&nbsp; <b>Forma de Pago:</b> Efectivo</div>
+          </div>
+          <table class="doc-detalle" id="DOC-TBL-PREVIEW-DETALLE">
+            <thead>
+              <tr>
+                <th style="width:8%;">Cant.</th>
+                <th style="width:52%;">Descripción</th>
+                <th style="width:15%;" class="num">P. Unit.</th>
+                <th style="width:25%;" class="num">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>2</td><td>Paracetamol 500mg — Lote LT-2026-A</td><td class="money">S/ 3.50</td><td class="money">S/ 7.00</td></tr>
+              <tr><td>3</td><td>Amoxicilina 500mg — Lote LT-2026-B</td><td class="money">S/ 12.00</td><td class="money">S/ 36.00</td></tr>
+              <tr><td>1</td><td>Ibuprofeno 400mg — Lote LT-2026-C</td><td class="money">S/ 2.50</td><td class="money">S/ 2.50</td></tr>
+            </tbody>
+          </table>
+          <div class="doc-totales">
+            <table>
+              <tr><td class="label">Subtotal:</td><td class="valor" id="DOC-LBL-PREVIEW-SUBTOTAL">S/ 38.56</td></tr>
+              <tr><td class="label">IGV (18%):</td><td class="valor" id="DOC-LBL-PREVIEW-IGV">S/ 6.94</td></tr>
+              <tr class="total-final"><td class="label">TOTAL:</td><td class="valor" id="DOC-LBL-PREVIEW-TOTAL">S/ 45.50</td></tr>
+            </table>
+          </div>
+          <div class="doc-footer">
+            <div>Son: <b>CUARENTA Y CINCO CON 50/100 SOLES</b></div>
+            <div style="margin-top:4px;">Representación impresa del comprobante electrónico. Consulte su validez en <b>www.sunat.gob.pe</b></div>
+            <div class="doc-hash">Hash: <span id="DOC-LBL-PREVIEW-HASH">a3f5c8d1e92b47f0c6a8... (pendiente de generar al emitir)</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="doc-modal-actions">
+        <div class="left">
+          <div class="element-wrapper" style="margin-bottom:0;">
+            <button style="background:#0dcaf0;color:white;" onclick="alert('Descargando borrador PDF (sin emitir)...')">Descargar borrador PDF</button>
+            <span class="ui-tag-btn">DOC-BTN-DESCARGAR-PDF</span>
+          </div>
+        </div>
+        <div class="right">
+          <div class="element-wrapper" style="margin-bottom:0;">
+            <button style="background:#6c757d;color:white;" onclick="cerrarModal('DOC-MDL-PREVISUALIZAR-COMPROBANTE')">Volver a editar</button>
+            <span class="ui-tag-btn">DOC-BTN-CANCELAR-EMISION</span>
+          </div>
+          <div class="element-wrapper" style="margin-bottom:0;">
+            <button style="background:#198754;color:white;" onclick="abrirConfirmacion()">Continuar</button>
+            <span class="ui-tag-btn">DOC-BTN-CONFIRMAR-EMISION</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="DOC-MDL-CONFIRMAR-EMISION">
+    <div class="modal-content">
+      <div class="confirm-header">
+        <div class="confirm-icon">!</div>
+        <h3>Confirmar Emisión Definitiva</h3>
+        <p>Esta es la última verificación antes de enviar a SUNAT</p>
+      </div>
+      <div class="confirm-body">
+        <div class="confirm-summary">
+          <div class="row"><span class="k">Venta de referencia</span><span class="v" id="DOC-LBL-CONFIRMAR-VENTA">VEN-2026-091</span></div>
+          <div class="row"><span class="k">Tipo de comprobante</span><span class="v" id="DOC-LBL-CONFIRMAR-TIPO">Boleta Electrónica</span></div>
+          <div class="row"><span class="k">Número</span><span class="v" id="DOC-LBL-CONFIRMAR-NUMERO">B001-00001284</span></div>
+          <div class="row"><span class="k">Cliente</span><span class="v" id="DOC-LBL-CONFIRMAR-CLIENTE">Consumidor Final</span></div>
+          <div class="row total"><span class="k">Total a emitir</span><span class="v" id="DOC-LBL-CONFIRMAR-TOTAL">S/ 45.50</span></div>
+        </div>
+        <div class="confirm-warning" id="DOC-TXT-MSJ-EMISION">
+          <b>Atención:</b> al confirmar, el comprobante se enviará a SUNAT y quedará registrado de forma permanente en <code>TBL_COMPROBANTES_TRIBUTARIOS</code>.<br><br>Si hay un error en los datos fiscales (RUC del emisor, monto, tipo), la corrección solo puede hacerse emitiendo una <b>nota de crédito</b>, no editando este documento.
+        </div>
+        <div class="confirm-actions">
+          <div class="element-wrapper" style="margin-bottom:0;">
+            <button style="background:#6c757d;color:white;" onclick="volverAlPreview()">No, volver al preview</button>
+            <span class="ui-tag-btn">DOC-BTN-EMITIR-NO</span>
+          </div>
+          <div class="element-wrapper" style="margin-bottom:0;">
+            <button style="background:#dc3545;color:white;" onclick="emitirDefinitivo()">Sí, emitir definitivamente</button>
+            <span class="ui-tag-btn">DOC-BTN-EMITIR-SI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="DOC-MDL-CONFIRMAR-ELIMINACION">
+    <div class="modal-content" style="width:380px;">
+      <div class="element-wrapper" style="align-items: center;">
+        <h4>Anulación de Comprobante</h4>
+        <span class="ui-tag">Modal: DOC-MDL-CONFIRMAR-ELIMINACION</span>
+      </div>
+      <div class="element-wrapper" style="align-items: center; margin: 15px 0;">
+        <p>¿Está seguro de anular el comprobante seleccionado?</p>
+        <span class="ui-tag">Mensaje: DOC-TXT-MSJ</span>
+      </div>
+      <div style="display: flex; gap: 15px; justify-content: center;">
+        <div class="element-wrapper" style="width: auto;">
+          <button style="background: #dc3545; color: white;">Sí, Anular</button>
+          <span class="ui-tag-btn">DOC-BTN-CONFIRMAR-SI</span>
+        </div>
+        <div class="element-wrapper" style="width: auto;">
+          <button style="background: #6c757d; color: white;" onclick="cerrarModal('DOC-MDL-CONFIRMAR-ELIMINACION')">Cancelar</button>
+          <span class="ui-tag-btn">DOC-BTN-CONFIRMAR-NO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function abrirModal(id) { document.getElementById(id).classList.add('show'); }
+    function cerrarModal(id) { document.getElementById(id).classList.remove('show'); }
+    function abrirPreview() { abrirModal('DOC-MDL-PREVISUALIZAR-COMPROBANTE'); }
+    function abrirConfirmacion() {
+      var numero = document.getElementById('DOC-LBL-PREVIEW-NUMERO').innerText;
+      var cliente = document.getElementById('DOC-LBL-PREVIEW-CLIENTE-NOMBRE').innerText;
+      var total = document.getElementById('DOC-LBL-PREVIEW-TOTAL').innerText;
+      document.getElementById('DOC-LBL-CONFIRMAR-NUMERO').innerText = numero;
+      document.getElementById('DOC-LBL-CONFIRMAR-CLIENTE').innerText = cliente;
+      document.getElementById('DOC-LBL-CONFIRMAR-TOTAL').innerText = total;
+      abrirModal('DOC-MDL-CONFIRMAR-EMISION');
+    }
+    function volverAlPreview() { cerrarModal('DOC-MDL-CONFIRMAR-EMISION'); }
+    function emitirDefinitivo() {
+      cerrarModal('DOC-MDL-CONFIRMAR-EMISION');
+      cerrarModal('DOC-MDL-PREVISUALIZAR-COMPROBANTE');
+      alert('Comprobante emitido y registrado correctamente.');
+    }
+    function syncDNI(valor) { document.getElementById('DOC-LBL-PREVIEW-CLIENTE-DNI').innerText = valor || '—'; }
+    function syncNombre(valor) { document.getElementById('DOC-LBL-PREVIEW-CLIENTE-NOMBRE').innerText = valor || '—'; }
+  </script>
+</body>
+</html>

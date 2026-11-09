@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ART-MKP-ALV-0001 - Alertas de Vencimiento</title>
+  <style>
+    * { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    body { background-color: #f0f2f5; color: #333; padding: 20px; }
+    .element-wrapper { display: flex; flex-direction: column; margin-bottom: 10px; width: 100%; }
+    .ui-tag { font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: bold; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 2px 5px; border-radius: 3px; margin-top: 3px; display: inline-block; width: fit-content; }
+    .ui-tag-btn { font-family: 'Courier New', Courier, monospace; font-size: 10px; font-weight: bold; background: #cce5ff; color: #004085; border: 1px solid #b8daff; padding: 2px 5px; border-radius: 3px; margin-top: 3px; text-align: center; }
+    header { display: flex; gap: 15px; background-color: #0d6efd; padding: 15px; border-radius: 6px; color: white; align-items: flex-start; margin-bottom: 20px; }
+    .layout { display: grid; grid-template-columns: 320px 1fr 360px; gap: 20px; }
+    .panel { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .lote-list { max-height: 500px; overflow-y: auto; padding-right: 5px; }
+    .lote-img { width: 60px; height: 60px; background: #ffebee; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #c62828; border: 1px dashed #ef9a9a; flex-shrink: 0; }
+    input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+    button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .card-lote { border-left: 4px solid #dc3545; background: #fff5f5; padding: 10px; border-radius: 4px; margin-bottom: 10px; display: flex; gap: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
+    table th, table td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+    table th { background: #f8f9fa; }
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 20px; border-radius: 6px; width: 380px; text-align: center; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="element-wrapper" style="flex: 3;">
+      <select><option>-- Seleccionar Remesa / Lote --</option></select>
+      <span class="ui-tag">ComboBox: ALV-CMB-LOTE-ALERTA</span>
+    </div>
+    <div class="element-wrapper" style="flex: 1;">
+      <button style="background: #198754; color: white;">Filtrar Alertas</button>
+      <span class="ui-tag-btn">Botón: ALV-BTN-LEER-ALERTA</span>
+    </div>
+  </header>
+  <div class="layout">
+    <div class="panel">
+      <h3>Lotes en Riesgo</h3>
+      <div class="element-wrapper" style="margin-top: 5px;">
+        <select><option>Filtrar por Estado de Vencimiento</option></select>
+        <span class="ui-tag">Filtro: ALV-CMB-LOTE-ALERTA</span>
+      </div>
+      <hr style="margin-bottom: 10px;">
+      <div class="lote-list">
+        <div class="card-lote">
+          <div class="lote-img">[ LOTE IMG ]</div>
+          <div style="flex: 1;">
+            <div class="element-wrapper">
+              <h4 style="color: #dc3545;">Lote LT-2026-A</h4>
+              <span class="ui-tag">ALV-CMB-LOTE-ALERTA</span>
+            </div>
+            <div class="element-wrapper">
+              <p style="font-size: 11px;">Vence: <b>2026-10-15</b></p>
+              <span class="ui-tag">ALV-LBL-FECHA-VENCIMIENTO</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-lote" style="border-left-color: #ffc107; background: #fffdf5;">
+          <div class="lote-img" style="background: #fff8e1; border-color: #ffe082; color: #f57f17;">[ LOTE IMG ]</div>
+          <div style="flex: 1;">
+            <div class="element-wrapper">
+              <h4 style="color: #856404;">Lote LT-2026-B</h4>
+              <span class="ui-tag">ALV-CMB-LOTE-ALERTA</span>
+            </div>
+            <div class="element-wrapper">
+              <p style="font-size: 11px;">Vence: <b>2026-11-02</b></p>
+              <span class="ui-tag">ALV-LBL-FECHA-VENCIMIENTO</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-lote">
+          <div class="lote-img">[ LOTE IMG ]</div>
+          <div style="flex: 1;">
+            <div class="element-wrapper">
+              <h4 style="color: #dc3545;">Lote LT-2026-C</h4>
+              <span class="ui-tag">ALV-CMB-LOTE-ALERTA</span>
+            </div>
+            <div class="element-wrapper">
+              <p style="font-size: 11px;">Vence: <b>2026-10-01</b></p>
+              <span class="ui-tag">ALV-LBL-FECHA-VENCIMIENTO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Control Sanitario de Lote</h3>
+      <hr style="margin-bottom: 10px;">
+      <div class="element-wrapper">
+        <label><b>Lote / Remesa Afectada:</b></label>
+        <select><option>LT-2026-A (Paracetamol 500mg)</option></select>
+        <span class="ui-tag">ComboBox: ALV-CMB-LOTE-ALERTA</span>
+      </div>
+      <div class="element-wrapper">
+        <label><b>Fecha de Vencimiento Registrada:</b></label>
+        <input type="text" value="2026-10-15" readonly style="background: #e9ecef;">
+        <span class="ui-tag">Label Solo Lectura: ALV-LBL-FECHA-VENCIMIENTO</span>
+      </div>
+      <div class="element-wrapper">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" checked style="width: auto;">
+          <label style="color: #dc3545; font-weight: bold;">Lote Defectuoso / Bloqueado</label>
+        </div>
+        <span class="ui-tag">Checkbox (BIT): ALV-CHK-LOTE-DEFECTUOSO</span>
+      </div>
+      <div class="element-wrapper">
+        <label><b>Código Alerta DIGEMID:</b></label>
+        <input type="text" value="DIG-2026-00489-RD">
+        <span class="ui-tag">Campo Texto: ALV-TXT-ALERTA-DIGEMID</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Tablero de Alertas</h3>
+      <hr style="margin-bottom: 10px;">
+      <div class="element-wrapper">
+        <table>
+          <thead>
+            <tr><th>Lote</th><th>Venc.</th><th>Defect.</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>LT-2026-A</td><td>15/10/26</td><td>Sí</td></tr>
+            <tr><td>LT-2026-B</td><td>02/11/26</td><td>No</td></tr>
+          </tbody>
+        </table>
+        <span class="ui-tag">Tabla: ALV-TBL-ALERTAS-VENCIMIENTO</span>
+      </div>
+      <div class="btn-grid">
+        <div class="element-wrapper">
+          <button style="background: #dc3545; color: white;">Bloquear Lote</button>
+          <span class="ui-tag-btn">ALV-BTN-CREAR-ALERTA</span>
+        </div>
+        <div class="element-wrapper">
+          <button style="background: #ffc107; color: #333;">Modificar</button>
+          <span class="ui-tag-btn">ALV-BTN-ACTUALIZAR-ALERTA</span>
+        </div>
+        <div class="element-wrapper" style="grid-column: span 2;">
+          <button style="background: #0d6efd; color: white;">Confirmar Actualización</button>
+          <span class="ui-tag-btn">ALV-BTN-CONFIRMAR-ACTUALIZACION</span>
+        </div>
+        <div class="element-wrapper" style="grid-column: span 2;">
+          <button style="background: #6c757d; color: white;" onclick="document.getElementById('ALV-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Liberar Lote / Eliminar Alerta</button>
+          <span class="ui-tag-btn">ALV-BTN-ELIMINAR-ALERTA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="ALV-MDL-CONFIRMAR-ELIMINACION">
+    <div class="modal-content">
+      <div class="element-wrapper" style="align-items: center;">
+        <h4>Liberación de Lote</h4>
+        <span class="ui-tag">Modal: ALV-MDL-CONFIRMAR-ELIMINACION</span>
+      </div>
+      <div class="element-wrapper" style="align-items: center; margin: 15px 0;">
+        <p>¿Está seguro de retirar la alerta del Lote seleccionado?</p>
+        <span class="ui-tag">Mensaje: ALV-TXT-MSJ</span>
+      </div>
+      <div style="display: flex; gap: 15px; justify-content: center;">
+        <div class="element-wrapper" style="width: auto;">
+          <button style="background: #198754; color: white;">Sí, Liberar</button>
+          <span class="ui-tag-btn">ALV-BTN-CONFIRMAR-SI</span>
+        </div>
+        <div class="element-wrapper" style="width: auto;">
+          <button style="background: #6c757d; color: white;" onclick="document.getElementById('ALV-MDL-CONFIRMAR-ELIMINACION').style.display='none'">Cancelar</button>
+          <span class="ui-tag-btn">ALV-BTN-CONFIRMAR-NO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

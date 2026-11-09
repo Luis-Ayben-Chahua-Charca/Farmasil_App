@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>ART-MKP-USR-0001 - Gestión de Usuarios</title>
+<style>
+* { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+body { background-color: #f0f2f5; color: #333; padding: 20px; }
+.element-wrapper { display: flex; flex-direction: column; margin-bottom: 10px; width: 100%; }
+.ui-tag { font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: bold; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 2px 5px; border-radius: 3px; margin-top: 3px; display: inline-block; width: fit-content; }
+.ui-tag-btn { font-family: 'Courier New', Courier, monospace; font-size: 10px; font-weight: bold; background: #cce5ff; color: #004085; border: 1px solid #b8daff; padding: 2px 5px; border-radius: 3px; margin-top: 3px; text-align: center; }
+header { display: flex; gap: 15px; background-color: #0d6efd; padding: 15px; border-radius: 6px; color: white; align-items: flex-start; margin-bottom: 20px; }
+.layout { display: grid; grid-template-columns: 320px 1fr 380px; gap: 20px; }
+.panel { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
+table th, table td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+table th { background: #f8f9fa; }
+.btn-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+.modal-content { background: white; padding: 20px; border-radius: 6px; width: 380px; text-align: center; }
+.user-card { border: 1px solid #ddd; border-left: 4px solid #0d6efd; padding: 10px; border-radius: 4px; background: #fafafa; margin-bottom: 10px; font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="element-wrapper" style="flex:2;">
+    <input type="text" placeholder="Buscar por nombre de usuario...">
+    <span class="ui-tag">Campo Texto: USR-TXT-NOMBRE-USUARIO</span>
+  </div>
+  <div class="element-wrapper" style="flex:1;">
+    <select><option>-- Rol --</option><option>Administrador</option><option>Tecnico</option></select>
+    <span class="ui-tag">ComboBox: USR-CMB-ROL</span>
+  </div>
+  <div class="element-wrapper" style="width:auto;">
+    <button style="background:#198754;color:white;">Buscar</button>
+    <span class="ui-tag-btn">USR-BTN-LEER-USUARIO</span>
+  </div>
+</header>
+<div class="layout">
+  <div class="panel">
+    <h3>Cuentas de Usuario</h3>
+    <div style="max-height:500px;overflow-y:auto;">
+      <div class="user-card"><b>admin_farmasil</b><br>Administrador · Activo</div>
+      <div class="user-card"><b>tecnico_01</b><br>Tecnico · Activo</div>
+      <div class="user-card" style="border-left-color:#6c757d;"><b>tecnico_02</b><br>Tecnico · Inactivo</div>
+    </div>
+    <span class="ui-tag" style="margin-top:5px;">Lista: USR-TBL-USUARIOS</span>
+  </div>
+  <div class="panel">
+    <h3>Ficha de Usuario</h3>
+    <hr style="margin-bottom:10px;">
+    <div class="element-wrapper">
+      <label><b>Nombre de Usuario:</b></label>
+      <input type="text" value="tecnico_01">
+      <span class="ui-tag">Campo Texto: USR-TXT-NOMBRE-USUARIO</span>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Contraseña:</b></label>
+      <input type="password" value="********">
+      <span class="ui-tag">Campo Contraseña: USR-PWD-CONTRASENA</span>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Rol:</b></label>
+      <select><option>Tecnico</option><option>Administrador</option></select>
+      <span class="ui-tag">ComboBox: USR-CMB-ROL</span>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Estado:</b></label>
+      <select><option>Activo</option><option>Inactivo</option></select>
+      <span class="ui-tag">ComboBox: USR-CMB-ESTADO-USUARIO</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Tabla de Usuarios</h3>
+    <hr style="margin-bottom:10px;">
+    <div class="element-wrapper">
+      <table>
+        <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>admin_farmasil</td><td>Admin</td><td>Activo</td></tr>
+          <tr><td>tecnico_01</td><td>Tecnico</td><td>Activo</td></tr>
+          <tr><td>tecnico_02</td><td>Tecnico</td><td>Inactivo</td></tr>
+        </tbody>
+      </table>
+      <span class="ui-tag">Tabla: USR-TBL-USUARIOS</span>
+    </div>
+    <div class="btn-actions">
+      <div class="element-wrapper"><button style="background:#198754;color:white;">Crear</button><span class="ui-tag-btn">USR-BTN-CREAR-USUARIO</span></div>
+      <div class="element-wrapper"><button style="background:#ffc107;color:#333;">Actualizar</button><span class="ui-tag-btn">USR-BTN-ACTUALIZAR-USUARIO</span></div>
+      <div class="element-wrapper"><button style="background:#dc3545;color:white;" onclick="document.getElementById('USR-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Eliminar</button><span class="ui-tag-btn">USR-BTN-ELIMINAR-USUARIO</span></div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="USR-MDL-CONFIRMAR-ELIMINACION">
+  <div class="modal-content">
+    <div class="element-wrapper" style="align-items:center;"><h4>Eliminar Usuario</h4><span class="ui-tag">Modal: USR-MDL-CONFIRMAR-ELIMINACION</span></div>
+    <div class="element-wrapper" style="align-items:center;margin:15px 0;"><p>¿Está seguro de dar de baja esta cuenta de usuario?</p><span class="ui-tag">Mensaje: USR-TXT-MSJ</span></div>
+    <div style="display:flex;gap:15px;justify-content:center;">
+      <div class="element-wrapper" style="width:auto;"><button style="background:#dc3545;color:white;">Sí, Eliminar</button><span class="ui-tag-btn">USR-BTN-CONFIRMAR-SI</span></div>
+      <div class="element-wrapper" style="width:auto;"><button style="background:#6c757d;color:white;" onclick="document.getElementById('USR-MDL-CONFIRMAR-ELIMINACION').style.display='none'">Cancelar</button><span class="ui-tag-btn">USR-BTN-CONFIRMAR-NO</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
