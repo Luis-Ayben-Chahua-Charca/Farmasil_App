@@ -1,0 +1,60 @@
+# Integración continua de FARMASIL_APP.
+# Compila la solución y corre las pruebas en cada PR hacia main y en cada fusión.
+# Mientras no exista una solución .NET en el repositorio, el job termina en verde con un aviso,
+# para que los PR de documentación no queden bloqueados.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: build-and-test
+    runs-on: windows-latest   # WPF solo compila en Windows
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Buscar la solución
+        id: sln
+        shell: bash
+        run: |
+          SLN=$(git ls-files '*.slnx' '*.sln' | head -n 1)
+          echo "path=$SLN" >> "$GITHUB_OUTPUT"
+          if [ -z "$SLN" ]; then
+            echo "::notice::Todavía no hay solución .NET en el repositorio; se omiten compilación y pruebas."
+          else
+            echo "Solución encontrada: $SLN"
+          fi
+
+      - name: Instalar .NET 10
+        if: steps.sln.outputs.path != ''
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restaurar dependencias
+        if: steps.sln.outputs.path != ''
+        run: dotnet restore "${{ steps.sln.outputs.path }}"
+
+      - name: Compilar
+        if: steps.sln.outputs.path != ''
+        run: dotnet build "${{ steps.sln.outputs.path }}" --configuration Release --no-restore
+
+      - name: Probar
+        if: steps.sln.outputs.path != ''
+        run: dotnet test "${{ steps.sln.outputs.path }}" --configuration Release --no-build --logger trx --results-directory TestResults
+
+      - name: Publicar resultados de pruebas
+        if: always() && steps.sln.outputs.path != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-pruebas
+          path: TestResults
+          if-no-files-found: ignore
