@@ -2,10 +2,12 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 05.00 |
-| Fecha | 01/11/2026 |
+| Versión | 06.00 |
+| Fecha | 08/11/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 06.00.** Alinea las pruebas con las correcciones de las auditorías de la base de datos (issue #63): predicado de vendibilidad, estado de la remesa por una regla única, varios retiros por remesa, una línea por remesa, intervalos de fecha semiabiertos, un comprobante 'Emitido' por venta, proveedor de las devoluciones, desempate de la cotización vigente y stock físico y vendible. Se agregan 18 pruebas, se ajustan cuatro filas y se reemplaza la de cambio de remesa de ESP-0015 por la de remesa de solo lectura. Se corrige además el total de la tabla de cobertura, que decía 256 cuando el plan tenía 257. Total: 275 pruebas.
+>
 > **Versión 05.00.** Alinea las pruebas de devoluciones y de la lista de reabastecimiento con DEC-019, DEC-020 y DEC-023: el combo de remesas de ESP-0025 ya no usa el umbral de vencimiento, ESP-0027 rechaza completar una orden cuya remesa no conserva stock suficiente, y el proceso 2 de RNF-0010 continúa cuando la restricción de unicidad rechaza un ítem que ya figura. Se agrega una prueba. Total: 257 pruebas.
 >
 > **Versión 04.00.** Completa las especificaciones de los módulos 12 y 13 y los procesos programados de RNF-0010, con el mismo criterio de la versión 03.00: solo las pruebas que cubren una clase de defecto que ninguna otra cubre. Agrega además las pruebas de las reglas incorporadas en la auditoría de coherencia del 12-13/10/2026: bajas condicionales por rechazo del motor, estado de remesa derivado y no editable, y remesa vencida que no vuelve a la venta. Total: 256 pruebas.
@@ -70,22 +72,30 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Interrumpir la transacción entre la cabecera y el detalle y verificar que no quede una venta sin líneas ni stock descontado. | T-012 |
 |  |  | Verificar que la venta registre el id_usuario de la sesión activa. | T-012 |
 |  |  | Presentar al cliente la pantalla de venta con varios productos y el monto total calculado. | T-005 |
+|  |  | Intentar vender una remesa vencida con estado 'Disponible' y verificar el rechazo con el mensaje de remesa vencida; comprobar que no se ofrezca en el combo ni se proponga por FEFO. | T-001 |
+|  |  | Intentar vender un medicamento 'Descontinuado' y verificar el rechazo con el mensaje de medicamento descontinuado. | T-001 |
+|  |  | Con un medicamento que tiene dos restricciones activas, una 'Informativa' y otra 'Bloqueante', verificar que se rechace la línea y se muestren los motivos; con dos 'Informativa', verificar que se muestren ambas y se acepte la línea. | T-006 |
+|  |  | Agregar dos veces la misma remesa en una venta y verificar que se acumule en una sola línea y que la validación de stock use la cantidad acumulada. | T-006 |
 | ESP-0002 | Consulta del registro de venta (Leer) | Camino básico: aplicar filtros de fecha y medicamento y desplegar resultados. | T-002 |
 |  |  | Partición sobre los filtros: coincidencia exacta, parcial, sin resultados y filtros vacíos. | T-001 |
 |  |  | Verificar que el filtro por medicamento se resuelva uniendo detalle y lotes, y devuelva las ventas correctas. | T-006 |
 |  |  | Seleccionar una venta y verificar que el detalle muestre el número de lote de cada línea. | T-006 |
+|  |  | Registrar una venta a las 23:50 y consultarla por su fecha, y verificar que aparezca (filtro por intervalo semiabierto). | T-001 |
 | ESP-0003 | Actualización del registro de venta (Actualizar) | Camino básico: seleccionar venta sin comprobante, modificar líneas y método de pago, recalcular y confirmar. | T-002 |
 |  |  | Complejidad ciclomática: ramas de comprobante emitido, agregar línea y quitar línea. | T-003 |
 |  |  | Intentar actualizar una venta con comprobante 'Emitido' y verificar que la operación se cancele. | T-006 |
 |  |  | Aumentar la cantidad de una línea y verificar que el stock se descuente solo por la diferencia. | T-006 |
 |  |  | Reducir la cantidad de una línea y verificar que la diferencia se devuelva al stock de la remesa. | T-007 |
 |  |  | Verificar que el monto_total resultante coincida con la suma del nuevo detalle. | T-004 |
-| ESP-0004 | Eliminación del registro de venta (Eliminar) | Camino básico: seleccionar venta sin comprobante, confirmar y verificar la eliminación en cascada. | T-002 |
+|  |  | Corregir una venta hasta dejar una remesa en cero y verificar que pase a 'Agotado'; quitar la línea de una remesa 'Agotado' no vencida y verificar que vuelva a 'Disponible' con su stock restituido. | T-006 |
+|  |  | Agregar a la venta una remesa que ya figura, y otra remesa vencida, y verificar que la primera se acumule y la segunda se rechace; verificar que las líneas existentes conserven su precio unitario. | T-006 |
+| ESP-0004 | Eliminación del registro de venta (Eliminar) | Camino básico: seleccionar venta sin comprobante, confirmar y verificar la eliminación del detalle y de la cabecera. | T-002 |
 |  |  | Complejidad ciclomática: ramas de comprobante asociado, confirmación afirmativa y negativa. | T-003 |
 |  |  | Verificar que se restituya el stock de cada remesa antes de eliminar líneas y cabecera. | T-006 |
 |  |  | Verificar que no queden filas huérfanas en el detalle tras la eliminación. | T-007 |
 |  |  | Intentar eliminar una venta con comprobante 'Emitido' y otra con comprobante 'Anulado', y verificar el rechazo en ambos casos. | T-006 |
 |  |  | Presionar el botón de cancelar del modal y verificar que no se produzca ningún cambio. | T-001 |
+|  |  | Eliminar una venta que había agotado una remesa y verificar que la remesa vuelva a 'Disponible' y a ofrecerse en ventas. | T-006 |
 | Módulo 1 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que ESP-0001 y ESP-0002 se ejecuten y que ESP-0003 y ESP-0004 sean rechazadas. | T-012 |
 
 ## Módulo 2 — Gestión de Inventario (EDU-0002)
@@ -99,7 +109,8 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | ESP-0006 | Consulta del producto de inventario (Leer) | Camino básico: búsqueda por identificador o nombre y despliegue del resultado. | T-002 |
 |  |  | Partición sobre los criterios: identificador existente, inexistente, nombre parcial y campos vacíos. | T-001 |
 |  |  | Verificar que el stock mostrado sea la suma de las existencias de todas las remesas del medicamento. | T-006 |
-|  |  | Crear una segunda remesa y verificar que el stock consolidado se actualice sin duplicar la fila del producto. | T-007 |
+|  |  | Crear una segunda remesa y verificar que el stock físico se actualice sin duplicar la fila del producto. | T-007 |
+|  |  | Con una remesa bloqueada y otra vencida, verificar que el stock mostrado sea el físico (incluye ambas), distinto del stock vendible. | T-006 |
 | ESP-0007 | Actualización del producto de inventario (Actualizar) | Camino básico: seleccionar producto, modificar los campos de catálogo y confirmar. | T-002 |
 |  |  | Verificar que el identificador permanezca inalterado y que las referencias desde lotes y restricciones sigan siendo válidas. | T-007 |
 |  |  | Modificar el precio y verificar que las ventas ya registradas conserven el precio vigente al momento de la venta. | T-006 |
@@ -116,18 +127,19 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | Clave | Requisito (Nombre / Operación) | Descripción de la prueba | Tipo |
 | --- | --- | --- | --- |
 | ESP-0009 | Registro de comprobante tributario (Crear) | Camino básico: seleccionar venta sin documentar, elegir tipo, registrar número y fecha, y confirmar con estado 'Emitido'. | T-002 |
-|  |  | Verificar que el combo de ventas liste únicamente las que aún no tienen comprobante asociado. | T-004 |
+|  |  | Verificar que el combo de ventas liste únicamente las que no tienen un comprobante 'Emitido'. | T-004 |
 |  |  | Intentar registrar un número de comprobante ya existente y verificar el rechazo. | T-001 |
 |  |  | Verificar que el monto se recupere de la venta y no sea editable, de modo que comprobante y venta no puedan declarar importes distintos. | T-006 |
 |  |  | Emitir un comprobante y verificar que la venta quede bloqueada para modificación y eliminación. | T-006 |
 |  |  | Ejecutar la operación sobre una base con la tabla de comprobantes vacía y verificar que el primer registro sea posible. | T-001 |
 |  |  | Presentar al cliente la emisión de una boleta y una factura. | T-005 |
+|  |  | Anular el comprobante 'Emitido' de una venta y registrar uno nuevo para la misma venta: verificar que se acepte, que la venta nunca tenga dos 'Emitido' y que el motor rechace el segundo 'Emitido'. | T-006 |
 | ESP-0010 | Consulta de comprobantes tributarios (Leer) | Camino básico: aplicar filtros de fecha, tipo y número y desplegar el resultado. | T-002 |
 |  |  | Partición sobre los filtros, incluyendo búsqueda sin resultados. | T-001 |
 |  |  | Verificar que los comprobantes anulados permanezcan visibles con su estado, requisito de auditoría tributaria. | T-006 |
 | ESP-0011 | Actualización de comprobante tributario (Actualizar) | Camino básico: seleccionar comprobante 'Emitido', corregir tipo, número y fecha, y confirmar. | T-002 |
 |  |  | Intentar actualizar un comprobante 'Anulado' y verificar que la operación se cancele. | T-001 |
-|  |  | Verificar que la venta asociada esté en solo lectura y que la relación uno a uno se conserve. | T-004 |
+|  |  | Verificar que la venta asociada esté en solo lectura y que la venta conserve a lo sumo un comprobante 'Emitido'. | T-004 |
 | ESP-0012 | Anulación de comprobante tributario (Eliminar) | Camino básico: seleccionar comprobante, confirmar y verificar el cambio a estado 'Anulado'. | T-002 |
 |  |  | Verificar que el registro se conserve físicamente y siga siendo consultable para auditoría. | T-006 |
 |  |  | Anular un comprobante y verificar que la venta asociada quede nuevamente habilitada para modificación y eliminación. | T-007 |
@@ -142,6 +154,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Valores límite sobre el umbral: remesa que vence justo en el límite, un día antes y un día después. | T-001 |
 |  |  | Verificar que el resultado identifique cada entrada por medicamento y número de lote. | T-006 |
 |  |  | Modificar el umbral en la base y verificar que la consulta refleje el nuevo criterio sin cambios en el código. | T-018 |
+|  |  | Verificar que una remesa 'Bloqueado por devolucion' o 'Agotado' no se cuente entre las próximas a vencer y que el conteo coincida con el aviso del proceso 1 de RNF-0010. | T-006 |
 | ESP-0014 | Registro manual de alerta de producto vencido (Crear) | Camino básico: seleccionar remesa, marcar lote defectuoso, registrar código DIGEMID y confirmar. | T-002 |
 |  |  | Verificar que la fecha de vencimiento se muestre derivada de la remesa y no sea editable. | T-004 |
 |  |  | Verificar que la alerta y el bloqueo de la remesa se apliquen de forma atómica: si una falla, ninguna se aplica. | T-012 |
@@ -149,13 +162,14 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Verificar que la remesa bloqueada deje de ofrecerse en ventas y quede disponible para una orden de devolución. | T-006 |
 |  |  | Verificar que el registro conserve el nombre del medicamento y el número de lote como copia de texto. | T-007 |
 | ESP-0015 | Modificación de alerta de producto vencido (Actualizar) | Camino básico: seleccionar alerta, modificar remesa o condiciones y confirmar. | T-002 |
-|  |  | Cambiar la remesa asociada y verificar que la fecha de vencimiento mostrada se actualice a la de la nueva. | T-004 |
+|  |  | Verificar que la remesa y su fecha de vencimiento se muestren en solo lectura y que ninguna ruta permita cambiar la remesa de una alerta existente. | T-012 |
 |  |  | Verificar que el bloqueo de venta se mantenga vigente durante y después de la modificación. | T-007 |
 | ESP-0016 | Eliminación de alerta de producto vencido (Eliminar) | Camino básico: seleccionar alerta, confirmar y verificar la eliminación con restitución del estado de la remesa. | T-002 |
 |  |  | Complejidad ciclomática: ramas de devolución pendiente, confirmación afirmativa y negativa. | T-003 |
 |  |  | Intentar eliminar la alerta de una remesa comprometida en una devolución pendiente y verificar el rechazo. | T-006 |
 |  |  | Verificar que tras la eliminación la remesa vuelva a 'Disponible' y se ofrezca de nuevo en ventas. | T-006 |
 |  |  | Intentar eliminar la alerta de una remesa con fecha de vencimiento igual o anterior a la actual y verificar el rechazo y que la remesa no vuelva a 'Disponible'. | T-001 |
+|  |  | Registrar dos alertas sobre la misma remesa, eliminar una y verificar que la remesa siga 'Bloqueado por devolucion'; eliminar la otra y verificar que quede 'Disponible', o 'Agotado' si no tiene existencias. | T-006 |
 | Módulo 4 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que ESP-0013 y ESP-0014 se ejecuten y que ESP-0015 y ESP-0016 sean rechazadas. | T-012 |
 
 ## Módulo 5 — Gestión de Métodos de Pago (EDU-0009)
@@ -185,6 +199,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Verificar que el reporte incluya el usuario responsable de cada venta, resolviendo la unión con la tabla de usuarios. | T-006 |
 |  |  | Verificar que la consolidación no modifique ninguna venta ni línea de detalle. | T-007 |
 |  |  | Presentar al cliente un reporte de ventas diarias con el detalle del personal responsable. | T-005 |
+|  |  | Generar un reporte con ventas registradas el último día del intervalo, incluidas las posteriores a la medianoche, y verificar que entren en el total recaudado. | T-001 |
 | ESP-0022 | Consulta de reportes de ventas (Leer) | Camino básico: listar los reportes y abrir el archivo seleccionado en solo lectura. | T-002 |
 |  |  | Verificar que el reporte se visualice en el formato con el que fue generado y no se regenere al consultarlo. | T-004 |
 |  |  | Consultar un reporte cuyo archivo fue movido o borrado y verificar el manejo del error. | T-001 |
@@ -208,6 +223,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Seleccionar el motivo 'Por Depuracion de Error' con el comentario vacío y verificar que el sistema exija completarlo. | T-001 |
 |  |  | Verificar que al registrar la orden el stock de las remesas permanezca sin modificación, por quedar 'Pendiente'. | T-006 |
 |  |  | Presentar al cliente la orden generada con el número de lote de cada línea, para confirmar que sirve al trámite con el proveedor. | T-005 |
+|  |  | Agregar dos veces la misma remesa a una orden y verificar que se acumule en una sola línea y que el motor rechace una segunda fila de la misma remesa. | T-006 |
 | ESP-0026 | Consulta de orden de devolución (Leer) | Camino básico: listar las órdenes, seleccionar una y desplegar cabecera y detalle. | T-002 |
 |  |  | Verificar que el detalle muestre por cada línea el medicamento, el número de lote y la cantidad. | T-006 |
 |  |  | Partición sobre el estado de la orden: 'Pendiente', 'Completada' y 'Eliminada'. | T-001 |
@@ -217,6 +233,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Marcar una orden como 'Completada' y verificar que el stock de cada remesa se descuente y que las remesas 'Disponible' que lleguen a cero pasen a 'Agotado'. | T-006 |
 |  |  | Registrar una orden de 8 unidades sobre una remesa de 10, vender 5 de esa remesa y completar la orden: verificar el rechazo con la remesa indicada y que ningún stock se descuente. | T-001 |
 |  |  | Verificar que el descuento de stock y el cambio de estado ocurran dentro de la misma transacción. | T-012 |
+|  |  | Verificar que el proveedor de la orden esté en solo lectura; editar una orden de depuración sin comentario, o con una línea de otro proveedor o de cantidad cero, y verificar el rechazo. | T-001 |
 | ESP-0028 | Eliminación de orden de devolución (Eliminar) | Camino básico: seleccionar orden 'Pendiente', confirmar y verificar el cambio a estado 'Eliminada'. | T-002 |
 |  |  | Intentar eliminar una orden 'Completada' y verificar el rechazo, ya que la mercancía fue despachada. | T-001 |
 |  |  | Verificar que las líneas se eliminen sin dejar filas huérfanas y que la cabecera se conserve para auditoría. | T-007 |
@@ -303,7 +320,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Registrar el mismo número de lote para dos medicamentos distintos y verificar que sea admitido, ya que la unicidad es por medicamento. | T-001 |
 |  |  | Valores límite sobre el vencimiento y las existencias: fecha anterior a hoy, igual a hoy, posterior; existencias cero, positivas y negativas. | T-001 |
 |  |  | Registrar tres remesas del mismo medicamento con vencimientos distintos y verificar que coexistan sin duplicar la fila del producto. | T-006 |
-|  |  | Verificar que el stock consolidado del medicamento se incremente en las unidades recibidas. | T-006 |
+|  |  | Verificar que el stock físico del medicamento se incremente en las unidades recibidas. | T-006 |
 |  |  | Presentar al cliente el registro de dos remesas del mismo medicamento con vencimientos distintos. | T-005 |
 | ESP-0042 | Consulta de remesas (Leer) | Camino básico: aplicar filtros por medicamento, lote y estado, y desplegar el resultado. | T-002 |
 |  |  | Verificar que el resultado se muestre ordenado por vencimiento ascendente, como contraparte visual del criterio FEFO. | T-004 |
@@ -315,12 +332,13 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Llevar las existencias a cero y verificar que la remesa pase a 'Agotado' y deje de ofrecerse en ventas; repetir con una remesa 'Bloqueado por devolucion' y verificar que conserve su estado. | T-006 |
 |  |  | Verificar que el estado se muestre en solo lectura y que no exista ruta para modificarlo. | T-012 |
 |  |  | Cambiar la fecha de vencimiento a una fecha pasada y verificar el rechazo; editar otro campo de una remesa ya vencida sin tocar su fecha y verificar que se acepte. | T-001 |
+|  |  | Cambiar el proveedor de una remesa que figura en una orden de devolución (de cualquier estado) y verificar el rechazo; cambiarlo en una remesa sin devoluciones y verificar que se acepte. | T-001 |
 | ESP-0044 | Baja de remesa (Eliminar) | Camino básico: seleccionar remesa, confirmar y verificar la baja aplicada. | T-002 |
 |  |  | Complejidad ciclomática: ramas de devolución pendiente, con movimientos, sin movimientos y confirmación negativa. | T-003 |
 |  |  | Intentar dar de baja una remesa comprometida en una devolución pendiente y verificar el rechazo. | T-006 |
 |  |  | Dar de baja una remesa con ventas y verificar que se aplique baja lógica con estado 'Agotado' y existencias en cero. | T-006 |
 |  |  | Tras la baja lógica, consultar las ventas históricas de esa remesa y verificar que el rastreo por lote siga siendo posible. | T-012 |
-|  |  | Verificar que el stock consolidado del medicamento se reduzca en las existencias dadas de baja. | T-006 |
+|  |  | Verificar que el stock físico del medicamento se reduzca en las existencias dadas de baja. | T-006 |
 |  |  | Dar de baja una remesa sin ventas ni devoluciones pero con un retiro registrado, y verificar el borrado físico y que el retiro conserve su histórico con `id_lote` nulo. | T-007 |
 | Módulo 11 | Control de acceso del módulo | Con sesión 'Tecnico', verificar que solo ESP-0042 se ejecute y que las otras tres sean rechazadas. | T-012 |
 
@@ -349,6 +367,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | ESP-0050 | Consulta comparativa y exportación (Leer) | Camino básico: filtrar por medicamento, desplegar la comparativa y exportar el CSV de un proveedor. | T-002 |
 |  |  | Con varias cotizaciones por proveedor, verificar que la comparativa tome la más reciente de cada uno y destaque el precio más bajo. | T-004 |
 |  |  | Verificar que el CSV contenga solo ítems pendientes de la lista de reabastecimiento y del proveedor elegido, y que exportar no registre ninguna fila en la base. | T-006 |
+|  |  | Con dos cotizaciones del mismo día para un mismo proveedor y medicamento, verificar que la comparativa tome la de mayor identificador. | T-001 |
 | ESP-0051 | Actualización de cotización (Actualizar) | Camino básico: seleccionar cotización, corregir precio, fecha o promoción, y confirmar. | T-002 |
 |  |  | Verificar que el medicamento y el proveedor se muestren en solo lectura. | T-004 |
 | ESP-0052 | Eliminación de cotización (Eliminar) | Camino básico: seleccionar cotización, confirmar y verificar la eliminación; cancelar y verificar que no haya cambios. | T-002 |
@@ -382,7 +401,8 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | RNF-0009 | Respaldo y restauración | Ejecutar una copia de respaldo, modificar datos, restaurar y verificar que el estado coincida con el del momento de la copia. | T-019 |
 | RNF-0009 | Crecimiento del volumen de datos | Cargar el volumen estimado de cinco años de operación y verificar que los tiempos de consulta y de registro se mantengan dentro de los límites, considerando el tamaño máximo de SQL Server Express. | T-010 |
 | RNF-0010 | Condición 1 — Evaluación de vencimientos | Con remesas que vencen dentro y fuera del umbral, iniciar la aplicación y verificar que el aviso cuente solo las primeras, que no se registren filas de alerta y que se actualice `fecha_ultima_verif`. | T-001 |
-| RNF-0010 | Condición 2 — Lista de reabastecimiento | Llevar un medicamento bajo su stock mínimo y ejecutar el proceso: verificar un único ítem 'Automático' y 'Normal'; ejecutarlo de nuevo y verificar que no se duplique ni cambie una prioridad editada a mano; con un ítem ya incorporado a mano, verificar que el rechazo por unicidad no detenga el proceso. | T-006 |
+|  |  | Con una remesa bloqueada y otra vencida que, sumadas, superen el mínimo, verificar que el proceso 2 las excluya del stock vendible y agregue el medicamento. | T-006 |
+| RNF-0010 | Condición 2 — Lista de reabastecimiento | Llevar un medicamento bajo su stock mínimo y ejecutar el proceso: verificar un único ítem 'Automatico' y 'Normal'; ejecutarlo de nuevo y verificar que no se duplique ni cambie una prioridad editada a mano; con un ítem ya incorporado a mano, verificar que el rechazo por unicidad no detenga el proceso. | T-006 |
 | RNF-0010 | Condición 2 — Reingreso de ítems | Eliminar un ítem automático cuyo medicamento sigue bajo el mínimo y verificar que reaparezca en la siguiente ejecución. | T-006 |
 
 ---
@@ -391,7 +411,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 
 | Verificación | Resultado |
 | --- | --- |
-| Pruebas definidas | 256 |
+| Pruebas definidas | 275 |
 | Especificaciones con al menos una prueba | 52 de 52 |
 | Especificaciones con prueba de camino básico (T-002) | 52 de 52 |
 | Módulos con verificación de rol | 13 de 13 |
