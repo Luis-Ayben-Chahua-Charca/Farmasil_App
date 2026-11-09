@@ -1,7 +1,10 @@
 @startuml VL-02_ModeloDominio
-' Vista lógica FARMASIL_APP — Diagrama de clases del dominio (v01.00)
-' Fuente: Diccionario de Datos v09.00, ESP-0001..ESP-0052, RNF-0006, RNF-0010.
-' Tipos según la tabla de correspondencia del diccionario (C# / .NET 8).
+' Vista lógica FARMASIL_APP — Diagrama de clases del dominio (v02.00)
+' Fuente: Diccionario de Datos v10.00, ESP-0001..ESP-0052, RNF-0006, RNF-0010.
+' Tipos según la tabla de correspondencia del diccionario (C# / .NET 10 LTS, DEC-028).
+' v02.00 (08/11/2026, auditorías de la base de datos, issue #63): stockActual sin valor inicial y
+' CHECK de la remesa (DEC-034), reabastecimiento 0..1 por producto (DEC-020), fechaUltimaVerif
+' anulable (DEC-032), una línea por remesa (DEC-036) y retiro con remesa de solo lectura (DEC-035).
 ' Navegabilidad: cada asociación se recorre solo en el sentido de la dependencia
 ' entre paquetes de VL-01 (el dependiente conoce al proveedor, nunca al revés).
 skinparam shadowing false
@@ -60,7 +63,7 @@ package "Lotes (LOT)" {
     - idLote : int
     - numeroLote : string
     - fechaVencimiento : DateOnly
-    - stockActual : int = 0
+    - stockActual : int
     - estadoLote : EstadoLote = Disponible
     - fechaIngreso : DateOnly
     --
@@ -166,7 +169,7 @@ package "AlertasVencimiento (ALV)" {
     - descripcion : string
     - umbralMeses : int = 2
     - estado : EstadoRegistro
-    - fechaUltimaVerif : DateTime
+    - fechaUltimaVerif : DateTime [0..1]
     --
     + fechaLimite(hoy : DateOnly) : DateOnly
     + registrarVerificacion(ahora : DateTime) : void
@@ -223,7 +226,7 @@ RestriccionVenta "0..*" --> "1" Producto : aplicaA
 OrdenDevolucion "0..*" --> "1" Proveedor : remitidaA
 DetalleDevolucion "0..*" --> "1" Lote : remesaDevuelta
 ProductoRetirado "0..*" --> "0..1" Lote : remesaRetirada
-ItemReabastecimiento "0..*" --> "1" Producto : aReabastecer
+ItemReabastecimiento "0..1" --> "1" Producto : aReabastecer
 CotizacionProveedor "0..*" --> "1" Producto : cotiza
 CotizacionProveedor "0..*" --> "1" Proveedor : ofrecidaPor
 
@@ -240,14 +243,24 @@ note top of Lote
   {unique (medicamento, numeroLote)}
   {al registrar: stockActual > 0}
   {desbloquear solo si no estaVencido(hoy)}
-  {estadoLote = Disponible y stockActual = 0
-   implica estadoLote = Agotado}
+  {estadoLote = Disponible implica stockActual > 0
+   (CHECK en el motor, sin valor inicial de stock)}
+  {regla única del estado (DEC-034): Disponible con
+   stock 0 pasa a Agotado; Agotado con stock > 0 y no
+   vencida pasa a Disponible; Bloqueado solo cambia
+   por alertas y devoluciones}
+  {stock y estado se fijan en una sola sentencia}
 end note
 
 note right of Venta
   {montoTotal = líneas->sum(cantidad * precioUnitario)}
   {cada línea: remesaVendida.esVendible(hoy)
-   y cantidad <= remesaVendida.stockActual}
+   (medicamento y remesa Disponible, stock > 0,
+   no vencida) y cantidad <= remesaVendida.stockActual}
+  {una remesa aparece una sola vez por venta;
+   si se repite, se acumula la cantidad}
+  {se evalúan todas las restricciones activas
+   del medicamento (ESP-0001)}
 end note
 
 note left of ComprobanteTributario
@@ -259,6 +272,8 @@ end note
 note bottom of OrdenDevolucion
   {motivo = PorDepuracionDeError implica comentario no vacío}
   {cada línea: remesaDevuelta.entregadoPor = remitidaA}
+  {remitidaA es de solo lectura una vez registrada}
+  {una remesa aparece una sola vez por orden}
   {estadoOrden <> Eliminada implica líneas->notEmpty()}
   {eliminar(): borra las líneas y marca Eliminada (ESP-0028)}
   {completar(): cada línea cantidadDevolver
@@ -274,5 +289,12 @@ end note
 note bottom of ProductoRetirado
   remesaRetirada queda nula si la remesa
   se elimina (ON DELETE SET NULL)
+  La remesa de un retiro no se modifica
+  (DEC-035); una remesa admite varios retiros
+end note
+
+note bottom of ReglaAlertaVencimiento
+  {a lo sumo una regla con estado = Activo}
+  fechaUltimaVerif nula = todavía no evaluada
 end note
 @enduml

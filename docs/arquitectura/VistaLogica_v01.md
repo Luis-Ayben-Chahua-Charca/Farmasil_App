@@ -1,3 +1,5 @@
+> Documento histórico (v01). Lo vigente está en el diccionario de datos v10.00 y en DEC-028 a DEC-041 de seguimiento/11-registro-pendientes.md.
+
 # Vista Lógica — FARMASIL_APP (v01.00)
 
 > Primera versión de la vista lógica. Fuentes: arquitectura genérica cerrada (13 componentes, 18 dependencias; `Contexto_Arquitectura_FARMASIL_ParaAgentesIA.md`), Diccionario de Datos v09.00, ESP-0001 a ESP-0052, RNF-0006, RNF-0008 y RNF-0010. Las fuentes de los diagramas están en `docs/diagramas/plaintext-VistaLogica/` y sus imágenes en `docs/diagramas/`.

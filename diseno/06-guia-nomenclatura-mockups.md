@@ -10,6 +10,7 @@
 
 | 05/09/2026 | 04.00 | Se incorpora el módulo 11 (lotes, prefijo **LOT**), derivado de la incorporación de `TBL_LOTES` al Diccionario de Datos v04.00. Los componentes de lote, vencimiento y stock se trasladan del módulo de inventario al nuevo módulo, y los módulos 1, 4 y 7 pasan a operar sobre la remesa en lugar del medicamento. | AUT-0001 |
 | 13/10/2026 | 05.00 | La contraseña se describe como hash con sal, conforme a RNF-0006 v05.00. | AUT-0001 |
+| 08/11/2026 | 06.00 | Se actualiza la tabla de tipos de la sección de componentes: SQL Server 2025 Express y .NET 10 LTS (DEC-028). | AUT-0001 |
 
 ---
 
@@ -88,7 +89,7 @@ Tres tipos se incorporan en esta versión. **FEC** ya se usaba en `DOC-FEC-FECHA
 
 El tipo del componente no se elige por criterio visual: lo determina el tipo del campo en el Diccionario de Datos v03.00 y el control que le corresponde en WPF según el stack definido en RNF-0008.
 
-| Tipo lógico del dato | SQL Server Express | Tipo en C# / .NET 8 | Control WPF | Prefijo |
+| Tipo lógico del dato | SQL Server 2025 Express | Tipo en C# / .NET 10 LTS | Control WPF | Prefijo |
 | --- | --- | --- | --- | --- |
 | Número entero | `INT` | `int` | TextBox con validación numérica | **NUM** |
 | Importe monetario | `DECIMAL(10,2)` | `decimal` | TextBox con formato de moneda | **NUM** |
