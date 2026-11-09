@@ -5,57 +5,57 @@
 | Educción | Ilación | Especificación | Otros artefactos |
 | --- | --- | --- | --- |
 | EDU-0001 | ILA-0001 | ESP-0001 | ART-MKP-VEN-0001 |
-|  | ILA-0002 | ESP-0002 | ART-MKP-VEN-0001, ART-MKP-VEN-0002 |
-|  | ILA-0003 | ESP-0003 | ART-MKP-VEN-0001, ART-MKP-VEN-0003 |
-|  | ILA-0004 | ESP-0004 | ART-MKP-VEN-0001, ART-MKP-VEN-0004 |
+|  | ILA-0002 | ESP-0002 | ART-MKP-VEN-0001 |
+|  | ILA-0003 | ESP-0003 | ART-MKP-VEN-0001 |
+|  | ILA-0004 | ESP-0004 | ART-MKP-VEN-0001 |
 | EDU-0002 | ILA-0005 | ESP-0005 | ART-MKP-INV-0001 |
-|  | ILA-0006 | ESP-0006 | ART-MKP-INV-0002 |
-|  | ILA-0007 | ESP-0007 | ART-MKP-INV-0001, ART-MKP-INV-0003 |
-|  | ILA-0008 | ESP-0008 | ART-MKP-INV-0004 |
-| EDU-0003 | ILA-0009 | ESP-0009 | ART-MKP-DOC-0001 |
-|  | ILA-0010 | ESP-0010 | ART-MKP-DOC-0001, ART-MKP-DOC-0002 |
-|  | ILA-0011 | ESP-0011 | ART-MKP-DOC-0001, ART-MKP-DOC-0003 |
-|  | ILA-0012 | ESP-0012 | ART-MKP-DOC-0001, ART-MKP-DOC-0004 |
+|  | ILA-0006 | ESP-0006 | ART-MKP-INV-0001 |
+|  | ILA-0007 | ESP-0007 | ART-MKP-INV-0001 |
+|  | ILA-0008 | ESP-0008 | ART-MKP-INV-0001 |
+| EDU-0003 | ILA-0009 | ESP-0009 | ART-MKP-DOC-0001, DOC-MDL-PREVISUALIZAR-COMPROBANTE |
+|  | ILA-0010 | ESP-0010 | ART-MKP-DOC-0001 |
+|  | ILA-0011 | ESP-0011 | ART-MKP-DOC-0001 |
+|  | ILA-0012 | ESP-0012 | ART-MKP-DOC-0001 |
 | EDU-0004 | ILA-0013 | ESP-0013 | ART-MKP-ALV-0001 |
 |  | ILA-0014 | ESP-0014 | ART-MKP-ALV-0001 |
-|  | ILA-0015 | ESP-0015 | ART-MKP-ALV-0001, ART-MKP-ALV-0002 |
-|  | ILA-0016 | ESP-0016 | ART-MKP-ALV-0001, ART-MKP-ALV-0003 |
+|  | ILA-0015 | ESP-0015 | ART-MKP-ALV-0001 |
+|  | ILA-0016 | ESP-0016 | ART-MKP-ALV-0001 |
 | EDU-0009 | ILA-0017 | ESP-0017 | ART-MKP-PAG-0001 |
-|  | ILA-0018 | ESP-0018 | ART-MKP-PAG-0001, ART-MKP-PAG-0002 |
-|  | ILA-0019 | ESP-0019 | ART-MKP-PAG-0001, ART-MKP-PAG-0003 |
-|  | ILA-0020 | ESP-0020 | ART-MKP-PAG-0001, ART-MKP-PAG-0004 |
+|  | ILA-0018 | ESP-0018 | ART-MKP-PAG-0001 |
+|  | ILA-0019 | ESP-0019 | ART-MKP-PAG-0001 |
+|  | ILA-0020 | ESP-0020 | ART-MKP-PAG-0001 |
 | EDU-0010 | ILA-0021 | ESP-0021 | ART-MKP-REP-0001 |
-|  | ILA-0022 | ESP-0022 | ART-MKP-REP-0002 |
-|  | ILA-0023 | ESP-0023 | ART-MKP-REP-0002, ART-MKP-REP-0003 |
-|  | ILA-0024 | ESP-0024 | ART-MKP-REP-0002 |
+|  | ILA-0022 | ESP-0022 | ART-MKP-REP-0001 |
+|  | ILA-0023 | ESP-0023 | ART-MKP-REP-0001 |
+|  | ILA-0024 | ESP-0024 | ART-MKP-REP-0001 |
 | EDU-0011 | ILA-0025 | ESP-0025 | ART-MKP-DEV-0001 |
-|  | ILA-0026 | ESP-0026 | ART-MKP-DEV-0001, ART-MKP-DEV-0002 |
-|  | ILA-0027 | ESP-0027 | ART-MKP-DEV-0001, ART-MKP-DEV-0003 |
-|  | ILA-0028 | ESP-0028 | ART-MKP-DEV-0001, ART-MKP-DEV-0004 |
+|  | ILA-0026 | ESP-0026 | ART-MKP-DEV-0001 |
+|  | ILA-0027 | ESP-0027 | ART-MKP-DEV-0001 |
+|  | ILA-0028 | ESP-0028 | ART-MKP-DEV-0001 |
 | EDU-0012 | ILA-0029 | ESP-0029 | ART-MKP-RES-0001 |
-|  | ILA-0030 | ESP-0030 | ART-MKP-RES-0002 |
-|  | ILA-0031 | ESP-0031 | ART-MKP-RES-0003 |
-|  | ILA-0032 | ESP-0032 | ART-MKP-RES-0004 |
+|  | ILA-0030 | ESP-0030 | ART-MKP-RES-0001 |
+|  | ILA-0031 | ESP-0031 | ART-MKP-RES-0001 |
+|  | ILA-0032 | ESP-0032 | ART-MKP-RES-0001 |
 | EDU-0013 | ILA-0033 | ESP-0033 | ART-MKP-USR-0001 |
-|  | ILA-0034 | ESP-0034 | ART-MKP-USR-0002 |
-|  | ILA-0035 | ESP-0035 | ART-MKP-USR-0003 |
-|  | ILA-0036 | ESP-0036 | ART-MKP-USR-0004 |
+|  | ILA-0034 | ESP-0034 | ART-MKP-USR-0001 |
+|  | ILA-0035 | ESP-0035 | ART-MKP-USR-0001 |
+|  | ILA-0036 | ESP-0036 | ART-MKP-USR-0001 |
 | EDU-0014 | ILA-0037 | ESP-0037 | ART-MKP-PRV-0001 |
-|  | ILA-0038 | ESP-0038 | ART-MKP-PRV-0002 |
-|  | ILA-0039 | ESP-0039 | ART-MKP-PRV-0003 |
-|  | ILA-0040 | ESP-0040 | ART-MKP-PRV-0004 |
+|  | ILA-0038 | ESP-0038 | ART-MKP-PRV-0001 |
+|  | ILA-0039 | ESP-0039 | ART-MKP-PRV-0001 |
+|  | ILA-0040 | ESP-0040 | ART-MKP-PRV-0001 |
 | EDU-0015 | ILA-0041 | ESP-0041 | ART-MKP-LOT-0001 |
-|  | ILA-0042 | ESP-0042 | ART-MKP-LOT-0002 |
-|  | ILA-0043 | ESP-0043 | ART-MKP-LOT-0003 |
-|  | ILA-0044 | ESP-0044 | ART-MKP-LOT-0004 |
+|  | ILA-0042 | ESP-0042 | ART-MKP-LOT-0001 |
+|  | ILA-0043 | ESP-0043 | ART-MKP-LOT-0001 |
+|  | ILA-0044 | ESP-0044 | ART-MKP-LOT-0001 |
 | EDU-0016 | ILA-0045 | ESP-0045 | ART-MKP-REA-0001 |
-|  | ILA-0046 | ESP-0046 | ART-MKP-REA-0001, ART-MKP-REA-0002 |
-|  | ILA-0047 | ESP-0047 | ART-MKP-REA-0001, ART-MKP-REA-0003 |
-|  | ILA-0048 | ESP-0048 | ART-MKP-REA-0001, ART-MKP-REA-0004 |
+|  | ILA-0046 | ESP-0046 | ART-MKP-REA-0001 |
+|  | ILA-0047 | ESP-0047 | ART-MKP-REA-0001 |
+|  | ILA-0048 | ESP-0048 | ART-MKP-REA-0001 |
 | EDU-0017 | ILA-0049 | ESP-0049 | ART-MKP-COT-0001 |
-|  | ILA-0050 | ESP-0050 | ART-MKP-COT-0001, ART-MKP-COT-0002 |
-|  | ILA-0051 | ESP-0051 | ART-MKP-COT-0001, ART-MKP-COT-0003 |
-|  | ILA-0052 | ESP-0052 | ART-MKP-COT-0001, ART-MKP-COT-0004 |
+|  | ILA-0050 | ESP-0050 | ART-MKP-COT-0001 |
+|  | ILA-0051 | ESP-0051 | ART-MKP-COT-0001 |
+|  | ILA-0052 | ESP-0052 | ART-MKP-COT-0001 |
 
 **Códigos reservados.** EDU-0005 a EDU-0008 no aparecen en esta matriz: fueron retirados de la etapa de educción por haberse reclasificado como requisitos no funcionales, y sus códigos se mantienen sin reasignar. El salto es intencional.
 
@@ -185,21 +185,21 @@
 
 1. ~~**Faltan pruebas y las existentes están desactualizadas.**~~ **Resuelto el 05/09/2026.** `09-pruebas-software.md` v03.00 cubre las 44 especificaciones con 223 pruebas, más las seis condiciones de RNF-0006 y los nueve requisitos no funcionales.
 2. **Faltan los datos de prueba.** El documento define qué se prueba, no con qué juego de datos de carga inicial.
-3. **Doce mockups sin diseñar**: ART-MKP-USR-0001 a 0004, ART-MKP-PRV-0001 a 0004 y ART-MKP-LOT-0001 a 0004.
+3. **Mockups pendientes de aprobación.** Los mockups de los 13 módulos y la plantilla `ART-MKP-CONFIRM-0001` están publicados en `diseno/Mockups/`, con una pantalla por módulo (DEC-042). La aprobación de la dueña sigue abierta en PEN-006.
 4. **`TBL_ALERTAS_VENCIMIENTO` sin CRUD**, según la sección 4.
 5. **Catálogo de fuentes inexistente.** FUE-0001 a FUE-0005 se citan en 26 artefactos sin que ningún documento los defina. Siete ilaciones citan la Entrevista 1 y cuatro la consulta posterior al cliente, ambas sin código.
 6. ~~**RNF-0006 pendiente de actualizar.**~~ **Resuelto el 05/09/2026.** Refundido en la versión 03.00, que cubre autenticación, identificación en la trazabilidad, autorización por rol, comportamiento ante intento no autorizado, protección de credenciales y continuidad de la administración. Ver `08-requisitos-no-funcionales.md`.
 7. ~~**Falta el requisito de la generación automática de alertas de vencimiento.**~~ **Resuelto el 13/10/2026** con la condición 1 de RNF-0010.
-8. **Veinte mockups sin diseñar** (antes doce): se suman `ART-MKP-REA-0001` a `0004` y `ART-MKP-COT-0001` a `0004` a los ya pendientes de `02-ilaciones.md`.
+8. ~~**Veinte mockups sin diseñar** (antes doce): se suman `ART-MKP-REA-0001` a `0004` y `ART-MKP-COT-0001` a `0004` a los ya pendientes de `02-ilaciones.md`.~~ **Resuelto el 09/11/2026.** Los mockups de todos los módulos están publicados con una pantalla por módulo (DEC-042); ver el punto 3.
 9. ~~**Generación automática de la lista de reabastecimiento sin requisito no funcional formal.**~~ **Resuelto el 13/10/2026** con la condición 2 de RNF-0010. Texto original:, en la misma situación que el punto 7 (generación automática de alertas de vencimiento, a la que ILA-0013 remite sin que exista). Se recomienda resolver ambos en un mismo RNF de "procesos programados del sistema".
 
 
-**Versión:** 04.00
-**Fecha:** 13/10/2026
+**Versión:** 05.00
+**Fecha:** 09/11/2026
 **Autor:** AUT-0001
 
 Sigue la estructura de la plantilla oficial de trazabilidad de la asignatura (Educción, Ilación, Especificación, Otros artefactos), ampliada con las columnas que el catálogo necesita para verificarse: rol autorizado, estado y cobertura de pruebas.
 
-Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificaciones.md`, `05-diccionario-datos.md` v08.00, `06-guia-nomenclatura-mockups.md` v04.00, `07-matriz-permisos.md` v03.00, `08-requisitos-no-funcionales.md` y `09-pruebas-software.md`.
+Fuentes de esta matriz: `01-educciones.md`, `02-ilaciones.md`, `03-especificaciones.md`, `05-diccionario-datos.md` v08.00, `06-guia-nomenclatura-mockups.md` v07.00, `07-matriz-permisos.md` v03.00, `08-requisitos-no-funcionales.md` y `09-pruebas-software.md`.
 
 ---
