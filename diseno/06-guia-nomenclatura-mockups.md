@@ -11,6 +11,7 @@
 | 05/09/2026 | 04.00 | Se incorpora el módulo 11 (lotes, prefijo **LOT**), derivado de la incorporación de `TBL_LOTES` al Diccionario de Datos v04.00. Los componentes de lote, vencimiento y stock se trasladan del módulo de inventario al nuevo módulo, y los módulos 1, 4 y 7 pasan a operar sobre la remesa en lugar del medicamento. | AUT-0001 |
 | 13/10/2026 | 05.00 | La contraseña se describe como hash con sal, conforme a RNF-0006 v05.00. | AUT-0001 |
 | 08/11/2026 | 06.00 | Se actualiza la tabla de tipos de la sección de componentes: SQL Server 2025 Express y .NET 10 LTS (DEC-028). | AUT-0001 |
+| 09/11/2026 | 07.00 | Auditoría de mockups (#142, DEC-042 a DEC-054): se incorporan los módulos 12 (reabastecimiento, **REA**) y 13 (cotizaciones, **COT**); la convención de artefactos pasa a una pantalla por módulo, `ART-MKP-<MOD>-0001`, y se retiran las referencias a 0002–0004; se agregan la sección de artefactos transversales (plantilla `ART-MKP-CONFIRM-0001`, significado del asterisco, fuentes HTML), el formato de los códigos visibles y la regla de rótulos frente a literales almacenados; el inventario por módulo cita `ART-MKP-<MOD>-0001`; la sección 8 pasa a listar los mockups publicados. No se agregan los IDs nuevos de cada módulo: los incorpora la ficha de cada uno. | AUT-0001 |
 
 ---
 
@@ -54,6 +55,8 @@ La versión anterior presentaba dos inconsistencias que conviene dejar resueltas
 | 9 | Gestión de Usuarios | usuarios | **USR** | EDU-0013 |
 | 10 | Gestión de Proveedores | proveedores | **PRV** | EDU-0014 |
 | 11 | Gestión de Lotes | lotes | **LOT** | EDU-0015 |
+| 12 | Gestión de Reabastecimiento | reabastecimiento | **REA** | EDU-0016 |
+| 13 | Gestión de Comparación de Precios de Proveedores | cotizaciones | **COT** | EDU-0017 |
 
 El inicio y cierre de sesión no constituyen un módulo funcional: están cubiertos por RNF-0006. Las pantallas de autenticación que se diseñen usan el prefijo **USR**, por operar sobre la misma entidad.
 
@@ -108,6 +111,22 @@ Dos consecuencias prácticas de esta regla:
 - Un campo con dominio cerrado (`rol`, `estado`, `tipo_comprobante`, `motivo_devolucion`, `tipo_restriccion`, y todos los campos de estado) se captura siempre con **CMB**, nunca escribiéndolo.
 - Un campo que es clave foránea se captura con **CMB**, nunca como texto libre: la ilación necesita el identificador de la entidad, no su nombre.
 
+### 3.2 Rótulos mostrados frente a literales almacenados (DEC-049)
+
+Los valores de dominio cerrado se guardan sin tilde y se escriben igual en los `CHECK` y en los `enum` de C# (DEC-031): `'Automatico'`, `'Tecnico'`, `'Bloqueado por devolucion'`. La interfaz puede mostrar el mismo valor con tilde, por ejemplo «Automático», «Técnico» o «Bloqueado por devolución». La conversión vive en la capa de presentación: el nombre de un componente, la especificación y la base de datos usan siempre el literal almacenado.
+
+### 3.3 Códigos visibles (DEC-048)
+
+Un código visible es la presentación de un identificador, no un dato nuevo: no se guarda en una columna ni se captura. Se obtiene dando formato al identificador de la tabla. Los dígitos indicados son un mínimo; si el número los supera, se muestra completo.
+
+| Código visible | Formato | Origen |
+| --- | --- | --- |
+| Medicamento | `PROD-` y `id_producto` con ceros a la izquierda, mínimo cinco dígitos (`PROD-00842`) | `TBL_PRODUCTOS.id_producto` |
+| Venta | `VEN-`, año de `fecha_hora`, `-` y `id_venta` con ceros a la izquierda, mínimo tres dígitos (`VEN-2026-091`) | `TBL_REGISTRO_VENTAS` |
+| Orden de devolución | `ORD-`, año de `fecha_creacion`, `-` y `id_devolucion` con ceros a la izquierda, mínimo tres dígitos (`ORD-2026-012`) | `TBL_ORDENES_DEVOLUCION` |
+
+El «Código #» de Ventas muestra provisionalmente el `id_producto` con este formato (PEN-032).
+
 ---
 
 ## 4. Convención para artefactos de mockup
@@ -116,14 +135,24 @@ Dos consecuencias prácticas de esta regla:
 [ART]-[MKP]-[MODULO]-[NUMERO]
 ```
 
-Numeración de cuatro dígitos, correlativa dentro de cada módulo. Por convención del catálogo, el orden sigue las fases del CRUD:
+Cada módulo tiene **una sola pantalla**, `ART-MKP-<MODULO>-0001` (DEC-042, criterio C1). En ella conviven la tabla de registros, el formulario de creación, la consulta con sus filtros, la actualización y la confirmación de baja. Los números 0002, 0003 y 0004 de la convención anterior (consulta, actualización y modal de baja) se retiran: ninguna ilación ni especificación los cita, y lo que describían se resuelve dentro de la pantalla 0001. Si la especificación pide una consulta, una actualización o una baja que el mockup no muestra, manda la especificación (criterio C4) y el mockup no se rehace.
 
-| Número | Contenido habitual |
+Cada componente tiene un identificador único dentro de la pantalla (criterio C2).
+
+### 4.1 Artefactos transversales (DEC-047)
+
+Los artefactos que no pertenecen a un solo módulo se citan con su propio nombre:
+
+| Artefacto | Qué es |
 | --- | --- |
-| 0001 | Pantalla principal del módulo, con la tabla de registros y el formulario de creación |
-| 0002 | Pantalla o panel de consulta y filtros |
-| 0003 | Formulario de actualización |
-| 0004 | Modal de confirmación de eliminación |
+| `ART-MKP-CONFIRM-0001` | Plantilla común de los modales de baja. Cada módulo usa sus propios identificadores y textos (`<MOD>-MDL-CONFIRMAR-ELIMINACION`, `<MOD>-TXT-MSJ`, `<MOD>-BTN-CONFIRMAR-SI`, `<MOD>-BTN-CONFIRMAR-NO`) según su especificación. |
+| `DOC-MDL-PREVISUALIZAR-COMPROBANTE` | Vista previa del comprobante. Es parte de `ART-MKP-DOC-0001` (criterio C1) y se cita junto con él. |
+
+Un **asterisco** en un identificador del mockup significa «ID propuesto por diseño»: el equipo lo incorpora a esta guía o lo reemplaza por el de la especificación.
+
+### 4.2 Fuentes de los mockups (DEC-054)
+
+Los PNG están en `diseno/Mockups/` y las fuentes HTML en `diseno/Mockups/fuente/`; cada fuente se llama igual que su PNG. El PNG manda en lo aprobado, el HTML manda en la grafía de los identificadores y la especificación manda sobre ambos. Las diferencias entre PNG y HTML no obligan a rehacer ninguno.
 
 ---
 
@@ -138,7 +167,7 @@ Para que los nombres sean predecibles, la función de los componentes que implem
 | Actualizar | `<MOD>-BTN-ACTUALIZAR-<ENTIDAD>` | `<MOD>-BTN-CONFIRMAR-ACTUALIZACION` |
 | Eliminar | `<MOD>-BTN-ELIMINAR-<ENTIDAD>` | `<MOD>-MDL-CONFIRMAR-ELIMINACION` con `<MOD>-BTN-CONFIRMAR-SI` y `<MOD>-BTN-CONFIRMAR-NO` |
 
-El texto que se muestra dentro de un modal se nombra `<MOD>-TXT-MSJ`. La tabla principal de registros del módulo se nombra `<MOD>-TBL-<ENTIDAD-EN-PLURAL>`.
+`<MOD>-BTN-CONFIRMAR-ACTUALIZACION`, con el rótulo «Guardar cambios», es el segundo paso de la actualización en todos los módulos (DEC-046). El texto que se muestra dentro de un modal se nombra `<MOD>-TXT-MSJ`. La tabla principal de registros del módulo se nombra `<MOD>-TBL-<ENTIDAD-EN-PLURAL>`.
 
 ---
 
@@ -149,38 +178,38 @@ El texto que se muestra dentro de un modal se nombra `<MOD>-TXT-MSJ`. La tabla p
 | Componente | Tipo | Función | Mockup |
 | --- | --- | --- | --- |
 | USR-TBL-USUARIOS | Tabla | Listado de cuentas: identificador, nombre de usuario, rol y estado. Nunca muestra la contraseña. | ART-MKP-USR-0001 |
-| USR-TXT-NOMBRE-USUARIO | Campo de texto | Nombre de usuario para el inicio de sesión. Único. | ART-MKP-USR-0001, 0002, 0003 |
-| USR-PWD-CONTRASENA | Campo de contraseña | Contraseña, con el contenido enmascarado. En el formulario de actualización se muestra vacío: si no se completa, la contraseña vigente se conserva. | ART-MKP-USR-0001, 0003 |
-| USR-CMB-ROL | ComboBox | Rol de la cuenta: 'Administrador' o 'Tecnico'. | ART-MKP-USR-0001, 0002, 0003 |
-| USR-CMB-ESTADO-USUARIO | ComboBox | Estado de la cuenta: 'Activo' o 'Inactivo'. | ART-MKP-USR-0001, 0003 |
+| USR-TXT-NOMBRE-USUARIO | Campo de texto | Nombre de usuario para el inicio de sesión. Único. | ART-MKP-USR-0001 |
+| USR-PWD-CONTRASENA | Campo de contraseña | Contraseña, con el contenido enmascarado. En el formulario de actualización se muestra vacío: si no se completa, la contraseña vigente se conserva. | ART-MKP-USR-0001 |
+| USR-CMB-ROL | ComboBox | Rol de la cuenta: 'Administrador' o 'Tecnico'. | ART-MKP-USR-0001 |
+| USR-CMB-ESTADO-USUARIO | ComboBox | Estado de la cuenta: 'Activo' o 'Inactivo'. | ART-MKP-USR-0001 |
 | USR-BTN-CREAR-USUARIO | Botón | Valida y registra la cuenta nueva. | ART-MKP-USR-0001 |
-| USR-BTN-LEER-USUARIO | Botón | Ejecuta la búsqueda por nombre de usuario o rol. | ART-MKP-USR-0002 |
+| USR-BTN-LEER-USUARIO | Botón | Ejecuta la búsqueda por nombre de usuario o rol. | ART-MKP-USR-0001 |
 | USR-BTN-ACTUALIZAR-USUARIO | Botón | Abre el formulario de actualización de la cuenta seleccionada. | ART-MKP-USR-0001 |
-| USR-BTN-CONFIRMAR-ACTUALIZACION | Botón | Guarda los cambios de la cuenta. | ART-MKP-USR-0003 |
+| USR-BTN-CONFIRMAR-ACTUALIZACION | Botón | Guarda los cambios de la cuenta. | ART-MKP-USR-0001 |
 | USR-BTN-ELIMINAR-USUARIO | Botón | Inicia la baja de la cuenta seleccionada. | ART-MKP-USR-0001 |
-| USR-MDL-CONFIRMAR-ELIMINACION | Modal | Confirmación de la baja. | ART-MKP-USR-0004 |
-| USR-TXT-MSJ | Campo de texto | Mensaje del modal. | ART-MKP-USR-0004 |
-| USR-BTN-CONFIRMAR-SI | Botón | Confirma la baja. | ART-MKP-USR-0004 |
-| USR-BTN-CONFIRMAR-NO | Botón | Cancela la baja. | ART-MKP-USR-0004 |
+| USR-MDL-CONFIRMAR-ELIMINACION | Modal | Confirmación de la baja. | ART-MKP-USR-0001 |
+| USR-TXT-MSJ | Campo de texto | Mensaje del modal. | ART-MKP-USR-0001 |
+| USR-BTN-CONFIRMAR-SI | Botón | Confirma la baja. | ART-MKP-USR-0001 |
+| USR-BTN-CONFIRMAR-NO | Botón | Cancela la baja. | ART-MKP-USR-0001 |
 
 ### Módulo 10 — Proveedores (PRV) · nuevo
 
 | Componente | Tipo | Función | Mockup |
 | --- | --- | --- | --- |
 | PRV-TBL-PROVEEDORES | Tabla | Listado de proveedores: identificador, RUC, razón social, teléfono y estado. | ART-MKP-PRV-0001 |
-| PRV-TXT-RUC | Campo de texto | RUC de la empresa. Once dígitos numéricos, único. | ART-MKP-PRV-0001, 0002, 0003 |
-| PRV-TXT-RAZON-SOCIAL | Campo de texto | Nombre legal de la droguería o distribuidora. | ART-MKP-PRV-0001, 0002, 0003 |
-| PRV-TXT-TELEFONO | Campo de texto | Teléfono de contacto. Opcional. | ART-MKP-PRV-0001, 0003 |
-| PRV-CMB-ESTADO-PROVEEDOR | ComboBox | Estado del proveedor: 'Activo' o 'Inactivo'. | ART-MKP-PRV-0001, 0003 |
+| PRV-TXT-RUC | Campo de texto | RUC de la empresa. Once dígitos numéricos, único. | ART-MKP-PRV-0001 |
+| PRV-TXT-RAZON-SOCIAL | Campo de texto | Nombre legal de la droguería o distribuidora. | ART-MKP-PRV-0001 |
+| PRV-TXT-TELEFONO | Campo de texto | Teléfono de contacto. Opcional. | ART-MKP-PRV-0001 |
+| PRV-CMB-ESTADO-PROVEEDOR | ComboBox | Estado del proveedor: 'Activo' o 'Inactivo'. | ART-MKP-PRV-0001 |
 | PRV-BTN-CREAR-PROVEEDOR | Botón | Valida y registra el proveedor nuevo. | ART-MKP-PRV-0001 |
-| PRV-BTN-LEER-PROVEEDOR | Botón | Ejecuta la búsqueda por RUC o razón social. | ART-MKP-PRV-0002 |
+| PRV-BTN-LEER-PROVEEDOR | Botón | Ejecuta la búsqueda por RUC o razón social. | ART-MKP-PRV-0001 |
 | PRV-BTN-ACTUALIZAR-PROVEEDOR | Botón | Abre el formulario de actualización del proveedor seleccionado. | ART-MKP-PRV-0001 |
-| PRV-BTN-CONFIRMAR-ACTUALIZACION | Botón | Guarda los cambios del proveedor. | ART-MKP-PRV-0003 |
+| PRV-BTN-CONFIRMAR-ACTUALIZACION | Botón | Guarda los cambios del proveedor. | ART-MKP-PRV-0001 |
 | PRV-BTN-ELIMINAR-PROVEEDOR | Botón | Inicia la baja del proveedor seleccionado. | ART-MKP-PRV-0001 |
-| PRV-MDL-CONFIRMAR-ELIMINACION | Modal | Confirmación de la baja. | ART-MKP-PRV-0004 |
-| PRV-TXT-MSJ | Campo de texto | Mensaje del modal. | ART-MKP-PRV-0004 |
-| PRV-BTN-CONFIRMAR-SI | Botón | Confirma la baja. | ART-MKP-PRV-0004 |
-| PRV-BTN-CONFIRMAR-NO | Botón | Cancela la baja. | ART-MKP-PRV-0004 |
+| PRV-MDL-CONFIRMAR-ELIMINACION | Modal | Confirmación de la baja. | ART-MKP-PRV-0001 |
+| PRV-TXT-MSJ | Campo de texto | Mensaje del modal. | ART-MKP-PRV-0001 |
+| PRV-BTN-CONFIRMAR-SI | Botón | Confirma la baja. | ART-MKP-PRV-0001 |
+| PRV-BTN-CONFIRMAR-NO | Botón | Cancela la baja. | ART-MKP-PRV-0001 |
 
 ### Correcciones de tipo aplicadas
 
@@ -210,21 +239,21 @@ Al contrastar cada componente contra el tipo de su campo aparecieron estas incoh
 | Componente | Tipo | Función | Mockup |
 | --- | --- | --- | --- |
 | LOT-TBL-LOTES | Tabla | Listado de remesas: medicamento, número de lote, vencimiento, stock y estado. | ART-MKP-LOT-0001 |
-| LOT-CMB-PRODUCTO | ComboBox | Medicamento del catálogo al que pertenece la remesa. | ART-MKP-LOT-0001, 0002, 0003 |
-| LOT-TXT-NUMERO-LOTE | Campo de texto | Número de lote impreso por el laboratorio. Único por medicamento. | ART-MKP-LOT-0001, 0002, 0003 |
-| LOT-FEC-FECHA-VENCIMIENTO | Selector de fecha | Caducidad de esta remesa. | ART-MKP-LOT-0001, 0003 |
-| LOT-NUM-STOCK-LOTE | Campo numérico | Unidades físicas disponibles de la remesa. | ART-MKP-LOT-0001, 0003 |
-| LOT-FEC-FECHA-INGRESO | Selector de fecha | Fecha de ingreso al almacén. | ART-MKP-LOT-0001, 0003 |
-| LOT-CMB-ESTADO-LOTE | ComboBox | 'Disponible', 'Bloqueado por devolucion' o 'Agotado'. | ART-MKP-LOT-0001, 0003 |
+| LOT-CMB-PRODUCTO | ComboBox | Medicamento del catálogo al que pertenece la remesa. | ART-MKP-LOT-0001 |
+| LOT-TXT-NUMERO-LOTE | Campo de texto | Número de lote impreso por el laboratorio. Único por medicamento. | ART-MKP-LOT-0001 |
+| LOT-FEC-FECHA-VENCIMIENTO | Selector de fecha | Caducidad de esta remesa. | ART-MKP-LOT-0001 |
+| LOT-NUM-STOCK-LOTE | Campo numérico | Unidades físicas disponibles de la remesa. | ART-MKP-LOT-0001 |
+| LOT-FEC-FECHA-INGRESO | Selector de fecha | Fecha de ingreso al almacén. | ART-MKP-LOT-0001 |
+| LOT-CMB-ESTADO-LOTE | ComboBox | 'Disponible', 'Bloqueado por devolucion' o 'Agotado'. | ART-MKP-LOT-0001 |
 | LOT-BTN-CREAR-LOTE | Botón | Valida y registra la remesa nueva. | ART-MKP-LOT-0001 |
-| LOT-BTN-LEER-LOTE | Botón | Ejecuta la búsqueda por medicamento, número de lote o estado. | ART-MKP-LOT-0002 |
+| LOT-BTN-LEER-LOTE | Botón | Ejecuta la búsqueda por medicamento, número de lote o estado. | ART-MKP-LOT-0001 |
 | LOT-BTN-ACTUALIZAR-LOTE | Botón | Abre el formulario de actualización de la remesa seleccionada. | ART-MKP-LOT-0001 |
-| LOT-BTN-CONFIRMAR-ACTUALIZACION | Botón | Guarda los cambios de la remesa. | ART-MKP-LOT-0003 |
+| LOT-BTN-CONFIRMAR-ACTUALIZACION | Botón | Guarda los cambios de la remesa. | ART-MKP-LOT-0001 |
 | LOT-BTN-ELIMINAR-LOTE | Botón | Inicia la baja de la remesa seleccionada. | ART-MKP-LOT-0001 |
-| LOT-MDL-CONFIRMAR-ELIMINACION | Modal | Confirmación de la baja. | ART-MKP-LOT-0004 |
-| LOT-TXT-MSJ | Campo de texto | Mensaje del modal. | ART-MKP-LOT-0004 |
-| LOT-BTN-CONFIRMAR-SI | Botón | Confirma la baja. | ART-MKP-LOT-0004 |
-| LOT-BTN-CONFIRMAR-NO | Botón | Cancela la baja. | ART-MKP-LOT-0004 |
+| LOT-MDL-CONFIRMAR-ELIMINACION | Modal | Confirmación de la baja. | ART-MKP-LOT-0001 |
+| LOT-TXT-MSJ | Campo de texto | Mensaje del modal. | ART-MKP-LOT-0001 |
+| LOT-BTN-CONFIRMAR-SI | Botón | Confirma la baja. | ART-MKP-LOT-0001 |
+| LOT-BTN-CONFIRMAR-NO | Botón | Cancela la baja. | ART-MKP-LOT-0001 |
 
 ### Reasignación de componentes por la incorporación de lotes
 
@@ -245,15 +274,15 @@ El módulo 2 conserva únicamente los datos de catálogo del medicamento: nombre
 
 | Componente | Tipo | Función | Mockup afectado |
 | --- | --- | --- | --- |
-| VEN-TBL-DETALLE-VENTA | Tabla | Líneas de productos de la venta en curso: producto, cantidad, precio unitario y subtotal. Es el componente que hace visible la venta de varios productos. | ART-MKP-VEN-0001, 0002, 0003 |
-| VEN-BTN-AGREGAR-PRODUCTO | Botón | Agrega el producto y la cantidad seleccionados como una línea del detalle. | ART-MKP-VEN-0001, 0003 |
-| VEN-BTN-QUITAR-PRODUCTO | Botón | Retira del detalle la línea seleccionada. | ART-MKP-VEN-0001, 0003 |
-| VEN-LBL-MONTO-TOTAL | Etiqueta | Suma calculada del detalle. No editable. | ART-MKP-VEN-0001, 0003 |
-| INV-TXT-STOCK-PRODUCTO | Campo de texto | Cantidad de unidades recibidas o disponibles. | ART-MKP-INV-0001, 0003 |
-| INV-CMB-PROVEEDOR | ComboBox | Proveedor que abastece el producto. Se alimenta del módulo 10. | ART-MKP-INV-0001, 0003 |
-| DEV-TBL-DETALLE-DEVOLUCION | Tabla | Medicamentos incluidos en la orden: producto, lote y cantidad a devolver. | ART-MKP-DEV-0001, 0002, 0003 |
-| DEV-NUM-CANTIDAD-DEVOLVER | Campo numérico | Unidades físicas a devolver por cada línea de la orden. | ART-MKP-DEV-0001, 0003 |
-| DEV-TXA-COMENTARIO | Área de texto | Observaciones de la orden. Obligatorio cuando el motivo es la depuración de un error. | ART-MKP-DEV-0001, 0003 |
+| VEN-TBL-DETALLE-VENTA | Tabla | Líneas de productos de la venta en curso: producto, cantidad, precio unitario y subtotal. Es el componente que hace visible la venta de varios productos. | ART-MKP-VEN-0001 |
+| VEN-BTN-AGREGAR-PRODUCTO | Botón | Agrega el producto y la cantidad seleccionados como una línea del detalle. | ART-MKP-VEN-0001 |
+| VEN-BTN-QUITAR-PRODUCTO | Botón | Retira del detalle la línea seleccionada. | ART-MKP-VEN-0001 |
+| VEN-LBL-MONTO-TOTAL | Etiqueta | Suma calculada del detalle. No editable. | ART-MKP-VEN-0001 |
+| INV-TXT-STOCK-PRODUCTO | Campo de texto | Cantidad de unidades recibidas o disponibles. | ART-MKP-INV-0001 |
+| INV-CMB-PROVEEDOR | ComboBox | Proveedor que abastece el producto. Se alimenta del módulo 10. | ART-MKP-INV-0001 |
+| DEV-TBL-DETALLE-DEVOLUCION | Tabla | Medicamentos incluidos en la orden: producto, lote y cantidad a devolver. | ART-MKP-DEV-0001 |
+| DEV-NUM-CANTIDAD-DEVOLVER | Campo numérico | Unidades físicas a devolver por cada línea de la orden. | ART-MKP-DEV-0001 |
+| DEV-TXA-COMENTARIO | Área de texto | Observaciones de la orden. Obligatorio cuando el motivo es la depuración de un error. | ART-MKP-DEV-0001 |
 
 ### Módulos 1 a 8 — componentes vigentes
 
@@ -311,25 +340,25 @@ Uniformidad con la convención de la sección 5. No corrigen un error, pero elim
 
 ---
 
-## 8. Mockups a diseñar
+## 8. Mockups publicados
 
-| Mockup | Estado | Contenido |
-| --- | --- | --- |
-| ART-MKP-USR-0001 | Por diseñar | Pantalla principal de usuarios: tabla de cuentas y formulario de alta. |
-| ART-MKP-USR-0002 | Por diseñar | Consulta de usuarios con filtros por nombre y rol. |
-| ART-MKP-USR-0003 | Por diseñar | Formulario de actualización de cuenta. |
-| ART-MKP-USR-0004 | Por diseñar | Modal de confirmación de baja de cuenta. |
-| ART-MKP-PRV-0001 | Por diseñar | Pantalla principal de proveedores: tabla y formulario de alta. |
-| ART-MKP-PRV-0002 | Por diseñar | Consulta de proveedores con filtros por RUC y razón social. |
-| ART-MKP-PRV-0003 | Por diseñar | Formulario de actualización de proveedor. |
-| ART-MKP-PRV-0004 | Por diseñar | Modal de confirmación de baja de proveedor. |
-| ART-MKP-LOT-0001 | Por diseñar | Pantalla principal de lotes: tabla de remesas y formulario de alta. |
-| ART-MKP-LOT-0002 | Por diseñar | Consulta de lotes con filtros por medicamento, número de lote y estado. |
-| ART-MKP-LOT-0003 | Por diseñar | Formulario de actualización de remesa. |
-| ART-MKP-LOT-0004 | Por diseñar | Modal de confirmación de baja de remesa. |
-| ART-MKP-VEN-0001, 0002, 0003 | Por modificar | Incorporar la tabla de detalle, los botones de agregar y quitar producto, la etiqueta de monto total y el selector de lote. |
-| ART-MKP-INV-0001, 0003 | Por modificar | Incorporar los campos de stock y proveedor. |
-| ART-MKP-DEV-0001, 0002, 0003 | Por modificar | Incorporar la tabla de detalle de la orden, el campo de cantidad a devolver y el área de comentario, y renombrar el combo de motivo. |
-| ART-MKP-ALV-0001, 0002 | Por modificar | El lote defectuoso pasa de combo a checkbox, la alerta DIGEMID de combo a campo de texto, y la selección pasa del medicamento a la remesa, con el vencimiento como valor derivado. |
+Una pantalla por módulo (DEC-042) más la plantilla de confirmación. Los PNG están en `diseno/Mockups/` y las fuentes en `diseno/Mockups/fuente/`.
 
-Los mockups de los módulos 3, 4, 5, 6 y 8 no requieren cambios estructurales; solo los renombramientos de la sección 7 que el equipo decida adoptar.
+| Mockup | Módulo |
+| --- | --- |
+| ART-MKP-VEN-0001 | Ventas |
+| ART-MKP-INV-0001 | Inventario |
+| ART-MKP-DOC-0001 (con DOC-MDL-PREVISUALIZAR-COMPROBANTE) | Documentación tributaria |
+| ART-MKP-ALV-0001 | Alertas de vencimiento |
+| ART-MKP-PAG-0001 | Métodos de pago |
+| ART-MKP-REP-0001 | Reportes de ventas |
+| ART-MKP-DEV-0001 | Devoluciones a proveedores |
+| ART-MKP-RES-0001 | Restricciones de venta |
+| ART-MKP-USR-0001 | Usuarios |
+| ART-MKP-PRV-0001 | Proveedores |
+| ART-MKP-LOT-0001 | Lotes |
+| ART-MKP-REA-0001 | Reabastecimiento |
+| ART-MKP-COT-0001 | Cotizaciones |
+| ART-MKP-CONFIRM-0001 | Plantilla de confirmación de baja (transversal) |
+
+La adecuación del catálogo a cada mockup se hace en un issue por módulo (DEC-043), y cada ficha incorpora a esta guía los identificadores nuevos de su módulo. La aprobación de los diseños por la dueña sigue en PEN-006.
