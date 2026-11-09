@@ -136,8 +136,8 @@
 | Código especificación | ESP-0008 |
 | --- | --- |
 | Nombre | Eliminación del producto de inventario |
-| Versión | 03.00 |
-| Fecha | 13/10/2026 |
+| Versión | 04.00 |
+| Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0004, FUE-0005 |
@@ -149,7 +149,7 @@
 | Código de artefactos asociados | ART-MKP-INV-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La versión anterior eliminaba físicamente el producto sin verificar sus referencias en tres tablas del modelo. Ahora la eliminación física solo procede cuando no hay movimientos, y en caso contrario se aplica baja lógica.<br>Depende de la incorporación del valor 'Descontinuado' al dominio de `estado_producto`, ya aplicada en el Diccionario de Datos v03.00 pero pendiente de reflejarse en el motor.<br>**Versión 03.00:** la decisión entre eliminación física y baja lógica la toma el motor de base de datos: se intenta el `ELIMINAR` y, si SQL Server lo rechaza porque una clave foránea referencia el registro, se revierte al punto de guardado de la transacción y se aplica la baja lógica. El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_LISTA_REABASTECIMIENTO` y `TBL_COTIZACIONES_PROVEEDOR`). |
+| Comentario | La versión anterior eliminaba físicamente el producto sin verificar sus referencias en tres tablas del modelo. Ahora la eliminación física solo procede cuando no hay movimientos, y en caso contrario se aplica baja lógica.<br>Depende de la incorporación del valor 'Descontinuado' al dominio de `estado_producto`, ya aplicada en el Diccionario de Datos v03.00 pero pendiente de reflejarse en el motor.<br>**Versión 03.00:** Baja condicional según DEC-009 y DEC-029 (VP-B). El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_LISTA_REABASTECIMIENTO` y `TBL_COTIZACIONES_PROVEEDOR`).<br>**Versión 04.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
 
 ---
 
@@ -364,8 +364,8 @@
 | Código especificación | ESP-0020 |
 | --- | --- |
 | Nombre | Desactivación de método de pago |
-| Versión | 03.00 |
-| Fecha | 13/10/2026 |
+| Versión | 04.00 |
+| Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
@@ -377,7 +377,7 @@
 | Código de artefactos asociados | ART-MKP-PAG-0001, ART-MKP-PAG-0004 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La postcondición anterior era contradictoria: para una eliminación afirmaba que el método "queda registrado correctamente".<br>La eliminación física era además inviable, porque `id_metodo_pago` es clave foránea en **TBL_REGISTRO_VENTAS**. Se resolvió con baja lógica cuando existen ventas asociadas.<br>**Versión 03.00:** la decisión entre eliminación física y baja lógica la toma el motor de base de datos: se intenta el `ELIMINAR` y, si SQL Server lo rechaza porque una clave foránea referencia el registro, se revierte al punto de guardado de la transacción y se aplica la baja lógica. El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía. |
+| Comentario | La postcondición anterior era contradictoria: para una eliminación afirmaba que el método "queda registrado correctamente".<br>La eliminación física era además inviable, porque `id_metodo_pago` es clave foránea en **TBL_REGISTRO_VENTAS**. Se resolvió con baja lógica cuando existen ventas asociadas.<br>**Versión 03.00:** Baja condicional según DEC-009 y DEC-029 (VP-B). El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía.<br>**Versión 04.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
 
 ---
 
@@ -668,8 +668,8 @@
 | Código especificación | ESP-0036 |
 | --- | --- |
 | Nombre | Desactivación de usuario |
-| Versión | 02.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
@@ -681,7 +681,7 @@
 | Código de artefactos asociados | ART-MKP-USR-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La baja lógica es obligatoria cuando la cuenta registró operaciones: eliminarla físicamente destruiría la verificación de identidad que la dueña solicitó.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0004**. El rechazo del inicio de sesión de una cuenta inactiva lo establece la condición 1 de RNF-0006.<br>**Versión 02.00:** la decisión entre eliminación física y baja lógica la toma el motor de base de datos: se intenta el `ELIMINAR` y, si SQL Server lo rechaza porque una clave foránea referencia el registro, se revierte al punto de guardado de la transacción y se aplica la baja lógica. El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_COTIZACIONES_PROVEEDOR.id_usuario`). |
+| Comentario | La baja lógica es obligatoria cuando la cuenta registró operaciones: eliminarla físicamente destruiría la verificación de identidad que la dueña solicitó.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0004**. El rechazo del inicio de sesión de una cuenta inactiva lo establece la condición 1 de RNF-0006.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B). El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_COTIZACIONES_PROVEEDOR.id_usuario`).<br>**Versión 03.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
 
 ---
 
@@ -744,8 +744,8 @@
 | Código especificación | ESP-0040 |
 | --- | --- |
 | Nombre | Desactivación de proveedor |
-| Versión | 02.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -757,7 +757,7 @@
 | Código de artefactos asociados | ART-MKP-PRV-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Se aplica el mismo criterio de baja lógica del resto del catálogo, más una verificación adicional: un proveedor con una devolución aún no despachada no puede darse de baja, porque la orden quedaría sin destinatario.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-PRV-0004**.<br>**Versión 02.00:** la decisión entre eliminación física y baja lógica la toma el motor de base de datos: se intenta el `ELIMINAR` y, si SQL Server lo rechaza porque una clave foránea referencia el registro, se revierte al punto de guardado de la transacción y se aplica la baja lógica. El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_LOTES.id_proveedor` y `TBL_COTIZACIONES_PROVEEDOR.id_proveedor`). La verificación de órdenes pendientes se conserva porque es una regla de negocio, no de integridad. |
+| Comentario | Se aplica el mismo criterio de baja lógica del resto del catálogo, más una verificación adicional: un proveedor con una devolución aún no despachada no puede darse de baja, porque la orden quedaría sin destinatario.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-PRV-0004**.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B). El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_LOTES.id_proveedor` y `TBL_COTIZACIONES_PROVEEDOR.id_proveedor`). La verificación de órdenes pendientes se conserva porque es una regla de negocio, no de integridad.<br>**Versión 03.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
 
 ---
 
@@ -820,7 +820,7 @@
 | Código especificación | ESP-0044 |
 | --- | --- |
 | Nombre | Baja de remesa |
-| Versión | 03.00 |
+| Versión | 04.00 |
 | Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
@@ -833,7 +833,7 @@
 | Código de artefactos asociados | ART-MKP-LOT-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**.<br>**Versión 02.00:** la decisión entre eliminación física y baja lógica la toma el motor de base de datos: se intenta el `ELIMINAR` y, si SQL Server lo rechaza porque una clave foránea referencia el registro, se revierte al punto de guardado de la transacción y se aplica la baja lógica. El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía. La verificación de devoluciones pendientes se conserva porque es una regla de negocio, no de integridad. Un retiro de `TBL_PRODUCTOS_RETIRADOS` no impide el borrado: su FK es `ON DELETE SET NULL`.<br>**Versión 03.00:** (DEC-040) se renombra `STOCK_CONSOLIDADO` a `STOCK_FISICO`. |
+| Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B). El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía. La verificación de devoluciones pendientes se conserva porque es una regla de negocio, no de integridad. Un retiro de `TBL_PRODUCTOS_RETIRADOS` no impide el borrado: su FK es `ON DELETE SET NULL`.<br>**Versión 03.00:** (DEC-040) se renombra `STOCK_CONSOLIDADO` a `STOCK_FISICO`.<br>**Versión 04.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
 
 ---
 

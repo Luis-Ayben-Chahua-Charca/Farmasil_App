@@ -62,7 +62,7 @@
 | Código ilación | ILA-0004 |
 | --- | --- |
 | Nombre | Eliminación del registro de venta |
-| Versión | 08.00 |
+| Versión | 09.00 |
 | Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
@@ -76,7 +76,7 @@
 | Código de artefactos asociados | ART-MKP-VEN-0001, ART-MKP-VEN-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | El procedimiento cargaba **ART-MKP-VEN-0003** mientras la fila de artefactos declaraba **ART-MKP-VEN-0004**; se corrigió a favor del mockup de eliminación.<br>Se agregó la eliminación del detalle por la operación (no en cascada del motor), que de otro modo quedaba huérfano y rompía la integridad referencial, la restitución del stock y el bloqueo de la eliminación cuando existe comprobante tributario emitido.<br>**Versión 07.00:** el bloqueo se extiende a los comprobantes 'Anulado': un documento tributario anulado debe conservarse junto con su venta. La vía de corrección es la actualización (ILA-0003).<br>**Versión 08.00:** alinea la ilación con ESP-0004 v05.00 (AUD-claude-001, 007; DEC-034). |
+| Comentario | El procedimiento cargaba **ART-MKP-VEN-0003** mientras la fila de artefactos declaraba **ART-MKP-VEN-0004**; se corrigió a favor del mockup de eliminación.<br>Se agregó la eliminación del detalle (el detalle lo elimina la operación), que de otro modo quedaba huérfano y rompía la integridad referencial, la restitución del stock y el bloqueo de la eliminación cuando existe comprobante tributario emitido.<br>**Versión 07.00:** el bloqueo se extiende a los comprobantes 'Anulado': un documento tributario anulado debe conservarse junto con su venta. La vía de corrección es la actualización (ILA-0003).<br>**Versión 08.00:** alinea la ilación con ESP-0004 v05.00 (AUD-claude-001, 007; DEC-034).<br>**Versión 09.00:** terminología: el detalle lo elimina la operación, no el motor. |
 
 ---
 
@@ -142,8 +142,8 @@
 | Código ilación | ILA-0008 |
 | --- | --- |
 | Nombre | Eliminación del producto de inventario |
-| Versión | 09.00 |
-| Fecha | 13/10/2026 |
+| Versión | 10.00 |
+| Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0004, FUE-0005 |
@@ -156,7 +156,7 @@
 | Código de artefactos asociados | ART-MKP-INV-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La versión anterior eliminaba físicamente el producto sin considerar que `id_producto` es clave foránea en **TBL_DETALLE_VENTAS**, **TBL_DETALLE_DEVOLUCION** y **TBL_RESTRICCIONES_VENTA**: la operación habría fallado o habría destruido el histórico de ventas.<br>El procedimiento anterior también pedía ingresar el ID del producto y además seleccionarlo de la tabla, dos pasos redundantes; se dejó únicamente la selección.<br>Queda Pendiente porque el valor 'Descontinuado' debe incorporarse al dominio de `estado_producto` en el Diccionario de Datos, que hoy solo contempla 'Disponible' y 'Bloqueado por devolucion'. Ver Anexo.<br>**Versión 09.00:** la elección entre eliminación física y baja lógica la resuelve la integridad referencial de la base de datos, sin consultar tablas de otros módulos (RG-011). |
+| Comentario | La versión anterior eliminaba físicamente el producto sin considerar que `id_producto` es clave foránea en **TBL_DETALLE_VENTAS**, **TBL_DETALLE_DEVOLUCION** y **TBL_RESTRICCIONES_VENTA**: la operación habría fallado o habría destruido el histórico de ventas.<br>El procedimiento anterior también pedía ingresar el ID del producto y además seleccionarlo de la tabla, dos pasos redundantes; se dejó únicamente la selección.<br>Queda Pendiente porque el valor 'Descontinuado' debe incorporarse al dominio de `estado_producto` en el Diccionario de Datos, que hoy solo contempla 'Disponible' y 'Bloqueado por devolucion'. Ver Anexo.<br>**Versión 09.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011).<br>**Versión 10.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
 ---
 
 # Módulo 3 — Gestión de documentación tributaria (EDU-0003)
@@ -380,8 +380,8 @@
 | Código ilación | ILA-0020 |
 | --- | --- |
 | Nombre | Desactivación de métodos de pago |
-| Versión | 06.00 |
-| Fecha | 13/10/2026 |
+| Versión | 07.00 |
+| Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
@@ -394,7 +394,7 @@
 | Código de artefactos asociados | ART-MKP-PAG-0001, ART-MKP-PAG-0004 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La postcondición anterior era contradictoria: para una operación de eliminación afirmaba que "el método de pago queda registrado correctamente".<br>La eliminación física era además inviable, porque `id_metodo_pago` es clave foránea en **TBL_REGISTRO_VENTAS**: borrar un método usado habría roto el histórico de ventas. Se resolvió con eliminación física solo cuando no hay referencias y baja lógica en caso contrario, usando el campo `estado` que el diccionario ya define.<br>Evita el uso de métodos de pago no autorizados o en desuso sin sacrificar la trazabilidad contable.<br>**Versión 06.00:** la elección entre eliminación física y baja lógica la resuelve la integridad referencial de la base de datos, sin consultar tablas de otros módulos (RG-011). |
+| Comentario | La postcondición anterior era contradictoria: para una operación de eliminación afirmaba que "el método de pago queda registrado correctamente".<br>La eliminación física era además inviable, porque `id_metodo_pago` es clave foránea en **TBL_REGISTRO_VENTAS**: borrar un método usado habría roto el histórico de ventas. Se resolvió con eliminación física solo cuando no hay referencias y baja lógica en caso contrario, usando el campo `estado` que el diccionario ya define.<br>Evita el uso de métodos de pago no autorizados o en desuso sin sacrificar la trazabilidad contable.<br>**Versión 06.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011).<br>**Versión 07.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
 
 ---
 
@@ -699,8 +699,8 @@
 | Código ilación | ILA-0036 |
 | --- | --- |
 | Nombre | Desactivación de usuario |
-| Versión | 02.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
@@ -713,7 +713,7 @@
 | Código de artefactos asociados | ART-MKP-USR-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La baja lógica es obligatoria aquí: eliminar físicamente una cuenta que registró ventas o devoluciones destruiría precisamente la verificación de identidad que la dueña solicitó.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0004**.<br>**Versión 02.00:** la elección entre eliminación física y baja lógica la resuelve la integridad referencial de la base de datos, sin consultar tablas de otros módulos (RG-011). El rechazo del inicio de sesión de una cuenta inactiva lo establece la condición 1 de RNF-0006. |
+| Comentario | La baja lógica es obligatoria aquí: eliminar físicamente una cuenta que registró ventas o devoluciones destruiría precisamente la verificación de identidad que la dueña solicitó.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0004**.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011). El rechazo del inicio de sesión de una cuenta inactiva lo establece la condición 1 de RNF-0006.<br>**Versión 03.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
 
 ---
 
@@ -779,8 +779,8 @@
 | Código ilación | ILA-0040 |
 | --- | --- |
 | Nombre | Desactivación de proveedor |
-| Versión | 02.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -793,7 +793,7 @@
 | Código de artefactos asociados | ART-MKP-PRV-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Se aplica el mismo criterio de baja lógica del resto del catálogo, más una verificación adicional: un proveedor con una devolución aún no despachada no puede darse de baja, porque la orden quedaría sin destinatario.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-PRV-0004**.<br>**Versión 02.00:** la elección entre eliminación física y baja lógica la resuelve la integridad referencial de la base de datos, sin consultar tablas de otros módulos (RG-011). |
+| Comentario | Se aplica el mismo criterio de baja lógica del resto del catálogo, más una verificación adicional: un proveedor con una devolución aún no despachada no puede darse de baja, porque la orden quedaría sin destinatario.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-PRV-0004**.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011).<br>**Versión 03.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
 
 ---
 
@@ -849,7 +849,7 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código ilación | ILA-0041 |
 | --- | --- |
 | Nombre | Registro de remesa |
-| Versión | 04.00 |
+| Versión | 05.00 |
 | Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
@@ -863,7 +863,7 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código de artefactos asociados | ART-MKP-LOT-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | Ilación nueva, derivada de la incorporación de **TBL_LOTES** al Diccionario de Datos v04.00.<br>La restricción de unicidad sobre medicamento y número de lote es la que sostiene el rastreo sanitario: si el mismo lote pudiera registrarse dos veces, no habría forma de responder inequívocamente qué se vendió de una remesa retirada por la DIGEMID.<br>Queda Pendiente porque el mockup **ART-MKP-LOT-0001** aún no ha sido diseñado.<br>**Versión 02.00:** se incorpora `TBL_LOTES.id_proveedor` (Diccionario de Datos v05.00), que permite registrar remesas de un mismo medicamento provenientes de proveedores distintos, requisito surgido durante el diseño del módulo de comparación de precios de proveedores (EDU-0017). Requiere incorporar **LOT-CMB-PROVEEDOR-LOTE** al mockup **ART-MKP-LOT-0001**. Ver Anexo.<br>**Versión 03.00:** una remesa nueva debe ingresar con al menos una unidad; con cero quedaba 'Disponible' sin existencias.<br>**Versión 04.00:** (DEC-040) se renombra el stock consolidado a stock físico, la suma de las existencias de todas las remesas del medicamento. |
+| Comentario | Ilación nueva, derivada de la incorporación de **TBL_LOTES** al Diccionario de Datos v04.00.<br>La restricción de unicidad sobre medicamento y número de lote es la que sostiene el rastreo sanitario: si el mismo lote pudiera registrarse dos veces, no habría forma de responder inequívocamente qué se vendió de una remesa retirada por la DIGEMID.<br>Queda Pendiente porque el mockup **ART-MKP-LOT-0001** aún no ha sido diseñado.<br>**Versión 02.00:** se incorpora `TBL_LOTES.id_proveedor` (Diccionario de Datos v05.00), que permite registrar remesas de un mismo medicamento provenientes de proveedores distintos, requisito surgido durante el diseño del módulo de comparación de precios de proveedores (EDU-0017). Requiere incorporar **LOT-CMB-PROVEEDOR-LOTE** al mockup **ART-MKP-LOT-0001**. Ver Anexo.<br>**Versión 03.00:** una remesa nueva debe ingresar con al menos una unidad; con cero quedaba 'Disponible' sin existencias.<br>**Versión 04.00:** (DEC-040) el stock que muestra Inventario pasa a llamarse stock físico: la suma de las existencias de todas las remesas del medicamento.<br>**Versión 05.00:** terminología vigente (DEC-040). |
 
 | Código ilación | ILA-0042 |
 | --- | --- |
@@ -906,7 +906,7 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código ilación | ILA-0044 |
 | --- | --- |
 | Nombre | Baja de remesa |
-| Versión | 03.00 |
+| Versión | 04.00 |
 | Fecha | 08/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
@@ -920,7 +920,7 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código de artefactos asociados | ART-MKP-LOT-0004 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**.<br>**Versión 02.00:** la elección entre eliminación física y baja lógica la resuelve la integridad referencial de la base de datos, sin consultar tablas de otros módulos (RG-011).<br>**Versión 03.00:** (DEC-040) se renombra el stock consolidado a stock físico. |
+| Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011).<br>**Versión 03.00:** (DEC-040) el stock que muestra Inventario pasa a llamarse stock físico.<br>**Versión 04.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
 
 ---
 

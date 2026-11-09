@@ -2,10 +2,12 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 06.00 |
+| Versión | 07.00 |
 | Fecha | 08/11/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 07.00.** La prueba de RNF-0009 verifica el esquema según el Diccionario de Datos v10.00 y no según el v09.00. No cambia el número de pruebas (275).
+>
 > **Versión 06.00.** Alinea las pruebas con las correcciones de las auditorías de la base de datos (issue #63): predicado de vendibilidad, estado de la remesa por una regla única, varios retiros por remesa, una línea por remesa, intervalos de fecha semiabiertos, un comprobante 'Emitido' por venta, proveedor de las devoluciones, desempate de la cotización vigente y stock físico y vendible. Se agregan 18 pruebas, se ajustan cuatro filas y se reemplaza la de cambio de remesa de ESP-0015 por la de remesa de solo lectura. Se corrige además el total de la tabla de cobertura, que decía 256 cuando el plan tenía 257. Total: 275 pruebas.
 >
 > **Versión 05.00.** Alinea las pruebas de devoluciones y de la lista de reabastecimiento con DEC-019, DEC-020 y DEC-023: el combo de remesas de ESP-0025 ya no usa el umbral de vencimiento, ESP-0027 rechaza completar una orden cuya remesa no conserva stock suficiente, y el proceso 2 de RNF-0010 continúa cuando la restricción de unicidad rechaza un ítem que ya figura. Se agrega una prueba. Total: 257 pruebas.
@@ -396,7 +398,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | RNF-0007 | Funcionamiento en el equipo objetivo | Instalar y ejecutar el sistema en Windows 11 con la especificación declarada, sin instalar software adicional. | T-020 |
 | RNF-0007 | Visualización en el equipo objetivo | Verificar la visualización de los mockups de los trece módulos en la resolución del equipo objetivo. | T-015 |
 | RNF-0008 | Stack tecnológico | Verificar que los importes se manejen con el tipo decimal y no con float o double, comprobando que no aparezcan errores de redondeo en el monto total. | T-004 |
-| RNF-0009 | Integridad del esquema | Verificar que las dieciséis tablas existan con sus claves primarias, foráneas, restricciones de unicidad y reglas de borrado según el Diccionario de Datos v09.00, incluidos `CHECK (stock_actual >= 0)` en `TBL_LOTES` y el UNIQUE de `TBL_LISTA_REABASTECIMIENTO.id_producto`. | T-018 |
+| RNF-0009 | Integridad del esquema | Verificar que las dieciséis tablas existan con sus claves primarias, foráneas, restricciones de unicidad y reglas de borrado según el Diccionario de Datos v10.00, incluidos los `CHECK` de dominios y de fila, `CHECK (estado_lote <> 'Disponible' OR stock_actual > 0)` en `TBL_LOTES`, los UNIQUE de los detalles, los índices únicos filtrados de comprobantes y de alertas y el UNIQUE de `TBL_LISTA_REABASTECIMIENTO.id_producto`. | T-018 |
 | RNF-0009 | Atomicidad de las operaciones | Interrumpir cada una de las operaciones transaccionales del catálogo a mitad de ejecución y verificar que ninguna deje datos parciales. | T-012 |
 | RNF-0009 | Respaldo y restauración | Ejecutar una copia de respaldo, modificar datos, restaurar y verificar que el estado coincida con el del momento de la copia. | T-019 |
 | RNF-0009 | Crecimiento del volumen de datos | Cargar el volumen estimado de cinco años de operación y verificar que los tiempos de consulta y de registro se mantengan dentro de los límites, considerando el tamaño máximo de SQL Server Express. | T-010 |
