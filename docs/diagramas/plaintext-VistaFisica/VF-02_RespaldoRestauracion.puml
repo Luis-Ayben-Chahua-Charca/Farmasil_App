@@ -1,0 +1,55 @@
+@startuml VF-02_RespaldoRestauracion
+' VF-02 Respaldo y restauración de DB_FARMASIL (Vista Física) - versión 00.01 BORRADOR
+' Los elementos marcados [POR DEFINIR] dependen de decisiones abiertas (RNF-0009, RNF-0004).
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam sequenceMessageAlign center
+title VF-02 Respaldo y restauración de DB_FARMASIL (borrador)
+
+participant "Disparador\n[POR DEFINIR]" as TRG
+participant "Script T-SQL\n(sqlcmd)" as SCR
+participant "SQL Server 2025 Express\n(instancia SQLEXPRESS)" as SQL
+database "DB_FARMASIL\n(.mdf / .ldf)" as DB
+participant "Almacenamiento\nde respaldo\n(externo al equipo)" as EXT
+
+== Respaldo periódico (RNF-0009) ==
+TRG -> SCR : inicia según la frecuencia\n[POR DEFINIR]
+note right of TRG
+  Express no incluye SQL Server Agent:
+  el disparo se hace desde fuera del motor,
+  por ejemplo con el Programador de tareas de Windows
+  o desde la propia aplicación.
+end note
+SCR -> SQL : BACKUP DATABASE DB_FARMASIL\nTO DISK = '<destino>' [POR DEFINIR]
+SQL -> DB : lee las páginas de datos
+SQL -> EXT : escribe DB_FARMASIL.bak
+note right of EXT
+  La cuenta del servicio de SQL Server
+  necesita permiso de escritura en el destino.
+end note
+alt el respaldo termina bien
+  SCR -> SQL : RESTORE VERIFYONLY FROM DISK = '<destino>'
+  SQL --> SCR : copia verificada
+else falla (destino no disponible, disco lleno)
+  SCR --> TRG : registra el error\n[mecanismo de aviso POR DEFINIR]
+end
+
+== Restauración en un equipo nuevo (RNF-0004: máximo 15 días) ==
+actor "Responsable\ndel equipo" as OP
+participant "PC de reemplazo\n<<device>>" as PC
+OP -> PC : instala Windows 11
+OP -> PC : instala SQL Server 2025 Express\n(instancia SQLEXPRESS)
+OP -> PC : instala FarmasilApp\n(paquete autocontenido win-x64)
+OP -> EXT : conecta el almacenamiento de respaldo
+OP -> SQL : RESTORE DATABASE DB_FARMASIL\nFROM DISK = '<destino>'
+SQL -> DB : recrea los archivos .mdf / .ldf
+SQL --> OP : base restaurada
+OP -> PC : abre FarmasilApp y comprueba el ingreso\ny los datos
+note over OP, PC
+  Se pierde lo registrado después de la última copia.
+  Frecuencia de respaldo [POR DEFINIR] define ese margen.
+  Prueba periódica de restauración [POR DEFINIR].
+end note
+@enduml

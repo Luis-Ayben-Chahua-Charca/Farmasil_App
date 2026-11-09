@@ -1,0 +1,49 @@
+@startuml VF-01_Despliegue
+' VF-01 Diagrama de despliegue de FarmasilApp (Vista Fisica) - version 01.00
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam nodeBorderColor #444444
+skinparam artifactBorderColor #444444
+skinparam databaseBorderColor #444444
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+title VF-01 Diagrama de despliegue - FarmasilApp
+
+node "PC de la farmacia\n<<device>>\nWindows 11 | Intel Core i5-12500 | 16 GB RAM | 1 TB" as PC {
+
+  node ".NET 10 (LTS) win-x64\n<<executionEnvironment>>\nincluido en el paquete (publicacion autocontenida,\nsin recorte de ensamblados)" as RT {
+    artifact "FarmasilApp.exe\n(proceso unico WPF)" as APP
+    note bottom of APP
+      Capas logicas dentro del mismo proceso:
+      - Presentacion (Vistas y VistaModelos, MVVM)
+      - Logica de negocio (servicios de los 13 modulos)
+      - Acceso a datos (repositorios y unidad de trabajo)
+      Hilo de fondo: procesos programados (RNF-0010)
+    end note
+  }
+
+  node "SQL Server 2025 Express\n<<executionEnvironment>>\nservicio de Windows, instancia SQLEXPRESS" as DBE {
+    database "DB_FARMASIL\n(14 tablas)\n.mdf / .ldf" as DB
+  }
+
+  node "Programador de tareas de Windows\n<<executionEnvironment>>" as TS {
+    artifact "Script T-SQL de respaldo\n(sqlcmd)" as BK
+  }
+}
+
+node "Almacenamiento de respaldo\n<<device>>\nexterno al equipo (RNF-0004, RNF-0009)" as EXT {
+  artifact "DB_FARMASIL.bak\n(copias periodicas)" as BAK
+}
+
+APP -right- DB : <<shared memory>>\nsin puerto de red
+BK -up- DB : <<shared memory>>
+BK -down-> BAK : <<archivo .bak>>
+
+note right of PC
+  Sin servidores separados ni dependencia
+  de internet para operar (RNF-0001).
+  Un solo equipo, un usuario a la vez (RNF-0007).
+  Si se habilitara TCP/IP: puerto dinamico de la
+  instancia con nombre; UDP 1434 (SQL Server Browser).
+end note
+@enduml
