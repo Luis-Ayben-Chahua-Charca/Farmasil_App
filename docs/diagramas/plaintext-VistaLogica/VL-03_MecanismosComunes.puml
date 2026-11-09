@@ -1,7 +1,8 @@
 @startuml VL-03_MecanismosComunes
 ' Vista lógica FARMASIL_APP — Mecanismos comunes: generalización, realización,
-' enumeraciones (estereotipos) y procesos programados (v01.00)
-' Fuente: Diccionario de Datos v09.00 (dominios cerrados), RNF-0006, RNF-0010.
+' enumeraciones (estereotipos) y procesos programados (v02.00)
+' Fuente: Diccionario de Datos v10.00 (dominios cerrados), RNF-0006, RNF-0010.
+' v02.00 (08/11/2026, issue #63): stock vendible (DEC-040) y literal 'Automatico' (DEC-031).
 skinparam shadowing false
 skinparam classAttributeIconSize 0
 skinparam defaultFontSize 11
@@ -76,8 +77,8 @@ package "Reabastecimiento (REA)" {
     --
     + ejecutar(hoy : DateOnly) : void
     -- responsabilidades --
-    Agregar ítems 'Automático' para productos
-    Disponible con stock consolidado < stockMinimo
+    Agregar ítems 'Automatico' para productos
+    Disponible con stock vendible < stockMinimo
   }
 }
 

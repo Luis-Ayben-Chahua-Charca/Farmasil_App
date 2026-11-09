@@ -1,5 +1,6 @@
 @startuml VP-12_Reabastecimiento
-' Vista de procesos FARMASIL_APP — VP-12_Reabastecimiento (v01.00).
+' Vista de procesos FARMASIL_APP — VP-12_Reabastecimiento (v02.00).
+' v02.00 (08/11/2026, issue #63): stock vendible (DEC-040), literal 'Automatico' (DEC-031), diccionario v10.00.
 ' Convenciones: DEC-025 (particiones de VL-04, nivel de arquitectura, PlantUML + PNG).
 skinparam shadowing false
 skinparam defaultFontSize 11
@@ -37,13 +38,13 @@ start
 :Evento de tiempo: 15 días desde la última
 generación, o al iniciar si ya pasaron;
 |Persistencia|
-:Leer los medicamentos 'Disponible' con su stock
-consolidado en remesas 'Disponible';
+:Leer los medicamentos 'Disponible' con su stock vendible
+(remesas 'Disponible' no vencidas);
 |Hilo de fondo|
 repeat
-  if (¿Stock consolidado menor que el mínimo?) then (sí)
+  if (¿Stock vendible menor que el mínimo?) then (sí)
     |Persistencia|
-    :Insertar el ítem (origen 'Automático',
+    :Insertar el ítem (origen 'Automatico',
     prioridad 'Normal', fecha actual);
     if (¿La unicidad lo rechaza?) then (sí)
       |Hilo de fondo|
@@ -101,7 +102,7 @@ legend right
   Concurrencia: es la única escritura simultánea del sistema; la restricción de unicidad
   sobre el medicamento evita duplicados (DEC-020). El proceso automático no cambia la
   prioridad ni retira ítems: los retira la dueña tras el pedido (ESP-0048).
-  Trazabilidad: RNF-0010 (proceso 2), ESP-0045 · DEC-020 · VL-03: GeneracionListaReabastecimiento
+  Trazabilidad: RNF-0010 (proceso 2), ESP-0045 · DEC-020, DEC-031, DEC-040 · Diccionario de Datos v10.00 · VL-03: GeneracionListaReabastecimiento
   VL-02: ItemReabastecimiento · Tablas: TBL_LISTA_REABASTECIMIENTO, TBL_PRODUCTOS, TBL_LOTES
 endlegend
 @enduml

@@ -1,6 +1,6 @@
 # Gestión de Riesgos — FARMASIL
 
-**Versión:** 07.00 · **Fecha:** 18/10/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
+**Versión:** 08.00 · **Fecha:** 08/11/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
 
 Insumo para la plantilla de gestión de riesgos GRI_0002: el equipo revisa, ajusta y traslada estas
 filas a la hoja de cálculo. Cubre **las 52 ilaciones de los 13 módulos** más un bloque de **riesgos
@@ -17,6 +17,7 @@ generales (RG)**, según la observación del profesor.
 | 05.00 | 13/10/2026 | Se resuelve ILA-0004-R03: la venta con cualquier comprobante asociado no puede eliminarse. |
 | 06.00 | 13/10/2026 | Se resuelven ILA-0033-R02 (contraseña como hash con sal), ILA-0041-R01 (remesa nueva con existencias mayores que cero) e ILA-0043-R02 (validación de la nueva fecha de vencimiento). |
 | 07.00 | 18/10/2026 | Se cierran por no aplicar los cuatro riesgos de concurrencia entre usuarios (ILA-0001-R02, ILA-0003-R02, ILA-0023-R03, ILA-0031-R02): RNF-0003 v02.00 establece un solo usuario por vez. |
+| 08.00 | 08/11/2026 | Terminología vigente (DEC-031, DEC-040): ILA-0046-R01 habla de stock vendible y ILA-0045-R01 usa el literal 'Automatico'. No cambia ningún estado ni el conteo de riesgos. |
 
 En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"**, **"v05 —"**, **"v06 —"** o **"v07 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
 
@@ -225,9 +226,9 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 
 | Clave | Riesgo identificado | Prob. | % | Impacto | Estado | Plan de mitigación | Artefactos |
 |---|---|---|---|---|---|---|---|
-| ILA-0045-R01 | El proceso periódico que agrega a la lista los medicamentos bajo `stock_minimo` no tiene especificación ni requisito no funcional (Anexo de 02-ilaciones, punto 4). | Baja | 10% | 4 | Resuelto | v04 — Condición 2 de RNF-0010: ejecución cada 15 días, origen 'Automático', prioridad 'Normal', sin duplicar ítems. | Anexo 02-ilaciones, 08-RNF |
+| ILA-0045-R01 | El proceso periódico que agrega a la lista los medicamentos bajo `stock_minimo` no tiene especificación ni requisito no funcional (Anexo de 02-ilaciones, punto 4). | Baja | 10% | 4 | Resuelto | v04 — Condición 2 de RNF-0010: ejecución cada 15 días, origen 'Automatico', prioridad 'Normal', sin duplicar ítems. | Anexo 02-ilaciones, 08-RNF |
 | ILA-0045-R02 | Un ítem no sale de la lista cuando se repone el stock: permanece hasta que la dueña lo elimina manualmente. | Baja | 10% | 2 | Resuelto | v04 — Decisión documentada en RNF-0010: el proceso no retira ítems; la dueña los retira al realizar el pedido (ESP-0048). | ESP-0048, proceso periódico |
-| ILA-0046-R01 | La vista de la lista no muestra el stock consolidado ni el stock mínimo, datos que la dueña necesita para decidir qué cotizar. | Media | 50% | 2 | Pendiente | Agregar ambas columnas a REA-TBL-LISTA-REABASTECIMIENTO. | ESP-0046 |
+| ILA-0046-R01 | La vista de la lista no muestra el stock vendible ni el stock mínimo, datos que la dueña necesita para decidir qué cotizar. | Media | 50% | 2 | Pendiente | Agregar ambas columnas a REA-TBL-LISTA-REABASTECIMIENTO. | ESP-0046 |
 | ILA-0047-R01 | No se define si el proceso periódico respeta o sobrescribe una prioridad cambiada manualmente. | Baja | 10% | 2 | Resuelto | v04 — RNF-0010 establece que el proceso no modifica la prioridad de los ítems existentes. Prueba T-006 agregada. | ESP-0047, proceso periódico |
 | ILA-0048-R01 | Si la dueña elimina un ítem automático cuyo medicamento sigue bajo el mínimo, la siguiente corrida del proceso lo vuelve a agregar. | Baja | 10% | 2 | Resuelto | v04 — RNF-0010 fija el comportamiento: el ítem vuelve a agregarse mientras el medicamento siga bajo el mínimo. Prueba T-006 agregada. | ESP-0048, proceso periódico |
 
