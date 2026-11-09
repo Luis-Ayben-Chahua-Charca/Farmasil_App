@@ -41,18 +41,28 @@ Commits pequeños y frecuentes — no uno solo gigante al final. Si necesitas un
 git push -u origin <tu-rama>
 ```
 
-Abre el PR en GitHub (verás un banner "Compare & pull request" apenas hagas push — no se abre solo, tienes que darle clic):
+Abre el PR en GitHub (verás un banner "Compare & pull request" apenas hagas push — no se abre solo, tienes que darle clic). La descripción se llena sola con la plantilla del repositorio: complétala.
 
 - **Título:** igual al commit, ej. `docs(actor-dueno): agregar caso de uso CU-01 actor dueño`
 - **Descripción:** debe incluir `Closes #<numero-issue>` — sin esto, el issue no se cierra solo al fusionar.
 - **Checklist antes de avisar que está listo:**
-  - [ ] CI en verde (si el repo ya tiene checks configurados para tu tipo de cambio)
+  - [ ] CI en verde: los checks `build-and-test` e `issue-link` deben pasar
   - [ ] Nada marcado `[pendiente]` sin explicar por qué
   - [ ] Cumple lo pedido en el issue
 
 ## 4. Después de abrir el PR
 
-**No lo fusiones tú mismo** — el squash & merge lo hace Leyni. Una vez que lo revise y fusione:
+**No lo fusiones tú mismo** — el squash & merge lo hace Leyni. GitHub no deja fusionar un PR hacia `main` hasta que se cumplan estas reglas:
+
+| Regla | Qué significa para ti |
+| --- | --- |
+| Todo cambio entra por PR | No se puede hacer push directo a `main`. |
+| `build-and-test` en verde | La solución compila y las pruebas pasan. Si falla, abre el detalle del check, corrige en tu rama y vuelve a hacer push. |
+| `issue-link` en verde | La descripción del PR tiene `Closes #<numero-issue>`. Si falta, edita la descripción y el check se vuelve a ejecutar solo. |
+| Aprobación de Leyni | Es la responsable del código de todo el repositorio (`.github/CODEOWNERS`). Si haces push después de la aprobación, la aprobación se descarta y hay que pedirla de nuevo. |
+| Conversaciones resueltas | Cada comentario de revisión debe quedar resuelto antes de fusionar. |
+
+Una vez que lo revise y fusione:
 
 - tu rama se elimina sola,
 - el issue se cierra solo,
@@ -67,5 +77,5 @@ No hace falta que hagas nada más ni que borres la rama a mano.
 3. Mover tu tarjeta a In Progress (manual)
 4. Commits pequeños, `tipo(alcance): descripción`, `Refs #numero`
 5. `git push -u origin tu-rama`
-6. Abrir el PR con `Closes #numero`
-7. Avisar que está listo y esperar el merge — listo, el resto es automático
+6. Abrir el PR con `Closes #numero` y esperar los checks en verde
+7. Avisar que está listo y esperar la aprobación y el merge — listo, el resto es automático

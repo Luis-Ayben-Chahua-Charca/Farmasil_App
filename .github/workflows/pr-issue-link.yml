@@ -1,0 +1,24 @@
+# Verifica que cada PR enlace su issue con "Closes #<número>",
+# para que el issue se cierre solo al fusionar y el tablero quede al día.
+name: Enlace al issue
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  issue-link:
+    name: issue-link
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verificar "Closes #<número>" en la descripción
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if printf '%s' "$BODY" | grep -Eiq '(close[sd]?|fix(e[sd])?|resolve[sd]?) +#[0-9]+'; then
+            echo "El PR enlaza un issue."
+          else
+            echo "::error::La descripción del PR debe incluir 'Closes #<número-de-issue>'."
+            exit 1
+          fi
