@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>ART-MKP-COT-0001 - Comparación de Precios de Proveedores</title>
+<style>
+* { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+body { background-color: #f0f2f5; color: #333; padding: 20px; }
+.element-wrapper { display: flex; flex-direction: column; margin-bottom: 10px; width: 100%; }
+.ui-tag { font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: bold; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 2px 5px; border-radius: 3px; margin-top: 3px; display: inline-block; width: fit-content; }
+.ui-tag-btn { font-family: 'Courier New', Courier, monospace; font-size: 10px; font-weight: bold; background: #cce5ff; color: #004085; border: 1px solid #b8daff; padding: 2px 5px; border-radius: 3px; margin-top: 3px; text-align: center; }
+header { display: flex; gap: 15px; background: linear-gradient(135deg, #0d6efd, #6610f2); padding: 20px; border-radius: 10px; color: white; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+.layout { display: grid; grid-template-columns: 1fr 360px; gap: 20px; }
+.panel { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
+table th, table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+table th { background: #f8f9fa; }
+.best-price { background: #d4edda; color: #155724; font-weight: bold; border-radius: 4px; }
+.btn-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 10; }
+.modal-content { background: white; padding: 20px; border-radius: 6px; width: 380px; text-align: center; }
+.product-chip { display: inline-block; background: #e7f1ff; color: #0d6efd; padding: 4px 10px; border-radius: 12px; font-size: 11px; margin: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <div style="flex:1;">
+    <h2 style="margin-bottom:4px;">Comparador de Cotizaciones</h2>
+    <p style="font-size:13px;opacity:0.9;">Precios ofrecidos por proveedor para los medicamentos pendientes de reabastecer</p>
+  </div>
+  <div class="element-wrapper" style="width:auto;">
+    <button style="background:#198754;color:white;padding:10px 18px;">Exportar CSV</button>
+    <span class="ui-tag-btn">COT-BTN-EXPORTAR-CSV</span>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="panel">
+    <h3>Matriz Comparativa</h3>
+    <div class="element-wrapper" style="margin-top:10px;">
+      <input type="text" placeholder="Buscar medicamento en la comparativa...">
+      <span class="ui-tag">Campo Texto: COT-BTN-LEER-COTIZACION</span>
+    </div>
+    <table style="margin-top:15px;">
+      <thead>
+        <tr>
+          <th>Medicamento</th>
+          <th>Bayer S.A.</th>
+          <th>Genfar</th>
+          <th>Portugal</th>
+          <th>Mejor Precio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:left;">Paracetamol 500mg</td>
+          <td>S/ 3.20</td>
+          <td class="best-price">S/ 2.80</td>
+          <td>S/ 3.10</td>
+          <td><span class="product-chip">Genfar</span></td>
+        </tr>
+        <tr>
+          <td style="text-align:left;">Amoxicilina 500mg</td>
+          <td class="best-price">S/ 10.50</td>
+          <td>S/ 11.20</td>
+          <td>S/ 10.90</td>
+          <td><span class="product-chip">Bayer</span></td>
+        </tr>
+        <tr>
+          <td style="text-align:left;">Ibuprofeno 400mg</td>
+          <td>S/ 5.00</td>
+          <td>S/ 5.40</td>
+          <td class="best-price">S/ 4.80</td>
+          <td><span class="product-chip">Portugal</span></td>
+        </tr>
+        <tr>
+          <td style="text-align:left;">Loratadina 10mg</td>
+          <td>S/ 4.10</td>
+          <td class="best-price">S/ 3.90</td>
+          <td>S/ 4.30</td>
+          <td><span class="product-chip">Genfar</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <span class="ui-tag" style="margin-top:10px;">Tabla: COT-TBL-COTIZACIONES-PROVEEDOR</span>
+  </div>
+
+  <div class="panel">
+    <h3>Registrar Cotización</h3>
+    <hr style="margin-bottom:10px;">
+    <div class="element-wrapper">
+      <label><b>Medicamento:</b></label>
+      <select><option>Paracetamol 500mg</option><option>Amoxicilina 500mg</option><option>Ibuprofeno 400mg</option></select>
+      <span class="ui-tag">ComboBox: COT-CMB-PRODUCTO</span>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Proveedor:</b></label>
+      <select><option>Bayer S.A.</option><option>Genfar</option><option>Portugal</option></select>
+      <span class="ui-tag">ComboBox: COT-CMB-PROVEEDOR</span>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Precio Ofrecido (S/):</b></label>
+      <input type="number" step="0.01" value="2.80">
+      <span class="ui-tag">Campo Numérico: COT-NUM-PRECIO-OFRECIDO</span>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Tiempo de Entrega (días):</b></label>
+      <input type="number" value="3">
+      <span class="ui-tag">Campo Numérico: COT-NUM-TIEMPO-ENTREGA</span>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Fecha de Cotización:</b></label>
+      <input type="date" value="2026-10-02">
+      <span class="ui-tag">Fecha: COT-FEC-FECHA-COTIZACION</span>
+    </div>
+    <div class="btn-actions">
+      <div class="element-wrapper"><button style="background:#198754;color:white;width:100%;">Registrar</button><span class="ui-tag-btn">COT-BTN-CREAR-COTIZACION</span></div>
+      <div class="element-wrapper"><button style="background:#ffc107;color:#333;width:100%;">Actualizar</button><span class="ui-tag-btn">COT-BTN-ACTUALIZAR-COTIZACION</span></div>
+      <div class="element-wrapper"><button style="background:#dc3545;color:white;width:100%;" onclick="document.getElementById('COT-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Eliminar</button><span class="ui-tag-btn">COT-BTN-ELIMINAR-COTIZACION</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="COT-MDL-CONFIRMAR-ELIMINACION">
+  <div class="modal-content">
+    <div class="element-wrapper" style="align-items:center;"><h4>Eliminar Cotización</h4><span class="ui-tag">Modal: COT-MDL-CONFIRMAR-ELIMINACION</span></div>
+    <div class="element-wrapper" style="align-items:center;margin:15px 0;"><p>¿Está seguro de eliminar esta cotización del comparador?</p><span class="ui-tag">Mensaje: COT-TXT-MSJ</span></div>
+    <div style="display:flex;gap:15px;justify-content:center;">
+      <div class="element-wrapper" style="width:auto;"><button style="background:#dc3545;color:white;">Sí, Eliminar</button><span class="ui-tag-btn">COT-BTN-CONFIRMAR-SI</span></div>
+      <div class="element-wrapper" style="width:auto;"><button style="background:#6c757d;color:white;" onclick="document.getElementById('COT-MDL-CONFIRMAR-ELIMINACION').style.display='none'">Cancelar</button><span class="ui-tag-btn">COT-BTN-CONFIRMAR-NO</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

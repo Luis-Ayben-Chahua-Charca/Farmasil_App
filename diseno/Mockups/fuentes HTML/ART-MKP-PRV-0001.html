@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>ART-MKP-PRV-0001 - Gestión de Proveedores</title>
+<style>
+* { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+body { background-color: #f0f2f5; color: #333; padding: 20px; }
+.element-wrapper { display: flex; flex-direction: column; margin-bottom: 10px; width: 100%; }
+.ui-tag { font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: bold; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 2px 5px; border-radius: 3px; margin-top: 3px; display: inline-block; width: fit-content; }
+.ui-tag-btn { font-family: 'Courier New', Courier, monospace; font-size: 10px; font-weight: bold; background: #cce5ff; color: #004085; border: 1px solid #b8daff; padding: 2px 5px; border-radius: 3px; margin-top: 3px; text-align: center; }
+header { display: flex; gap: 15px; background-color: #0d6efd; padding: 15px; border-radius: 6px; color: white; align-items: flex-start; margin-bottom: 20px; }
+.layout { display: grid; grid-template-columns: 320px 1fr 380px; gap: 20px; }
+.panel { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
+table th, table td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+table th { background: #f8f9fa; }
+.btn-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+.modal-content { background: white; padding: 20px; border-radius: 6px; width: 380px; text-align: center; }
+.prov-card { border: 1px solid #ddd; border-left: 4px solid #0d6efd; padding: 10px; border-radius: 4px; background: #fafafa; margin-bottom: 10px; font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="element-wrapper" style="flex:2;">
+    <input type="text" placeholder="Buscar por RUC o razón social...">
+    <span class="ui-tag">Campo Texto: PRV-TXT-RUC / PRV-TXT-RAZON-SOCIAL</span>
+  </div>
+  <div class="element-wrapper" style="flex:1;">
+    <select><option>-- Estado --</option><option>Activo</option><option>Inactivo</option></select>
+    <span class="ui-tag">ComboBox: PRV-CMB-ESTADO-PROVEEDOR</span>
+  </div>
+  <div class="element-wrapper" style="width:auto;">
+    <button style="background:#198754;color:white;">Buscar</button>
+    <span class="ui-tag-btn">PRV-BTN-LEER-PROVEEDOR</span>
+  </div>
+</header>
+<div class="layout">
+  <div class="panel">
+    <h3>Proveedores</h3>
+    <div style="max-height:500px;overflow-y:auto;">
+      <div class="prov-card"><b>Bayer S.A.</b><br>RUC: 20123456789 · Activo</div>
+      <div class="prov-card"><b>Genfar</b><br>RUC: 20987654321 · Activo</div>
+      <div class="prov-card" style="border-left-color:#6c757d;"><b>Portugal</b><br>RUC: 20456789123 · Inactivo</div>
+    </div>
+    <span class="ui-tag" style="margin-top:5px;">Lista: PRV-TBL-PROVEEDORES</span>
+  </div>
+  <div class="panel">
+    <h3>Ficha de Proveedor</h3>
+    <hr style="margin-bottom:10px;">
+    <div class="element-wrapper">
+      <label><b>RUC:</b></label>
+      <input type="text" value="20123456789">
+      <span class="ui-tag">Campo Texto: PRV-TXT-RUC</span>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Razón Social:</b></label>
+      <input type="text" value="Bayer S.A.">
+      <span class="ui-tag">Campo Texto: PRV-TXT-RAZON-SOCIAL</span>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Teléfono:</b></label>
+      <input type="text" value="01-2345678">
+      <span class="ui-tag">Campo Texto: PRV-TXT-TELEFONO</span>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Estado:</b></label>
+      <select><option>Activo</option><option>Inactivo</option></select>
+      <span class="ui-tag">ComboBox: PRV-CMB-ESTADO-PROVEEDOR</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Tabla de Proveedores</h3>
+    <hr style="margin-bottom:10px;">
+    <div class="element-wrapper">
+      <table>
+        <thead><tr><th>RUC</th><th>Razón Social</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>20123456789</td><td>Bayer S.A.</td><td>Activo</td></tr>
+          <tr><td>20987654321</td><td>Genfar</td><td>Activo</td></tr>
+          <tr><td>20456789123</td><td>Portugal</td><td>Inactivo</td></tr>
+        </tbody>
+      </table>
+      <span class="ui-tag">Tabla: PRV-TBL-PROVEEDORES</span>
+    </div>
+    <div class="btn-actions">
+      <div class="element-wrapper"><button style="background:#198754;color:white;">Crear</button><span class="ui-tag-btn">PRV-BTN-CREAR-PROVEEDOR</span></div>
+      <div class="element-wrapper"><button style="background:#ffc107;color:#333;">Actualizar</button><span class="ui-tag-btn">PRV-BTN-ACTUALIZAR-PROVEEDOR</span></div>
+      <div class="element-wrapper"><button style="background:#dc3545;color:white;" onclick="document.getElementById('PRV-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Eliminar</button><span class="ui-tag-btn">PRV-BTN-ELIMINAR-PROVEEDOR</span></div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="PRV-MDL-CONFIRMAR-ELIMINACION">
+  <div class="modal-content">
+    <div class="element-wrapper" style="align-items:center;"><h4>Eliminar Proveedor</h4><span class="ui-tag">Modal: PRV-MDL-CONFIRMAR-ELIMINACION</span></div>
+    <div class="element-wrapper" style="align-items:center;margin:15px 0;"><p>¿Está seguro de dar de baja este proveedor?</p><span class="ui-tag">Mensaje: PRV-TXT-MSJ</span></div>
+    <div style="display:flex;gap:15px;justify-content:center;">
+      <div class="element-wrapper" style="width:auto;"><button style="background:#dc3545;color:white;">Sí, Eliminar</button><span class="ui-tag-btn">PRV-BTN-CONFIRMAR-SI</span></div>
+      <div class="element-wrapper" style="width:auto;"><button style="background:#6c757d;color:white;" onclick="document.getElementById('PRV-MDL-CONFIRMAR-ELIMINACION').style.display='none'">Cancelar</button><span class="ui-tag-btn">PRV-BTN-CONFIRMAR-NO</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>ART-MKP-REP-0001 - Gestión de Reportes de Ventas</title>
+<style>
+* { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+body { background-color: #f0f2f5; color: #333; padding: 20px; }
+.element-wrapper { display: flex; flex-direction: column; margin-bottom: 10px; width: 100%; }
+.ui-tag { font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: bold; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 2px 5px; border-radius: 3px; margin-top: 3px; display: inline-block; width: fit-content; }
+.ui-tag-btn { font-family: 'Courier New', Courier, monospace; font-size: 10px; font-weight: bold; background: #cce5ff; color: #004085; border: 1px solid #b8daff; padding: 2px 5px; border-radius: 3px; margin-top: 3px; text-align: center; }
+header { display: flex; gap: 15px; background-color: #0d6efd; padding: 15px; border-radius: 6px; color: white; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; }
+.layout { display: grid; grid-template-columns: 340px 1fr 380px; gap: 20px; }
+.panel { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
+table th, table td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+table th { background: #f8f9fa; }
+.btn-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+.modal-content { background: white; padding: 20px; border-radius: 6px; width: 380px; text-align: center; }
+.preview-box { background: #f8f9fa; border: 2px dashed #adb5bd; border-radius: 6px; padding: 20px; min-height: 320px; }
+.preview-title { text-align: center; color: #0d6efd; margin-bottom: 15px; }
+.report-card { border: 1px solid #ddd; border-left: 4px solid #0d6efd; padding: 10px; border-radius: 4px; background: #fafafa; margin-bottom: 10px; font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="element-wrapper" style="flex:1;">
+    <select><option>-- Tipo de Reporte --</option><option>Ventas por Fecha</option><option>Ventas por Producto</option><option>Consolidado General</option></select>
+    <span class="ui-tag">ComboBox: REP-CMB-TIPO-REPORTE</span>
+  </div>
+  <div class="element-wrapper" style="flex:1;">
+    <select><option>-- Formato --</option><option>PDF</option><option>Excel</option></select>
+    <span class="ui-tag">ComboBox: REP-CMB-FORMATO-REPORTE</span>
+  </div>
+  <div class="element-wrapper" style="flex:1;">
+    <input type="date" value="2026-09-01">
+    <span class="ui-tag">Fecha Inicio: REP-FEC-FECHA-INICIO</span>
+  </div>
+  <div class="element-wrapper" style="flex:1;">
+    <input type="date" value="2026-09-30">
+    <span class="ui-tag">Fecha Fin: REP-FEC-FECHA-FIN</span>
+  </div>
+  <div class="element-wrapper" style="width:auto;">
+    <button style="background:#198754;color:white;">Generar</button>
+    <span class="ui-tag-btn">REP-BTN-GENERAR-REPORTE</span>
+  </div>
+</header>
+<div class="layout">
+  <div class="panel">
+    <h3>Parámetros y Búsqueda</h3>
+    <hr style="margin-bottom:10px;">
+    <div class="element-wrapper">
+      <label><b>Buscar reporte:</b></label>
+      <input type="text" placeholder="Código o tipo...">
+      <span class="ui-tag">Campo Texto: REP-BTN-LEER-REPORTE</span>
+    </div>
+    <div class="element-wrapper">
+      <button style="background:#0d6efd;color:white;width:100%;">Filtrar Historial</button>
+      <span class="ui-tag-btn">REP-BTN-LEER-REPORTE</span>
+    </div>
+    <hr style="margin:10px 0;">
+    <h4 style="font-size:13px;color:#555;">Reportes Recientes</h4>
+    <div class="report-card">
+      <b>Ventas por Fecha</b><br>01/09/2026 - 30/09/2026<br><span style="color:#6c757d;">Generado: 30/09/2026</span>
+    </div>
+    <div class="report-card">
+      <b>Ventas por Producto</b><br>15/09/2026 - 20/09/2026<br><span style="color:#6c757d;">Generado: 20/09/2026</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Vista Previa del Reporte</h3>
+    <hr style="margin-bottom:10px;">
+    <div class="preview-box">
+      <div class="preview-title"><b>REPORTE DE VENTAS</b><br><small>Del 01/09/2026 al 30/09/2026</small></div>
+      <table>
+        <thead><tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>02/09/2026</td><td>Paracetamol 500mg</td><td>12</td><td>S/ 42.00</td></tr>
+          <tr><td>05/09/2026</td><td>Amoxicilina 500mg</td><td>8</td><td>S/ 96.00</td></tr>
+          <tr><td>12/09/2026</td><td>Ibuprofeno 400mg</td><td>20</td><td>S/ 116.00</td></tr>
+          <tr><td>25/09/2026</td><td>Paracetamol 500mg</td><td>30</td><td>S/ 105.00</td></tr>
+        </tbody>
+      </table>
+      <p style="text-align:right;margin-top:10px;font-weight:bold;">Total: S/ 359.00</p>
+    </div>
+    <span class="ui-tag" style="margin-top:10px;">Vista Previa: REP-TBL-REPORTES</span>
+  </div>
+  <div class="panel">
+    <h3>Historial de Reportes</h3>
+    <hr style="margin-bottom:10px;">
+    <div class="element-wrapper">
+      <table>
+        <thead><tr><th>Tipo</th><th>Fecha</th><th>Formato</th></tr></thead>
+        <tbody>
+          <tr><td>Por Fecha</td><td>30/09</td><td>PDF</td></tr>
+          <tr><td>Por Producto</td><td>20/09</td><td>Excel</td></tr>
+        </tbody>
+      </table>
+      <span class="ui-tag">Tabla: REP-TBL-REPORTES</span>
+    </div>
+    <div class="btn-actions">
+      <div class="element-wrapper"><button style="background:#198754;color:white;">Generar</button><span class="ui-tag-btn">REP-BTN-GENERAR-REPORTE</span></div>
+      <div class="element-wrapper"><button style="background:#ffc107;color:#333;">Modificar</button><span class="ui-tag-btn">REP-BTN-ACTUALIZAR-REPORTE</span></div>
+      <div class="element-wrapper"><button style="background:#dc3545;color:white;" onclick="document.getElementById('REP-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Eliminar</button><span class="ui-tag-btn">REP-BTN-ELIMINAR-REPORTE</span></div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="REP-MDL-CONFIRMAR-ELIMINACION">
+  <div class="modal-content">
+    <div class="element-wrapper" style="align-items:center;"><h4>Eliminar Reporte</h4><span class="ui-tag">Modal: REP-MDL-CONFIRMAR-ELIMINACION</span></div>
+    <div class="element-wrapper" style="align-items:center;margin:15px 0;"><p>¿Está seguro de eliminar este registro de reporte?</p><span class="ui-tag">Mensaje: REP-TXT-MSJ</span></div>
+    <div style="display:flex;gap:15px;justify-content:center;">
+      <div class="element-wrapper" style="width:auto;"><button style="background:#dc3545;color:white;">Sí, Eliminar</button><span class="ui-tag-btn">REP-BTN-CONFIRMAR-SI</span></div>
+      <div class="element-wrapper" style="width:auto;"><button style="background:#6c757d;color:white;" onclick="document.getElementById('REP-MDL-CONFIRMAR-ELIMINACION').style.display='none'">Cancelar</button><span class="ui-tag-btn">REP-BTN-CONFIRMAR-NO</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
