@@ -1,5 +1,5 @@
 @startuml ACD-02_EsquemaRepositorio
-' Arquitectura centrada en datos FARMASIL_APP — ACD-02 Esquema del repositorio DB_FARMASIL — v00.02 (borrador)
+' Arquitectura centrada en datos FARMASIL_APP — ACD-02 Esquema del repositorio DB_FARMASIL — v01.00
 ' Estructura del almacenamiento central: 16 tablas agrupadas por el agente que es dueño de cada una,
 ' y sus 2 vistas, con las 18 claves foráneas del Diccionario de Datos v11.00 (resumen de relaciones). Notación pata de gallo.
 ' Leyenda de columnas: PK clave primaria, FK clave foránea, UQ única, UQ1 parte de una UNIQUE compuesta,

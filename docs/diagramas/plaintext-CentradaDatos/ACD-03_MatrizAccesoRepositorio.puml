@@ -1,9 +1,10 @@
 @startuml ACD-03_MatrizAccesoRepositorio
-' Arquitectura centrada en datos FARMASIL_APP — ACD-03 Matriz de acceso de los módulos al repositorio (nivel 2) — v00.02 (borrador)
+' Arquitectura centrada en datos FARMASIL_APP — ACD-03 Matriz de acceso de los módulos al repositorio (nivel 2) — v01.00
 ' Acceso de cada módulo a cada tabla o vista de DB_FARMASIL, extraído de la precondición y el procedimiento de las
 ' 52 especificaciones (catalogo/03-especificaciones.md) y de RNF-0010 v04.00, con las decisiones DEC-055 a DEC-057.
 ' C crear, R leer, U actualizar, D eliminar. No se incluye la lectura de TBL_USUARIOS por la sesión (transversal,
 ' RNF-0006) ni el respaldo, que lee la base completa.
+' Tampoco se dibuja la resolución del nombre del autor en ESP-0021 y ESP-0023, que es transversal como la sesión (DEC-059).
 skinparam shadowing false
 skinparam defaultFontName Arial
 skinparam defaultFontSize 12
@@ -16,11 +17,11 @@ legend top left
 | <b>VEN</b> Ventas | | |<#DDEBF7> R IPagos |<#DDEBF7> R ILotes |<#DDEBF7> R IRestr. |<#DDEBF7> R U ILotes | | |<#D9D4F7> CRUD |<#D9D4F7> CRUD |<#FFD9A8> R H1 | | | | | | | |
 | <b>INV</b> Inventario | |<#DDEBF7> R IProv. | |<#D9D4F7> CRUD | | |<#FFD9A8> R H2 | | | | | | | | | | | |
 | <b>DOC</b> Documentación Tributaria | | | | | | | | |<#DDEBF7> R IVentas | |<#D9D4F7> CRU | | | | | | | |
-| <b>ALV</b> Alertas de Vencimiento | | | | | |<#DDEBF7> R U ILotes | | | | | | |<#DDEBF7> R IDevol. |<#DDEBF7> R IDevol. |<#D9D4F7> R |<#D9D4F7> CRUD | | |
+| <b>ALV</b> Alertas de Vencimiento | | | |<#DDEBF7> R ILotes | |<#DDEBF7> R U ILotes | | | | | | |<#DDEBF7> R IDevol. |<#DDEBF7> R IDevol. |<#D9D4F7> R |<#D9D4F7> CRUD | | |
 | ALV·EV  proceso de evaluación de vencimientos | | | | | |<#DDEBF7> R ILotes | | | | | | | | |<#D9D4F7> R U | | | |
 | <b>PAG</b> Métodos de Pago | | |<#D9D4F7> CRUD | | | | | | | | | | | | | | | |
 | <b>REP</b> Reportes de Ventas | | | | | | | | |<#DDEBF7> R IVentas |<#DDEBF7> R IVentas | |<#D9D4F7> CRUD | | | | | | |
-| <b>DEV</b> Devoluciones | |<#DDEBF7> R IProv. | | | |<#DDEBF7> R U ILotes | | | | | | |<#D9D4F7> CRU |<#D9D4F7> CRUD | | | | |
+| <b>DEV</b> Devoluciones | |<#DDEBF7> R IProv. | |<#DDEBF7> R ILotes | |<#DDEBF7> R U ILotes | | | | | | |<#D9D4F7> CRU |<#D9D4F7> CRUD | | | | |
 | <b>RES</b> Restricciones de Venta | | | |<#DDEBF7> R IInvent. |<#D9D4F7> CRU | | | | | | | | | | | | | |
 | <b>PRV</b> Proveedores | |<#D9D4F7> CRUD | | | | | | | | | | |<#FFD9A8> R H4 | | | | | |
 | <b>LOT</b> Lotes | |<#DDEBF7> R IProv. | |<#DDEBF7> R IInvent. | |<#D9D4F7> CRUD |<#D9D4F7> dueño |<#D9D4F7> dueño | | | | |<#FFD9A8> R H3 |<#FFD9A8> R H3 | | | | |
@@ -44,5 +45,6 @@ legend top left
 Los procesos programados de RNF-0010 pertenecen a un módulo: la evaluación de vencimientos (EV) a Alertas de Vencimiento y la generación de la lista (GL) a Reabastecimiento.
 TBL_LOTES solo la escribe Lotes. Ventas, Devoluciones y Alertas le piden descontar, restituir o bloquear una remesa por ILotes, con la regla única de DEC-034.
 H5 (Devoluciones leía TBL_PRODUCTOS en ESP-0026) se eliminó: el nombre del medicamento llega por ILotes (DEC-057).
+Tampoco se dibuja la resolución del nombre del autor en ESP-0021 y ESP-0023, que es transversal como la sesión (DEC-059).
 endlegend
 @enduml

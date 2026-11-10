@@ -1,10 +1,10 @@
 @startuml ACD-01_RepositorioAgentes
-' Arquitectura centrada en datos FARMASIL_APP — ACD-01 Repositorio y agentes (nivel 1) — v00.02 (borrador)
+' Arquitectura centrada en datos FARMASIL_APP — ACD-01 Repositorio y agentes (nivel 1) — v01.00
 ' Estilo: repositorio (ArquitecturaSoftware.pdf, "Arquitectura de software centrada en el dato"), combinado
 ' con invocación explícita: los módulos comparten el repositorio DB_FARMASIL y además se invocan por las
 ' 18 dependencias de la arquitectura genérica (VL-04: IVentas, ILotes, IPagos, IRestricciones...).
 ' Cada tabla la escribe solo su módulo dueño (DEC-055).
-' Fuentes: Diccionario de Datos v10.00 (16 tablas), Contexto de arquitectura §2-§4, RNF-0001,
+' Fuentes: Diccionario de Datos v11.00 (16 tablas y 2 vistas), Contexto de arquitectura §2-§4, RNF-0001,
 ' RNF-0003, RNF-0006, RNF-0007, RNF-0010, VF-01, VL-04, DEC-021, DEC-055, DEC-056.
 skinparam shadowing false
 skinparam defaultFontName Arial
@@ -109,8 +109,9 @@ note as N2
     (por ejemplo, Ventas pide a Lotes la remesa FEFO
     y el descuento de stock con ILotes);
   - acceso al repositorio compartido: cada módulo
-    escribe solo sus tablas y lee tablas ajenas solo
-    en la lista cerrada H1-H4 (DEC-055).
+    escribe solo sus tablas; un dato ajeno lo obtiene
+    por la interfaz del dueño, salvo las lecturas de
+    verificación H1-H4 (DEC-055).
   El detalle por tabla está en ACD-03.
 end note
 G1 -[hidden]down- G4

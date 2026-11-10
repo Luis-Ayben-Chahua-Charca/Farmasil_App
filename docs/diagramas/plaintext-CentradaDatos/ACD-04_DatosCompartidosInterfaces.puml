@@ -1,5 +1,5 @@
 @startuml ACD-04_DatosCompartidosInterfaces
-' Arquitectura centrada en datos FARMASIL_APP — ACD-04 Datos compartidos e interfaces en dos cadenas — v00.02 (borrador)
+' Arquitectura centrada en datos FARMASIL_APP — ACD-04 Datos compartidos e interfaces en dos cadenas — v01.00
 ' Los módulos se invocan por las dependencias de la arquitectura genérica (VL-04) y comparten el
 ' repositorio DB_FARMASIL. En cada paso se indica qué dato persiste en el repositorio y por qué
 ' interfaz lo obtiene el módulo siguiente. Cadenas: venta → comprobante → reporte, y
@@ -57,9 +57,10 @@ note right of TRV
 end note
 
 TEC -> DOC : emitir comprobante
-DOC -> VEN : IVentas.consultarVentas(sin comprobante 'Emitido')
+DOC -> VEN : IVentas.consultarVentas(filtro)
 VEN -> TRV : leer venta
 VEN --> DOC : venta y monto_total
+DOC -> TCMP : excluir ventas con comprobante 'Emitido' (tabla propia)
 DOC -> TCMP : INSERT comprobante (ESP-0009)
 note right of TCMP : Persiste: el comprobante (dueño DOC).
 
@@ -74,7 +75,9 @@ note over REA : cada 15 días o al iniciar si ya pasaron (RNF-0010, proceso 2)
 REA -> TLOT : leer VW_STOCK_VENDIBLE\n(lectura de verificación H2, DEC-056)
 note over REA : stock_minimo y estado del medicamento\nllegan por IInventario (arista REA → INV)
 REA -> TLRE : INSERT ítem 'Automatico' si stock vendible < stock_minimo
-alt el medicamento ya figura (UNIQUE id_producto)
+alt el medicamento no figura
+  TLRE --> REA : ítem registrado
+else ya figura (UNIQUE id_producto)
   TLRE --> REA : rechazo por unicidad: se trata como "ya figura" (DEC-020)
 end
 note right of TLRE : Persiste: el ítem de la lista (dueño REA).
