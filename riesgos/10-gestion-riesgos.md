@@ -1,6 +1,6 @@
 # Gestión de Riesgos — FARMASIL
 
-**Versión:** 08.00 · **Fecha:** 08/11/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
+**Versión:** 09.00 · **Fecha:** 09/11/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
 
 Insumo para la plantilla de gestión de riesgos GRI_0002: el equipo revisa, ajusta y traslada estas
 filas a la hoja de cálculo. Cubre **las 52 ilaciones de los 13 módulos** más un bloque de **riesgos
@@ -18,8 +18,9 @@ generales (RG)**, según la observación del profesor.
 | 06.00 | 13/10/2026 | Se resuelven ILA-0033-R02 (contraseña como hash con sal), ILA-0041-R01 (remesa nueva con existencias mayores que cero) e ILA-0043-R02 (validación de la nueva fecha de vencimiento). |
 | 07.00 | 18/10/2026 | Se cierran por no aplicar los cuatro riesgos de concurrencia entre usuarios (ILA-0001-R02, ILA-0003-R02, ILA-0023-R03, ILA-0031-R02): RNF-0003 v02.00 establece un solo usuario por vez. |
 | 08.00 | 08/11/2026 | Terminología vigente (DEC-031, DEC-040): ILA-0046-R01 habla de stock vendible y ILA-0045-R01 usa el literal 'Automatico'. No cambia ningún estado ni el conteo de riesgos. |
+| 09.00 | 09/11/2026 | RG-011 cita la regla de lecturas de verificación (DEC-055): DEC-009 cubre la elección entre borrado físico y baja lógica, y las guardas sobre devoluciones pendientes de ESP-0040 y ESP-0044 son lecturas permitidas y enumeradas. No cambia ningún estado ni el conteo de riesgos. |
 
-En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"**, **"v05 —"**, **"v06 —"** o **"v07 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
+En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"**, **"v05 —"**, **"v06 —"**, **"v07 —"** o **"v09 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
 
 ## Criterio usado para el campo Estado
 
@@ -56,7 +57,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | RG-008 | Error del usuario al ingresar información incorrecta (fechas, cantidades, montos) por falta de capacitación. | Media | 50% | 2 | En proceso | Reforzar validaciones de formato por campo; plan de capacitación al personal. | Guía de nomenclatura de mockups |
 | RG-009 | Fallas del sistema operativo o incompatibilidad del software con el equipo de la farmacia. | Baja | 10% | 3 | Pendiente | Definir requisitos mínimos de hardware/software antes del despliegue. | 08-requisitos-no-funcionales.md |
 | RG-010 | Pérdida de información por ausencia de copias de seguridad periódicas de DB_FARMASIL. | Media | 50% | 5 | Pendiente | Programar respaldo automático diario de la base de datos. | DB_FARMASIL |
-| RG-011 | Las bajas condicionales (física si no hay referencias, lógica si las hay) consultan tablas de otros módulos para decidir: ESP-0008 lee Lotes y Restricciones, ESP-0020 lee Ventas, ESP-0036 lee Ventas y Devoluciones, ESP-0040 lee Productos y Devoluciones. Son dependencias inversas que la arquitectura genérica no registra, y las listas ya están incompletas (ILA-0036-R01, ILA-0040-R01). | Baja | 10% | 3 | Resuelto | v04 — ESP-0008, ESP-0020, ESP-0036, ESP-0040 y ESP-0044 intentan el borrado físico y, si el motor lo rechaza por una clave foránea, aplican la baja lógica. Ningún módulo enumera tablas ajenas; la regla de borrado de las FK está en el Diccionario de Datos v06.00 y en la sección 5 del contexto de arquitectura. | ESP-0008, ESP-0020, ESP-0036, ESP-0040, Arquitectura genérica |
+| RG-011 | Las bajas condicionales (física si no hay referencias, lógica si las hay) consultan tablas de otros módulos para decidir: ESP-0008 lee Lotes y Restricciones, ESP-0020 lee Ventas, ESP-0036 lee Ventas y Devoluciones, ESP-0040 lee Productos y Devoluciones. Son dependencias inversas que la arquitectura genérica no registra, y las listas ya están incompletas (ILA-0036-R01, ILA-0040-R01). | Baja | 10% | 3 | Resuelto | v04 — ESP-0008, ESP-0020, ESP-0036, ESP-0040 y ESP-0044 intentan el borrado físico y, si el motor lo rechaza por una clave foránea, aplican la baja lógica. Ningún módulo enumera tablas ajenas; la regla de borrado de las FK está en el Diccionario de Datos v06.00 y en la sección 5 del contexto de arquitectura. v09 — DEC-009 se limita a esa elección. Las guardas previas sobre órdenes de devolución pendientes de ESP-0040 y ESP-0044 son lecturas de verificación permitidas por la regla de DEC-055 (punto 10 de la sección 5 del contexto de arquitectura), que enumera la lista cerrada de lecturas de tablas ajenas. | ESP-0008, ESP-0020, ESP-0036, ESP-0040, Arquitectura genérica |
 
 ---
 
