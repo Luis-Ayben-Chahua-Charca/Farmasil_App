@@ -2,8 +2,8 @@
 
 | Artefacto | Registro de pendientes y decisiones |
 | --- | --- |
-| Versión | 06.00 |
-| Fecha | 09/11/2026 |
+| Versión | 07.00 |
+| Fecha | 10/11/2026 |
 | Responsable | AUT-0001 |
 
 ## 1. Para qué existe y por qué tiene esta forma
@@ -68,6 +68,7 @@ No se duplica el backlog ni los riesgos: un pendiente que se convierte en trabaj
 | PEN-032 | ¿Qué código identifica al producto en la venta? ¿Es el código de barras? Provisional: el `id_producto` formateado (DEC-048). | Cliente | Dueña | Ninguno (hay comportamiento provisional aplicado) | Baja | En espera del cliente | Respuesta registrada; si es el código de barras, columna nueva en `TBL_PRODUCTOS` | P-06 de la auditoría de mockups | — |
 | PEN-033 | Reabastecimiento: ¿la prioridad tiene dos niveles o tres? ¿La cantidad a pedir la escribe la dueña o la calcula el sistema? ¿Quiere generar la lista a mano? Provisional: prioridad 'Normal' y 'Urgente'; la «cantidad sugerida» se muestra solo como dato calculado, `MAX(stock_minimo − stock vendible, 0)`, y no se guarda; la generación es solo automática (RNF-0010). Se vincula con PEN-002. | Cliente | Dueña | Ninguno (hay comportamiento provisional aplicado) | Baja | En espera del cliente | Respuesta registrada; si cambia, ajuste del dominio de `prioridad`, del Diccionario de Datos y de ESP-0045 a ESP-0049 | P-11 de la auditoría de mockups (AUD-MKP-gpt-107) | — |
 | PEN-034 | ¿Necesita registrar el tiempo de entrega de cada proveedor? Provisional: fuera de alcance. | Alcance | Dueña | Ninguno (hay comportamiento provisional aplicado) | Baja | En espera del cliente | Respuesta registrada; si entra, columna y operación que la registren | P-12 de la auditoría de mockups | — |
+| PEN-035 | Autenticación de la aplicación ante SQL Server: ¿cuenta de Windows o inicio de sesión SQL? Provisional: cuenta de Windows de quien ejecuta la aplicación (`Integrated Security=true`), sin usuario ni contraseña en el repositorio. | Equipo | Leyni | Ninguno (hay comportamiento provisional aplicado); se confirma antes de la puesta en producción (plan de implementación, sección 10) | Media | Abierto | Decisión registrada como `DEC-NNN`. Si se mantiene la cuenta de Windows: confirmar que las cuentas del equipo de la farmacia tienen permiso sobre `DB_FARMASIL` y quitar la marca de provisional del README y de `architecture.md`. Si se elige un inicio de sesión SQL: definir dónde se guarda la contraseña fuera del repositorio, cambiar `appsettings.json` y la prueba `CadenaDeConexionPruebas`, y actualizar el README y VF-01 | `architecture.md` §3 (decisión abierta), VF-01, plan de implementación §10 | #53 |
 
 ## 4. Agenda para la próxima reunión con la dueña
 
