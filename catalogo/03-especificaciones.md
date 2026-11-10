@@ -480,20 +480,20 @@
 | Código especificación | ESP-0026 |
 | --- | --- |
 | Nombre | Consulta de orden de devolución |
-| Versión | 03.00 |
-| Fecha | 13/10/2026 |
+| Versión | 04.00 |
+| Fecha | 09/11/2026 |
 | Autor de la plantilla | AUT-0004 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0026 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_ORDENES_DEVOLUCION <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-DEV-0001**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**CARGAR DEV-TBL-ORDENES-DEVOLUCION CON (id_devolucion, fecha_creacion, proveedor, motivo_devolucion, estado_orden)**<br>&nbsp;&nbsp;**SELECCIONAR orden EN DEV-TBL-ORDENES-DEVOLUCION**<br>&nbsp;&nbsp;**PRESIONAR DEV-BTN-LEER-DEVOLUCION**<br>&nbsp;&nbsp;**CARGAR ART-MKP-DEV-0002**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_ORDENES_DEVOLUCION UNIENDO DB_FARMASIL.TBL_PROVEEDORES**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_DETALLE_DEVOLUCION UNIENDO DB_FARMASIL.TBL_LOTES UNIENDO DB_FARMASIL.TBL_PRODUCTOS DONDE id_devolucion = orden**<br>&nbsp;&nbsp;**CARGAR DEV-TBL-DETALLE-DEVOLUCION CON (nombre, numero_lote, cantidad_devolver)**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**CARGAR DEV-TBL-ORDENES-DEVOLUCION CON (id_devolucion, fecha_creacion, proveedor, motivo_devolucion, estado_orden)**<br>&nbsp;&nbsp;**SELECCIONAR orden EN DEV-TBL-ORDENES-DEVOLUCION**<br>&nbsp;&nbsp;**PRESIONAR DEV-BTN-LEER-DEVOLUCION**<br>&nbsp;&nbsp;**CARGAR ART-MKP-DEV-0002**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_ORDENES_DEVOLUCION UNIENDO DB_FARMASIL.TBL_PROVEEDORES**<br>&nbsp;&nbsp;**detalle = CONSULTAR DB_FARMASIL.TBL_DETALLE_DEVOLUCION DONDE id_devolucion = orden**<br>&nbsp;&nbsp;**remesas = ILotes.datosRemesas(detalle.id_lote) CON (id_lote, numero_lote, nombre_medicamento)**<br>&nbsp;&nbsp;**CARGAR DEV-TBL-DETALLE-DEVOLUCION CON (remesas.nombre_medicamento, remesas.numero_lote, detalle.cantidad_devolver)**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DEV-TBL-ORDENES-DEVOLUCION = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR DEV-TBL-DETALLE-DEVOLUCION = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL = SIN_MODIFICACION**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-DEV-0001, ART-MKP-DEV-0002 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La postcondición anterior decía únicamente que "el sistema permanece invariable", sin declarar el resultado de la consulta.<br>El detalle se resuelve contra **TBL_DETALLE_DEVOLUCION**, el número de lote de **TBL_LOTES** a través de `id_lote` y el nombre del medicamento de **TBL_PRODUCTOS** (Diccionario de Datos v04.00).<br>**Versión 03.00:** se corrige la referencia anterior, que situaba el lote en **TBL_PRODUCTOS**, donde ya no existe desde la incorporación de **TBL_LOTES**. |
+| Comentario | La postcondición anterior decía únicamente que "el sistema permanece invariable", sin declarar el resultado de la consulta.<br>El detalle se resuelve contra **TBL_DETALLE_DEVOLUCION**, el número de lote de **TBL_LOTES** a través de `id_lote` y el nombre del medicamento de **TBL_PRODUCTOS** (Diccionario de Datos v04.00).<br>**Versión 03.00:** se corrige la referencia anterior, que situaba el lote en **TBL_PRODUCTOS**, donde ya no existe desde la incorporación de **TBL_LOTES**.<br>**Versión 04.00:** (DEC-057) el número de lote y el nombre del medicamento de cada línea se obtienen por la interfaz **ILotes**, que devuelve los datos de la remesa, como en DEC-044. Devoluciones ya no une **TBL_LOTES** ni **TBL_PRODUCTOS**: leer **TBL_PRODUCTOS** suponía una dependencia Devoluciones → Inventario que la arquitectura genérica no tiene. |
 
 | Código especificación | ESP-0027 |
 | --- | --- |

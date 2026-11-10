@@ -501,8 +501,8 @@
 | Código ilación | ILA-0026 |
 | --- | --- |
 | Nombre | Consultar orden de devolución |
-| Versión | 04.00 |
-| Fecha | 05/09/2026 |
+| Versión | 05.00 |
+| Fecha | 09/11/2026 |
 | Autor de la plantilla | AUT-0004 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -510,12 +510,12 @@
 | Código educción | EDU-0011 |
 | Código especificación | ESP-0026 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_ORDENES_DEVOLUCION** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-DEV-0001**. |
-| Procedimiento | 1. El sistema muestra el listado de órdenes de devolución en **DEV-TBL-ORDENES-DEVOLUCION**, con su código, fecha, proveedor, motivo y estado.<br>2. El usuario selecciona una orden específica y presiona **DEV-BTN-LEER-DEVOLUCION**.<br>3. El sistema carga el mockup **ART-MKP-DEV-0002**.<br>4. El sistema consulta **DB_FARMASIL.TBL_ORDENES_DEVOLUCION** y **DB_FARMASIL.TBL_DETALLE_DEVOLUCION**, resuelve la remesa contra **DB_FARMASIL.TBL_LOTES**, el nombre del medicamento contra **DB_FARMASIL.TBL_PRODUCTOS** y el proveedor contra **DB_FARMASIL.TBL_PROVEEDORES**.<br>5. El sistema muestra el detalle de la orden: datos de cabecera y, por cada medicamento, su nombre, número de lote y cantidad a devolver. |
+| Procedimiento | 1. El sistema muestra el listado de órdenes de devolución en **DEV-TBL-ORDENES-DEVOLUCION**, con su código, fecha, proveedor, motivo y estado.<br>2. El usuario selecciona una orden específica y presiona **DEV-BTN-LEER-DEVOLUCION**.<br>3. El sistema carga el mockup **ART-MKP-DEV-0002**.<br>4. El sistema consulta **DB_FARMASIL.TBL_ORDENES_DEVOLUCION** y **DB_FARMASIL.TBL_DETALLE_DEVOLUCION**, obtiene el número de lote y el nombre del medicamento de cada remesa a través de la interfaz de Lotes (**ILotes**) y resuelve el proveedor contra **DB_FARMASIL.TBL_PROVEEDORES**.<br>5. El sistema muestra el detalle de la orden: datos de cabecera y, por cada medicamento, su nombre, número de lote y cantidad a devolver. |
 | Postcondición | 1. El sistema muestra la orden y su detalle completo.<br>2. Ningún dato es modificado en **DB_FARMASIL**. |
 | Código de artefactos asociados | ART-MKP-DEV-0001, ART-MKP-DEV-0002 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Se corrigieron el código **ILA_0026**, el código de educción **EDU-00011**, que tenía cinco dígitos, y las referencias a la tabla inexistente **DEV_TBL_ORDENES_DEVOLUCION**.<br>La postcondición decía únicamente "el sistema permanece invariable", sin declarar el resultado de la consulta; se completó.<br>El campo Fuente decía "Ninguno" pese a que el requisito proviene del Registro de Entrevista 1; se corrigió y queda pendiente asignarle su código FUE definitivo. |
+| Comentario | Se corrigieron el código **ILA_0026**, el código de educción **EDU-00011**, que tenía cinco dígitos, y las referencias a la tabla inexistente **DEV_TBL_ORDENES_DEVOLUCION**.<br>La postcondición decía únicamente "el sistema permanece invariable", sin declarar el resultado de la consulta; se completó.<br>El campo Fuente decía "Ninguno" pese a que el requisito proviene del Registro de Entrevista 1; se corrigió y queda pendiente asignarle su código FUE definitivo.<br>**Versión 05.00:** (DEC-057) el nombre del medicamento y el número de lote se obtienen por **ILotes**, como en DEC-044, y no consultando **TBL_PRODUCTOS**, para no crear la dependencia Devoluciones → Inventario. |
 
 | Código ilación | ILA-0027 |
 | --- | --- |
