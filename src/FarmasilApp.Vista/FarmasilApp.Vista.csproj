@@ -16,7 +16,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.15" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Configuración local opcional de cada integrante; no se versiona (*.local.json en .gitignore). -->
+    <Content Include="appsettings.local.json" Condition="Exists('appsettings.local.json')" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

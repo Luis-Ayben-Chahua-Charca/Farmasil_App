@@ -62,7 +62,7 @@ public class EstructuraDeCapasPruebas
     [Fact]
     public void LaSolucionIncluyeLosCincoProyectos()
     {
-        var slnx = XDocument.Load(Path.Combine(RaizDelRepositorio(), "FarmasilApp.slnx"));
+        var slnx = XDocument.Load(Path.Combine(Repositorio.Raiz(), "FarmasilApp.slnx"));
         var incluidos = slnx.Descendants("Project")
             .Select(p => Path.GetFileNameWithoutExtension((string?)p.Attribute("Path") ?? string.Empty))
             .OrderBy(n => n, StringComparer.Ordinal)
@@ -84,17 +84,5 @@ public class EstructuraDeCapasPruebas
     }
 
     private static string RutaCsproj(string proyecto) =>
-        Path.Combine(RaizDelRepositorio(), "src", proyecto, proyecto + ".csproj");
-
-    private static string RaizDelRepositorio()
-    {
-        var directorio = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directorio is not null && !File.Exists(Path.Combine(directorio.FullName, "FarmasilApp.slnx")))
-        {
-            directorio = directorio.Parent;
-        }
-
-        return directorio?.FullName
-            ?? throw new InvalidOperationException("No se encontró FarmasilApp.slnx subiendo desde " + AppContext.BaseDirectory);
-    }
+        Path.Combine(Repositorio.Raiz(), "src", proyecto, proyecto + ".csproj");
 }
