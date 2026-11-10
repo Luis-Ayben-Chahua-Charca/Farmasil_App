@@ -45,6 +45,7 @@ FARMASIL_APP es un sistema de gestión de inventarios y ventas para una farmacia
 | Riesgos | `riesgos/10-gestion-riesgos.md` |
 | Pendientes y decisiones | `seguimiento/11-registro-pendientes.md` |
 | Auditorías y revisiones | `seguimiento/12-*`, `13-*`, `14-*` |
+| Plan de implementación (roles, sprints, definición de terminado) | `docs/plan/plan-implementacion.md` |
 
 ### 3.2 Vistas de arquitectura
 
@@ -131,6 +132,7 @@ ProyectoFarmasil/
 ├── diseno/                    06 guía de mockups, 07 matriz de permisos, Mockups/
 ├── docs/
 │   ├── arquitectura/          contexto para agentes, insumos, vista lógica, niveles 1 y 2
+│   ├── plan/                  plan de implementación (roles, sprints, definición de terminado)
 │   └── diagramas/             PNG de todas las vistas + plaintext-*/ con los .puml
 ├── pruebas de software/       09 pruebas
 ├── riesgos/                   10 gestión de riesgos
