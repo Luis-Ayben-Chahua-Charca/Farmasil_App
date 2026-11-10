@@ -18,6 +18,8 @@ Sistema de gestión para farmacia. Universidad Nacional de San Agustín, Ingenie
 | `10-gestion-riesgos.md` | v07.00 | 127 riesgos (11 generales y 116 de las 52 ilaciones), 74 resueltos, con su estado verificado contra el catálogo vigente. Insumo de la plantilla GRI_0002. |
 | `11-registro-pendientes.md` | v03.00 | Cuestiones abiertas (PEN), agenda para la dueña y registro de decisiones (DEC). Carpeta `seguimiento/`. |
 
+El plan de implementación (roles, calendario de sprints y definición de terminado) está en [`docs/plan/plan-implementacion.md`](docs/plan/plan-implementacion.md).
+
 ## Estructura del catálogo
 
 13 módulos, cada uno con una educción, cuatro ilaciones y cuatro especificaciones.
