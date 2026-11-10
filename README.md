@@ -51,6 +51,8 @@ Los códigos EDU-0005 a EDU-0008 están reservados y no se reasignan: correspond
 
 ## Desarrollo local
 
+Para preparar el entorno (herramientas, paquetes y verificación), sigue «Preparar el entorno» en [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 La aplicación es C# sobre .NET 10 LTS con WPF y SQL Server 2025 Express (RNF-0008, DEC-028). La solución es `FarmasilApp.slnx`, con un proyecto por capa (Vista, VistaModelo, Modelo y Persistencia) y uno de pruebas (`tests/FarmasilApp.Pruebas`).
 
 Requisitos: Windows 11, el SDK de .NET 10 (`global.json`) y SQL Server 2025 Express con la instancia `SQLEXPRESS` en el mismo equipo (VF-01).

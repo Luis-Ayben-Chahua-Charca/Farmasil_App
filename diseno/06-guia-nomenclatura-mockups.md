@@ -12,6 +12,7 @@
 | 13/10/2026 | 05.00 | La contraseña se describe como hash con sal, conforme a RNF-0006 v05.00. | AUT-0001 |
 | 08/11/2026 | 06.00 | Se actualiza la tabla de tipos de la sección de componentes: SQL Server 2025 Express y .NET 10 LTS (DEC-028). | AUT-0001 |
 | 09/11/2026 | 07.00 | Auditoría de mockups (#142, DEC-042 a DEC-054): se incorporan los módulos 12 (reabastecimiento, **REA**) y 13 (cotizaciones, **COT**); la convención de artefactos pasa a una pantalla por módulo, `ART-MKP-<MOD>-0001`, y se retiran las referencias a 0002–0004; se agregan la sección de artefactos transversales (plantilla `ART-MKP-CONFIRM-0001`, significado del asterisco, fuentes HTML), el formato de los códigos visibles y la regla de rótulos frente a literales almacenados; el inventario por módulo cita `ART-MKP-<MOD>-0001`; la sección 8 pasa a listar los mockups publicados. No se agregan los IDs nuevos de cada módulo: los incorpora la ficha de cada uno. | AUT-0001 |
+| 10/11/2026 | 08.00 | Se agrega la regla del identificador en XAML (DEC-060): el identificador de esta guía va en `AutomationProperties.AutomationId`, y `x:Name` solo cuando el XAML lo necesita, con guion bajo. | AUT-0001 |
 
 ---
 
@@ -38,6 +39,10 @@ La versión anterior presentaba dos inconsistencias que conviene dejar resueltas
 2. La regla decía "se utilizará el carácter guion bajo (-)", mezclando el nombre de un separador con el símbolo del otro.
    **Separador oficial en interfaz: guion (`-`). Separador oficial en base de datos: guion bajo (`_`).** `VEN-BTN-CREAR-VENTA` frente a `DB_FARMASIL.TBL_REGISTRO_VENTAS`.
 
+
+### Identificador en XAML (DEC-060)
+
+En la interfaz WPF, cada componente lleva el identificador exacto de esta guía en `AutomationProperties.AutomationId`, por ejemplo `AutomationProperties.AutomationId="VEN-BTN-CREAR-VENTA"`. XAML no admite guiones en `x:Name`, así que `x:Name` no es obligatorio: con MVVM el code-behind no toca controles y la vista se conecta por `Binding`. Se usa solo cuando el XAML lo necesita, por ejemplo para un `ElementName`, y en ese caso es el mismo identificador con guion bajo: `VEN_BTN_CREAR_VENTA`. Así se conserva el identificador tal como aparece en la guía, los mockups y las especificaciones, y las pruebas de interfaz localizan los controles por `AutomationId`.
 ---
 
 ## 2. Tabla de equivalencias de módulos

@@ -97,7 +97,7 @@ Un módulo no espera a que su dependencia esté terminada. Trabaja contra la int
 
 El aprendizaje ocurre en el sprint 1 y sobre código real: nadie hace ejercicios descartables. El primer issue de cada integrante es la operación de consulta de su propio módulo, copiando el patrón del módulo de referencia (Usuarios).
 
-1. **Instalación (domingo 8 a lunes 9).** Visual Studio 2026 Community con la carga de trabajo de escritorio .NET, SDK de .NET 10, SQL Server 2025 Express, SQL Server Management Studio y Git. Cada integrante confirma en el grupo que la solución compila y que la base se crea con el script.
+1. **Instalación (domingo 8 a martes 10).** Cada integrante prepara su equipo según «Preparar el entorno» en `CONTRIBUTING.md` y confirma en el grupo que la solución compila y que las pruebas pasan. Cuando el #70 esté en `main`, confirma también que la base se crea con `database/recrear.ps1`.
 2. **Recorrido del esqueleto (miércoles 11, unas 2 horas, grabado).** R1 muestra cómo nace una pantalla en las cuatro capas. Ejemplo: la consulta de Usuarios, desde el botón en XAML hasta la consulta SQL, pasando por el enlace de datos, el comando, el servicio y el repositorio. R2 muestra el script de la base y los datos de prueba, y R8 cómo correr las pruebas.
 3. **Primer issue (jueves 12 a sábado 14).** Cada integrante implementa la consulta de su primer módulo y abre su primer PR. El primer PR de cada persona se revisa en una llamada corta, no solo por escrito.
 4. **Parejas en los módulos difíciles (sprints 2 y 3).** R1 acompaña a R6 en DOC y R2 acompaña a R7 en ALV, porque ambos módulos dependen de piezas de datos y de transacciones.
@@ -135,7 +135,7 @@ El catálogo se adecua a los mockups módulo por módulo, a cargo del dueño de 
 **Criterios generales (C1 a C4, DEC-042):**
 
 1. **Una pantalla por módulo.** Cada mockup `ART-MKP-<MOD>-0001` reúne consulta, alta, actualización y baja. Las especificaciones citan ese mockup en lugar de los `0002` a `0004`, que no existen y no se diseñarán.
-2. **Un identificador por componente.** Cuando un mismo ID rotula dos controles distintos (por ejemplo, el buscador y el catálogo de Ventas), se asigna un ID propio a cada uno según la guía de nomenclatura. El nombre corregido se usa en el mockup, en la especificación y en el `x:Name` del XAML.
+2. **Un identificador por componente.** Cuando un mismo ID rotula dos controles distintos (por ejemplo, el buscador y el catálogo de Ventas), se asigna un ID propio a cada uno según la guía de nomenclatura. El nombre corregido se usa en el mockup, en la especificación y en el `AutomationProperties.AutomationId` del XAML (DEC-060).
 3. **Lo que aparece en el mockup sin respaldo en una especificación queda fuera de alcance**, salvo que la dueña lo pida. Esto incluye el visor 3D, las indicaciones y sugerencias, el envío a OSE/SUNAT, el historial de eventos, el tiempo de entrega y el botón Generar Lista. Los filtros de búsqueda adicionales sí se aceptan y se agregan a la especificación de consulta.
 4. **Si la especificación pide algo que el mockup no muestra, manda la especificación.** La pantalla WPF lo incluye y el mockup no se rehace.
 
@@ -157,7 +157,7 @@ Un módulo está terminado cuando sus cuatro operaciones pasan las pruebas del p
 **Definición de terminado de un módulo:**
 
 - [ ] Las cuatro operaciones (consulta, alta, actualización, baja) cumplen sus especificaciones, incluidos los mensajes y las validaciones.
-- [ ] Los controles usan los nombres de la guía de nomenclatura, ya corregidos en la adecuación (sección 7).
+- [ ] Los controles llevan en `AutomationId` el identificador de la guía de nomenclatura, ya corregido en la adecuación (sección 7).
 - [ ] Los permisos por rol respetan la matriz de permisos.
 - [ ] Las pruebas del módulo en `09-pruebas-software.md` están automatizadas y pasan en GitHub Actions.
 - [ ] No hay lógica en el code-behind y no hay consultas SQL armadas concatenando texto.

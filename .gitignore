@@ -17,3 +17,5 @@ obj/
 .vs/
 *.user
 *.suo
+.vscode/
+.idea/
