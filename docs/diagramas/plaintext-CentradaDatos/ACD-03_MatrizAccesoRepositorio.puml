@@ -1,0 +1,48 @@
+@startuml ACD-03_MatrizAccesoRepositorio
+' Arquitectura centrada en datos FARMASIL_APP — ACD-03 Matriz de acceso de los módulos al repositorio (nivel 2) — v00.02 (borrador)
+' Acceso de cada módulo a cada tabla o vista de DB_FARMASIL, extraído de la precondición y el procedimiento de las
+' 52 especificaciones (catalogo/03-especificaciones.md) y de RNF-0010 v04.00, con las decisiones DEC-055 a DEC-057.
+' C crear, R leer, U actualizar, D eliminar. No se incluye la lectura de TBL_USUARIOS por la sesión (transversal,
+' RNF-0006) ni el respaldo, que lee la base completa.
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam legendBackgroundColor #FFFFFF
+skinparam legendBorderColor #FFFFFF
+title ACD-03 Matriz de acceso de los módulos al repositorio DB_FARMASIL
+legend top left
+|= Módulo \\ tabla |= USU |= PRV |= MPG |= PRO |= RST |= LOT |= VSF |= VSV |= RVE |= DVE |= CMP |= RPT |= ODV |= DDV |= ALE |= RET |= LRE |= COT |
+| <b>USR</b> Usuarios |<#D9D4F7> CRUD | | | | | | | | | | | | | | | | | |
+| <b>VEN</b> Ventas | | |<#DDEBF7> R IPagos |<#DDEBF7> R ILotes |<#DDEBF7> R IRestr. |<#DDEBF7> R U ILotes | | |<#D9D4F7> CRUD |<#D9D4F7> CRUD |<#FFD9A8> R H1 | | | | | | | |
+| <b>INV</b> Inventario | |<#DDEBF7> R IProv. | |<#D9D4F7> CRUD | | |<#FFD9A8> R H2 | | | | | | | | | | | |
+| <b>DOC</b> Documentación Tributaria | | | | | | | | |<#DDEBF7> R IVentas | |<#D9D4F7> CRU | | | | | | | |
+| <b>ALV</b> Alertas de Vencimiento | | | | | |<#DDEBF7> R U ILotes | | | | | | |<#DDEBF7> R IDevol. |<#DDEBF7> R IDevol. |<#D9D4F7> R |<#D9D4F7> CRUD | | |
+| ALV·EV  proceso de evaluación de vencimientos | | | | | |<#DDEBF7> R ILotes | | | | | | | | |<#D9D4F7> R U | | | |
+| <b>PAG</b> Métodos de Pago | | |<#D9D4F7> CRUD | | | | | | | | | | | | | | | |
+| <b>REP</b> Reportes de Ventas | | | | | | | | |<#DDEBF7> R IVentas |<#DDEBF7> R IVentas | |<#D9D4F7> CRUD | | | | | | |
+| <b>DEV</b> Devoluciones | |<#DDEBF7> R IProv. | | | |<#DDEBF7> R U ILotes | | | | | | |<#D9D4F7> CRU |<#D9D4F7> CRUD | | | | |
+| <b>RES</b> Restricciones de Venta | | | |<#DDEBF7> R IInvent. |<#D9D4F7> CRU | | | | | | | | | | | | | |
+| <b>PRV</b> Proveedores | |<#D9D4F7> CRUD | | | | | | | | | | |<#FFD9A8> R H4 | | | | | |
+| <b>LOT</b> Lotes | |<#DDEBF7> R IProv. | |<#DDEBF7> R IInvent. | |<#D9D4F7> CRUD |<#D9D4F7> dueño |<#D9D4F7> dueño | | | | |<#FFD9A8> R H3 |<#FFD9A8> R H3 | | | | |
+| <b>REA</b> Reabastecimiento | | | |<#DDEBF7> R IInvent. | | | | | | | | | | | | |<#D9D4F7> CRUD | |
+| REA·GL  proceso de generación de la lista | | | |<#DDEBF7> R IInvent. | | | |<#FFD9A8> R H2 | | | | | | | | |<#D9D4F7> C | |
+| <b>COT</b> Comparación de Precios | |<#DDEBF7> R IProv. | |<#DDEBF7> R IInvent. | | | | | | | | | | | | |<#DDEBF7> R IReab. |<#D9D4F7> CRUD |
+
+|= Clave |= Tabla o vista |= Clave |= Tabla o vista |= Clave |= Tabla o vista |
+| USU | TBL_USUARIOS | PRV | TBL_PROVEEDORES | MPG | TBL_METODOS_PAGO |
+| PRO | TBL_PRODUCTOS | RST | TBL_RESTRICCIONES_VENTA | LOT | TBL_LOTES |
+| VSF | VW_STOCK_FISICO | VSV | VW_STOCK_VENDIBLE | RVE | TBL_REGISTRO_VENTAS |
+| DVE | TBL_DETALLE_VENTAS | CMP | TBL_COMPROBANTES_TRIBUTARIOS | RPT | TBL_REPORTES_VENTAS |
+| ODV | TBL_ORDENES_DEVOLUCION | DDV | TBL_DETALLE_DEVOLUCION | ALE | TBL_ALERTAS_VENCIMIENTO |
+| RET | TBL_PRODUCTOS_RETIRADOS | LRE | TBL_LISTA_REABASTECIMIENTO | COT | TBL_COTIZACIONES_PROVEEDOR |
+
+|= Color |= Significado |
+|<#D9D4F7> CRUD | el módulo dueño opera sobre sus propias tablas; es el único que las escribe (DEC-055) |
+|<#DDEBF7> R / U Ixxx | el dato de otro módulo se obtiene o se cambia por la interfaz del dueño (arista de la arquitectura genérica) |
+|<#FFD9A8> R Hn | lectura de verificación sobre una tabla o vista ajena, de solo lectura y sin invocar al dueño: lista cerrada H1 a H4 (DEC-055, DEC-056) |
+
+Los procesos programados de RNF-0010 pertenecen a un módulo: la evaluación de vencimientos (EV) a Alertas de Vencimiento y la generación de la lista (GL) a Reabastecimiento.
+TBL_LOTES solo la escribe Lotes. Ventas, Devoluciones y Alertas le piden descontar, restituir o bloquear una remesa por ILotes, con la regla única de DEC-034.
+H5 (Devoluciones leía TBL_PRODUCTOS en ESP-0026) se eliminó: el nombre del medicamento llega por ILotes (DEC-057).
+endlegend
+@enduml

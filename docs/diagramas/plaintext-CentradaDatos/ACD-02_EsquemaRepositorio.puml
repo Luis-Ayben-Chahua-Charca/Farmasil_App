@@ -1,0 +1,208 @@
+@startuml ACD-02_EsquemaRepositorio
+' Arquitectura centrada en datos FARMASIL_APP — ACD-02 Esquema del repositorio DB_FARMASIL — v00.02 (borrador)
+' Estructura del almacenamiento central: 16 tablas agrupadas por el agente que es dueño de cada una,
+' y sus 2 vistas, con las 18 claves foráneas del Diccionario de Datos v11.00 (resumen de relaciones). Notación pata de gallo.
+' Leyenda de columnas: PK clave primaria, FK clave foránea, UQ única, UQ1 parte de una UNIQUE compuesta,
+' UX índice único filtrado, CK restricción CHECK, NULL anulable (las demás son NOT NULL).
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam linetype ortho
+hide circle
+hide empty members
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #8577E0
+  ArrowColor #444444
+}
+skinparam package {
+  BorderColor #8577E0
+  BackgroundColor #FAFAFA
+}
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+title ACD-02 Esquema del repositorio DB_FARMASIL (16 tablas y 2 vistas, Diccionario de Datos v11.00)
+package "Catálogo base y seguridad" {
+  entity "TBL_USUARIOS" as TBL_USUARIOS <<USR>> {
+    * id_usuario : INT <<PK>>
+    --
+    * nombre_usuario : NVARCHAR(50) <<UQ>>
+    * contrasena : NVARCHAR(255) <<hash con sal>>
+    * rol : NVARCHAR(20) <<CK>>
+    * estado : NVARCHAR(10) <<CK>>
+  }
+  entity "TBL_PROVEEDORES" as TBL_PROVEEDORES <<PRV>> {
+    * id_proveedor : INT <<PK>>
+    --
+    * ruc : NVARCHAR(11) <<UQ, CK>>
+    * razon_social : NVARCHAR(150)
+    telefono : NVARCHAR(15) <<NULL>>
+    * estado : NVARCHAR(10) <<CK>>
+  }
+  entity "TBL_METODOS_PAGO" as TBL_METODOS_PAGO <<PAG>> {
+    * id_metodo_pago : INT <<PK>>
+    --
+    * nombre_metodo : NVARCHAR(50) <<UQ>>
+    * estado : NVARCHAR(10) <<CK>>
+  }
+}
+package "Inventario físico" {
+  entity "TBL_PRODUCTOS" as TBL_PRODUCTOS <<INV>> {
+    * id_producto : INT <<PK>>
+    --
+    * nombre : NVARCHAR(100)
+    * accion_terapeutica : NVARCHAR(150)
+    * precio_venta : DECIMAL(10,2) <<CK>>
+    * estado_producto : NVARCHAR(25) <<CK>>
+    * id_proveedor : INT <<FK>>
+    * stock_minimo : INT <<CK>>
+  }
+  entity "TBL_LOTES" as TBL_LOTES <<LOT>> #FFE4E1 {
+    * id_lote : INT <<PK>>
+    --
+    * id_producto : INT <<FK, UQ1>>
+    * numero_lote : NVARCHAR(30) <<UQ1>>
+    * fecha_vencimiento : DATE
+    * stock_actual : INT <<CK>>
+    * estado_lote : NVARCHAR(25) <<CK>>
+    * fecha_ingreso : DATE
+    * id_proveedor : INT <<FK>>
+  }
+  entity "VW_STOCK_FISICO" as VW_STOCK_FISICO <<vista LOT>> #F5F5F5 {
+    id_producto : INT
+    stock_fisico : INT
+  }
+  entity "VW_STOCK_VENDIBLE" as VW_STOCK_VENDIBLE <<vista LOT>> #F5F5F5 {
+    id_producto : INT
+    stock_vendible : INT
+  }
+}
+package "Operación diaria" {
+  entity "TBL_REGISTRO_VENTAS" as TBL_REGISTRO_VENTAS <<VEN>> {
+    * id_venta : INT <<PK>>
+    --
+    * fecha_hora : DATETIME2(0)
+    * monto_total : DECIMAL(10,2) <<CK>>
+    * id_metodo_pago : INT <<FK>>
+    * id_usuario : INT <<FK>>
+  }
+  entity "TBL_DETALLE_VENTAS" as TBL_DETALLE_VENTAS <<VEN>> {
+    * id_detalle_venta : INT <<PK>>
+    --
+    * id_venta : INT <<FK, UQ1>>
+    * id_lote : INT <<FK, UQ1>>
+    * cantidad : INT <<CK>>
+    * precio_unitario : DECIMAL(10,2) <<CK>>
+  }
+  entity "TBL_RESTRICCIONES_VENTA" as TBL_RESTRICCIONES_VENTA <<RES>> {
+    * id_restriccion : INT <<PK>>
+    --
+    * id_producto : INT <<FK>>
+    * condicion_cliente : NVARCHAR(50)
+    * tipo_restriccion : NVARCHAR(25) <<CK>>
+    * motivo_advertencia : NVARCHAR(MAX)
+    * estado_alerta : NVARCHAR(10) <<CK>>
+  }
+}
+package "Derivados de la operación" {
+  entity "TBL_COMPROBANTES_TRIBUTARIOS" as TBL_COMPROBANTES_TRIBUTARIOS <<DOC>> {
+    * id_comprobante : INT <<PK>>
+    --
+    * numero_comprobante : NVARCHAR(20) <<UQ>>
+    * tipo_comprobante : NVARCHAR(20) <<CK>>
+    * fecha_emision : DATE
+    * id_venta : INT <<FK, UX Emitido>>
+    * estado_documento : NVARCHAR(25) <<CK>>
+  }
+  entity "TBL_REPORTES_VENTAS" as TBL_REPORTES_VENTAS <<REP>> {
+    * id_reporte : INT <<PK>>
+    --
+    * tipo_reporte : NVARCHAR(50) <<abierto (PEN-001)>>
+    * formato : NVARCHAR(10) <<CK>>
+    * fecha_inicio : DATE
+    * fecha_fin : DATE <<CK>>
+    * total_recaudado : DECIMAL(10,2) <<CK>>
+    * fecha_generacion : DATETIME2(0)
+    * ruta_archivo : NVARCHAR(255)
+  }
+}
+package "Gestión de proveedores" {
+  entity "TBL_ORDENES_DEVOLUCION" as TBL_ORDENES_DEVOLUCION <<DEV>> {
+    * id_devolucion : INT <<PK>>
+    --
+    * fecha_creacion : DATE
+    * motivo_devolucion : NVARCHAR(50) <<CK>>
+    * id_proveedor : INT <<FK>>
+    comentario : NVARCHAR(MAX) <<NULL>>
+    * estado_orden : NVARCHAR(15) <<CK>>
+    * id_usuario : INT <<FK>>
+  }
+  entity "TBL_DETALLE_DEVOLUCION" as TBL_DETALLE_DEVOLUCION <<DEV>> {
+    * id_detalle_dev : INT <<PK>>
+    --
+    * id_devolucion : INT <<FK, UQ1>>
+    * id_lote : INT <<FK, UQ1>>
+    * cantidad_devolver : INT <<CK>>
+  }
+  entity "TBL_ALERTAS_VENCIMIENTO" as TBL_ALERTAS_VENCIMIENTO <<ALV>> {
+    * id_alerta : INT <<PK>>
+    --
+    * descripcion : NVARCHAR(150)
+    * umbral_meses : INT <<CK>>
+    * estado : NVARCHAR(10) <<CK, UX Activa>>
+    fecha_ultima_verif : DATETIME2(0) <<NULL>>
+  }
+  entity "TBL_PRODUCTOS_RETIRADOS" as TBL_PRODUCTOS_RETIRADOS <<ALV>> {
+    * id_retiro : INT <<PK>>
+    --
+    id_lote : INT <<FK NULL, SET NULL>>
+    * nombre_producto : NVARCHAR(100) <<copia>>
+    * numero_lote : NVARCHAR(30) <<copia>>
+    * fecha_vencimiento : DATE
+    * es_lote_defectuoso : BIT
+    alerta_digemid : NVARCHAR(100) <<NULL>>
+    * fecha_registro : DATE
+  }
+}
+package "Abastecimiento" {
+  entity "TBL_LISTA_REABASTECIMIENTO" as TBL_LISTA_REABASTECIMIENTO <<REA>> {
+    * id_reabastecimiento : INT <<PK>>
+    --
+    * id_producto : INT <<FK, UQ>>
+    * origen : NVARCHAR(20) <<CK>>
+    * prioridad : NVARCHAR(10) <<CK>>
+    * fecha_inclusion : DATE
+  }
+  entity "TBL_COTIZACIONES_PROVEEDOR" as TBL_COTIZACIONES_PROVEEDOR <<COT>> {
+    * id_cotizacion : INT <<PK>>
+    --
+    * id_producto : INT <<FK>>
+    * id_proveedor : INT <<FK>>
+    * precio_cotizado : DECIMAL(10,2) <<CK>>
+    * fecha_cotizacion : DATE
+    promocion : NVARCHAR(MAX) <<NULL>>
+    * id_usuario : INT <<FK>>
+  }
+}
+TBL_PROVEEDORES ||--o{ TBL_PRODUCTOS
+TBL_PRODUCTOS ||--o{ TBL_LOTES
+TBL_PROVEEDORES ||--o{ TBL_LOTES
+TBL_METODOS_PAGO ||--o{ TBL_REGISTRO_VENTAS
+TBL_USUARIOS ||--o{ TBL_REGISTRO_VENTAS
+TBL_REGISTRO_VENTAS ||--|{ TBL_DETALLE_VENTAS
+TBL_LOTES ||--o{ TBL_DETALLE_VENTAS
+TBL_REGISTRO_VENTAS ||--o{ TBL_COMPROBANTES_TRIBUTARIOS
+TBL_PRODUCTOS ||--o{ TBL_RESTRICCIONES_VENTA
+TBL_PROVEEDORES ||--o{ TBL_ORDENES_DEVOLUCION
+TBL_USUARIOS ||--o{ TBL_ORDENES_DEVOLUCION
+TBL_ORDENES_DEVOLUCION ||--|{ TBL_DETALLE_DEVOLUCION
+TBL_LOTES ||--o{ TBL_DETALLE_DEVOLUCION
+TBL_LOTES |o--o{ TBL_PRODUCTOS_RETIRADOS
+TBL_PRODUCTOS ||--o| TBL_LISTA_REABASTECIMIENTO
+TBL_PRODUCTOS ||--o{ TBL_COTIZACIONES_PROVEEDOR
+TBL_PROVEEDORES ||--o{ TBL_COTIZACIONES_PROVEEDOR
+TBL_USUARIOS ||--o{ TBL_COTIZACIONES_PROVEEDOR
+VW_STOCK_FISICO ..> TBL_LOTES : suma stock_actual
+VW_STOCK_VENDIBLE ..> TBL_LOTES : suma Disponible\nno vencidas
+note "El estereotipo de cada tabla indica el módulo dueño, el único que la escribe (DEC-055).\nTBL_LOTES (rosado) es el dato más usado: solo Lotes la escribe; Ventas, Devoluciones y Alertas\nle piden descontar, restituir o bloquear por ILotes, con la regla única de DEC-034.\nLas vistas de stock son de solo lectura y no agregan columnas (DEC-040, DEC-056).\nTBL_ALERTAS_VENCIMIENTO y TBL_REPORTES_VENTAS no tienen claves foráneas.\nTodas las FK son ON DELETE NO ACTION, salvo TBL_PRODUCTOS_RETIRADOS.id_lote (SET NULL, DEC-006)." as NE
+@enduml
