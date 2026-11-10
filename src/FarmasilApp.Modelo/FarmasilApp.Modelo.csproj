@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Capa Modelo (VL-04): servicios, entidades e interfaces provistas entre módulos. No referencia a ninguna otra capa. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>FarmasilApp.Modelo</RootNamespace>
+  </PropertyGroup>
+
+</Project>

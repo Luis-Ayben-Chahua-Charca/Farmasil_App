@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Capa Persistencia (VL-04): repositorios, unidad de trabajo y acceso a DB_FARMASIL. Implementa las interfaces del Modelo. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>FarmasilApp.Persistencia</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FarmasilApp.Modelo\FarmasilApp.Modelo.csproj" />
+  </ItemGroup>
+
+</Project>

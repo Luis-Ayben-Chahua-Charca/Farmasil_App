@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Capa VistaModelo (VL-04, rol de Controlador): propiedades enlazadas y comandos. Solo conoce el Modelo. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>FarmasilApp.VistaModelo</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FarmasilApp.Modelo\FarmasilApp.Modelo.csproj" />
+  </ItemGroup>
+
+</Project>

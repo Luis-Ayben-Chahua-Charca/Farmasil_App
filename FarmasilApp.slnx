@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FarmasilApp.Modelo/FarmasilApp.Modelo.csproj" />
+    <Project Path="src/FarmasilApp.Persistencia/FarmasilApp.Persistencia.csproj" />
+    <Project Path="src/FarmasilApp.Vista/FarmasilApp.Vista.csproj" />
+    <Project Path="src/FarmasilApp.VistaModelo/FarmasilApp.VistaModelo.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FarmasilApp.Pruebas/FarmasilApp.Pruebas.csproj" />
+  </Folder>
+</Solution>
