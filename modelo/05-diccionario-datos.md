@@ -354,6 +354,7 @@ Las tablas y las columnas no se renombran. Las restricciones se nombran explíci
 | Único filtrado | `UX_<tabla>_<nombre>` | `UX_TBL_ALERTAS_VENCIMIENTO_Activa` |
 | Verificación | `CK_<tabla>_<columna>` | `CK_TBL_LOTES_estado_lote` |
 | Índice | `IX_<tabla>_<columnas>` | `IX_TBL_LOTES_FEFO` |
+| Vista | `VW_<nombre>` | `VW_STOCK_FISICO` |
 
 Si un `CHECK` involucra más de una columna, se usa un nombre descriptivo en lugar de la columna, por ejemplo `CK_TBL_LOTES_estado_stock`.
 
@@ -384,6 +385,22 @@ El stock consolidado de un medicamento no se guarda: se calcula sumando sus reme
 - **Stock vendible:** suma de `stock_actual` de las remesas en estado 'Disponible' y no vencidas. Es lo que se compara con `stock_minimo` en el proceso 2 de RNF-0010 (reabastecimiento).
 
 Es provisional hasta que la dueña confirme qué debe mostrar Inventario y qué debe disparar el reabastecimiento (PEN-024).
+
+Ambos valores se obtienen de las vistas `VW_STOCK_FISICO` y `VW_STOCK_VENDIBLE` de la sección siguiente.
+
+---
+
+## Vistas del repositorio
+
+Vistas de solo lectura. No agregan columnas ni persisten valores: el stock consolidado sigue sin guardarse (DEC-040). Cada vista pertenece al módulo dueño de las tablas que consulta, que es el único que puede cambiar su definición; los módulos consumidores solo leen a través de ella (DEC-055, DEC-056).
+
+| Vista | Dueño | Columnas | Definición | La lee |
+| --- | --- | --- | --- | --- |
+| `VW_STOCK_FISICO` | Lotes (LOT) | `id_producto` INT, `stock_fisico` INT | Por cada fila de `TBL_PRODUCTOS`, la suma de `stock_actual` de todas sus remesas en `TBL_LOTES`, de cualquier estado y vencidas o no; 0 si no tiene remesas. | Inventario: `STOCK_FISICO(id_producto)` de ESP-0006. |
+| `VW_STOCK_VENDIBLE` | Lotes (LOT) | `id_producto` INT, `stock_vendible` INT | Por cada fila de `TBL_PRODUCTOS`, la suma de `stock_actual` de sus remesas con `estado_lote` = 'Disponible' y `fecha_vencimiento` posterior a la fecha actual; 0 si no tiene ninguna. | Reabastecimiento: proceso 2 de RNF-0010, que la compara con `stock_minimo`. |
+
+Si la dueña cambia la definición de alguno de los dos stocks (PEN-024), se modifica solo la vista; los consumidores no cambian.
+
 
 ---
 
@@ -416,10 +433,12 @@ Estos puntos no se modificaron porque implican decisiones de alcance, no correcc
 5. **Gestión de la configuración de alertas.** `TBL_ALERTAS_VENCIMIENTO` no tiene ninguna educción que la administre: el umbral es hoy un valor fijo que nadie puede cambiar desde el sistema, y la fila inicial la carga el script de datos iniciales (PEN-009, PEN-011, DEC-032).
 
 
-**Versión:** 10.00
-**Fecha:** 08/11/2026
+**Versión:** 11.00
+**Fecha:** 09/11/2026
 **Autor:** AUT-0001
 **Origen:** Diccionario de Datos v02.00, `Cambios_Modelo_ER_DB_FARMASIL.md` y Entrevista 3 (v05.00) y auditorías de la base de datos (`seguimiento/13-auditoria-bd-claude.md` y `seguimiento/13-auditoria-bd-gpt.md`, issue #63)
+
+> **Aplicado en v11.00 (09/11/2026, arquitectura centrada en datos):** nueva sección «Vistas del repositorio» con `VW_STOCK_FISICO` y `VW_STOCK_VENDIBLE`, propiedad de Lotes y de solo lectura, sin columnas nuevas (DEC-040, DEC-056). Inventario deja de leer `TBL_LOTES` para mostrar el stock físico. Se agrega el patrón `VW_<nombre>` a la convención de nombres.
 
 > **Aplicado en v10.00 (08/11/2026, auditorías de la base de datos, issue #63):**
 >
