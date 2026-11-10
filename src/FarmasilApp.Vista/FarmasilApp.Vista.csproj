@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Capa Vista (VL-04): ventanas XAML. El ejecutable se llama FarmasilApp.exe (VF-01).
+       Conoce la VistaModelo; la referencia a Persistencia es solo para registrar las dependencias al arrancar. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>FarmasilApp</AssemblyName>
+    <RootNamespace>FarmasilApp.Vista</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FarmasilApp.VistaModelo\FarmasilApp.VistaModelo.csproj" />
+    <ProjectReference Include="..\FarmasilApp.Persistencia\FarmasilApp.Persistencia.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.15" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Configuración local opcional de cada integrante; no se versiona (*.local.json en .gitignore). -->
+    <Content Include="appsettings.local.json" Condition="Exists('appsettings.local.json')" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

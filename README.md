@@ -48,3 +48,37 @@ Los códigos EDU-0005 a EDU-0008 están reservados y no se reasignan: correspond
 - Tablas y campos de base de datos: guion bajo, con punto separador (`DB_FARMASIL.TBL_PRODUCTOS`).
 - Versión `DD.DD`, fecha `dd/mm/aaaa`, ningún campo vacío (`Ninguno` cuando no aplica).
 - Toda operación que escriba en más de una tabla se ejecuta dentro de una transacción.
+
+## Desarrollo local
+
+Para preparar el entorno (herramientas, paquetes y verificación), sigue «Preparar el entorno» en [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+La aplicación es C# sobre .NET 10 LTS con WPF y SQL Server 2025 Express (RNF-0008, DEC-028). La solución es `FarmasilApp.slnx`, con un proyecto por capa (Vista, VistaModelo, Modelo y Persistencia) y uno de pruebas (`tests/FarmasilApp.Pruebas`).
+
+Requisitos: Windows 11, el SDK de .NET 10 (`global.json`) y SQL Server 2025 Express con la instancia `SQLEXPRESS` en el mismo equipo (VF-01).
+
+Compilar y probar, con los mismos pasos que la CI:
+
+```bash
+dotnet build FarmasilApp.slnx --configuration Release
+dotnet test FarmasilApp.slnx --configuration Release --no-build
+```
+
+Ejecutar la aplicación:
+
+```bash
+dotnet run --project src/FarmasilApp.Vista
+```
+
+### Cadena de conexión
+
+La aplicación lee `ConnectionStrings:DB_FARMASIL` de `src/FarmasilApp.Vista/appsettings.json`:
+
+```text
+Server=.\SQLEXPRESS;Database=DB_FARMASIL;Integrated Security=true;TrustServerCertificate=true
+```
+
+- Se conecta con la cuenta de Windows de quien ejecuta la aplicación. Esta forma es provisional (PEN-035) y no lleva usuario ni contraseña: no se guardan credenciales en el repositorio.
+- `TrustServerCertificate=true` es necesario porque el cliente cifra la conexión por defecto y la instancia local de Express no tiene un certificado de confianza.
+- Para usar otra instancia o base, por ejemplo `DB_FARMASIL_PRUEBAS`, crea `src/FarmasilApp.Vista/appsettings.local.json` con la misma estructura. Ese archivo no se versiona (`*.local.json` está en `.gitignore`) y prevalece sobre `appsettings.json`.
+- La base se crea con los scripts de `database/`, que escribe R2 (plan de implementación, sección 10).

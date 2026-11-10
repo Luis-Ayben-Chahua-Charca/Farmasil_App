@@ -74,7 +74,7 @@ FARMASIL_APP es un sistema de gestión de inventarios y ventas para una farmacia
 
 Decisiones aún abiertas que los diagramas marcan como `[POR DEFINIR]`:
 
-- Autenticación de la aplicación ante el motor (cuenta de Windows o inicio de sesión SQL).
+- Autenticación de la aplicación ante el motor (cuenta de Windows o inicio de sesión SQL): PEN-035, con la cuenta de Windows como comportamiento provisional.
 - Respaldo: frecuencia, destino, disparador (Programador de tareas o la aplicación), prueba de restauración y aviso de falla.
 
 No las des por resueltas al implementar; si necesitas una, regístrala como `PEN-NNN` (`AGENTS.md` §7).

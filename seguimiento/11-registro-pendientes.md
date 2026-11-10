@@ -2,8 +2,8 @@
 
 | Artefacto | Registro de pendientes y decisiones |
 | --- | --- |
-| Versión | 06.00 |
-| Fecha | 09/11/2026 |
+| Versión | 07.00 |
+| Fecha | 10/11/2026 |
 | Responsable | AUT-0001 |
 
 ## 1. Para qué existe y por qué tiene esta forma
@@ -68,6 +68,7 @@ No se duplica el backlog ni los riesgos: un pendiente que se convierte en trabaj
 | PEN-032 | ¿Qué código identifica al producto en la venta? ¿Es el código de barras? Provisional: el `id_producto` formateado (DEC-048). | Cliente | Dueña | Ninguno (hay comportamiento provisional aplicado) | Baja | En espera del cliente | Respuesta registrada; si es el código de barras, columna nueva en `TBL_PRODUCTOS` | P-06 de la auditoría de mockups | — |
 | PEN-033 | Reabastecimiento: ¿la prioridad tiene dos niveles o tres? ¿La cantidad a pedir la escribe la dueña o la calcula el sistema? ¿Quiere generar la lista a mano? Provisional: prioridad 'Normal' y 'Urgente'; la «cantidad sugerida» se muestra solo como dato calculado, `MAX(stock_minimo − stock vendible, 0)`, y no se guarda; la generación es solo automática (RNF-0010). Se vincula con PEN-002. | Cliente | Dueña | Ninguno (hay comportamiento provisional aplicado) | Baja | En espera del cliente | Respuesta registrada; si cambia, ajuste del dominio de `prioridad`, del Diccionario de Datos y de ESP-0045 a ESP-0049 | P-11 de la auditoría de mockups (AUD-MKP-gpt-107) | — |
 | PEN-034 | ¿Necesita registrar el tiempo de entrega de cada proveedor? Provisional: fuera de alcance. | Alcance | Dueña | Ninguno (hay comportamiento provisional aplicado) | Baja | En espera del cliente | Respuesta registrada; si entra, columna y operación que la registren | P-12 de la auditoría de mockups | — |
+| PEN-035 | Autenticación de la aplicación ante SQL Server: ¿cuenta de Windows o inicio de sesión SQL? Provisional: cuenta de Windows de quien ejecuta la aplicación (`Integrated Security=true`), sin usuario ni contraseña en el repositorio. | Equipo | Leyni | Ninguno (hay comportamiento provisional aplicado); se confirma antes de la puesta en producción (plan de implementación, sección 10) | Media | Abierto | Decisión registrada como `DEC-NNN`. Si se mantiene la cuenta de Windows: confirmar que las cuentas del equipo de la farmacia tienen permiso sobre `DB_FARMASIL` y quitar la marca de provisional del README y de `architecture.md`. Si se elige un inicio de sesión SQL: definir dónde se guarda la contraseña fuera del repositorio, cambiar `appsettings.json` y la prueba `CadenaDeConexionPruebas`, y actualizar el README y VF-01 | `architecture.md` §3 (decisión abierta), VF-01, plan de implementación §10 | #53 |
 
 ## 4. Agenda para la próxima reunión con la dueña
 
@@ -146,6 +147,7 @@ Preguntas en el orden en que conviene hacerlas, para salir de la reunión con to
 | DEC-057 | 09/11/2026 | ESP-0026 e ILA-0026 obtienen el número de lote y el nombre del medicamento de cada línea por `ILotes`, que devuelve los datos de la remesa, como en DEC-044. Devoluciones no lee `TBL_PRODUCTOS`. | ESP-0026 unía `TBL_PRODUCTOS` desde Devoluciones (H5), una dependencia Devoluciones → Inventario que la arquitectura genérica no tiene. | Instancia maestra | ESP-0026 v04.00, ILA-0026 v05.00 |
 | DEC-058 | 09/11/2026 | VW_STOCK_FISICO y VW_STOCK_VENDIBLE solo leen TBL_LOTES, agrupadas por id_producto; el medicamento sin remesas no aparece y el consumidor lo trata como 0 (Inventario con LEFT JOIN sobre su TBL_PRODUCTOS; Reabastecimiento con los medicamentos de IInventario). | Definirlas «por cada fila de TBL_PRODUCTOS» hacía que una vista de Lotes leyera una tabla de Inventario, fuera de DEC-055, y contradecía ACD-02. | Instancia maestra | Diccionario de Datos v11.00, ACD-02, DEC-056 |
 | DEC-059 | 09/11/2026 | Mostrar el nombre del usuario responsable (ESP-0021, ESP-0023) es una consulta transversal de Usuarios, como la sesión (§4 del contexto de arquitectura); no es una lectura H ni una dependencia de negocio. Documentación filtra en su propia tabla las ventas que ya tienen comprobante 'Emitido'; Ventas no lee comprobantes fuera de H1. | La matriz ACD-03 no registraba la lectura de TBL_USUARIOS de Reportes, y ACD-04 hacía que Ventas filtrara por comprobantes. | Instancia maestra | Contexto §4, ACD-03, ACD-04, ESP-0009, ESP-0021, ESP-0023 |
+| DEC-060 | 10/11/2026 | Cada componente de la interfaz WPF lleva el identificador exacto de la guía de nomenclatura en `AutomationProperties.AutomationId`. `x:Name` no es obligatorio: solo se usa cuando el XAML lo necesita (por ejemplo, un `ElementName`) y es el mismo identificador con guion bajo (`VEN_BTN_CREAR_VENTA`). | XAML no admite guiones en `x:Name`. Con `AutomationId` se conserva el identificador tal como aparece en la guía, los mockups y las ESP, y las pruebas de interfaz localizan los controles por él. | Instancia maestra | `diseno/06-guia-nomenclatura-mockups.md` v08.00, plan de implementación (secciones 7 y 8), `CONTRIBUTING.md` |
 
 ## 6. Cuestiones cerradas
 
