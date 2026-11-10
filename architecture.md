@@ -11,7 +11,7 @@ FARMASIL_APP es un sistema de gestión de inventarios y ventas para una farmacia
 | Aspecto | Valor | Fuente |
 | --- | --- | --- |
 | Plataforma | C#, WPF, .NET 10 LTS, publicación autocontenida win-x64 sin recorte | `catalogo/08-requisitos-no-funcionales.md` (RNF-0008), DEC-028 |
-| Base de datos | SQL Server 2025 Express, base `DB_FARMASIL`, 14 tablas | `modelo/05-diccionario-datos.md` |
+| Base de datos | SQL Server 2025 Express, base `DB_FARMASIL`, 16 tablas | `modelo/05-diccionario-datos.md` |
 | Despliegue | Un único nodo: Windows 11, i5-12500, 16 GB, 1 TB | RNF-0007, diagrama `VF-01` |
 | Usuarios | Dueña y Técnica, un usuario a la vez | RNF-0003, `diseno/07-matriz-permisos.md` |
 | Módulos | 13 (VEN, INV, DOC, ALV, PAG, REP, DEV, RES, USR, PRV, LOT, REA, COT) | `Contexto_Arquitectura_FARMASIL_ParaAgentesIA.md` §2 |

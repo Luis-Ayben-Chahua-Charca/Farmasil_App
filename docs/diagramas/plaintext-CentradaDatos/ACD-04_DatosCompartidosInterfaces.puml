@@ -1,0 +1,101 @@
+@startuml ACD-04_DatosCompartidosInterfaces
+' Arquitectura centrada en datos FARMASIL_APP — ACD-04 Datos compartidos e interfaces en dos cadenas — v01.00
+' Los módulos se invocan por las dependencias de la arquitectura genérica (VL-04) y comparten el
+' repositorio DB_FARMASIL. En cada paso se indica qué dato persiste en el repositorio y por qué
+' interfaz lo obtiene el módulo siguiente. Cadenas: venta → comprobante → reporte, y
+' stock → lista de reabastecimiento → cotización.
+' Fuentes: ESP-0001, ESP-0009, ESP-0021, ESP-0045, ESP-0049, ESP-0050, RNF-0010 v04.00,
+' VL-04, DEC-020, DEC-034, DEC-040, DEC-044, DEC-055, DEC-056.
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam participant {
+  BorderColor #8577E0
+  BackgroundColor #EDECFB
+}
+skinparam database {
+  BorderColor #444444
+  BackgroundColor #FFF8DC
+}
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+
+title ACD-04 Datos compartidos e interfaces en dos cadenas de FARMASIL
+
+actor "Técnica\n<<Tecnico>>" as TEC
+actor "Dueña\n<<Administrador>>" as DUE
+box "Módulos (invocación explícita por interfaces)" #FAFAFA
+  participant "Ventas\n(VEN)" as VEN
+  participant "Lotes\n(LOT)" as LOT
+  participant "Documentación\nTributaria (DOC)" as DOC
+  participant "Reportes\n(REP)" as REP
+  participant "Reabastecimiento (REA)\nproceso GL" as REA
+  participant "Comparación de\nPrecios (COT)" as COT
+end box
+box "Repositorio DB_FARMASIL" #FFFDF5
+  database "TBL_LOTES\nVW_STOCK_VENDIBLE" as TLOT #FFE4E1
+  database "TBL_REGISTRO_VENTAS\nTBL_DETALLE_VENTAS" as TRV
+  database "TBL_COMPROBANTES_\nTRIBUTARIOS" as TCMP
+  database "TBL_LISTA_\nREABASTECIMIENTO" as TLRE
+  database "TBL_COTIZACIONES_\nPROVEEDOR" as TCOT
+end box
+
+== 1. Venta → comprobante → reporte ==
+TEC -> VEN : registrar venta
+VEN -> LOT : ILotes.sugerirFEFO(idProducto)
+LOT -> TLOT : leer remesas vendibles (DEC-033)
+LOT --> VEN : RemesaVendibleDto
+group transacción (ESP-0001)
+  VEN -> TRV : INSERT cabecera y líneas (id_lote)
+  VEN -> LOT : ILotes.descontar(idLote, cantidad)
+  LOT -> TLOT : ACTUALIZAR_STOCK_LOTE\n(stock y estado, DEC-034)
+end
+note right of TRV
+  Persiste: la venta y sus líneas (dueño VEN)
+  y el nuevo stock de la remesa (dueño LOT).
+end note
+
+TEC -> DOC : emitir comprobante
+DOC -> VEN : IVentas.consultarVentas(filtro)
+VEN -> TRV : leer venta
+VEN --> DOC : venta y monto_total
+DOC -> TCMP : excluir ventas con comprobante 'Emitido' (tabla propia)
+DOC -> TCMP : INSERT comprobante (ESP-0009)
+note right of TCMP : Persiste: el comprobante (dueño DOC).
+
+DUE -> REP : generar reporte del intervalo
+REP -> VEN : IVentas.consultarVentas(intervalo)
+VEN -> TRV : leer ventas y líneas (ESP-0021)
+VEN --> REP : ventas del intervalo
+note right of REP : Persiste: el índice del reporte en\nTBL_REPORTES_VENTAS (dueño REP, no dibujada).
+
+== 2. Stock → lista de reabastecimiento → cotización ==
+note over REA : cada 15 días o al iniciar si ya pasaron (RNF-0010, proceso 2)
+REA -> TLOT : leer VW_STOCK_VENDIBLE\n(lectura de verificación H2, DEC-056)
+note over REA : stock_minimo y estado del medicamento\nllegan por IInventario (arista REA → INV)
+REA -> TLRE : INSERT ítem 'Automatico' si stock vendible < stock_minimo
+alt el medicamento no figura
+  TLRE --> REA : ítem registrado
+else ya figura (UNIQUE id_producto)
+  TLRE --> REA : rechazo por unicidad: se trata como "ya figura" (DEC-020)
+end
+note right of TLRE : Persiste: el ítem de la lista (dueño REA).
+
+DUE -> COT : registrar cotizaciones
+COT -> REA : IReabastecimiento.pendientes()
+REA -> TLRE : leer lista
+REA --> COT : medicamentos pendientes
+COT -> TCOT : INSERT cotización (ESP-0049)
+note right of TCOT : Persiste: la cotización (dueño COT).
+DUE -> COT : exportar comparativo por proveedor
+COT -> TCOT : leer cotización vigente (DEC-039)
+COT --> DUE : archivo CSV (efímero, ESP-0050)
+
+note over VEN, COT
+  Cada módulo escribe solo sus tablas (DEC-055). Lo que necesita de otro módulo lo pide
+  por la interfaz del dueño: ILotes, IVentas, IInventario, IReabastecimiento.
+  La única lectura directa de un dato ajeno en estas cadenas es la vista de stock
+  vendible (H2), de solo lectura y propiedad de Lotes.
+end note
+@enduml

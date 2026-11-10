@@ -88,13 +88,14 @@ Cada fila es una interfaz nombrada con el prefijo `I` seguido del nombre del mó
 - **Confianza:** alta.
 
 ### ILotes (provista por Lotes)
-- **Expone:** consulta de remesas disponibles (criterio FEFO), descuento/restitución de `stock_actual`, cambio de `estado_lote`.
+- **Expone:** consulta de remesas disponibles (criterio FEFO), descuento/restitución de `stock_actual`, cambio de `estado_lote`, `medicamentosVendibles()` (DEC-044) y `datosRemesas(idsLote)` (DEC-057).
 - **Requerida por:**
   - Ventas (ESP-0001: selección de remesa por FEFO y descuento de stock al confirmar la venta).
-  - Alertas de Vencimiento (ESP-0014: bloquea la remesa cambiando `estado_lote` a `'Bloqueado por devolucion'`; ESP-0016 la restituye a `'Disponible'`).
-  - Devoluciones (ESP-0025: valida `lote.id_proveedor = proveedor` y descuenta `stock_actual` al completar la orden en ESP-0027).
-  - Reabastecimiento (proceso periódico: compara el stock consolidado — `SUMA(TBL_LOTES.stock_actual)` por producto — contra `TBL_PRODUCTOS.stock_minimo`).
+  - Alertas de Vencimiento (ESP-0014: bloquea la remesa cambiando `estado_lote` a `'Bloqueado por devolucion'`, y obtiene los datos de la remesa para el retiro; ESP-0016 la restituye a `'Disponible'`).
+  - Devoluciones (ESP-0025: valida `lote.id_proveedor = proveedor` y descuenta `stock_actual` al completar la orden en ESP-0027; ESP-0026: datos de la remesa).
+  - Reabastecimiento (proceso periódico: el stock vendible ya no se calcula con `SUMA(TBL_LOTES.stock_actual)`; se lee de `VW_STOCK_VENDIBLE`, que es propiedad de Lotes, lectura H2, DEC-056, y se compara contra `TBL_PRODUCTOS.stock_minimo`).
 - **Confianza:** alta.
+- **Nota (09/11/2026):** se agregan `medicamentosVendibles()` y `datosRemesas(idsLote)` a las operaciones expuestas y se actualizan los consumidores según DEC-044, DEC-056 y DEC-057.
 
 ### IVentas (provista por Ventas)
 - **Expone:** consulta de ventas y su detalle, por fecha/producto.

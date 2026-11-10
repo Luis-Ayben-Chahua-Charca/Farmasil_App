@@ -1,0 +1,122 @@
+@startuml ACD-01_RepositorioAgentes
+' Arquitectura centrada en datos FARMASIL_APP — ACD-01 Repositorio y agentes (nivel 1) — v01.00
+' Estilo: repositorio (ArquitecturaSoftware.pdf, "Arquitectura de software centrada en el dato"), combinado
+' con invocación explícita: los módulos comparten el repositorio DB_FARMASIL y además se invocan por las
+' 18 dependencias de la arquitectura genérica (VL-04: IVentas, ILotes, IPagos, IRestricciones...).
+' Cada tabla la escribe solo su módulo dueño (DEC-055).
+' Fuentes: Diccionario de Datos v11.00 (16 tablas y 2 vistas), Contexto de arquitectura §2-§4, RNF-0001,
+' RNF-0003, RNF-0006, RNF-0007, RNF-0010, VF-01, VL-04, DEC-021, DEC-055, DEC-056.
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam componentStyle rectangle
+skinparam ArrowColor #444444
+skinparam package {
+  BorderColor #8577E0
+  BackgroundColor #FFFFFF
+}
+skinparam component {
+  BorderColor #8577E0
+  BackgroundColor #EDECFB
+}
+skinparam database {
+  BorderColor #444444
+  BackgroundColor #FFF8DC
+}
+skinparam rectangle {
+  BorderColor #999999
+  BackgroundColor #FFFFFF
+}
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+
+title ACD-01 Arquitectura centrada en datos — Repositorio DB_FARMASIL y sus agentes
+
+actor "Dueña de la farmacia\n<<Administrador>>" as ACT1
+actor "Técnica farmacéutica\n<<Tecnico>>" as ACT2
+
+package "Agentes interactivos (los inicia el usuario desde la interfaz WPF)" as AI {
+  package "Catálogo base" as G1 {
+    component "Métodos de Pago\n(PAG)" as PAG
+    component "Proveedores\n(PRV)" as PRV
+  }
+  package "Inventario físico" as G2 {
+    component "Inventario\n(INV)" as INV
+    component "Lotes\n(LOT)" as LOT
+  }
+  package "Operación diaria" as G3 {
+    component "Ventas\n(VEN)" as VEN
+    component "Restricciones\nde Venta (RES)" as RES
+  }
+  package "Derivados de la operación" as G4 {
+    component "Documentación\nTributaria (DOC)" as DOC
+    component "Reportes\nde Ventas (REP)" as REP
+  }
+  package "Gestión de proveedores" as G5 {
+    component "Devoluciones\n(DEV)" as DEV
+    component "Alertas de\nVencimiento (ALV)" as ALV
+  }
+  package "Abastecimiento" as G6 {
+    component "Reabastecimiento\n(REA)" as REA
+    component "Comparación de\nPrecios (COT)" as COT
+  }
+  rectangle "Invocación explícita entre módulos (18 dependencias de la arquitectura genérica)\nIVentas · ILotes · IInventario · IProveedores · IPagos · IRestricciones · IDevoluciones · IReabastecimiento" as IFZ #F5F5F5
+}
+
+component "Usuarios (USR)\n<<agente transversal>>\nsesión, rol y autoría" as USR #F5F5F5
+
+package "Agentes autónomos (hilo de fondo, RNF-0010)" as AA {
+  component "Evaluación de vencimientos\n<<proceso programado>>\nmódulo ALV, al iniciar y cada 24 h" as EV
+  component "Generación de la lista\nde reabastecimiento\n<<proceso programado>>\nmódulo REA, cada 15 días" as GL
+}
+
+component "Respaldo\n<<agente de mantenimiento>>\nscript T-SQL (sqlcmd)\nProgramador de tareas" as BK #F5F5F5
+
+database "DB_FARMASIL\n<<repositorio>>\nSQL Server 2025 Express\n16 tablas y 2 vistas" as DB {
+  rectangle "Catálogos\nUSUARIOS · PROVEEDORES\nMETODOS_PAGO · PRODUCTOS\nRESTRICCIONES_VENTA" as Z1
+  rectangle "Existencias (Lotes)\nLOTES\nVW_STOCK_FISICO · VW_STOCK_VENDIBLE" as Z2 #FFE4E1
+  rectangle "Transacciones\nREGISTRO_VENTAS · DETALLE_VENTAS\nCOMPROBANTES_TRIBUTARIOS\nORDENES_DEVOLUCION · DETALLE_DEVOLUCION" as Z3
+  rectangle "Control y salidas\nALERTAS_VENCIMIENTO · PRODUCTOS_RETIRADOS\nREPORTES_VENTAS · LISTA_REABASTECIMIENTO\nCOTIZACIONES_PROVEEDOR" as Z4
+  rectangle "Reglas del repositorio\nPK · FK NO ACTION · CHECK\nUNIQUE · índices únicos filtrados" as Z5 #F5F5F5
+}
+
+ACT1 --> AI
+ACT2 --> AI
+ACT1 ..> USR : inicia sesión
+ACT2 ..> USR : inicia sesión
+USR .. AI : sesión activa y\nautoría (id_usuario)
+
+AI ==> DB : cada módulo escribe sus tablas;\nlee las ajenas por interfaz o,\nen H1-H4, para verificar (DEC-055)
+USR --> DB : lee / escribe\nTBL_USUARIOS
+AA ==> DB : lee / escribe
+BK --> DB : BACKUP DATABASE\n(lectura completa)
+
+EV ..> AI : evento «aviso de vencimientos»\n(invocación implícita sin buffer, DEC-021)
+
+note as N1
+  Repositorio pasivo y único: las 16 tablas viven
+  en un solo nodo (RNF-0007) y operan sin internet
+  (RNF-0001). Lo usa una persona a la vez (RNF-0003);
+  la única concurrencia es la de los dos procesos
+  programados, que el motor resuelve con transacciones
+  y restricciones UNIQUE (DEC-020).
+end note
+
+note as N2
+  Dos conectores conviven:
+  - invocación explícita entre módulos por las
+    18 dependencias de la arquitectura genérica
+    (por ejemplo, Ventas pide a Lotes la remesa FEFO
+    y el descuento de stock con ILotes);
+  - acceso al repositorio compartido: cada módulo
+    escribe solo sus tablas; un dato ajeno lo obtiene
+    por la interfaz del dueño, salvo las lecturas de
+    verificación H1-H4 (DEC-055).
+  El detalle por tabla está en ACD-03.
+end note
+G1 -[hidden]down- G4
+G2 -[hidden]down- G5
+G3 -[hidden]down- G6
+G5 -[hidden]down- IFZ
+DB -[hidden]right- N1
+@enduml
