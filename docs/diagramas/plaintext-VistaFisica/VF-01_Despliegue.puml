@@ -23,7 +23,7 @@ node "PC de la farmacia\n<<device>>\nWindows 11 | Intel Core i5-12500 | 16 GB RA
   }
 
   node "SQL Server 2025 Express\n<<executionEnvironment>>\nservicio de Windows, instancia SQLEXPRESS" as DBE {
-    database "DB_FARMASIL\n(14 tablas)\n.mdf / .ldf" as DB
+    database "DB_FARMASIL\n(16 tablas)\n.mdf / .ldf" as DB
   }
 
   node "Programador de tareas de Windows\n<<executionEnvironment>>" as TS {
