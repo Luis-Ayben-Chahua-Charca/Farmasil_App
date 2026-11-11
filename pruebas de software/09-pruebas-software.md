@@ -2,10 +2,12 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 07.00 |
-| Fecha | 08/11/2026 |
+| Versión | 08.00 |
+| Fecha | 11/11/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 08.00.** Alinea las pruebas de Inventario y Lotes con la adecuación de los mockups del issue #72 (DEC-042). La consulta de Inventario incorpora la búsqueda única por identificador o nombre y los filtros de proveedor y categoría mediante `accion_terapeutica` (PEN-010); el stock físico se verifica mediante `VW_STOCK_FISICO`, incluyendo el caso de medicamentos sin remesas con stock 0; la actualización usa `INV-BTN-CONFIRMAR-ACTUALIZACION` (DEC-046). En Lotes se distinguen los controles de filtro de los campos de captura y se mantiene el medicamento de la remesa en solo lectura durante la actualización. No cambia el número de pruebas: 275.
+>
 > **Versión 07.00.** La prueba de RNF-0009 verifica el esquema según el Diccionario de Datos v10.00 y no según el v09.00. No cambia el número de pruebas (275).
 >
 > **Versión 06.00.** Alinea las pruebas con las correcciones de las auditorías de la base de datos (issue #63): predicado de vendibilidad, estado de la remesa por una regla única, varios retiros por remesa, una línea por remesa, intervalos de fecha semiabiertos, un comprobante 'Emitido' por venta, proveedor de las devoluciones, desempate de la cotización vigente y stock físico y vendible. Se agregan 18 pruebas, se ajustan cuatro filas y se reemplaza la de cambio de remesa de ESP-0015 por la de remesa de solo lectura. Se corrige además el total de la tabla de cobertura, que decía 256 cuando el plan tenía 257. Total: 275 pruebas.
@@ -104,16 +106,16 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 
 | Clave | Requisito (Nombre / Operación) | Descripción de la prueba | Tipo |
 | --- | --- | --- | --- |
-| ESP-0005 | Creación del producto de inventario (Crear) | Camino básico: nombre, acción terapéutica, precio y proveedor, validación y registro con estado 'Disponible'. | T-002 |
+| ESP-0005 | Creación del producto de inventario (Crear) | Camino básico: nombre, acción terapéutica, precio, proveedor y stock mínimo, validación y registro con estado 'Disponible'. | T-002 |
 |  |  | Partición sobre el precio: positivo, cero, negativo y no numérico; y sobre el nombre vacío. | T-001 |
 |  |  | Verificar que el identificador se genere automáticamente y se muestre sin permitir edición. | T-004 |
 |  |  | Verificar que un medicamento recién creado, sin remesas, no se ofrezca en el módulo de ventas. | T-006 |
-| ESP-0006 | Consulta del producto de inventario (Leer) | Camino básico: búsqueda por identificador o nombre y despliegue del resultado. | T-002 |
-|  |  | Partición sobre los criterios: identificador existente, inexistente, nombre parcial y campos vacíos. | T-001 |
-|  |  | Verificar que el stock mostrado sea la suma de las existencias de todas las remesas del medicamento. | T-006 |
+| ESP-0006 | Consulta del producto de inventario (Leer) | Camino básico: búsqueda por identificador o nombre mediante **INV-TXT-BUSQUEDA-PRODUCTO**, aplicación opcional de filtros por proveedor y categoría, y despliegue del resultado con stock físico. | T-002 |
+|  |  | Partición sobre los criterios: identificador existente e inexistente, nombre parcial, proveedor, categoría mediante `accion_terapeutica`, combinación de filtros y filtros vacíos. | T-001 |
+|  |  | Verificar que el stock físico se obtenga mediante **VW_STOCK_FISICO**, corresponda a la suma de las existencias de todas las remesas y que un medicamento sin remesas muestre stock 0. | T-006 |
 |  |  | Crear una segunda remesa y verificar que el stock físico se actualice sin duplicar la fila del producto. | T-007 |
 |  |  | Con una remesa bloqueada y otra vencida, verificar que el stock mostrado sea el físico (incluye ambas), distinto del stock vendible. | T-006 |
-| ESP-0007 | Actualización del producto de inventario (Actualizar) | Camino básico: seleccionar producto, modificar los campos de catálogo y confirmar. | T-002 |
+| ESP-0007 | Actualización del producto de inventario (Actualizar) | Camino básico: seleccionar producto, iniciar la edición, modificar los campos de catálogo y confirmar los cambios mediante **INV-BTN-CONFIRMAR-ACTUALIZACION**. | T-002 |
 |  |  | Verificar que el identificador permanezca inalterado y que las referencias desde lotes y restricciones sigan siendo válidas. | T-007 |
 |  |  | Modificar el precio y verificar que las ventas ya registradas conserven el precio vigente al momento de la venta. | T-006 |
 | ESP-0008 | Eliminación del producto de inventario (Eliminar) | Camino básico: seleccionar producto, confirmar y verificar la baja aplicada. | T-002 |
@@ -317,14 +319,14 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 
 | Clave | Requisito (Nombre / Operación) | Descripción de la prueba | Tipo |
 | --- | --- | --- | --- |
-| ESP-0041 | Registro de remesa (Crear) | Camino básico: seleccionar medicamento, ingresar lote, vencimiento, existencias y fecha de ingreso, y confirmar. | T-002 |
+| ESP-0041 | Registro de remesa (Crear) | Camino básico: seleccionar medicamento y proveedor, ingresar número de lote, vencimiento, existencias y fecha de ingreso, y confirmar. | T-002 |
 |  |  | Registrar dos remesas del mismo medicamento con el mismo número de lote y verificar el rechazo por unicidad. | T-012 |
 |  |  | Registrar el mismo número de lote para dos medicamentos distintos y verificar que sea admitido, ya que la unicidad es por medicamento. | T-001 |
 |  |  | Valores límite sobre el vencimiento y las existencias: fecha anterior a hoy, igual a hoy, posterior; existencias cero, positivas y negativas. | T-001 |
 |  |  | Registrar tres remesas del mismo medicamento con vencimientos distintos y verificar que coexistan sin duplicar la fila del producto. | T-006 |
 |  |  | Verificar que el stock físico del medicamento se incremente en las unidades recibidas. | T-006 |
 |  |  | Presentar al cliente el registro de dos remesas del mismo medicamento con vencimientos distintos. | T-005 |
-| ESP-0042 | Consulta de remesas (Leer) | Camino básico: aplicar filtros por medicamento, lote y estado, y desplegar el resultado. | T-002 |
+| ESP-0042 | Consulta de remesas (Leer) | Camino básico: aplicar los filtros independientes **LOT-CMB-FILTRO-PRODUCTO**, **LOT-TXT-FILTRO-NUMERO-LOTE** y **LOT-CMB-FILTRO-ESTADO-LOTE**, y desplegar el resultado. | T-002 |
 |  |  | Verificar que el resultado se muestre ordenado por vencimiento ascendente, como contraparte visual del criterio FEFO. | T-004 |
 |  |  | Partición sobre el filtro de estado: 'Disponible', 'Bloqueado por devolucion', 'Agotado' y sin filtro. | T-001 |
 | ESP-0043 | Actualización de remesa (Actualizar) | Camino básico: seleccionar remesa, modificar lote, vencimiento, existencias o proveedor, y confirmar. | T-002 |

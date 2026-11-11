@@ -85,8 +85,8 @@
 | Código ilación | ILA-0005 |
 | --- | --- |
 | Nombre | Creación del producto de inventario |
-| Versión | 09.00 |
-| Fecha | 02/10/2026 |
+| Versión | 10.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0004, FUE-0005 |
@@ -98,33 +98,33 @@
 | Postcondición | 1. El producto queda registrado en **DB_FARMASIL.TBL_PRODUCTOS** con todos sus campos obligatorios completos.<br>2. El producto aparece en **INV-TBL-PRODUCTOS** con estado 'Disponible'.<br>3. El producto queda disponible para recibir sus remesas según ILA-0041. Hasta que exista al menos una remesa con existencias, el medicamento no se ofrece en el módulo de ventas.<br>4. El medicamento queda registrado con su `stock_minimo`, usado por el proceso de generación automática de la lista de reabastecimiento (EDU-0016). |
 | Código de artefactos asociados | ART-MKP-INV-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | El procedimiento anterior pedía al usuario que ingresara manualmente el ID del producto, pero `id_producto` es clave primaria autoincremental según el Diccionario de Datos; se corrigió a generación automática con visualización de solo lectura.<br>Faltaba `id_proveedor`, campo obligatorio que el registro no puede completar sin él.<br>Con la incorporación de **TBL_LOTES** en el Diccionario de Datos v04.00, el número de lote, la fecha de vencimiento y las existencias dejaron de ser atributos del medicamento y se registran como remesas en ILA-0041. Esta ilación quedó reducida a los datos de catálogo.<br>Queda Pendiente porque requiere incorporar **INV-CMB-PROVEEDOR** al mockup **ART-MKP-INV-0001**. Ver Anexo.<br>**Versión 09.00:** se incorporó la captura de `stock_minimo`, campo nuevo del Diccionario de Datos v05.00, para alimentar la lista de reabastecimiento (EDU-0016). Requiere incorporar **INV-NUM-STOCK-MINIMO** al mockup **ART-MKP-INV-0001**. Ver Anexo. |
+| Estado | Concluido |
+| Comentario | El procedimiento anterior pedía al usuario que ingresara manualmente el ID del producto, pero `id_producto` es clave primaria autoincremental según el Diccionario de Datos; se corrigió a generación automática con visualización de solo lectura.<br>Faltaba `id_proveedor`, campo obligatorio que el registro no puede completar sin él.<br>Con la incorporación de **TBL_LOTES** en el Diccionario de Datos v04.00, el número de lote, la fecha de vencimiento y las existencias dejaron de ser atributos del medicamento y se registran como remesas en ILA-0041. Esta ilación quedó reducida a los datos de catálogo.<br>**Versión 09.00:** se incorporó la captura de `stock_minimo`, campo nuevo del Diccionario de Datos v05.00, para alimentar la lista de reabastecimiento (EDU-0016).<br>**Versión 10.00:** (DEC-042, C4) **INV-CMB-PROVEEDOR** e **INV-NUM-STOCK-MINIMO** se mantienen como campos obligatorios aunque no estén representados completamente en el mockup aprobado; la ilación prevalece y no se modifica el PNG. |
 
 | Código ilación | ILA-0006 |
 | --- | --- |
 | Nombre | Consulta del producto de inventario |
-| Versión | 09.00 |
-| Fecha | 08/11/2026 |
+| Versión | 10.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | FUE-0004, FUE-0005 |
 | Experto | Ninguno |
 | Código educción | EDU-0002 |
 | Código especificación | ESP-0006 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador' o 'Tecnico'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-INV-0002**.<br>6. Los campos **INV-TXT-ID-PRODUCTO** e **INV-TXT-NOMBRE-PRODUCTO** se encuentran habilitados.<br>7. El botón **INV-BTN-LEER-PRODUCTO** se encuentra habilitado. |
-| Procedimiento | 1. El usuario visualiza el formulario de consulta de producto en el mockup **ART-MKP-INV-0002**.<br>2. El usuario ingresa el identificador del producto en **INV-TXT-ID-PRODUCTO** o el nombre del producto en **INV-TXT-NOMBRE-PRODUCTO**.<br>3. El usuario presiona **INV-BTN-LEER-PRODUCTO**.<br>4. El sistema procesa los criterios de búsqueda ingresados.<br>5. El sistema consulta los registros almacenados en **DB_FARMASIL.TBL_PRODUCTOS**.<br>6. El sistema muestra los resultados encontrados en **INV-TBL-PRODUCTOS**, incluyendo el estado del medicamento y el stock físico, calculado como la suma de las existencias de todas sus remesas en **DB_FARMASIL.TBL_LOTES**, incluidas las bloqueadas, agotadas o vencidas.<br>7. El usuario revisa la información mostrada. |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador' o 'Tecnico'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-INV-0001**.<br>6. Los controles **INV-TXT-BUSQUEDA-PRODUCTO**, **INV-CMB-FILTRO-PROVEEDOR** e **INV-CMB-FILTRO-ACCION-TERAPEUTICA** se encuentran habilitados.<br>7. El botón **INV-BTN-LEER-PRODUCTO** se encuentra habilitado. |
+| Procedimiento | 1. El usuario visualiza la consulta de productos en el mockup **ART-MKP-INV-0001**.<br>2. El usuario puede ingresar un identificador o nombre en **INV-TXT-BUSQUEDA-PRODUCTO**.<br>3. Opcionalmente, el usuario selecciona un proveedor en **INV-CMB-FILTRO-PROVEEDOR** o una categoría en **INV-CMB-FILTRO-ACCION-TERAPEUTICA**; mientras PEN-010 permanezca abierto, la categoría se resuelve mediante `accion_terapeutica`.<br>4. El usuario presiona **INV-BTN-LEER-PRODUCTO**.<br>5. El sistema consulta **DB_FARMASIL.TBL_PRODUCTOS** y realiza una unión izquierda con **DB_FARMASIL.VW_STOCK_FISICO** por `id_producto`.<br>6. El sistema aplica únicamente los filtros que tengan valor: identificador o nombre, proveedor y acción terapéutica.<br>7. El sistema muestra los resultados en **INV-TBL-PRODUCTOS**, incluyendo identificador, nombre, acción terapéutica, precio, estado y stock físico. Cuando el medicamento no tiene remesas, el stock físico mostrado es 0.<br>8. El usuario revisa la información mostrada. |
 | Postcondición | 1. Los productos consultados se visualizan en **INV-TBL-PRODUCTOS** con su stock físico.<br>1-bis. El detalle por remesa, con número de lote y vencimiento, se consulta en el módulo 11 según ILA-0042.<br>2. No se modifica ninguna información registrada en **DB_FARMASIL.TBL_PRODUCTOS**. |
-| Código de artefactos asociados | ART-MKP-INV-0002 |
+| Código de artefactos asociados | ART-MKP-INV-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Permitirá localizar medicamentos de forma rápida y eficiente. Se explicitó en el resultado de la consulta el stock, el lote y el estado, que son los datos que el personal necesita durante la atención.<br>**Versión 09.00:** (AUD-claude-016, AUD-gpt-019; DEC-040, PEN-024) el stock que muestra Inventario es el stock físico; el reabastecimiento usa el stock vendible (RNF-0010). Provisional hasta que la dueña responda. |
+| Comentario | Permitirá localizar medicamentos de forma rápida y eficiente. El detalle por remesa se consulta en el módulo 11 mediante ILA-0042.<br>**Versión 09.00:** (AUD-claude-016, AUD-gpt-019; DEC-040, PEN-024) el stock que muestra Inventario es el stock físico; el reabastecimiento usa el stock vendible (RNF-0010). Provisional hasta que la dueña responda.<br>**Versión 10.00:** (DEC-042, DEC-058, PEN-010, PEN-027) la consulta se integra en la pantalla única **ART-MKP-INV-0001**. La caja de búsqueda permite localizar por identificador o nombre; los filtros visibles de proveedor y categoría se incorporan a la consulta y la categoría usa provisionalmente `accion_terapeutica`. El stock físico se obtiene mediante **VW_STOCK_FISICO** con unión izquierda y los medicamentos sin remesas muestran 0. El visor 3D y las imágenes quedan fuera del alcance funcional. |
 
 | Código ilación | ILA-0007 |
 | --- | --- |
 | Nombre | Actualización del producto de inventario |
-| Versión | 09.00 |
-| Fecha | 02/10/2026 |
+| Versión | 10.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0004, FUE-0005 |
@@ -132,31 +132,31 @@
 | Código educción | EDU-0002 |
 | Código especificación | ESP-0007 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-INV-0001**.<br>6. El botón **INV-BTN-ACTUALIZAR-PRODUCTO** se encuentra habilitado. |
-| Procedimiento | 1. El usuario visualiza la tabla de productos **INV-TBL-PRODUCTOS** en el mockup **ART-MKP-INV-0001**.<br>2. El usuario identifica y selecciona el producto que desea actualizar.<br>3. El usuario presiona **INV-BTN-ACTUALIZAR-PRODUCTO**.<br>4. El sistema carga el formulario de actualización en el mockup **ART-MKP-INV-0003** con la información vigente del producto.<br>5. El usuario modifica los campos editables: **INV-TXT-NOMBRE-PRODUCTO**, **INV-TXT-ACCION-TERAPEUTICA**, **INV-NUM-PRECIO-PRODUCTO**, **INV-CMB-PROVEEDOR** e **INV-NUM-STOCK-MINIMO**. El identificador se muestra en **INV-LBL-ID-PRODUCTO** y no es editable. El número de lote, el vencimiento y las existencias se modifican sobre la remesa correspondiente, según ILA-0043.<br>6. El usuario verifica la información y presiona **INV-BTN-ACTUALIZAR-PRODUCTO**.<br>7. El sistema valida la información ingresada con los mismos criterios de la creación.<br>8. El sistema actualiza el registro correspondiente en **DB_FARMASIL.TBL_PRODUCTOS**.<br>9. El sistema actualiza **INV-TBL-PRODUCTOS**. |
+| Procedimiento | 1. El usuario visualiza la tabla de productos **INV-TBL-PRODUCTOS** en el mockup **ART-MKP-INV-0001**.<br>2. El usuario identifica y selecciona el producto que desea actualizar.<br>3. El usuario presiona **INV-BTN-ACTUALIZAR-PRODUCTO**.<br>4. El sistema carga el formulario de actualización en el mockup **ART-MKP-INV-0001** con la información vigente del producto.<br>5. El usuario modifica los campos editables: **INV-TXT-NOMBRE-PRODUCTO**, **INV-TXT-ACCION-TERAPEUTICA**, **INV-NUM-PRECIO-PRODUCTO**, **INV-CMB-PROVEEDOR** e **INV-NUM-STOCK-MINIMO**. El identificador se muestra en **INV-LBL-ID-PRODUCTO** y no es editable. El número de lote, el vencimiento y las existencias se modifican sobre la remesa correspondiente, según ILA-0043.<br>6. El usuario verifica la información y presiona **INV-BTN-CONFIRMAR-ACTUALIZACION**.<br>7. El sistema valida la información ingresada con los mismos criterios de la creación.<br>8. El sistema actualiza el registro correspondiente en **DB_FARMASIL.TBL_PRODUCTOS**.<br>9. El sistema actualiza **INV-TBL-PRODUCTOS**. |
 | Postcondición | 1. Los cambios quedan registrados en **DB_FARMASIL.TBL_PRODUCTOS**.<br>2. La información actualizada se visualiza en **INV-TBL-PRODUCTOS**.<br>3. El identificador del producto permanece inalterado, preservando las referencias desde **TBL_LOTES** y **TBL_RESTRICCIONES_VENTA**. |
-| Código de artefactos asociados | ART-MKP-INV-0001, ART-MKP-INV-0003 |
+| Código de artefactos asociados | ART-MKP-INV-0001 |
 | Importancia | Media |
-| Estado | Pendiente |
-| Comentario | Se declaró explícitamente que el identificador no es editable, dado que es clave foránea en tres tablas del modelo. Se alinearon los campos editables con los incorporados en ILA-0005.<br>Queda Pendiente por la misma dependencia de mockup que ILA-0005.<br>**Versión 09.00:** se agregó **INV-NUM-STOCK-MINIMO** a los campos editables, alineado con ILA-0005 (Diccionario de Datos v05.00). Requiere incorporarlo al mockup **ART-MKP-INV-0003**. Ver Anexo. |
+| Estado | Concluido |
+| Comentario | Se declaró explícitamente que el identificador no es editable, dado que es clave foránea en otras tablas del modelo. Se alinearon los campos editables con los incorporados en ILA-0005.<br>**Versión 09.00:** se agregó **INV-NUM-STOCK-MINIMO** a los campos editables, alineado con ILA-0005 (Diccionario de Datos v05.00).<br>**Versión 10.00:** (DEC-042, DEC-046) la actualización se realiza en la pantalla única **ART-MKP-INV-0001**. **INV-BTN-ACTUALIZAR-PRODUCTO** inicia la edición y **INV-BTN-CONFIRMAR-ACTUALIZACION**, con el rótulo «Guardar cambios», confirma la modificación. Los campos exigidos por la ilación se mantienen aunque el mockup no los muestre completamente (C4). |
 
 | Código ilación | ILA-0008 |
 | --- | --- |
 | Nombre | Eliminación del producto de inventario |
-| Versión | 10.00 |
-| Fecha | 08/11/2026 |
+| Versión | 11.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0004, FUE-0005 |
 | Experto | Ninguno |
 | Código educción | EDU-0002 |
 | Código especificación | ESP-0008 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-INV-0004**.<br>6. El producto a dar de baja se encuentra visible en **INV-TBL-PRODUCTOS**. |
-| Procedimiento | 1. El usuario identifica y selecciona el producto que desea dar de baja en **INV-TBL-PRODUCTOS**.<br>2. El usuario verifica la información mostrada y presiona **INV-BTN-ELIMINAR-PRODUCTO**.<br>3. El sistema carga el mockup **ART-MKP-INV-0004** y muestra el modal **INV-MDL-CONFIRMAR-ELIMINACION** con el mensaje **INV-TXT-MSJ**: "¿Está seguro de dar de baja este producto?"<br>4. Al confirmar, el sistema intenta eliminar físicamente el registro; si la base de datos lo rechaza porque otro registro lo referencia, aplica en su lugar la baja lógica.<br>5. Si el usuario presiona **INV-BTN-CONFIRMAR-SI** y el producto no tiene movimientos asociados, el sistema elimina el registro de **DB_FARMASIL.TBL_PRODUCTOS**.<br>6. Si el usuario presiona **INV-BTN-CONFIRMAR-SI** y el producto sí tiene movimientos asociados, el sistema realiza una baja lógica actualizando `estado_producto` a 'Descontinuado', conservando el registro y su histórico.<br>7. Si el usuario presiona **INV-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>8. El sistema actualiza **INV-TBL-PRODUCTOS**. |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-INV-0001**.<br>6. El producto a dar de baja se encuentra visible en **INV-TBL-PRODUCTOS**. |
+| Procedimiento | 1. El usuario identifica y selecciona el producto que desea dar de baja en **INV-TBL-PRODUCTOS**.<br>2. El usuario verifica la información mostrada y presiona **INV-BTN-ELIMINAR-PRODUCTO**.<br>3. El sistema carga el mockup **ART-MKP-INV-0001** y muestra el modal **INV-MDL-CONFIRMAR-ELIMINACION** con el mensaje **INV-TXT-MSJ**: "¿Está seguro de dar de baja este producto?"<br>4. Al confirmar, el sistema intenta eliminar físicamente el registro; si la base de datos lo rechaza porque otro registro lo referencia, aplica en su lugar la baja lógica.<br>5. Si el usuario presiona **INV-BTN-CONFIRMAR-SI** y el producto no tiene movimientos asociados, el sistema elimina el registro de **DB_FARMASIL.TBL_PRODUCTOS**.<br>6. Si el usuario presiona **INV-BTN-CONFIRMAR-SI** y el producto sí tiene movimientos asociados, el sistema realiza una baja lógica actualizando `estado_producto` a 'Descontinuado', conservando el registro y su histórico.<br>7. Si el usuario presiona **INV-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>8. El sistema actualiza **INV-TBL-PRODUCTOS**. |
 | Postcondición | 1. El producto sin movimientos queda eliminado de **DB_FARMASIL.TBL_PRODUCTOS**.<br>2. El producto con movimientos queda con `estado_producto` = 'Descontinuado' y conserva su histórico de ventas y devoluciones.<br>3. En ambos casos el producto deja de ofrecerse en **VEN-CMB-PRODUCTO-VENTA**.<br>4. No se produce ninguna violación de integridad referencial. |
-| Código de artefactos asociados | ART-MKP-INV-0004 |
+| Código de artefactos asociados | ART-MKP-INV-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | La versión anterior eliminaba físicamente el producto sin considerar que `id_producto` es clave foránea en **TBL_DETALLE_VENTAS**, **TBL_DETALLE_DEVOLUCION** y **TBL_RESTRICCIONES_VENTA**: la operación habría fallado o habría destruido el histórico de ventas.<br>El procedimiento anterior también pedía ingresar el ID del producto y además seleccionarlo de la tabla, dos pasos redundantes; se dejó únicamente la selección.<br>Queda Pendiente porque el valor 'Descontinuado' debe incorporarse al dominio de `estado_producto` en el Diccionario de Datos, que hoy solo contempla 'Disponible' y 'Bloqueado por devolucion'. Ver Anexo.<br>**Versión 09.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011).<br>**Versión 10.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
+| Estado | Concluido |
+| Comentario | La versión anterior eliminaba físicamente el producto sin considerar las referencias que pueden existir hacia él; la operación habría fallado o habría destruido el histórico. El procedimiento anterior también pedía ingresar el ID del producto y además seleccionarlo de la tabla, dos pasos redundantes; se dejó únicamente la selección.<br>El valor 'Descontinuado' forma parte actualmente del dominio de `estado_producto` del Diccionario de Datos.<br>**Versión 09.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011).<br>**Versión 10.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022.<br>**Versión 11.00:** (DEC-042, C1) la baja se realiza desde la pantalla única **ART-MKP-INV-0001** y conserva el modal de confirmación identificado mediante los componentes `INV-MDL-*`. |
 ---
 
 # Módulo 3 — Gestión de documentación tributaria (EDU-0003)
@@ -819,16 +819,12 @@
 | Mockup | Componentes nuevos | Motivo |
 | --- | --- | --- |
 | `ART-MKP-VEN-0001`, `ART-MKP-VEN-0003` | **VEN-BTN-AGREGAR-PRODUCTO**, **VEN-BTN-QUITAR-PRODUCTO**, **VEN-TBL-DETALLE-VENTA**, **VEN-LBL-MONTO-TOTAL** | Venta de varios productos en una misma transacción. |
-| `ART-MKP-INV-0001`, `ART-MKP-INV-0003` | **INV-CMB-PROVEEDOR** | Campo obligatorio del diccionario que ningún mockup permite capturar. El lote, el vencimiento y las existencias se retiran de este mockup y pasan al módulo 11. |
-| `ART-MKP-LOT-0001` a `ART-MKP-LOT-0004` | Módulo completo, prefijo **LOT** | Mockups aún no diseñados. Gestión de lotes (EDU-0015). |
 | `ART-MKP-VEN-0001`, `ART-MKP-VEN-0003` | **VEN-CMB-LOTE-VENTA** | Selección de la remesa de la que se descuenta, según el criterio FEFO. |
 | `ART-MKP-DEV-0001`, `ART-MKP-DEV-0003` | Tabla de detalle de la orden de devolución | Varios medicamentos por orden. |
 | `ART-MKP-USR-0001` a `ART-MKP-USR-0004` | Módulo completo, prefijo **USR** | Mockups aún no diseñados. Gestión de usuarios (EDU-0013). |
 | `ART-MKP-PRV-0001` a `ART-MKP-PRV-0004` | Módulo completo, prefijo **PRV** | Mockups aún no diseñados. Gestión de proveedores (EDU-0014). |
 | `ART-MKP-REA-0001` a `ART-MKP-REA-0004` | Módulo completo, prefijo **REA** | Mockups aún no diseñados. Gestión de reabastecimiento (EDU-0016). |
 | `ART-MKP-COT-0001` a `ART-MKP-COT-0004` | Módulo completo, prefijo **COT** | Mockups aún no diseñados. Gestión de comparación de precios de proveedores (EDU-0017). |
-| `ART-MKP-INV-0001`, `ART-MKP-INV-0003` | **INV-NUM-STOCK-MINIMO** | Campo nuevo `TBL_PRODUCTOS.stock_minimo`, capturado al crear/actualizar el medicamento (ver corrección a ILA-0005/ILA-0007 en la Sección 4). |
-| `ART-MKP-LOT-0001`, `ART-MKP-LOT-0003` | **LOT-CMB-PROVEEDOR-LOTE** | Campo nuevo `TBL_LOTES.id_proveedor`, capturado al registrar/actualizar la remesa (ver corrección a ILA-0041/ILA-0043 en la Sección 4). |
 
 Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura de Mockups antes de trasladarse a las especificaciones.
 
@@ -849,8 +845,8 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código ilación | ILA-0041 |
 | --- | --- |
 | Nombre | Registro de remesa |
-| Versión | 05.00 |
-| Fecha | 08/11/2026 |
+| Versión | 06.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -862,65 +858,65 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Postcondición | 1. La remesa queda almacenada en **DB_FARMASIL.TBL_LOTES** asociada a su medicamento y al proveedor que la entregó (`id_proveedor`).<br>2. La combinación de medicamento y número de lote es única en la tabla.<br>3. La remesa aparece en **LOT-TBL-LOTES**.<br>4. La remesa queda disponible para ser seleccionada en **VEN-CMB-LOTE-VENTA** durante el registro de una venta.<br>5. El stock físico del medicamento, mostrado en **INV-TBL-PRODUCTOS**, se incrementa en las unidades recibidas. |
 | Código de artefactos asociados | ART-MKP-LOT-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Ilación nueva, derivada de la incorporación de **TBL_LOTES** al Diccionario de Datos v04.00.<br>La restricción de unicidad sobre medicamento y número de lote es la que sostiene el rastreo sanitario: si el mismo lote pudiera registrarse dos veces, no habría forma de responder inequívocamente qué se vendió de una remesa retirada por la DIGEMID.<br>Queda Pendiente porque el mockup **ART-MKP-LOT-0001** aún no ha sido diseñado.<br>**Versión 02.00:** se incorpora `TBL_LOTES.id_proveedor` (Diccionario de Datos v05.00), que permite registrar remesas de un mismo medicamento provenientes de proveedores distintos, requisito surgido durante el diseño del módulo de comparación de precios de proveedores (EDU-0017). Requiere incorporar **LOT-CMB-PROVEEDOR-LOTE** al mockup **ART-MKP-LOT-0001**. Ver Anexo.<br>**Versión 03.00:** una remesa nueva debe ingresar con al menos una unidad; con cero quedaba 'Disponible' sin existencias.<br>**Versión 04.00:** (DEC-040) el stock que muestra Inventario pasa a llamarse stock físico: la suma de las existencias de todas las remesas del medicamento.<br>**Versión 05.00:** terminología vigente (DEC-040). |
+| Estado | Concluido |
+| Comentario | Ilación derivada de la incorporación de **TBL_LOTES** al Diccionario de Datos v04.00.<br>La restricción de unicidad sobre medicamento y número de lote sostiene el rastreo sanitario.<br>**Versión 02.00:** se incorpora `TBL_LOTES.id_proveedor` (Diccionario de Datos v05.00), que permite registrar remesas de un mismo medicamento provenientes de proveedores distintos.<br>**Versión 03.00:** una remesa nueva debe ingresar con al menos una unidad; con cero quedaba 'Disponible' sin existencias.<br>**Versión 04.00:** (DEC-040) el stock que muestra Inventario pasa a llamarse stock físico: la suma de las existencias de todas las remesas del medicamento.<br>**Versión 05.00:** terminología vigente (DEC-040).<br>**Versión 06.00:** (DEC-042, C4) la operación se mantiene en **ART-MKP-LOT-0001**. **LOT-CMB-PROVEEDOR-LOTE** continúa siendo obligatorio aunque el mockup no lo represente completamente; la ilación prevalece y no se modifica el PNG. |
 
 | Código ilación | ILA-0042 |
 | --- | --- |
 | Nombre | Consulta de remesas |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código educción | EDU-0015 |
 | Código especificación | ESP-0042 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador' o 'Tecnico'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LOTES** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-LOT-0002**. |
-| Procedimiento | 1. El usuario accede al módulo de gestión de lotes.<br>2. El usuario aplica los filtros disponibles: medicamento en **LOT-CMB-PRODUCTO**, número de lote en **LOT-TXT-NUMERO-LOTE** o estado en **LOT-CMB-ESTADO-LOTE**.<br>3. El usuario presiona **LOT-BTN-LEER-LOTE**.<br>4. El sistema consulta **DB_FARMASIL.TBL_LOTES** y resuelve el nombre del medicamento contra **DB_FARMASIL.TBL_PRODUCTOS**.<br>5. El sistema muestra en **LOT-TBL-LOTES** el medicamento, el número de lote, la fecha de vencimiento, las existencias y el estado de cada remesa, ordenadas por fecha de vencimiento ascendente. |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador' o 'Tecnico'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LOTES** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-LOT-0001**. |
+| Procedimiento | 1. El usuario accede al módulo de gestión de lotes y visualiza el mockup **ART-MKP-LOT-0001**.<br>2. El usuario aplica los filtros disponibles: medicamento en **LOT-CMB-FILTRO-PRODUCTO**, número de lote en **LOT-TXT-FILTRO-NUMERO-LOTE** o estado en **LOT-CMB-FILTRO-ESTADO-LOTE**.<br>3. El usuario presiona **LOT-BTN-LEER-LOTE**.<br>4. El sistema consulta **DB_FARMASIL.TBL_LOTES** y resuelve el nombre del medicamento contra **DB_FARMASIL.TBL_PRODUCTOS**, aplicando los filtros que tengan un valor seleccionado o ingresado.<br>5. El sistema muestra en **LOT-TBL-LOTES** el medicamento, el número de lote, la fecha de vencimiento, las existencias y el estado de cada remesa, ordenadas por fecha de vencimiento ascendente. |
 | Postcondición | 1. Las remesas consultadas se visualizan en **LOT-TBL-LOTES**.<br>2. El orden por vencimiento ascendente permite identificar de un vistazo qué remesa debe despacharse primero.<br>3. No se modifica ninguna información en **DB_FARMASIL.TBL_LOTES**. |
-| Código de artefactos asociados | ART-MKP-LOT-0002 |
+| Código de artefactos asociados | ART-MKP-LOT-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Es una de las operaciones disponibles para ambos roles: la técnica necesita saber qué remesa tiene disponible y cuándo vence antes de despachar un medicamento.<br>El orden por vencimiento ascendente es la contraparte visual del criterio FEFO que aplica ILA-0001.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0002**. |
+| Estado | Concluido |
+| Comentario | Es una de las operaciones disponibles para ambos roles: la técnica necesita saber qué remesa tiene disponible y cuándo vence antes de despachar un medicamento.<br>El orden por vencimiento ascendente es la contraparte visual del criterio FEFO que aplica ILA-0001.<br>**Versión 02.00:** (DEC-042, C1-C4) la consulta se integra en **ART-MKP-LOT-0001**. Los controles de búsqueda reciben identificadores propios para no compartirlos con los campos de captura y edición. La tabla conserva medicamento, número de lote, vencimiento, existencias y estado aunque el mockup no muestre todas estas columnas explícitamente. |
 
 | Código ilación | ILA-0043 |
 | --- | --- |
 | Nombre | Actualización de remesa |
-| Versión | 05.00 |
-| Fecha | 08/11/2026 |
+| Versión | 06.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código educción | EDU-0015 |
 | Código especificación | ESP-0043 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LOTES** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-LOT-0003**. |
-| Procedimiento | 1. La dueña selecciona una remesa en **LOT-TBL-LOTES**.<br>2. La dueña presiona **LOT-BTN-ACTUALIZAR-LOTE**.<br>3. El sistema carga el mockup **ART-MKP-LOT-0003** con la información vigente de la remesa.<br>4. La dueña modifica el número de lote en **LOT-TXT-NUMERO-LOTE**, la fecha de vencimiento en **LOT-FEC-FECHA-VENCIMIENTO**, las existencias en **LOT-NUM-STOCK-LOTE** o el proveedor de la remesa en **LOT-CMB-PROVEEDOR-LOTE**. El medicamento asociado, mostrado en **LOT-CMB-PRODUCTO**, y el estado, mostrado en **LOT-CMB-ESTADO-LOTE**, permanecen de solo lectura.<br>5. La dueña presiona **LOT-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo número de lote no colisione con otra remesa del mismo medicamento que las existencias sean un entero no negativo y, si se modificó la fecha de vencimiento, que la nueva fecha sea posterior a la actual. Rechaza el cambio de proveedor si la remesa figura en el detalle de alguna orden de devolución, de cualquier estado.<br>7. El sistema verifica que las existencias declaradas no sean inferiores a las unidades ya comprometidas en órdenes de devolución pendientes de esa remesa.<br>8. El sistema deriva el estado de la remesa: una remesa 'Bloqueado por devolucion' conserva su estado; en otro caso, si las existencias quedan en cero pasa a 'Agotado'; si estaba 'Agotado', no está vencida y recibe existencias, vuelve a 'Disponible'; en otro caso conserva su estado.<br>9. El sistema actualiza el registro en **DB_FARMASIL.TBL_LOTES**.<br>10. El sistema actualiza **LOT-TBL-LOTES**. |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LOTES** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-LOT-0001**. |
+| Procedimiento | 1. La dueña selecciona una remesa en **LOT-TBL-LOTES** del mockup **ART-MKP-LOT-0001**.<br>2. La dueña presiona **LOT-BTN-ACTUALIZAR-LOTE**.<br>3. El sistema carga en **ART-MKP-LOT-0001** la información vigente de la remesa seleccionada.<br>4. La dueña modifica el número de lote en **LOT-TXT-NUMERO-LOTE**, la fecha de vencimiento en **LOT-FEC-FECHA-VENCIMIENTO**, las existencias en **LOT-NUM-STOCK-LOTE** o el proveedor de la remesa en **LOT-CMB-PROVEEDOR-LOTE**. El medicamento asociado, mostrado en **LOT-CMB-PRODUCTO**, y el estado, mostrado en **LOT-CMB-ESTADO-LOTE**, permanecen de solo lectura.<br>5. La dueña presiona **LOT-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo número de lote no colisione con otra remesa del mismo medicamento, que las existencias sean un entero no negativo y, si se modificó la fecha de vencimiento, que la nueva fecha sea posterior a la actual. Rechaza el cambio de proveedor si la remesa figura en el detalle de alguna orden de devolución, de cualquier estado.<br>7. El sistema verifica que las existencias declaradas no sean inferiores a las unidades ya comprometidas en órdenes de devolución pendientes de esa remesa.<br>8. El sistema deriva el estado de la remesa: una remesa 'Bloqueado por devolucion' conserva su estado; en otro caso, si las existencias quedan en cero pasa a 'Agotado'; si estaba 'Agotado', no está vencida y recibe existencias, vuelve a 'Disponible'; en otro caso conserva su estado.<br>9. El sistema actualiza el registro en **DB_FARMASIL.TBL_LOTES** sin modificar el medicamento asociado a la remesa.<br>10. El sistema actualiza **LOT-TBL-LOTES**. |
 | Postcondición | 1. La remesa queda actualizada en **DB_FARMASIL.TBL_LOTES**.<br>2. El identificador de la remesa permanece inalterado, preservando las referencias desde **TBL_DETALLE_VENTAS** y **TBL_DETALLE_DEVOLUCION**.<br>3. El medicamento asociado a la remesa permanece inalterado: reasignar una remesa a otro medicamento falsearía el histórico de ventas ya registrado.<br>4. Una remesa 'Bloqueado por devolucion' conserva ese estado; si la remesa queda 'Agotado', deja de ofrecerse en **VEN-CMB-LOTE-VENTA**.<br>5. Los cambios se reflejan en **LOT-TBL-LOTES**. |
-| Código de artefactos asociados | ART-MKP-LOT-0003 |
+| Código de artefactos asociados | ART-MKP-LOT-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | El medicamento asociado se declara de solo lectura por la misma razón que el identificador: las ventas ya registradas apuntan a esta remesa, y cambiarle el medicamento reescribiría retroactivamente qué se vendió.<br>La verificación del paso 7 evita que una corrección de inventario deje una orden de devolución comprometiendo unidades que ya no existen.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0003**.<br>**Versión 02.00:** a diferencia del medicamento, el proveedor de la remesa **sí** es editable, porque puede corregirse un error de captura sin falsear qué medicamento se vendió. Requiere incorporar **LOT-CMB-PROVEEDOR-LOTE** al mockup **ART-MKP-LOT-0003**. Ver Anexo.<br>**Versión 03.00:** el estado deja de ser editable: sus transiciones corresponden a la venta (ILA-0001), las alertas (ILA-0014 e ILA-0016) y la baja (ILA-0044). Editarlo a mano permitía devolver a la venta una remesa bloqueada o vencida.<br>**Versión 04.00:** se valida la nueva fecha de vencimiento igual que en ILA-0041.<br>**Versión 05.00:** alinea la ilación con ESP-0043 v05.00 (AUD-claude-018, AUD-gpt-007; DEC-038): el paso 8 es la regla única del estado de la remesa que invocan las demás ilaciones, y el proveedor de una remesa referenciada por devoluciones no se modifica. |
+| Estado | Concluido |
+| Comentario | El medicamento asociado se declara de solo lectura por la misma razón que el identificador: las ventas ya registradas apuntan a esta remesa, y cambiarle el medicamento reescribiría retroactivamente qué se vendió.<br>La verificación del paso 7 evita que una corrección de inventario deje una orden de devolución comprometiendo unidades que ya no existen.<br>**Versión 02.00:** a diferencia del medicamento, el proveedor de la remesa **sí** es editable, porque puede corregirse un error de captura sin falsear qué medicamento se vendió.<br>**Versión 03.00:** el estado deja de ser editable: sus transiciones corresponden a la venta (ILA-0001), las alertas (ILA-0014 e ILA-0016) y la baja (ILA-0044). Editarlo a mano permitía devolver a la venta una remesa bloqueada o vencida.<br>**Versión 04.00:** se valida la nueva fecha de vencimiento igual que en ILA-0041.<br>**Versión 05.00:** alinea la ilación con ESP-0043 v05.00 (AUD-claude-018, AUD-gpt-007; DEC-038): el paso 8 es la regla única del estado de la remesa que invocan las demás ilaciones, y el proveedor de una remesa referenciada por devoluciones no se modifica.<br>**Versión 06.00:** (DEC-042, C1 y C4) la actualización se integra en **ART-MKP-LOT-0001**. El medicamento asociado permanece en solo lectura aunque el mockup lo represente como selector editable; reasignar una remesa a otro medicamento modificaría retroactivamente la trazabilidad de las ventas y devoluciones. |
 
 | Código ilación | ILA-0044 |
 | --- | --- |
 | Nombre | Baja de remesa |
-| Versión | 04.00 |
-| Fecha | 08/11/2026 |
+| Versión | 05.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código educción | EDU-0015 |
 | Código especificación | ESP-0044 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LOTES** tiene entradas válidas.<br>5. La remesa seleccionada no forma parte de una orden de devolución en estado 'Pendiente'.<br>6. Se carga el mockup **ART-MKP-LOT-0004**. |
-| Procedimiento | 1. La dueña selecciona una remesa en **LOT-TBL-LOTES**.<br>2. La dueña presiona **LOT-BTN-ELIMINAR-LOTE**.<br>3. El sistema verifica que la remesa no esté comprometida en una orden de devolución pendiente. Si lo está, cancela la operación e informa el motivo.<br>4. El sistema muestra el modal **LOT-MDL-CONFIRMAR-ELIMINACION** con el mensaje **LOT-TXT-MSJ**: "¿Está seguro de dar de baja esta remesa? El histórico de ventas que la involucra se conservará."<br>5. Al confirmar, el sistema intenta eliminar físicamente el registro; si la base de datos lo rechaza porque otro registro lo referencia, aplica en su lugar la baja lógica.<br>6. Si la dueña presiona **LOT-BTN-CONFIRMAR-SI** y la remesa no tiene movimientos, el sistema la elimina de **DB_FARMASIL.TBL_LOTES**.<br>7. Si la dueña presiona **LOT-BTN-CONFIRMAR-SI** y la remesa sí tiene movimientos, el sistema actualiza su `estado_lote` a 'Agotado' y sus existencias a cero, conservando el registro.<br>8. Si la dueña presiona **LOT-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>9. El sistema actualiza **LOT-TBL-LOTES**. |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LOTES** tiene entradas válidas.<br>5. La remesa seleccionada no forma parte de una orden de devolución en estado 'Pendiente'.<br>6. Se carga el mockup **ART-MKP-LOT-0001**. |
+| Procedimiento | 1. La dueña selecciona una remesa en **LOT-TBL-LOTES** del mockup **ART-MKP-LOT-0001**.<br>2. La dueña presiona **LOT-BTN-ELIMINAR-LOTE**.<br>3. El sistema verifica que la remesa no esté comprometida en una orden de devolución pendiente. Si lo está, cancela la operación e informa el motivo.<br>4. El sistema muestra el modal **LOT-MDL-CONFIRMAR-ELIMINACION** con el mensaje **LOT-TXT-MSJ**: "¿Está seguro de dar de baja esta remesa? El histórico de ventas que la involucra se conservará."<br>5. Al confirmar, el sistema intenta eliminar físicamente el registro; si la base de datos lo rechaza porque otro registro lo referencia, aplica en su lugar la baja lógica.<br>6. Si la dueña presiona **LOT-BTN-CONFIRMAR-SI** y la remesa no tiene movimientos, el sistema la elimina de **DB_FARMASIL.TBL_LOTES**.<br>7. Si la dueña presiona **LOT-BTN-CONFIRMAR-SI** y la remesa sí tiene movimientos, el sistema actualiza su `estado_lote` a 'Agotado' y sus existencias a cero, conservando el registro y su trazabilidad histórica.<br>8. Si la dueña presiona **LOT-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>9. El sistema actualiza **LOT-TBL-LOTES**. |
 | Postcondición | 1. La remesa sin movimientos queda eliminada de **DB_FARMASIL.TBL_LOTES**.<br>2. La remesa con movimientos queda con `estado_lote` = 'Agotado' y existencias en cero, conservando la trazabilidad de las ventas que la involucran.<br>3. En ambos casos la remesa deja de ofrecerse en **VEN-CMB-LOTE-VENTA**.<br>4. El stock físico del medicamento en **INV-TBL-PRODUCTOS** se reduce en las existencias dadas de baja.<br>5. No se produce ninguna violación de integridad referencial. |
-| Código de artefactos asociados | ART-MKP-LOT-0004 |
+| Código de artefactos asociados | ART-MKP-LOT-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-LOT-0004**.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011).<br>**Versión 03.00:** (DEC-040) el stock que muestra Inventario pasa a llamarse stock físico.<br>**Versión 04.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
+| Estado | Concluido |
+| Comentario | La baja lógica es obligatoria cuando la remesa registró ventas: eliminarla físicamente destruiría precisamente el rastreo sanitario que motivó la creación de este módulo.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011).<br>**Versión 03.00:** (DEC-040) el stock que muestra Inventario pasa a llamarse stock físico.<br>**Versión 04.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022.<br>**Versión 05.00:** (DEC-042, C1) la baja se realiza desde la pantalla única **ART-MKP-LOT-0001** y utiliza el modal de confirmación identificado mediante los componentes `LOT-MDL-*`. |
 
 ---
 
@@ -1119,6 +1115,8 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 > **Criterio de estado:** se mantiene `Concluido` cuando la corrección fue formal o de coherencia interna. Se marca `Pendiente` cuando el cambio exige una decisión externa a la ilación: un componente de mockup nuevo, un ajuste al diccionario de datos o una ampliación de la educción. El Anexo al final del documento lista esos pendientes.
 
 > **Corrección del 08/11/2026 (auditorías de la base de datos, issue #63).** Se alinearon con las especificaciones ajustadas las ilaciones ILA-0001 a ILA-0004, ILA-0006, ILA-0009, ILA-0011, ILA-0013, ILA-0015, ILA-0016, ILA-0021, ILA-0023, ILA-0025, ILA-0027, ILA-0041, ILA-0043, ILA-0044 y ILA-0050. No se modificó ninguna educción.
+
+> **Adecuación del 11/11/2026 (issue #72, INV y LOT).** Se aplican los criterios C1–C4 de DEC-042 a las ilaciones de Inventario y Lotes. Todas las operaciones se integran en `ART-MKP-INV-0001` y `ART-MKP-LOT-0001`; los filtros de consulta reciben identificadores propios; el filtro de categoría de Inventario usa provisionalmente `accion_terapeutica` (PEN-010); el visor 3D queda fuera de alcance (PEN-027); ILA-0006 obtiene el stock físico mediante `VW_STOCK_FISICO`; ILA-0007 adopta `INV-BTN-CONFIRMAR-ACTUALIZACION` (DEC-046); y el medicamento asociado a una remesa permanece en solo lectura durante la actualización. Se eliminan del Anexo B los pendientes de INV y LOT resueltos por estos criterios.
 
 ## Convenciones aplicadas
 
