@@ -13,6 +13,7 @@
 | 08/11/2026 | 06.00 | Se actualiza la tabla de tipos de la sección de componentes: SQL Server 2025 Express y .NET 10 LTS (DEC-028). | AUT-0001 |
 | 09/11/2026 | 07.00 | Auditoría de mockups (#142, DEC-042 a DEC-054): se incorporan los módulos 12 (reabastecimiento, **REA**) y 13 (cotizaciones, **COT**); la convención de artefactos pasa a una pantalla por módulo, `ART-MKP-<MOD>-0001`, y se retiran las referencias a 0002–0004; se agregan la sección de artefactos transversales (plantilla `ART-MKP-CONFIRM-0001`, significado del asterisco, fuentes HTML), el formato de los códigos visibles y la regla de rótulos frente a literales almacenados; el inventario por módulo cita `ART-MKP-<MOD>-0001`; la sección 8 pasa a listar los mockups publicados. No se agregan los IDs nuevos de cada módulo: los incorpora la ficha de cada uno. | AUT-0001 |
 | 10/11/2026 | 08.00 | Se agrega la regla del identificador en XAML (DEC-060): el identificador de esta guía va en `AutomationProperties.AutomationId`, y `x:Name` solo cuando el XAML lo necesita, con guion bajo. | AUT-0001 |
+| 11/11/2026 | 09.00 | Adecuación de Inventario y Lotes a los mockups aprobados (issue #72, DEC-042): se incorporan identificadores propios para los filtros de consulta de INV y LOT, evitando reutilizar los controles de captura y edición; Inventario adopta una búsqueda única por identificador o nombre y el filtro de categoría mediante `accion_terapeutica` (PEN-010). | AUT-0001 |
 
 ---
 
@@ -228,7 +229,7 @@ Al contrastar cada componente contra el tipo de su campo aparecieron estas incoh
 | VEN-TXT-CANTIDAD-VENTA | **VEN-NUM-CANTIDAD-VENTA** | `cantidad INT` | Valor numérico. |
 | INV-TXT-PRECIO-PRODUCTO | **INV-NUM-PRECIO-PRODUCTO** | `precio_venta DECIMAL(10,2)` | Importe monetario. |
 | INV-TXT-STOCK-PRODUCTO | **INV-NUM-STOCK-PRODUCTO** | `stock_actual INT` | Valor numérico. |
-| INV-TXT-ID-PRODUCTO (en alta y actualización) | **INV-LBL-ID-PRODUCTO** | `id_producto` autoincremental | El identificador lo genera el motor; el usuario no lo escribe. En la pantalla de consulta se conserva INV-TXT-ID-PRODUCTO, donde sí es un criterio de búsqueda que se teclea. |
+| INV-TXT-ID-PRODUCTO (en alta y actualización) | **INV-LBL-ID-PRODUCTO** | `id_producto` autoincremental | El identificador lo genera el motor; el usuario no lo escribe. En la consulta, el antiguo campo separado por identificador se sustituye por **INV-TXT-BUSQUEDA-PRODUCTO**, que permite buscar por identificador o nombre (issue #72, DEC-042 C2-C3). |
 | DOC-TXT-MONTO-TOTAL | **DOC-LBL-MONTO-TOTAL** | derivado de `monto_total` | Se recupera de la venta; no se captura. |
 | USR-TXT-CONTRASENA | **USR-PWD-CONTRASENA** | `contrasena NVARCHAR(255)` | PasswordBox, por RNF-0006. |
 | RES-TXT-MOTIVO-ADVERTENCIA | **RES-TXA-MOTIVO-ADVERTENCIA** | `motivo_advertencia NVARCHAR(MAX)` | Texto extenso. |
@@ -249,8 +250,9 @@ Al contrastar cada componente contra el tipo de su campo aparecieron estas incoh
 | LOT-FEC-FECHA-VENCIMIENTO | Selector de fecha | Caducidad de esta remesa. | ART-MKP-LOT-0001 |
 | LOT-NUM-STOCK-LOTE | Campo numérico | Unidades físicas disponibles de la remesa. | ART-MKP-LOT-0001 |
 | LOT-FEC-FECHA-INGRESO | Selector de fecha | Fecha de ingreso al almacén. | ART-MKP-LOT-0001 |
-| LOT-CMB-ESTADO-LOTE | ComboBox | 'Disponible', 'Bloqueado por devolucion' o 'Agotado'. | ART-MKP-LOT-0001 |
-| LOT-BTN-CREAR-LOTE | Botón | Valida y registra la remesa nueva. | ART-MKP-LOT-0001 |
+| LOT-CMB-FILTRO-PRODUCTO | ComboBox | Filtro de consulta por medicamento. Se mantiene separado de **LOT-CMB-PRODUCTO**, usado en captura y edición. | ART-MKP-LOT-0001 |
+| LOT-TXT-FILTRO-NUMERO-LOTE | Campo de texto | Filtro de consulta por número de lote. Se mantiene separado de **LOT-TXT-NUMERO-LOTE**, usado en captura y edición. | ART-MKP-LOT-0001 |
+| LOT-CMB-FILTRO-ESTADO-LOTE | ComboBox | Filtro de consulta por estado de la remesa. Se mantiene separado de **LOT-CMB-ESTADO-LOTE**, usado para mostrar el estado de la remesa. | ART-MKP-LOT-0001 |
 | LOT-BTN-LEER-LOTE | Botón | Ejecuta la búsqueda por medicamento, número de lote o estado. | ART-MKP-LOT-0001 |
 | LOT-BTN-ACTUALIZAR-LOTE | Botón | Abre el formulario de actualización de la remesa seleccionada. | ART-MKP-LOT-0001 |
 | LOT-BTN-CONFIRMAR-ACTUALIZACION | Botón | Guarda los cambios de la remesa. | ART-MKP-LOT-0001 |
@@ -285,6 +287,9 @@ El módulo 2 conserva únicamente los datos de catálogo del medicamento: nombre
 | VEN-LBL-MONTO-TOTAL | Etiqueta | Suma calculada del detalle. No editable. | ART-MKP-VEN-0001 |
 | INV-TXT-STOCK-PRODUCTO | Campo de texto | Cantidad de unidades recibidas o disponibles. | ART-MKP-INV-0001 |
 | INV-CMB-PROVEEDOR | ComboBox | Proveedor que abastece el producto. Se alimenta del módulo 10. | ART-MKP-INV-0001 |
+| INV-TXT-BUSQUEDA-PRODUCTO | Campo de texto | Búsqueda única de productos por identificador o nombre. Sustituye los criterios separados de búsqueda. | ART-MKP-INV-0001 |
+| INV-CMB-FILTRO-PROVEEDOR | ComboBox | Filtro opcional de consulta por proveedor. Se mantiene separado de **INV-CMB-PROVEEDOR**, usado en captura y edición. | ART-MKP-INV-0001 |
+| INV-CMB-FILTRO-ACCION-TERAPEUTICA | ComboBox | Filtro opcional de categoría. Mientras PEN-010 permanezca abierto, se interpreta mediante `accion_terapeutica`. | ART-MKP-INV-0001 |
 | DEV-TBL-DETALLE-DEVOLUCION | Tabla | Medicamentos incluidos en la orden: producto, lote y cantidad a devolver. | ART-MKP-DEV-0001 |
 | DEV-NUM-CANTIDAD-DEVOLVER | Campo numérico | Unidades físicas a devolver por cada línea de la orden. | ART-MKP-DEV-0001 |
 | DEV-TXA-COMENTARIO | Área de texto | Observaciones de la orden. Obligatorio cuando el motivo es la depuración de un error. | ART-MKP-DEV-0001 |
@@ -296,13 +301,13 @@ Los componentes ya definidos en las especificaciones se mantienen. El inventario
 | Módulo | Componentes |
 | --- | --- |
 | **VEN** | VEN-TBL-REGISTRO-VENTAS, VEN-TBL-DETALLE-VENTA, VEN-CMB-PRODUCTO-VENTA, VEN-CMB-LOTE-VENTA, VEN-CMB-METODO-PAGO, VEN-NUM-CANTIDAD-VENTA, VEN-LBL-FECHA-VENTA, VEN-FEC-FECHA-VENTA, VEN-LBL-MONTO-TOTAL, VEN-BTN-AGREGAR-PRODUCTO, VEN-BTN-QUITAR-PRODUCTO, VEN-BTN-CREAR-VENTA, VEN-BTN-LEER-VENTA, VEN-BTN-ACTUALIZAR-VENTA, VEN-BTN-CONFIRMAR-ACTUALIZACION, VEN-BTN-ELIMINAR-VENTA, VEN-MDL-CONFIRMAR-ELIMINACION, VEN-TXT-MSJ, VEN-BTN-CONFIRMAR-SI, VEN-BTN-CONFIRMAR-NO |
-| **INV** | INV-TBL-PRODUCTOS, INV-LBL-ID-PRODUCTO, INV-TXT-ID-PRODUCTO, INV-TXT-NOMBRE-PRODUCTO, INV-TXT-ACCION-TERAPEUTICA, INV-NUM-PRECIO-PRODUCTO, INV-CMB-PROVEEDOR, INV-BTN-CREAR-PRODUCTO, INV-BTN-LEER-PRODUCTO, INV-BTN-ACTUALIZAR-PRODUCTO, INV-BTN-ELIMINAR-PRODUCTO, INV-MDL-CONFIRMAR-ELIMINACION, INV-TXT-MSJ, INV-BTN-CONFIRMAR-SI, INV-BTN-CONFIRMAR-NO |
+| **INV** | INV-TBL-PRODUCTOS, INV-LBL-ID-PRODUCTO, INV-TXT-BUSQUEDA-PRODUCTO, INV-TXT-NOMBRE-PRODUCTO, INV-TXT-ACCION-TERAPEUTICA, INV-NUM-PRECIO-PRODUCTO, INV-CMB-PROVEEDOR, INV-NUM-STOCK-MINIMO, INV-CMB-FILTRO-PROVEEDOR, INV-CMB-FILTRO-ACCION-TERAPEUTICA, INV-BTN-CREAR-PRODUCTO, INV-BTN-LEER-PRODUCTO, INV-BTN-ACTUALIZAR-PRODUCTO, INV-BTN-CONFIRMAR-ACTUALIZACION, INV-BTN-ELIMINAR-PRODUCTO, INV-MDL-CONFIRMAR-ELIMINACION, INV-TXT-MSJ, INV-BTN-CONFIRMAR-SI, INV-BTN-CONFIRMAR-NO |
 | **DOC** | DOC-TBL-COMPROBANTES, DOC-TXT-NUMERO-COMPROBANTE, DOC-CMB-TIPO-COMPROBANTE, DOC-CMB-CODIGO-VENTA, DOC-LBL-MONTO-TOTAL, DOC-FEC-FECHA-EMISION, DOC-BTN-CREAR-COMPROBANTE, DOC-BTN-LEER-COMPROBANTE, DOC-BTN-ACTUALIZAR-COMPROBANTE, DOC-BTN-CONFIRMAR-ACTUALIZACION, DOC-BTN-ELIMINAR-COMPROBANTE, DOC-MDL-CONFIRMAR-ELIMINACION, DOC-TXT-MSJ, DOC-BTN-CONFIRMAR-SI, DOC-BTN-CONFIRMAR-NO |
 | **ALV** | ALV-TBL-ALERTAS-VENCIMIENTO, ALV-CMB-LOTE-ALERTA, ALV-LBL-FECHA-VENCIMIENTO, ALV-CHK-LOTE-DEFECTUOSO, ALV-TXT-ALERTA-DIGEMID, ALV-BTN-CREAR-ALERTA, ALV-BTN-LEER-ALERTA, ALV-BTN-ACTUALIZAR-ALERTA, ALV-BTN-CONFIRMAR-ACTUALIZACION, ALV-BTN-ELIMINAR-ALERTA, ALV-MDL-CONFIRMAR-ELIMINACION, ALV-TXT-MSJ, ALV-BTN-CONFIRMAR-SI, ALV-BTN-CONFIRMAR-NO |
 | **PAG** | PAG-TBL-METODOS-PAGO, PAG-TXT-METODO-PAGO, PAG-CMB-ESTADO-METODO, PAG-BTN-CREAR-METODO, PAG-BTN-LEER-METODO, PAG-BTN-ACTUALIZAR-METODO, PAG-BTN-CONFIRMAR-ACTUALIZACION, PAG-BTN-ELIMINAR-METODO, PAG-MDL-CONFIRMAR-ELIMINACION, PAG-TXT-MSJ, PAG-BTN-CONFIRMAR-SI, PAG-BTN-CONFIRMAR-NO |
 | **REP** | REP-TBL-REPORTES, REP-CMB-TIPO-REPORTE, REP-CMB-FORMATO-REPORTE, REP-FEC-FECHA-INICIO, REP-FEC-FECHA-FIN, REP-BTN-GENERAR-REPORTE, REP-BTN-LEER-REPORTE, REP-BTN-ACTUALIZAR-REPORTE, REP-BTN-CONFIRMAR-ACTUALIZACION, REP-BTN-ELIMINAR-REPORTE, REP-MDL-CONFIRMAR-ELIMINACION, REP-TXT-MSJ, REP-BTN-CONFIRMAR-SI, REP-BTN-CONFIRMAR-NO |
 | **DEV** | DEV-TBL-ORDENES-DEVOLUCION, DEV-TBL-DETALLE-DEVOLUCION, DEV-CMB-PROVEEDOR, DEV-CMB-LOTE-DEVOLUCION, DEV-CMB-MOTIVO-DEVOLUCION, DEV-NUM-CANTIDAD-DEVOLVER, DEV-TXA-COMENTARIO, DEV-FEC-FECHA-DEVOLUCION, DEV-BTN-CREAR-DEVOLUCION, DEV-BTN-LEER-DEVOLUCION, DEV-BTN-ACTUALIZAR-DEVOLUCION, DEV-BTN-CONFIRMAR-ACTUALIZACION, DEV-BTN-ELIMINAR-DEVOLUCION, DEV-MDL-CONFIRMAR-ELIMINACION, DEV-TXT-MSJ, DEV-BTN-CONFIRMAR-SI, DEV-BTN-CONFIRMAR-NO |
-| **LOT** | LOT-TBL-LOTES, LOT-CMB-PRODUCTO, LOT-TXT-NUMERO-LOTE, LOT-FEC-FECHA-VENCIMIENTO, LOT-NUM-STOCK-LOTE, LOT-FEC-FECHA-INGRESO, LOT-CMB-ESTADO-LOTE, LOT-BTN-CREAR-LOTE, LOT-BTN-LEER-LOTE, LOT-BTN-ACTUALIZAR-LOTE, LOT-BTN-CONFIRMAR-ACTUALIZACION, LOT-BTN-ELIMINAR-LOTE, LOT-MDL-CONFIRMAR-ELIMINACION, LOT-TXT-MSJ, LOT-BTN-CONFIRMAR-SI, LOT-BTN-CONFIRMAR-NO |
+| **LOT** | LOT-TBL-LOTES, LOT-CMB-PRODUCTO, LOT-CMB-PROVEEDOR-LOTE, LOT-TXT-NUMERO-LOTE, LOT-FEC-FECHA-VENCIMIENTO, LOT-NUM-STOCK-LOTE, LOT-FEC-FECHA-INGRESO, LOT-CMB-ESTADO-LOTE, LOT-CMB-FILTRO-PRODUCTO, LOT-TXT-FILTRO-NUMERO-LOTE, LOT-CMB-FILTRO-ESTADO-LOTE, LOT-BTN-CREAR-LOTE, LOT-BTN-LEER-LOTE, LOT-BTN-ACTUALIZAR-LOTE, LOT-BTN-CONFIRMAR-ACTUALIZACION, LOT-BTN-ELIMINAR-LOTE, LOT-MDL-CONFIRMAR-ELIMINACION, LOT-TXT-MSJ, LOT-BTN-CONFIRMAR-SI, LOT-BTN-CONFIRMAR-NO |
 | **RES** | RES-TBL-RESTRICCIONES-VENTA, RES-CMB-MEDICAMENTO, RES-CMB-TIPO-RESTRICCION, RES-CMB-ESTADO-ALERTA, RES-TXT-CONDICION-CLIENTE, RES-TXA-MOTIVO-ADVERTENCIA, RES-BTN-CREAR-RESTRICCION, RES-BTN-LEER-RESTRICCION, RES-BTN-ACTUALIZAR-RESTRICCION, RES-BTN-CONFIRMAR-ACTUALIZACION, RES-BTN-ELIMINAR-RESTRICCION, RES-MDL-CONFIRMAR-ELIMINACION, RES-TXT-MSJ, RES-BTN-CONFIRMAR-SI, RES-BTN-CONFIRMAR-NO |
 
 ---
