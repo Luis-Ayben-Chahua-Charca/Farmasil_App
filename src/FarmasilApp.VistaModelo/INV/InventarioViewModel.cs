@@ -23,7 +23,6 @@ public sealed class InventarioViewModel : ViewModelBase
             ?? throw new ArgumentNullException(nameof(servicio));
 
         BuscarCommand = new RelayCommand(Consultar);
-        LimpiarCommand = new RelayCommand(LimpiarFiltros);
 
         CargarFiltros();
         Consultar();
@@ -36,8 +35,6 @@ public sealed class InventarioViewModel : ViewModelBase
     public ObservableCollection<string> AccionesTerapeuticas { get; } = new();
 
     public RelayCommand BuscarCommand { get; }
-
-    public RelayCommand LimpiarCommand { get; }
 
     public string? Busqueda
     {
@@ -112,14 +109,5 @@ public sealed class InventarioViewModel : ViewModelBase
             Productos.Clear();
             Mensaje = $"No se pudo realizar la consulta: {ex.Message}";
         }
-    }
-
-    private void LimpiarFiltros()
-    {
-        Busqueda = null;
-        ProveedorSeleccionado = null;
-        AccionTerapeuticaSeleccionada = null;
-
-        Consultar();
     }
 }

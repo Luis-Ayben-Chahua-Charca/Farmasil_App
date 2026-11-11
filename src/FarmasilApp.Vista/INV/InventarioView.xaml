@@ -35,7 +35,6 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0"
@@ -43,7 +42,8 @@
 
                 <TextBlock Text="Producto"/>
 
-                <TextBox Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox AutomationProperties.AutomationId="INV-TXT-BUSQUEDA-PRODUCTO"
+                         Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}"
                          Height="32"
                          Margin="0,5,0,0"
                          ToolTip="Buscar por ID o nombre"/>
@@ -55,7 +55,8 @@
 
                 <TextBlock Text="Proveedor"/>
 
-                <ComboBox ItemsSource="{Binding Proveedores}"
+                <ComboBox AutomationProperties.AutomationId="INV-CMB-FILTRO-PROVEEDOR"
+                          ItemsSource="{Binding Proveedores}"
                           SelectedItem="{Binding ProveedorSeleccionado}"
                           Height="32"
                           Margin="0,5,0,0"/>
@@ -67,7 +68,8 @@
 
                 <TextBlock Text="Acción terapéutica"/>
 
-                <ComboBox ItemsSource="{Binding AccionesTerapeuticas}"
+                <ComboBox AutomationProperties.AutomationId="INV-CMB-FILTRO-ACCION-TERAPEUTICA"
+                          ItemsSource="{Binding AccionesTerapeuticas}"
                           SelectedItem="{Binding AccionTerapeuticaSeleccionada}"
                           Height="32"
                           Margin="0,5,0,0"/>
@@ -75,16 +77,9 @@
             </StackPanel>
 
             <Button Grid.Column="3"
+                    AutomationProperties.AutomationId="INV-BTN-LEER-PRODUCTO"
                     Content="Buscar"
                     Command="{Binding BuscarCommand}"
-                    Height="32"
-                    MinWidth="90"
-                    Margin="0,22,8,0"
-                    Padding="12,0"/>
-
-            <Button Grid.Column="4"
-                    Content="Limpiar"
-                    Command="{Binding LimpiarCommand}"
                     Height="32"
                     MinWidth="90"
                     Margin="0,22,0,0"
@@ -98,6 +93,7 @@
                    Foreground="Gray"/>
 
         <DataGrid Grid.Row="3"
+                  AutomationProperties.AutomationId="INV-TBL-PRODUCTOS"
                   ItemsSource="{Binding Productos}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
