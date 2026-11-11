@@ -1,9 +1,18 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:vm="clr-namespace:FarmasilApp.VistaModelo.Principal;assembly=FarmasilApp.VistaModelo"
-                    xmlns:vista="clr-namespace:FarmasilApp.Vista.Principal">
-    <!-- Cada VistaModelo se asocia con su pantalla aquí. La navegación solo cambia la VistaModelo activa. -->
+                    xmlns:vmInv="clr-namespace:FarmasilApp.VistaModelo.INV;assembly=FarmasilApp.VistaModelo"
+                    xmlns:vista="clr-namespace:FarmasilApp.Vista.Principal"
+                    xmlns:vistaInv="clr-namespace:FarmasilApp.Vista.INV">
+
+    <!-- Pantalla de inicio -->
     <DataTemplate DataType="{x:Type vm:InicioViewModel}">
         <vista:InicioView />
     </DataTemplate>
+
+    <!-- Consulta de Inventario - ESP-0006 -->
+    <DataTemplate DataType="{x:Type vmInv:InventarioViewModel}">
+        <vistaInv:InventarioView />
+    </DataTemplate>
+
 </ResourceDictionary>

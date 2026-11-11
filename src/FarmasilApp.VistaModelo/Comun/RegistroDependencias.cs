@@ -1,10 +1,11 @@
+﻿using FarmasilApp.VistaModelo.INV;
 using FarmasilApp.VistaModelo.Principal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FarmasilApp.VistaModelo.Comun;
 
 /// <summary>
-/// Registro de las dependencias de la capa VistaModelo. La aplicación lo invoca una sola vez al arrancar (VP-00).
+/// Registro de las dependencias de la capa VistaModelo.
 /// Cada VistaModelo nueva se agrega aquí.
 /// </summary>
 public static class RegistroDependencias
@@ -15,6 +16,7 @@ public static class RegistroDependencias
 
         servicios.AddSingleton<MainViewModel>();
         servicios.AddTransient<InicioViewModel>();
+        servicios.AddTransient<InventarioViewModel>();
 
         return servicios;
     }
