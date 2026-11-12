@@ -82,3 +82,15 @@ Server=.\SQLEXPRESS;Database=DB_FARMASIL;Integrated Security=true;TrustServerCer
 - `TrustServerCertificate=true` es necesario porque el cliente cifra la conexión por defecto y la instancia local de Express no tiene un certificado de confianza.
 - Para usar otra instancia o base, por ejemplo `DB_FARMASIL_PRUEBAS`, crea `src/FarmasilApp.Vista/appsettings.local.json` con la misma estructura. Ese archivo no se versiona (`*.local.json` está en `.gitignore`) y prevalece sobre `appsettings.json`.
 - La base se crea con los scripts de `database/`, que escribe R2 (plan de implementación, sección 10).
+
+### Datos de prueba
+
+Al ejecutar `database/recrear.ps1` se cargan datos iniciales para pruebas locales.
+
+| Usuario | Contraseña | Rol | Estado |
+| --- | --- | --- | --- |
+| `admin_prueba` | `Farmasil2026!` | Administrador | Activo |
+| `tecnico_prueba` | `Farmasil2026!` | Tecnico | Activo |
+
+Estas credenciales son exclusivamente para el entorno local de desarrollo y pruebas.
+Las contraseñas se almacenan en `TBL_USUARIOS` como hashes PBKDF2-SHA256 con sal, nunca como texto plano.
