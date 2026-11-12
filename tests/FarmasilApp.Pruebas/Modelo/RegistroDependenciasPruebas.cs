@@ -1,4 +1,4 @@
-﻿using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Modelo.Servicios.INV;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,8 +35,7 @@ public class RegistroDependenciasPruebas
     {
         var servicios = new ServiceCollection();
 
-        var excepcion = Record.Exception(
-            () => servicios.AgregarModelo().AgregarModelo());
+        var excepcion = Record.Exception(() => servicios.AgregarModelo().AgregarModelo());
 
         Assert.Null(excepcion);
     }

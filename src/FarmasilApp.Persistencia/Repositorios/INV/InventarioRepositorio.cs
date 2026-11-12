@@ -1,4 +1,4 @@
-﻿using FarmasilApp.Modelo.Entidades.INV;
+using FarmasilApp.Modelo.Entidades.INV;
 using FarmasilApp.Modelo.Servicios.INV;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -38,7 +38,7 @@ public sealed class InventarioRepositorio : IInventarioRepositorio
             WHERE
                 (
                     @busqueda IS NULL
-                    OR p.nombre LIKE '%' + @busqueda + '%'
+                    OR p.nombre LIKE '%' + @busquedaLike + '%' ESCAPE '\'
                     OR CONVERT(nvarchar(20), p.id_producto) = @busqueda
                 )
                 AND
@@ -63,6 +63,14 @@ public sealed class InventarioRepositorio : IInventarioRepositorio
             new SqlParameter("@busqueda", SqlDbType.NVarChar, 100)
             {
                 Value = (object?)busqueda ?? DBNull.Value
+            });
+
+        comando.Parameters.Add(
+            new SqlParameter("@busquedaLike", SqlDbType.NVarChar, 400)
+            {
+                Value = busqueda is null
+                    ? DBNull.Value
+                    : EscaparLike(busqueda)
             });
 
         comando.Parameters.Add(
@@ -157,5 +165,14 @@ public sealed class InventarioRepositorio : IInventarioRepositorio
         }
 
         return acciones;
+    }
+
+    private static string EscaparLike(string valor)
+    {
+        return valor
+            .Replace(@"\", @"\\")
+            .Replace("%", @"\%")
+            .Replace("_", @"\_")
+            .Replace("[", @"\[");
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using FarmasilApp.Modelo.Entidades.INV;
 using FarmasilApp.Modelo.Servicios.INV;
 using FarmasilApp.VistaModelo.Comun;
@@ -10,11 +11,14 @@ namespace FarmasilApp.VistaModelo.INV;
 /// </summary>
 public sealed class InventarioViewModel : ViewModelBase
 {
+    private const string Todos = "Todos";
+
     private readonly InventarioServicio _servicio;
 
     private string? _busqueda;
-    private int? _proveedorSeleccionado;
-    private string? _accionTerapeuticaSeleccionada;
+    private string _proveedorSeleccionado = Todos;
+    private string _accionTerapeuticaSeleccionada = Todos;
+    private ProductoInventario? _productoSeleccionado;
     private string _mensaje = string.Empty;
 
     public InventarioViewModel(InventarioServicio servicio)
@@ -22,19 +26,26 @@ public sealed class InventarioViewModel : ViewModelBase
         _servicio = servicio
             ?? throw new ArgumentNullException(nameof(servicio));
 
-        BuscarCommand = new RelayCommand(Consultar);
+        InicializarCommand = new AsyncRelayCommand(InicializarAsync);
+        BuscarCommand = new AsyncRelayCommand(ConsultarAsync);
 
-        CargarFiltros();
-        Consultar();
+        SeleccionarProductoCommand =
+            new RelayCommand<ProductoInventario>(
+                SeleccionarProducto,
+                producto => producto is not null);
     }
 
     public ObservableCollection<ProductoInventario> Productos { get; } = new();
 
-    public ObservableCollection<int> Proveedores { get; } = new();
+    public ObservableCollection<string> Proveedores { get; } = new();
 
     public ObservableCollection<string> AccionesTerapeuticas { get; } = new();
 
-    public RelayCommand BuscarCommand { get; }
+    public AsyncRelayCommand InicializarCommand { get; }
+
+    public AsyncRelayCommand BuscarCommand { get; }
+
+    public RelayCommand<ProductoInventario> SeleccionarProductoCommand { get; }
 
     public string? Busqueda
     {
@@ -42,16 +53,22 @@ public sealed class InventarioViewModel : ViewModelBase
         set => Establecer(ref _busqueda, value);
     }
 
-    public int? ProveedorSeleccionado
+    public string ProveedorSeleccionado
     {
         get => _proveedorSeleccionado;
         set => Establecer(ref _proveedorSeleccionado, value);
     }
 
-    public string? AccionTerapeuticaSeleccionada
+    public string AccionTerapeuticaSeleccionada
     {
         get => _accionTerapeuticaSeleccionada;
         set => Establecer(ref _accionTerapeuticaSeleccionada, value);
+    }
+
+    public ProductoInventario? ProductoSeleccionado
+    {
+        get => _productoSeleccionado;
+        set => Establecer(ref _productoSeleccionado, value);
     }
 
     public string Mensaje
@@ -60,38 +77,67 @@ public sealed class InventarioViewModel : ViewModelBase
         private set => Establecer(ref _mensaje, value);
     }
 
-    private void CargarFiltros()
+    private async Task InicializarAsync()
+    {
+        await CargarFiltrosAsync();
+        await ConsultarAsync();
+    }
+
+    private async Task CargarFiltrosAsync()
     {
         try
         {
-            Proveedores.Clear();
+            var proveedores = await Task.Run(
+                () => _servicio.ObtenerProveedores());
 
-            foreach (var proveedor in _servicio.ObtenerProveedores())
+            var acciones = await Task.Run(
+                () => _servicio.ObtenerAccionesTerapeuticas());
+
+            Proveedores.Clear();
+            Proveedores.Add(Todos);
+
+            foreach (var proveedor in proveedores)
             {
-                Proveedores.Add(proveedor);
+                Proveedores.Add(proveedor.ToString());
             }
 
             AccionesTerapeuticas.Clear();
+            AccionesTerapeuticas.Add(Todos);
 
-            foreach (var accion in _servicio.ObtenerAccionesTerapeuticas())
+            foreach (var accion in acciones)
             {
                 AccionesTerapeuticas.Add(accion);
             }
+
+            ProveedorSeleccionado = Todos;
+            AccionTerapeuticaSeleccionada = Todos;
         }
         catch (Exception ex)
         {
-            Mensaje = $"No se pudieron cargar los filtros: {ex.Message}";
+            RegistrarError("Carga de filtros", ex);
+
+            Proveedores.Clear();
+            Proveedores.Add(Todos);
+
+            AccionesTerapeuticas.Clear();
+            AccionesTerapeuticas.Add(Todos);
+
+            Mensaje = "No se pudieron cargar los filtros del inventario.";
         }
     }
 
-    private void Consultar()
+    private async Task ConsultarAsync()
     {
         try
         {
-            var resultados = _servicio.Consultar(
-                Busqueda,
-                ProveedorSeleccionado,
-                AccionTerapeuticaSeleccionada);
+            var proveedor = ObtenerProveedorSeleccionado();
+            var accion = ObtenerAccionTerapeuticaSeleccionada();
+
+            var resultados = await Task.Run(
+                () => _servicio.Consultar(
+                    Busqueda,
+                    proveedor,
+                    accion));
 
             Productos.Clear();
 
@@ -100,14 +146,61 @@ public sealed class InventarioViewModel : ViewModelBase
                 Productos.Add(producto);
             }
 
+            ProductoSeleccionado = null;
+
             Mensaje = Productos.Count == 0
                 ? "No se encontraron productos."
                 : $"Productos encontrados: {Productos.Count}.";
         }
         catch (Exception ex)
         {
+            RegistrarError("Consulta de productos", ex);
+
             Productos.Clear();
-            Mensaje = $"No se pudo realizar la consulta: {ex.Message}";
+            ProductoSeleccionado = null;
+
+            Mensaje = "No se pudo consultar el inventario. Inténtelo nuevamente.";
         }
+    }
+
+    private int? ObtenerProveedorSeleccionado()
+    {
+        if (string.IsNullOrWhiteSpace(ProveedorSeleccionado)
+            || ProveedorSeleccionado == Todos)
+        {
+            return null;
+        }
+
+        return int.TryParse(
+            ProveedorSeleccionado,
+            out var idProveedor)
+            ? idProveedor
+            : null;
+    }
+
+    private string? ObtenerAccionTerapeuticaSeleccionada()
+    {
+        return string.IsNullOrWhiteSpace(AccionTerapeuticaSeleccionada)
+            || AccionTerapeuticaSeleccionada == Todos
+                ? null
+                : AccionTerapeuticaSeleccionada;
+    }
+
+    private void SeleccionarProducto(ProductoInventario? producto)
+    {
+        if (producto is not null)
+        {
+            ProductoSeleccionado = producto;
+        }
+    }
+
+    private static void RegistrarError(
+        string operacion,
+        Exception excepcion)
+    {
+        Trace.TraceError(
+            "[Inventario] {0}: {1}",
+            operacion,
+            excepcion);
     }
 }
