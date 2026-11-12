@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using FarmasilApp.Modelo.Entidades.INV;
-using FarmasilApp.Modelo.Servicios.INV;
+using FarmasilApp.Modelo.INV;
 using FarmasilApp.VistaModelo.Comun;
 
 namespace FarmasilApp.VistaModelo.INV;

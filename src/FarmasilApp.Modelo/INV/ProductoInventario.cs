@@ -1,4 +1,4 @@
-﻿namespace FarmasilApp.Modelo.Entidades.INV;
+namespace FarmasilApp.Modelo.INV;
 
 /// <summary>
 /// Producto mostrado por la consulta de Inventario (ESP-0006).

@@ -1,6 +1,6 @@
-﻿using FarmasilApp.Modelo.Entidades.INV;
+using FarmasilApp.Modelo.INV;
 
-namespace FarmasilApp.Modelo.Servicios.INV;
+namespace FarmasilApp.Modelo.INV;
 
 /// <summary>
 /// Servicio de aplicación para ESP-0006.

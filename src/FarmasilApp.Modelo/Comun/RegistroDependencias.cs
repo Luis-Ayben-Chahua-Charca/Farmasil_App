@@ -1,4 +1,4 @@
-using FarmasilApp.Modelo.Servicios.INV;
+using FarmasilApp.Modelo.INV;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FarmasilApp.Modelo.Comun;

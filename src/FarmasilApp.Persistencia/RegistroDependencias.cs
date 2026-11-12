@@ -1,5 +1,5 @@
-using FarmasilApp.Modelo.Servicios.INV;
-using FarmasilApp.Persistencia.Repositorios.INV;
+using FarmasilApp.Modelo.INV;
+using FarmasilApp.Persistencia.INV;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

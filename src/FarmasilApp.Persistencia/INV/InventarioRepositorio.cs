@@ -1,9 +1,8 @@
-using FarmasilApp.Modelo.Entidades.INV;
-using FarmasilApp.Modelo.Servicios.INV;
+using FarmasilApp.Modelo.INV;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace FarmasilApp.Persistencia.Repositorios.INV;
+namespace FarmasilApp.Persistencia.INV;
 
 /// <summary>
 /// Repositorio de la consulta de Inventario (ESP-0006).

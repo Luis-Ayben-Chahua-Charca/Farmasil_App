@@ -1,6 +1,6 @@
-﻿using FarmasilApp.Modelo.Entidades.INV;
+using FarmasilApp.Modelo.INV;
 
-namespace FarmasilApp.Modelo.Servicios.INV;
+namespace FarmasilApp.Modelo.INV;
 
 /// <summary>
 /// Operaciones de persistencia necesarias para la consulta de Inventario.

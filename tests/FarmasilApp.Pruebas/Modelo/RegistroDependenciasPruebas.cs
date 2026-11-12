@@ -1,5 +1,5 @@
 using FarmasilApp.Modelo.Comun;
-using FarmasilApp.Modelo.Servicios.INV;
+using FarmasilApp.Modelo.INV;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FarmasilApp.Pruebas.Modelo;
