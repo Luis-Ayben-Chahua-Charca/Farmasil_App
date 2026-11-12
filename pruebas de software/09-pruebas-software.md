@@ -2,10 +2,12 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 09.00 |
+| Versión | 10.00 |
 | Fecha | 11/11/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 10.00.** Alinea las pruebas de Proveedores con la adecuación del mockup del issue #81 (DEC-042, DEC-061 y DEC-062). La consulta usa la búsqueda única **PRV-SRH-PROVEEDOR** y el filtro opcional **PRV-CMB-FILTRO-ESTADO**; sin criterios se listan todos los proveedores, y la lista de tarjetas muestra el mismo resultado que la tabla. La actualización confirma con **PRV-BTN-CONFIRMAR-ACTUALIZACION** (DEC-046). No cambia el número de pruebas: 275.
+>
 > **Versión 09.00.** Completa la adecuación de Inventario y Lotes (issue #158, revisión del PR #157; DEC-061 y DEC-062). El buscador de texto de Inventario pasa de `INV-TXT-BUSQUEDA-PRODUCTO` a **INV-SRH-PRODUCTO** y el de Lotes, de `LOT-TXT-FILTRO-NUMERO-LOTE` a **LOT-SRH-NUMERO-LOTE**. Las pruebas de consulta (ESP-0006 y ESP-0042) verifican también la lista de tarjetas, **INV-PNL-CATALOGO** y **LOT-PNL-REMESAS**, y las de actualización y baja (ESP-0007, ESP-0043 y ESP-0044) aceptan la selección desde la tarjeta o desde la fila. No cambia el número de pruebas: 275.
 >
 > **Versión 08.00.** Alinea las pruebas de Inventario y Lotes con la adecuación de los mockups del issue #72 (DEC-042). La consulta de Inventario incorpora la búsqueda única por identificador o nombre y los filtros de proveedor y categoría mediante `accion_terapeutica` (PEN-010); el stock físico se verifica mediante `VW_STOCK_FISICO`, incluyendo el caso de medicamentos sin remesas con stock 0; la actualización usa `INV-BTN-CONFIRMAR-ACTUALIZACION` (DEC-046). En Lotes se distinguen los controles de filtro de los campos de captura y se mantiene el medicamento de la remesa en solo lectura durante la actualización. No cambia el número de pruebas: 275.
@@ -304,9 +306,9 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Verificar que un RUC con ceros a la izquierda se conserve íntegro, dado que el campo es de texto. | T-004 |
 |  |  | Registrar un proveedor 'Activo' y verificar que aparezca en los combos de inventario y devoluciones. | T-006 |
 |  |  | Registrar un proveedor sin teléfono y verificar que la operación se complete, por ser campo opcional. | T-001 |
-| ESP-0038 | Consulta de proveedores (Leer) | Camino básico: buscar por RUC o razón social y desplegar el resultado. | T-002 |
-|  |  | Partición sobre los criterios: RUC exacto, razón social parcial, ambos vacíos y sin resultados. | T-001 |
-| ESP-0039 | Actualización de proveedor (Actualizar) | Camino básico: seleccionar proveedor, modificar sus datos y confirmar. | T-002 |
+| ESP-0038 | Consulta de proveedores (Leer) | Camino básico: buscar por RUC o razón social en **PRV-SRH-PROVEEDOR**, aplicar opcionalmente **PRV-CMB-FILTRO-ESTADO** y desplegar el resultado en **PRV-TBL-PROVEEDORES** (con teléfono) y en **PRV-PNL-PROVEEDORES**. | T-002 |
+|  |  | Partición sobre los criterios: RUC exacto, razón social parcial, estado 'Activo', estado 'Inactivo', búsqueda combinada con estado, sin criterios (lista todos) y sin resultados. | T-001 |
+| ESP-0039 | Actualización de proveedor (Actualizar) | Camino básico: seleccionar proveedor, iniciar la edición con **PRV-BTN-ACTUALIZAR-PROVEEDOR**, modificar sus datos en la ficha y confirmar con **PRV-BTN-CONFIRMAR-ACTUALIZACION**. | T-002 |
 |  |  | Intentar asignar un RUC que ya pertenece a otro proveedor y verificar el rechazo. | T-001 |
 |  |  | Cambiar a 'Inactivo' y verificar que deje de ofrecerse pero que productos y órdenes ya asociados conserven su referencia. | T-007 |
 | ESP-0040 | Desactivación de proveedor (Eliminar) | Camino básico: seleccionar proveedor, confirmar y verificar la baja aplicada. | T-002 |
