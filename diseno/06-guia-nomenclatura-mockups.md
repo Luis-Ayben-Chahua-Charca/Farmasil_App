@@ -14,6 +14,7 @@
 | 09/11/2026 | 07.00 | Auditoría de mockups (#142, DEC-042 a DEC-054): se incorporan los módulos 12 (reabastecimiento, **REA**) y 13 (cotizaciones, **COT**); la convención de artefactos pasa a una pantalla por módulo, `ART-MKP-<MOD>-0001`, y se retiran las referencias a 0002–0004; se agregan la sección de artefactos transversales (plantilla `ART-MKP-CONFIRM-0001`, significado del asterisco, fuentes HTML), el formato de los códigos visibles y la regla de rótulos frente a literales almacenados; el inventario por módulo cita `ART-MKP-<MOD>-0001`; la sección 8 pasa a listar los mockups publicados. No se agregan los IDs nuevos de cada módulo: los incorpora la ficha de cada uno. | AUT-0001 |
 | 10/11/2026 | 08.00 | Se agrega la regla del identificador en XAML (DEC-060): el identificador de esta guía va en `AutomationProperties.AutomationId`, y `x:Name` solo cuando el XAML lo necesita, con guion bajo. | AUT-0001 |
 | 11/11/2026 | 09.00 | Adecuación de Inventario y Lotes a los mockups aprobados (issue #72, DEC-042): se incorporan identificadores propios para los filtros de consulta de INV y LOT, evitando reutilizar los controles de captura y edición; Inventario adopta una búsqueda única por identificador o nombre y el filtro de categoría mediante `accion_terapeutica` (PEN-010). | AUT-0001 |
+| 11/11/2026 | 10.00 | Adecuación de Proveedores al mockup aprobado (issue #81, DEC-042): se incorporan **PRV-SRH-PROVEEDOR** (búsqueda única por RUC o razón social), **PRV-CMB-FILTRO-ESTADO** (filtro de consulta separado del estado de la ficha), **PRV-PNL-PROVEEDORES** y **PRV-CRD-PROVEEDOR** (lista de tarjetas, separada de **PRV-TBL-PROVEEDORES**). La tabla conserva el teléfono y usa el identificador como clave no visible. | AUT-0001 |
 
 ---
 
@@ -202,15 +203,19 @@ Para que los nombres sean predecibles, la función de los componentes que implem
 
 | Componente | Tipo | Función | Mockup |
 | --- | --- | --- | --- |
-| PRV-TBL-PROVEEDORES | Tabla | Listado de proveedores: identificador, RUC, razón social, teléfono y estado. | ART-MKP-PRV-0001 |
-| PRV-TXT-RUC | Campo de texto | RUC de la empresa. Once dígitos numéricos, único. | ART-MKP-PRV-0001 |
-| PRV-TXT-RAZON-SOCIAL | Campo de texto | Nombre legal de la droguería o distribuidora. | ART-MKP-PRV-0001 |
-| PRV-TXT-TELEFONO | Campo de texto | Teléfono de contacto. Opcional. | ART-MKP-PRV-0001 |
-| PRV-CMB-ESTADO-PROVEEDOR | ComboBox | Estado del proveedor: 'Activo' o 'Inactivo'. | ART-MKP-PRV-0001 |
+| PRV-TBL-PROVEEDORES | Tabla | Resultado de la consulta: RUC, razón social, teléfono y estado. El identificador es la clave de selección y no se muestra. Identifica solo la tabla del panel derecho. | ART-MKP-PRV-0001 |
+| PRV-PNL-PROVEEDORES | Panel | Lista lateral «Proveedores» con el mismo resultado de la consulta en forma de tarjetas. | ART-MKP-PRV-0001 |
+| PRV-CRD-PROVEEDOR | Tarjeta | Un proveedor del resultado: razón social, RUC y estado. Seleccionarla equivale a seleccionar su fila en **PRV-TBL-PROVEEDORES**. | ART-MKP-PRV-0001 |
+| PRV-SRH-PROVEEDOR | Barra de búsqueda | Criterio único de consulta: RUC exacto o parte de la razón social. Se mantiene separado de **PRV-TXT-RUC** y **PRV-TXT-RAZON-SOCIAL**, usados en la ficha. | ART-MKP-PRV-0001 |
+| PRV-CMB-FILTRO-ESTADO | ComboBox | Filtro opcional de consulta por estado: 'Activo' o 'Inactivo'. Se mantiene separado de **PRV-CMB-ESTADO-PROVEEDOR**, usado en la ficha. | ART-MKP-PRV-0001 |
+| PRV-TXT-RUC | Campo de texto | RUC de la empresa en la ficha. Once dígitos numéricos, único. | ART-MKP-PRV-0001 |
+| PRV-TXT-RAZON-SOCIAL | Campo de texto | Nombre legal de la droguería o distribuidora, en la ficha. | ART-MKP-PRV-0001 |
+| PRV-TXT-TELEFONO | Campo de texto | Teléfono de contacto, en la ficha. Opcional. | ART-MKP-PRV-0001 |
+| PRV-CMB-ESTADO-PROVEEDOR | ComboBox | Estado del proveedor en la ficha: 'Activo' o 'Inactivo'. | ART-MKP-PRV-0001 |
 | PRV-BTN-CREAR-PROVEEDOR | Botón | Valida y registra el proveedor nuevo. | ART-MKP-PRV-0001 |
-| PRV-BTN-LEER-PROVEEDOR | Botón | Ejecuta la búsqueda por RUC o razón social. | ART-MKP-PRV-0001 |
-| PRV-BTN-ACTUALIZAR-PROVEEDOR | Botón | Abre el formulario de actualización del proveedor seleccionado. | ART-MKP-PRV-0001 |
-| PRV-BTN-CONFIRMAR-ACTUALIZACION | Botón | Guarda los cambios del proveedor. | ART-MKP-PRV-0001 |
+| PRV-BTN-LEER-PROVEEDOR | Botón | Ejecuta la consulta con **PRV-SRH-PROVEEDOR** y **PRV-CMB-FILTRO-ESTADO**. | ART-MKP-PRV-0001 |
+| PRV-BTN-ACTUALIZAR-PROVEEDOR | Botón | Carga en la ficha el proveedor seleccionado e inicia su edición. | ART-MKP-PRV-0001 |
+| PRV-BTN-CONFIRMAR-ACTUALIZACION | Botón | «Guardar cambios»: guarda los cambios del proveedor (DEC-046). No aparece en el mockup; lo exige ESP-0039. | ART-MKP-PRV-0001 |
 | PRV-BTN-ELIMINAR-PROVEEDOR | Botón | Inicia la baja del proveedor seleccionado. | ART-MKP-PRV-0001 |
 | PRV-MDL-CONFIRMAR-ELIMINACION | Modal | Confirmación de la baja. | ART-MKP-PRV-0001 |
 | PRV-TXT-MSJ | Campo de texto | Mensaje del modal. | ART-MKP-PRV-0001 |
