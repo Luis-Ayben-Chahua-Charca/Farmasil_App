@@ -1,6 +1,6 @@
 # Gestión de Riesgos — FARMASIL
 
-**Versión:** 09.00 · **Fecha:** 09/11/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
+**Versión:** 10.00 · **Fecha:** 11/11/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
 
 Insumo para la plantilla de gestión de riesgos GRI_0002: el equipo revisa, ajusta y traslada estas
 filas a la hoja de cálculo. Cubre **las 52 ilaciones de los 13 módulos** más un bloque de **riesgos
@@ -19,6 +19,7 @@ generales (RG)**, según la observación del profesor.
 | 07.00 | 18/10/2026 | Se cierran por no aplicar los cuatro riesgos de concurrencia entre usuarios (ILA-0001-R02, ILA-0003-R02, ILA-0023-R03, ILA-0031-R02): RNF-0003 v02.00 establece un solo usuario por vez. |
 | 08.00 | 08/11/2026 | Terminología vigente (DEC-031, DEC-040): ILA-0046-R01 habla de stock vendible y ILA-0045-R01 usa el literal 'Automatico'. No cambia ningún estado ni el conteo de riesgos. |
 | 09.00 | 09/11/2026 | RG-011 cita la regla de lecturas de verificación (DEC-055): DEC-009 cubre la elección entre borrado físico y baja lógica, y las guardas sobre devoluciones pendientes de ESP-0040 y ESP-0044 son lecturas permitidas y enumeradas. No cambia ningún estado ni el conteo de riesgos. |
+| 10.00 | 11/11/2026 | ILA-0006-R03 cita el mockup ART-MKP-INV-0001: la versión 09.00 citaba un mockup numerado que DEC-042 retiró, porque Inventario tiene una sola pantalla (issue #158, que completa la adecuación de Inventario y Lotes del #72). No cambia ningún estado ni el conteo de riesgos. |
 
 En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"**, **"v05 —"**, **"v06 —"**, **"v07 —"** o **"v09 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
 
@@ -89,7 +90,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0005-R04 | Ambigüedad sobre si fechaVencimiento admite fechas pasadas al registrar. | Baja | 10% | 1 | Resuelto | v02 — Trasladado a ESP-0041, que valida `fechaVencimiento > FECHA_SISTEMA`. | ESP-0041 |
 | ILA-0006-R01 | Ambigüedad sobre si la búsqueda por nombre admite coincidencia parcial (ESP-0006 aplica `nombre = nombre`). | Alta | 90% | 2 | Pendiente | Especificar tipo de búsqueda por campo. | ESP-0006 |
 | ILA-0006-R02 | Riesgo de que la consulta no muestre alertas de vencimiento asociadas (dependencia con módulo 4). | Media | 50% | 2 | Pendiente | Indicador visual si alguna remesa del producto tiene alerta activa. | ESP-0006, ESP-0013 |
-| ILA-0006-R03 | No se especifica límite de registros mostrados (catálogos grandes). | Media-alta | 75% | 2 | Pendiente | Implementar paginación. | ART-MKP-INV-0002 |
+| ILA-0006-R03 | No se especifica límite de registros mostrados (catálogos grandes). | Media-alta | 75% | 2 | Pendiente | Implementar paginación. | ART-MKP-INV-0001 |
 | ILA-0007-R01 | No se define si idProducto puede editarse tras su creación. | Baja | 10% | 3 | Resuelto | v02 — ESP-0007 lo muestra en solo lectura y la postcondición verifica `id_producto = SIN_MODIFICACION`. | ESP-0007 |
 | ILA-0007-R02 | Riesgo de que actualizar el precio afecte ventas ya confirmadas con el precio anterior. | Baja | 10% | 2 | Resuelto | v02 — `TBL_DETALLE_VENTAS.precio_unitario` congela el precio de cada línea al momento de la venta (ESP-0001). | ESP-0007, ESP-0001 |
 | ILA-0007-R03 | Inconsistencia entre numeroLote actualizado y alertas de vencimiento ya registradas. | Baja | 10% | 2 | Resuelto | v02 — No aplica: el producto ya no guarda lote; las remesas viven en `TBL_LOTES` (ESP-0041 a ESP-0044). | ESP-0007 |
