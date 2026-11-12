@@ -14,7 +14,8 @@
 | 09/11/2026 | 07.00 | Auditoría de mockups (#142, DEC-042 a DEC-054): se incorporan los módulos 12 (reabastecimiento, **REA**) y 13 (cotizaciones, **COT**); la convención de artefactos pasa a una pantalla por módulo, `ART-MKP-<MOD>-0001`, y se retiran las referencias a 0002–0004; se agregan la sección de artefactos transversales (plantilla `ART-MKP-CONFIRM-0001`, significado del asterisco, fuentes HTML), el formato de los códigos visibles y la regla de rótulos frente a literales almacenados; el inventario por módulo cita `ART-MKP-<MOD>-0001`; la sección 8 pasa a listar los mockups publicados. No se agregan los IDs nuevos de cada módulo: los incorpora la ficha de cada uno. | AUT-0001 |
 | 10/11/2026 | 08.00 | Se agrega la regla del identificador en XAML (DEC-060): el identificador de esta guía va en `AutomationProperties.AutomationId`, y `x:Name` solo cuando el XAML lo necesita, con guion bajo. | AUT-0001 |
 | 11/11/2026 | 09.00 | Adecuación de Inventario y Lotes a los mockups aprobados (issue #72, DEC-042): se incorporan identificadores propios para los filtros de consulta de INV y LOT, evitando reutilizar los controles de captura y edición; Inventario adopta una búsqueda única por identificador o nombre y el filtro de categoría mediante `accion_terapeutica` (PEN-010). | AUT-0001 |
-| 11/11/2026 | 10.00 | Adecuación de Proveedores al mockup aprobado (issue #81, DEC-042): se incorporan **PRV-SRH-PROVEEDOR** (búsqueda única por RUC o razón social), **PRV-CMB-FILTRO-ESTADO** (filtro de consulta separado del estado de la ficha), **PRV-PNL-PROVEEDORES** y **PRV-CRD-PROVEEDOR** (lista de tarjetas, separada de **PRV-TBL-PROVEEDORES**). La tabla conserva el teléfono y usa el identificador como clave no visible. | AUT-0001 |
+| 11/11/2026 | 10.00 | Se completa la adecuación de Inventario y Lotes del issue #72 (revisión del PR #157, issue #158). Se adopta `<MOD>-SRH-<ENTIDAD o CAMPO>` para los buscadores de texto y `<MOD>-CMB-FILTRO-<CAMPO>` para los filtros de lista cerrada (DEC-061), y la lista de tarjetas recibe identificadores propios, `<MOD>-PNL-<COLECCIÓN>`, `<MOD>-CRD-<ENTIDAD>` y `<MOD>-BTN-SELECCIONAR-<ENTIDAD>` (DEC-062): `INV-PNL-CATALOGO`, `INV-CRD-PRODUCTO`, `INV-BTN-SELECCIONAR-PRODUCTO`, `LOT-PNL-REMESAS` y `LOT-CRD-REMESA`. `INV-TXT-BUSQUEDA-PRODUCTO` pasa a `INV-SRH-PRODUCTO` y `LOT-TXT-FILTRO-NUMERO-LOTE` a `LOT-SRH-NUMERO-LOTE`. Se restauran en el módulo 11 `LOT-CMB-ESTADO-LOTE` y `LOT-BTN-CREAR-LOTE`, que la versión 09.00 había retirado de la tabla, y se agrega `LOT-CMB-PROVEEDOR-LOTE`. | AUT-0001 |
+| 11/11/2026 | 11.00 | Adecuación de Proveedores al mockup aprobado (issue #81, DEC-042; nomenclatura según DEC-061 y DEC-062): se incorporan **PRV-SRH-PROVEEDOR** (búsqueda única por RUC o razón social), **PRV-CMB-FILTRO-ESTADO** (filtro de consulta separado del estado de la ficha), **PRV-PNL-PROVEEDORES** y **PRV-CRD-PROVEEDOR** (lista de tarjetas, separada de **PRV-TBL-PROVEEDORES**). La tabla conserva el teléfono y usa el identificador como clave no visible. | AUT-0001 |
 
 ---
 
@@ -176,6 +177,10 @@ Para que los nombres sean predecibles, la función de los componentes que implem
 
 `<MOD>-BTN-CONFIRMAR-ACTUALIZACION`, con el rótulo «Guardar cambios», es el segundo paso de la actualización en todos los módulos (DEC-046). El texto que se muestra dentro de un modal se nombra `<MOD>-TXT-MSJ`. La tabla principal de registros del módulo se nombra `<MOD>-TBL-<ENTIDAD-EN-PLURAL>`.
 
+**Buscadores y filtros de consulta (DEC-061).** El campo de texto con el que se busca por uno o varios atributos es del tipo SRH y se nombra `<MOD>-SRH-<ENTIDAD o CAMPO>` (`INV-SRH-PRODUCTO`, `LOT-SRH-NUMERO-LOTE`). Los filtros de lista cerrada se nombran `<MOD>-CMB-FILTRO-<CAMPO>` (`INV-CMB-FILTRO-PROVEEDOR`). Ninguno reutiliza un control de captura o edición, que conserva su propio identificador.
+
+**Lista de tarjetas y tabla (DEC-062).** Cuando una pantalla muestra los registros en tarjetas además de la tabla, el contenedor de las tarjetas se nombra `<MOD>-PNL-<COLECCIÓN>`, cada tarjeta `<MOD>-CRD-<ENTIDAD>` y su botón de selección, si lo tiene, `<MOD>-BTN-SELECCIONAR-<ENTIDAD>`. Los textos dentro de la tarjeta no llevan identificador propio, y `<MOD>-TBL-…` identifica solo la tabla. Las especificaciones de consulta cargan ambos, y la selección, en tarjeta o en fila, carga la ficha.
+
 ---
 
 ## 6. Inventario de componentes por módulo
@@ -234,7 +239,9 @@ Al contrastar cada componente contra el tipo de su campo aparecieron estas incoh
 | VEN-TXT-CANTIDAD-VENTA | **VEN-NUM-CANTIDAD-VENTA** | `cantidad INT` | Valor numérico. |
 | INV-TXT-PRECIO-PRODUCTO | **INV-NUM-PRECIO-PRODUCTO** | `precio_venta DECIMAL(10,2)` | Importe monetario. |
 | INV-TXT-STOCK-PRODUCTO | **INV-NUM-STOCK-PRODUCTO** | `stock_actual INT` | Valor numérico. |
-| INV-TXT-ID-PRODUCTO (en alta y actualización) | **INV-LBL-ID-PRODUCTO** | `id_producto` autoincremental | El identificador lo genera el motor; el usuario no lo escribe. En la consulta, el antiguo campo separado por identificador se sustituye por **INV-TXT-BUSQUEDA-PRODUCTO**, que permite buscar por identificador o nombre (issue #72, DEC-042 C2-C3). |
+| INV-TXT-ID-PRODUCTO (en alta y actualización) | **INV-LBL-ID-PRODUCTO** | `id_producto` autoincremental | El identificador lo genera el motor; el usuario no lo escribe. En la consulta, el antiguo campo separado por identificador se sustituye por **INV-SRH-PRODUCTO**, que permite buscar por identificador o nombre (issue #72, DEC-042 C2-C3). |
+| INV-TXT-BUSQUEDA-PRODUCTO | **INV-SRH-PRODUCTO** | búsqueda por `id_producto` o `nombre` | El buscador de texto es del tipo SRH, no TXT (DEC-061). |
+| LOT-TXT-FILTRO-NUMERO-LOTE | **LOT-SRH-NUMERO-LOTE** | búsqueda por `numero_lote` | El buscador de texto es del tipo SRH, no TXT (DEC-061). |
 | DOC-TXT-MONTO-TOTAL | **DOC-LBL-MONTO-TOTAL** | derivado de `monto_total` | Se recupera de la venta; no se captura. |
 | USR-TXT-CONTRASENA | **USR-PWD-CONTRASENA** | `contrasena NVARCHAR(255)` | PasswordBox, por RNF-0006. |
 | RES-TXT-MOTIVO-ADVERTENCIA | **RES-TXA-MOTIVO-ADVERTENCIA** | `motivo_advertencia NVARCHAR(MAX)` | Texto extenso. |
@@ -249,15 +256,20 @@ Al contrastar cada componente contra el tipo de su campo aparecieron estas incoh
 
 | Componente | Tipo | Función | Mockup |
 | --- | --- | --- | --- |
-| LOT-TBL-LOTES | Tabla | Listado de remesas: medicamento, número de lote, vencimiento, stock y estado. | ART-MKP-LOT-0001 |
+| LOT-PNL-REMESAS | Panel | Lista de remesas en tarjetas: contiene una tarjeta **LOT-CRD-REMESA** por remesa (DEC-062). | ART-MKP-LOT-0001 |
+| LOT-CRD-REMESA | Tarjeta | Tarjeta de una remesa: lote, medicamento, vencimiento y existencias. Sus textos no llevan identificador propio; al seleccionarla se carga la ficha. | ART-MKP-LOT-0001 |
+| LOT-TBL-LOTES | Tabla | Listado de remesas: medicamento, número de lote, vencimiento, stock y estado. Identifica solo la tabla, no la lista de tarjetas. | ART-MKP-LOT-0001 |
 | LOT-CMB-PRODUCTO | ComboBox | Medicamento del catálogo al que pertenece la remesa. | ART-MKP-LOT-0001 |
+| LOT-CMB-PROVEEDOR-LOTE | ComboBox | Proveedor de la remesa (`TBL_LOTES.id_proveedor`). Se alimenta del módulo 10 y es editable en la actualización (ILA-0043). | ART-MKP-LOT-0001 |
 | LOT-TXT-NUMERO-LOTE | Campo de texto | Número de lote impreso por el laboratorio. Único por medicamento. | ART-MKP-LOT-0001 |
 | LOT-FEC-FECHA-VENCIMIENTO | Selector de fecha | Caducidad de esta remesa. | ART-MKP-LOT-0001 |
 | LOT-NUM-STOCK-LOTE | Campo numérico | Unidades físicas disponibles de la remesa. | ART-MKP-LOT-0001 |
 | LOT-FEC-FECHA-INGRESO | Selector de fecha | Fecha de ingreso al almacén. | ART-MKP-LOT-0001 |
+| LOT-CMB-ESTADO-LOTE | ComboBox | Estado de la remesa: 'Disponible', 'Bloqueado por devolucion' o 'Agotado'. Solo lectura en la ficha; se deriva de las existencias (DEC-010). | ART-MKP-LOT-0001 |
 | LOT-CMB-FILTRO-PRODUCTO | ComboBox | Filtro de consulta por medicamento. Se mantiene separado de **LOT-CMB-PRODUCTO**, usado en captura y edición. | ART-MKP-LOT-0001 |
-| LOT-TXT-FILTRO-NUMERO-LOTE | Campo de texto | Filtro de consulta por número de lote. Se mantiene separado de **LOT-TXT-NUMERO-LOTE**, usado en captura y edición. | ART-MKP-LOT-0001 |
+| LOT-SRH-NUMERO-LOTE | Barra de búsqueda | Búsqueda de consulta por número de lote. Se mantiene separado de **LOT-TXT-NUMERO-LOTE**, usado en captura y edición. | ART-MKP-LOT-0001 |
 | LOT-CMB-FILTRO-ESTADO-LOTE | ComboBox | Filtro de consulta por estado de la remesa. Se mantiene separado de **LOT-CMB-ESTADO-LOTE**, usado para mostrar el estado de la remesa. | ART-MKP-LOT-0001 |
+| LOT-BTN-CREAR-LOTE | Botón | Valida y registra la remesa nueva. | ART-MKP-LOT-0001 |
 | LOT-BTN-LEER-LOTE | Botón | Ejecuta la búsqueda por medicamento, número de lote o estado. | ART-MKP-LOT-0001 |
 | LOT-BTN-ACTUALIZAR-LOTE | Botón | Abre el formulario de actualización de la remesa seleccionada. | ART-MKP-LOT-0001 |
 | LOT-BTN-CONFIRMAR-ACTUALIZACION | Botón | Guarda los cambios de la remesa. | ART-MKP-LOT-0001 |
@@ -292,9 +304,12 @@ El módulo 2 conserva únicamente los datos de catálogo del medicamento: nombre
 | VEN-LBL-MONTO-TOTAL | Etiqueta | Suma calculada del detalle. No editable. | ART-MKP-VEN-0001 |
 | INV-TXT-STOCK-PRODUCTO | Campo de texto | Cantidad de unidades recibidas o disponibles. | ART-MKP-INV-0001 |
 | INV-CMB-PROVEEDOR | ComboBox | Proveedor que abastece el producto. Se alimenta del módulo 10. | ART-MKP-INV-0001 |
-| INV-TXT-BUSQUEDA-PRODUCTO | Campo de texto | Búsqueda única de productos por identificador o nombre. Sustituye los criterios separados de búsqueda. | ART-MKP-INV-0001 |
+| INV-SRH-PRODUCTO | Barra de búsqueda | Búsqueda única de productos por identificador o nombre. Sustituye los criterios separados de búsqueda. | ART-MKP-INV-0001 |
 | INV-CMB-FILTRO-PROVEEDOR | ComboBox | Filtro opcional de consulta por proveedor. Se mantiene separado de **INV-CMB-PROVEEDOR**, usado en captura y edición. | ART-MKP-INV-0001 |
 | INV-CMB-FILTRO-ACCION-TERAPEUTICA | ComboBox | Filtro opcional de categoría. Mientras PEN-010 permanezca abierto, se interpreta mediante `accion_terapeutica`. | ART-MKP-INV-0001 |
+| INV-PNL-CATALOGO | Panel | Catálogo general en tarjetas: contiene una tarjeta **INV-CRD-PRODUCTO** por medicamento (DEC-062). | ART-MKP-INV-0001 |
+| INV-CRD-PRODUCTO | Tarjeta | Tarjeta de un medicamento: nombre, acción terapéutica y precio. Sus textos no llevan identificador propio; la imagen queda fuera del alcance (PEN-027). | ART-MKP-INV-0001 |
+| INV-BTN-SELECCIONAR-PRODUCTO | Botón | «Seleccionar» de la tarjeta: carga la ficha del producto. No ejecuta la consulta, que corresponde a **INV-BTN-LEER-PRODUCTO**. | ART-MKP-INV-0001 |
 | DEV-TBL-DETALLE-DEVOLUCION | Tabla | Medicamentos incluidos en la orden: producto, lote y cantidad a devolver. | ART-MKP-DEV-0001 |
 | DEV-NUM-CANTIDAD-DEVOLVER | Campo numérico | Unidades físicas a devolver por cada línea de la orden. | ART-MKP-DEV-0001 |
 | DEV-TXA-COMENTARIO | Área de texto | Observaciones de la orden. Obligatorio cuando el motivo es la depuración de un error. | ART-MKP-DEV-0001 |
@@ -306,13 +321,13 @@ Los componentes ya definidos en las especificaciones se mantienen. El inventario
 | Módulo | Componentes |
 | --- | --- |
 | **VEN** | VEN-TBL-REGISTRO-VENTAS, VEN-TBL-DETALLE-VENTA, VEN-CMB-PRODUCTO-VENTA, VEN-CMB-LOTE-VENTA, VEN-CMB-METODO-PAGO, VEN-NUM-CANTIDAD-VENTA, VEN-LBL-FECHA-VENTA, VEN-FEC-FECHA-VENTA, VEN-LBL-MONTO-TOTAL, VEN-BTN-AGREGAR-PRODUCTO, VEN-BTN-QUITAR-PRODUCTO, VEN-BTN-CREAR-VENTA, VEN-BTN-LEER-VENTA, VEN-BTN-ACTUALIZAR-VENTA, VEN-BTN-CONFIRMAR-ACTUALIZACION, VEN-BTN-ELIMINAR-VENTA, VEN-MDL-CONFIRMAR-ELIMINACION, VEN-TXT-MSJ, VEN-BTN-CONFIRMAR-SI, VEN-BTN-CONFIRMAR-NO |
-| **INV** | INV-TBL-PRODUCTOS, INV-LBL-ID-PRODUCTO, INV-TXT-BUSQUEDA-PRODUCTO, INV-TXT-NOMBRE-PRODUCTO, INV-TXT-ACCION-TERAPEUTICA, INV-NUM-PRECIO-PRODUCTO, INV-CMB-PROVEEDOR, INV-NUM-STOCK-MINIMO, INV-CMB-FILTRO-PROVEEDOR, INV-CMB-FILTRO-ACCION-TERAPEUTICA, INV-BTN-CREAR-PRODUCTO, INV-BTN-LEER-PRODUCTO, INV-BTN-ACTUALIZAR-PRODUCTO, INV-BTN-CONFIRMAR-ACTUALIZACION, INV-BTN-ELIMINAR-PRODUCTO, INV-MDL-CONFIRMAR-ELIMINACION, INV-TXT-MSJ, INV-BTN-CONFIRMAR-SI, INV-BTN-CONFIRMAR-NO |
+| **INV** | INV-PNL-CATALOGO, INV-CRD-PRODUCTO, INV-TBL-PRODUCTOS, INV-LBL-ID-PRODUCTO, INV-SRH-PRODUCTO, INV-TXT-NOMBRE-PRODUCTO, INV-TXT-ACCION-TERAPEUTICA, INV-NUM-PRECIO-PRODUCTO, INV-CMB-PROVEEDOR, INV-NUM-STOCK-MINIMO, INV-CMB-FILTRO-PROVEEDOR, INV-CMB-FILTRO-ACCION-TERAPEUTICA, INV-BTN-CREAR-PRODUCTO, INV-BTN-LEER-PRODUCTO, INV-BTN-SELECCIONAR-PRODUCTO, INV-BTN-ACTUALIZAR-PRODUCTO, INV-BTN-CONFIRMAR-ACTUALIZACION, INV-BTN-ELIMINAR-PRODUCTO, INV-MDL-CONFIRMAR-ELIMINACION, INV-TXT-MSJ, INV-BTN-CONFIRMAR-SI, INV-BTN-CONFIRMAR-NO |
 | **DOC** | DOC-TBL-COMPROBANTES, DOC-TXT-NUMERO-COMPROBANTE, DOC-CMB-TIPO-COMPROBANTE, DOC-CMB-CODIGO-VENTA, DOC-LBL-MONTO-TOTAL, DOC-FEC-FECHA-EMISION, DOC-BTN-CREAR-COMPROBANTE, DOC-BTN-LEER-COMPROBANTE, DOC-BTN-ACTUALIZAR-COMPROBANTE, DOC-BTN-CONFIRMAR-ACTUALIZACION, DOC-BTN-ELIMINAR-COMPROBANTE, DOC-MDL-CONFIRMAR-ELIMINACION, DOC-TXT-MSJ, DOC-BTN-CONFIRMAR-SI, DOC-BTN-CONFIRMAR-NO |
 | **ALV** | ALV-TBL-ALERTAS-VENCIMIENTO, ALV-CMB-LOTE-ALERTA, ALV-LBL-FECHA-VENCIMIENTO, ALV-CHK-LOTE-DEFECTUOSO, ALV-TXT-ALERTA-DIGEMID, ALV-BTN-CREAR-ALERTA, ALV-BTN-LEER-ALERTA, ALV-BTN-ACTUALIZAR-ALERTA, ALV-BTN-CONFIRMAR-ACTUALIZACION, ALV-BTN-ELIMINAR-ALERTA, ALV-MDL-CONFIRMAR-ELIMINACION, ALV-TXT-MSJ, ALV-BTN-CONFIRMAR-SI, ALV-BTN-CONFIRMAR-NO |
 | **PAG** | PAG-TBL-METODOS-PAGO, PAG-TXT-METODO-PAGO, PAG-CMB-ESTADO-METODO, PAG-BTN-CREAR-METODO, PAG-BTN-LEER-METODO, PAG-BTN-ACTUALIZAR-METODO, PAG-BTN-CONFIRMAR-ACTUALIZACION, PAG-BTN-ELIMINAR-METODO, PAG-MDL-CONFIRMAR-ELIMINACION, PAG-TXT-MSJ, PAG-BTN-CONFIRMAR-SI, PAG-BTN-CONFIRMAR-NO |
 | **REP** | REP-TBL-REPORTES, REP-CMB-TIPO-REPORTE, REP-CMB-FORMATO-REPORTE, REP-FEC-FECHA-INICIO, REP-FEC-FECHA-FIN, REP-BTN-GENERAR-REPORTE, REP-BTN-LEER-REPORTE, REP-BTN-ACTUALIZAR-REPORTE, REP-BTN-CONFIRMAR-ACTUALIZACION, REP-BTN-ELIMINAR-REPORTE, REP-MDL-CONFIRMAR-ELIMINACION, REP-TXT-MSJ, REP-BTN-CONFIRMAR-SI, REP-BTN-CONFIRMAR-NO |
 | **DEV** | DEV-TBL-ORDENES-DEVOLUCION, DEV-TBL-DETALLE-DEVOLUCION, DEV-CMB-PROVEEDOR, DEV-CMB-LOTE-DEVOLUCION, DEV-CMB-MOTIVO-DEVOLUCION, DEV-NUM-CANTIDAD-DEVOLVER, DEV-TXA-COMENTARIO, DEV-FEC-FECHA-DEVOLUCION, DEV-BTN-CREAR-DEVOLUCION, DEV-BTN-LEER-DEVOLUCION, DEV-BTN-ACTUALIZAR-DEVOLUCION, DEV-BTN-CONFIRMAR-ACTUALIZACION, DEV-BTN-ELIMINAR-DEVOLUCION, DEV-MDL-CONFIRMAR-ELIMINACION, DEV-TXT-MSJ, DEV-BTN-CONFIRMAR-SI, DEV-BTN-CONFIRMAR-NO |
-| **LOT** | LOT-TBL-LOTES, LOT-CMB-PRODUCTO, LOT-CMB-PROVEEDOR-LOTE, LOT-TXT-NUMERO-LOTE, LOT-FEC-FECHA-VENCIMIENTO, LOT-NUM-STOCK-LOTE, LOT-FEC-FECHA-INGRESO, LOT-CMB-ESTADO-LOTE, LOT-CMB-FILTRO-PRODUCTO, LOT-TXT-FILTRO-NUMERO-LOTE, LOT-CMB-FILTRO-ESTADO-LOTE, LOT-BTN-CREAR-LOTE, LOT-BTN-LEER-LOTE, LOT-BTN-ACTUALIZAR-LOTE, LOT-BTN-CONFIRMAR-ACTUALIZACION, LOT-BTN-ELIMINAR-LOTE, LOT-MDL-CONFIRMAR-ELIMINACION, LOT-TXT-MSJ, LOT-BTN-CONFIRMAR-SI, LOT-BTN-CONFIRMAR-NO |
+| **LOT** | LOT-PNL-REMESAS, LOT-CRD-REMESA, LOT-TBL-LOTES, LOT-CMB-PRODUCTO, LOT-CMB-PROVEEDOR-LOTE, LOT-TXT-NUMERO-LOTE, LOT-FEC-FECHA-VENCIMIENTO, LOT-NUM-STOCK-LOTE, LOT-FEC-FECHA-INGRESO, LOT-CMB-ESTADO-LOTE, LOT-CMB-FILTRO-PRODUCTO, LOT-SRH-NUMERO-LOTE, LOT-CMB-FILTRO-ESTADO-LOTE, LOT-BTN-CREAR-LOTE, LOT-BTN-LEER-LOTE, LOT-BTN-ACTUALIZAR-LOTE, LOT-BTN-CONFIRMAR-ACTUALIZACION, LOT-BTN-ELIMINAR-LOTE, LOT-MDL-CONFIRMAR-ELIMINACION, LOT-TXT-MSJ, LOT-BTN-CONFIRMAR-SI, LOT-BTN-CONFIRMAR-NO |
 | **RES** | RES-TBL-RESTRICCIONES-VENTA, RES-CMB-MEDICAMENTO, RES-CMB-TIPO-RESTRICCION, RES-CMB-ESTADO-ALERTA, RES-TXT-CONDICION-CLIENTE, RES-TXA-MOTIVO-ADVERTENCIA, RES-BTN-CREAR-RESTRICCION, RES-BTN-LEER-RESTRICCION, RES-BTN-ACTUALIZAR-RESTRICCION, RES-BTN-CONFIRMAR-ACTUALIZACION, RES-BTN-ELIMINAR-RESTRICCION, RES-MDL-CONFIRMAR-ELIMINACION, RES-TXT-MSJ, RES-BTN-CONFIRMAR-SI, RES-BTN-CONFIRMAR-NO |
 
 ---

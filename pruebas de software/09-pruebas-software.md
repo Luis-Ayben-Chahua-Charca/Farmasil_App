@@ -2,11 +2,13 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 09.00 |
+| Versión | 10.00 |
 | Fecha | 11/11/2026 |
 | Responsable | AUT-0001 |
 
-> **Versión 09.00.** Alinea las pruebas de Proveedores con la adecuación del mockup del issue #81 (DEC-042). La consulta usa la búsqueda única **PRV-SRH-PROVEEDOR** y el filtro opcional **PRV-CMB-FILTRO-ESTADO**; sin criterios se listan todos los proveedores, y la lista de tarjetas muestra el mismo resultado que la tabla. La actualización confirma con **PRV-BTN-CONFIRMAR-ACTUALIZACION** (DEC-046). No cambia el número de pruebas: 275.
+> **Versión 10.00.** Alinea las pruebas de Proveedores con la adecuación del mockup del issue #81 (DEC-042, DEC-061 y DEC-062). La consulta usa la búsqueda única **PRV-SRH-PROVEEDOR** y el filtro opcional **PRV-CMB-FILTRO-ESTADO**; sin criterios se listan todos los proveedores, y la lista de tarjetas muestra el mismo resultado que la tabla. La actualización confirma con **PRV-BTN-CONFIRMAR-ACTUALIZACION** (DEC-046). No cambia el número de pruebas: 275.
+>
+> **Versión 09.00.** Completa la adecuación de Inventario y Lotes (issue #158, revisión del PR #157; DEC-061 y DEC-062). El buscador de texto de Inventario pasa de `INV-TXT-BUSQUEDA-PRODUCTO` a **INV-SRH-PRODUCTO** y el de Lotes, de `LOT-TXT-FILTRO-NUMERO-LOTE` a **LOT-SRH-NUMERO-LOTE**. Las pruebas de consulta (ESP-0006 y ESP-0042) verifican también la lista de tarjetas, **INV-PNL-CATALOGO** y **LOT-PNL-REMESAS**, y las de actualización y baja (ESP-0007, ESP-0043 y ESP-0044) aceptan la selección desde la tarjeta o desde la fila. No cambia el número de pruebas: 275.
 >
 > **Versión 08.00.** Alinea las pruebas de Inventario y Lotes con la adecuación de los mockups del issue #72 (DEC-042). La consulta de Inventario incorpora la búsqueda única por identificador o nombre y los filtros de proveedor y categoría mediante `accion_terapeutica` (PEN-010); el stock físico se verifica mediante `VW_STOCK_FISICO`, incluyendo el caso de medicamentos sin remesas con stock 0; la actualización usa `INV-BTN-CONFIRMAR-ACTUALIZACION` (DEC-046). En Lotes se distinguen los controles de filtro de los campos de captura y se mantiene el medicamento de la remesa en solo lectura durante la actualización. No cambia el número de pruebas: 275.
 >
@@ -112,12 +114,12 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Partición sobre el precio: positivo, cero, negativo y no numérico; y sobre el nombre vacío. | T-001 |
 |  |  | Verificar que el identificador se genere automáticamente y se muestre sin permitir edición. | T-004 |
 |  |  | Verificar que un medicamento recién creado, sin remesas, no se ofrezca en el módulo de ventas. | T-006 |
-| ESP-0006 | Consulta del producto de inventario (Leer) | Camino básico: búsqueda por identificador o nombre mediante **INV-TXT-BUSQUEDA-PRODUCTO**, aplicación opcional de filtros por proveedor y categoría, y despliegue del resultado con stock físico. | T-002 |
+| ESP-0006 | Consulta del producto de inventario (Leer) | Camino básico: búsqueda por identificador o nombre mediante **INV-SRH-PRODUCTO**, aplicación opcional de filtros por proveedor y categoría, y despliegue del resultado con stock físico en las tarjetas **INV-CRD-PRODUCTO** de **INV-PNL-CATALOGO** y en **INV-TBL-PRODUCTOS**; seleccionar una tarjeta con **INV-BTN-SELECCIONAR-PRODUCTO** o una fila carga la ficha. | T-002 |
 |  |  | Partición sobre los criterios: identificador existente e inexistente, nombre parcial, proveedor, categoría mediante `accion_terapeutica`, combinación de filtros y filtros vacíos. | T-001 |
 |  |  | Verificar que el stock físico se obtenga mediante **VW_STOCK_FISICO**, corresponda a la suma de las existencias de todas las remesas y que un medicamento sin remesas muestre stock 0. | T-006 |
 |  |  | Crear una segunda remesa y verificar que el stock físico se actualice sin duplicar la fila del producto. | T-007 |
 |  |  | Con una remesa bloqueada y otra vencida, verificar que el stock mostrado sea el físico (incluye ambas), distinto del stock vendible. | T-006 |
-| ESP-0007 | Actualización del producto de inventario (Actualizar) | Camino básico: seleccionar producto, iniciar la edición, modificar los campos de catálogo y confirmar los cambios mediante **INV-BTN-CONFIRMAR-ACTUALIZACION**. | T-002 |
+| ESP-0007 | Actualización del producto de inventario (Actualizar) | Camino básico: seleccionar producto (en su tarjeta con **INV-BTN-SELECCIONAR-PRODUCTO** o en una fila de **INV-TBL-PRODUCTOS**), iniciar la edición, modificar los campos de catálogo y confirmar los cambios mediante **INV-BTN-CONFIRMAR-ACTUALIZACION**. | T-002 |
 |  |  | Verificar que el identificador permanezca inalterado y que las referencias desde lotes y restricciones sigan siendo válidas. | T-007 |
 |  |  | Modificar el precio y verificar que las ventas ya registradas conserven el precio vigente al momento de la venta. | T-006 |
 | ESP-0008 | Eliminación del producto de inventario (Eliminar) | Camino básico: seleccionar producto, confirmar y verificar la baja aplicada. | T-002 |
@@ -328,10 +330,10 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Registrar tres remesas del mismo medicamento con vencimientos distintos y verificar que coexistan sin duplicar la fila del producto. | T-006 |
 |  |  | Verificar que el stock físico del medicamento se incremente en las unidades recibidas. | T-006 |
 |  |  | Presentar al cliente el registro de dos remesas del mismo medicamento con vencimientos distintos. | T-005 |
-| ESP-0042 | Consulta de remesas (Leer) | Camino básico: aplicar los filtros independientes **LOT-CMB-FILTRO-PRODUCTO**, **LOT-TXT-FILTRO-NUMERO-LOTE** y **LOT-CMB-FILTRO-ESTADO-LOTE**, y desplegar el resultado. | T-002 |
+| ESP-0042 | Consulta de remesas (Leer) | Camino básico: aplicar los filtros independientes **LOT-CMB-FILTRO-PRODUCTO**, **LOT-SRH-NUMERO-LOTE** y **LOT-CMB-FILTRO-ESTADO-LOTE**, y desplegar el resultado en las tarjetas **LOT-CRD-REMESA** de **LOT-PNL-REMESAS** y en **LOT-TBL-LOTES**; seleccionar una tarjeta o una fila carga la ficha. | T-002 |
 |  |  | Verificar que el resultado se muestre ordenado por vencimiento ascendente, como contraparte visual del criterio FEFO. | T-004 |
 |  |  | Partición sobre el filtro de estado: 'Disponible', 'Bloqueado por devolucion', 'Agotado' y sin filtro. | T-001 |
-| ESP-0043 | Actualización de remesa (Actualizar) | Camino básico: seleccionar remesa, modificar lote, vencimiento, existencias o proveedor, y confirmar. | T-002 |
+| ESP-0043 | Actualización de remesa (Actualizar) | Camino básico: seleccionar remesa (en una tarjeta **LOT-CRD-REMESA** o en una fila de **LOT-TBL-LOTES**), modificar lote, vencimiento, existencias o proveedor, y confirmar. | T-002 |
 |  |  | Verificar que el medicamento esté en solo lectura y que no exista ruta alguna para reasignar la remesa a otro. | T-012 |
 |  |  | Reducir las existencias por debajo de lo comprometido en una devolución pendiente y verificar que se cancele la operación. | T-006 |
 |  |  | Intentar asignar un número de lote que ya existe para el mismo medicamento y verificar el rechazo. | T-001 |
@@ -339,7 +341,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Verificar que el estado se muestre en solo lectura y que no exista ruta para modificarlo. | T-012 |
 |  |  | Cambiar la fecha de vencimiento a una fecha pasada y verificar el rechazo; editar otro campo de una remesa ya vencida sin tocar su fecha y verificar que se acepte. | T-001 |
 |  |  | Cambiar el proveedor de una remesa que figura en una orden de devolución (de cualquier estado) y verificar el rechazo; cambiarlo en una remesa sin devoluciones y verificar que se acepte. | T-001 |
-| ESP-0044 | Baja de remesa (Eliminar) | Camino básico: seleccionar remesa, confirmar y verificar la baja aplicada. | T-002 |
+| ESP-0044 | Baja de remesa (Eliminar) | Camino básico: seleccionar remesa (en una tarjeta **LOT-CRD-REMESA** o en una fila de **LOT-TBL-LOTES**), confirmar y verificar la baja aplicada. | T-002 |
 |  |  | Complejidad ciclomática: ramas de devolución pendiente, con movimientos, sin movimientos y confirmación negativa. | T-003 |
 |  |  | Intentar dar de baja una remesa comprometida en una devolución pendiente y verificar el rechazo. | T-006 |
 |  |  | Dar de baja una remesa con ventas y verificar que se aplique baja lógica con estado 'Agotado' y existencias en cero. | T-006 |

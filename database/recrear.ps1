@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$Base = "DB_FARMASIL",
     [string]$Servidor = "lpc:localhost\SQLEXPRESS"
 )
@@ -7,6 +7,7 @@ $ErrorActionPreference = "Stop"
 
 $DirectorioScript = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ScriptEsquema = Join-Path $DirectorioScript "001_esquema.sql"
+$ScriptDatos = Join-Path $DirectorioScript "002_datos_prueba.sql"
 
 if (-not (Test-Path $ScriptEsquema)) {
     throw "No se encontró el archivo: $ScriptEsquema"
@@ -53,6 +54,20 @@ sqlcmd `
 
 if ($LASTEXITCODE -ne 0) {
     throw "Ocurrió un error al ejecutar 001_esquema.sql."
+}
+
+Write-Host ""
+Write-Host "Ejecutando 002_datos_prueba.sql..."
+
+sqlcmd `
+    -S $Servidor `
+    -E `
+    -b `
+    -d $Base `
+    -i $ScriptDatos
+
+if ($LASTEXITCODE -ne 0) {
+    throw "Ocurrió un error al ejecutar 002_datos_prueba.sql."
 }
 
 Write-Host ""
