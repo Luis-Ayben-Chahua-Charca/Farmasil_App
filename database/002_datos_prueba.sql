@@ -1,6 +1,13 @@
 ﻿/* =========================================================
    FARMASIL - Datos de prueba
    Issue #71
+
+   Se ejecuta sobre una base recien creada con 001_esquema.sql
+   (database/recrear.ps1): los detalles de venta y de devolucion
+   localizan sus cabeceras con MIN/MAX de id, por lo que no es
+   re-ejecutable sobre una base con datos.
+   El stock de las remesas es el stock actual de prueba; no se
+   descuenta de las ventas historicas.
    ========================================================= */
 
 SET NOCOUNT ON;
@@ -234,7 +241,7 @@ INSERT INTO dbo.TBL_ALERTAS_VENCIMIENTO
     (descripcion, umbral_meses, estado, fecha_ultima_verif)
 VALUES
 (
-    N'Alerta inicial de vencimiento',
+    N'Alerta Base Cuarentena',
     2,
     N'Activo',
     NULL
@@ -251,10 +258,10 @@ VALUES
 (
     N'Ventas Diarias',
     N'PDF',
-    DATEADD(DAY, -30, CAST(GETDATE() AS DATE)),
-    DATEADD(DAY, -30, CAST(GETDATE() AS DATE)),
-    9.00,
-    DATEADD(DAY, -29, CAST(GETDATE() AS DATETIME2(0))),
+    DATEADD(DAY, -10, CAST(GETDATE() AS DATE)),
+    DATEADD(DAY, -10, CAST(GETDATE() AS DATE)),
+    5.00,
+    DATEADD(DAY, -9, CAST(GETDATE() AS DATETIME2(0))),
     N'reportes/ventas-diarias-prueba.pdf'
 ),
 (
@@ -262,7 +269,7 @@ VALUES
     N'Excel',
     DATEADD(MONTH, -1, CAST(GETDATE() AS DATE)),
     CAST(GETDATE() AS DATE),
-    11.50,
+    7.50,
     CAST(GETDATE() AS DATETIME2(0)),
     N'reportes/ventas-mensuales-prueba.xlsx'
 );

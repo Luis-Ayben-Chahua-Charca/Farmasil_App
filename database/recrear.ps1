@@ -10,7 +10,7 @@ $ScriptEsquema = Join-Path $DirectorioScript "001_esquema.sql"
 $ScriptDatos = Join-Path $DirectorioScript "002_datos_prueba.sql"
 
 if (-not (Test-Path $ScriptEsquema)) {
-    throw "No se encontrÃ³ el archivo: $ScriptEsquema"
+    throw "No se encontró el archivo: $ScriptEsquema"
 }
 
 Write-Host "Servidor: $Servidor"
@@ -53,7 +53,7 @@ sqlcmd `
     -i $ScriptEsquema
 
 if ($LASTEXITCODE -ne 0) {
-    throw "OcurriÃ³ un error al ejecutar 001_esquema.sql."
+    throw "Ocurrió un error al ejecutar 001_esquema.sql."
 }
 
 Write-Host ""
