@@ -2,8 +2,8 @@
 
 | Artefacto | Registro de pendientes y decisiones |
 | --- | --- |
-| Versión | 07.00 |
-| Fecha | 10/11/2026 |
+| Versión | 08.00 |
+| Fecha | 11/11/2026 |
 | Responsable | AUT-0001 |
 
 ## 1. Para qué existe y por qué tiene esta forma
@@ -148,6 +148,8 @@ Preguntas en el orden en que conviene hacerlas, para salir de la reunión con to
 | DEC-058 | 09/11/2026 | VW_STOCK_FISICO y VW_STOCK_VENDIBLE solo leen TBL_LOTES, agrupadas por id_producto; el medicamento sin remesas no aparece y el consumidor lo trata como 0 (Inventario con LEFT JOIN sobre su TBL_PRODUCTOS; Reabastecimiento con los medicamentos de IInventario). | Definirlas «por cada fila de TBL_PRODUCTOS» hacía que una vista de Lotes leyera una tabla de Inventario, fuera de DEC-055, y contradecía ACD-02. | Instancia maestra | Diccionario de Datos v11.00, ACD-02, DEC-056 |
 | DEC-059 | 09/11/2026 | Mostrar el nombre del usuario responsable (ESP-0021, ESP-0023) es una consulta transversal de Usuarios, como la sesión (§4 del contexto de arquitectura); no es una lectura H ni una dependencia de negocio. Documentación filtra en su propia tabla las ventas que ya tienen comprobante 'Emitido'; Ventas no lee comprobantes fuera de H1. | La matriz ACD-03 no registraba la lectura de TBL_USUARIOS de Reportes, y ACD-04 hacía que Ventas filtrara por comprobantes. | Instancia maestra | Contexto §4, ACD-03, ACD-04, ESP-0009, ESP-0021, ESP-0023 |
 | DEC-060 | 10/11/2026 | Cada componente de la interfaz WPF lleva el identificador exacto de la guía de nomenclatura en `AutomationProperties.AutomationId`. `x:Name` no es obligatorio: solo se usa cuando el XAML lo necesita (por ejemplo, un `ElementName`) y es el mismo identificador con guion bajo (`VEN_BTN_CREAR_VENTA`). | XAML no admite guiones en `x:Name`. Con `AutomationId` se conserva el identificador tal como aparece en la guía, los mockups y las ESP, y las pruebas de interfaz localizan los controles por él. | Instancia maestra | `diseno/06-guia-nomenclatura-mockups.md` v08.00, plan de implementación (secciones 7 y 8), `CONTRIBUTING.md` |
+| DEC-061 | 11/11/2026 | El campo de texto con el que se busca se nombra `<MOD>-SRH-<ENTIDAD o CAMPO>`, del tipo SRH de la guía (`INV-SRH-PRODUCTO`, `LOT-SRH-NUMERO-LOTE`); los filtros de lista cerrada se nombran `<MOD>-CMB-FILTRO-<CAMPO>`. Rige para todos los módulos. | El PR #157 dejó dos patrones distintos para el mismo tipo de control (`INV-TXT-BUSQUEDA-PRODUCTO` y `LOT-TXT-FILTRO-NUMERO-LOTE`) y la guía ya define el tipo SRH; con un solo patrón el nombre se deduce del tipo de control. | Leyni | Guía v10.00 (§5), ILA-0006, ILA-0042, ESP-0006, ESP-0042, plan de pruebas v09.00, issue #158 |
+| DEC-062 | 11/11/2026 | Cuando una pantalla muestra los registros en tarjetas y en tabla, la lista de tarjetas tiene identificadores propios: contenedor `<MOD>-PNL-<COLECCIÓN>`, tarjeta `<MOD>-CRD-<ENTIDAD>` y, si la tarjeta lo tiene, botón `<MOD>-BTN-SELECCIONAR-<ENTIDAD>`. Los textos internos de la tarjeta no llevan identificador propio y `<MOD>-TBL-…` identifica solo la tabla. Las especificaciones de consulta cargan ambos y la selección, en tarjeta o en fila, carga la ficha. Se aplica a Inventario (`INV-PNL-CATALOGO`, `INV-CRD-PRODUCTO`, `INV-BTN-SELECCIONAR-PRODUCTO`) y a Lotes (`LOT-PNL-REMESAS`, `LOT-CRD-REMESA`); la imagen y el visor 3D siguen fuera del alcance (PEN-027). | Es el criterio C2 de DEC-042 (un identificador por componente): `INV-TBL-PRODUCTOS` y `LOT-TBL-LOTES` rotulaban a la vez la lista de tarjetas y la tabla, y los textos de la tarjeta reutilizaban los identificadores de la ficha (AUD-MKP-claude-036, 037 y 119; AUD-MKP-gpt-027 y 095). | Leyni | DEC-042, guía v10.00 (§5 y §6), ILA y ESP 0006, 0007 y 0042 a 0044, plan de pruebas v09.00, issue #158 |
 
 ## 6. Cuestiones cerradas
 
