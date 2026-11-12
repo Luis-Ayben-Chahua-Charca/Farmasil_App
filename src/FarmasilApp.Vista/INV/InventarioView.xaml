@@ -1,0 +1,270 @@
+<UserControl x:Class="FarmasilApp.Vista.INV.InventarioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:comun="clr-namespace:FarmasilApp.Vista.Comun"
+             MinWidth="800"
+             MinHeight="500"
+             comun:ComandoAlCargar.Command="{Binding InicializarCommand}">
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0"
+                    Margin="0,0,0,20">
+
+            <TextBlock Text="Inventario"
+                       FontSize="28"
+                       FontWeight="Bold"/>
+
+            <TextBlock Text="Consulta de productos"
+                       Margin="0,4,0,0"
+                       FontSize="15"
+                       Foreground="Gray"/>
+
+        </StackPanel>
+
+        <Grid Grid.Row="1"
+              Margin="0,0,0,16">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0"
+                        Margin="0,0,10,0">
+
+                <TextBlock Text="Producto"/>
+
+                <TextBox AutomationProperties.AutomationId="INV-SRH-PRODUCTO"
+                         Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}"
+                         Height="32"
+                         Margin="0,5,0,0"
+                         ToolTip="Buscar por ID o nombre"/>
+
+            </StackPanel>
+
+            <StackPanel Grid.Column="1"
+                        Margin="0,0,10,0">
+
+                <TextBlock Text="Proveedor"/>
+
+                <ComboBox AutomationProperties.AutomationId="INV-CMB-FILTRO-PROVEEDOR"
+                          ItemsSource="{Binding Proveedores}"
+                          SelectedItem="{Binding ProveedorSeleccionado}"
+                          Height="32"
+                          Margin="0,5,0,0"/>
+
+            </StackPanel>
+
+            <StackPanel Grid.Column="2"
+                        Margin="0,0,10,0">
+
+                <TextBlock Text="Acción terapéutica"/>
+
+                <ComboBox AutomationProperties.AutomationId="INV-CMB-FILTRO-ACCION-TERAPEUTICA"
+                          ItemsSource="{Binding AccionesTerapeuticas}"
+                          SelectedItem="{Binding AccionTerapeuticaSeleccionada}"
+                          Height="32"
+                          Margin="0,5,0,0"/>
+
+            </StackPanel>
+
+            <Button Grid.Column="3"
+                    AutomationProperties.AutomationId="INV-BTN-LEER-PRODUCTO"
+                    Content="Buscar"
+                    Command="{Binding BuscarCommand}"
+                    Height="32"
+                    MinWidth="90"
+                    Margin="0,22,0,0"
+                    Padding="12,0"/>
+
+        </Grid>
+
+        <TextBlock Grid.Row="2"
+                   Text="{Binding Mensaje}"
+                   Margin="0,0,0,10"
+                   Foreground="Gray"/>
+
+        <ScrollViewer Grid.Row="3"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      MaxHeight="190"
+                      Margin="0,0,0,14">
+
+            <ItemsControl AutomationProperties.AutomationId="INV-PNL-CATALOGO"
+                          ItemsSource="{Binding Productos}">
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                        <Border AutomationProperties.AutomationId="INV-CRD-PRODUCTO"
+                                BorderBrush="#D0D0D0"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="12"
+                                Margin="0,0,10,10"
+                                Width="230">
+
+                            <StackPanel>
+
+                                <TextBlock Text="{Binding Nombre}"
+                                           FontWeight="Bold"
+                                           FontSize="15"
+                                           TextWrapping="Wrap"/>
+
+                                <TextBlock Text="{Binding AccionTerapeutica}"
+                                           Margin="0,5,0,0"
+                                           Foreground="Gray"
+                                           TextWrapping="Wrap"/>
+
+                                <TextBlock Margin="0,5,0,0">
+                                    <Run Text="Precio: S/ "/>
+                                    <Run Text="{Binding PrecioVenta, StringFormat=N2}"/>
+                                </TextBlock>
+
+                                <TextBlock Margin="0,5,0,0">
+                                    <Run Text="ID: "/>
+                                    <Run Text="{Binding IdProducto}"/>
+                                </TextBlock>
+
+                                <TextBlock>
+                                    <Run Text="Stock físico: "/>
+                                    <Run Text="{Binding StockFisico}"/>
+                                </TextBlock>
+
+                                <TextBlock>
+                                    <Run Text="Estado: "/>
+                                    <Run Text="{Binding EstadoProducto}"/>
+                                </TextBlock>
+
+                                <Button AutomationProperties.AutomationId="INV-BTN-SELECCIONAR-PRODUCTO"
+                                        Content="Seleccionar"
+                                        Margin="0,10,0,0"
+                                        Padding="10,4"
+                                        Command="{Binding DataContext.SeleccionarProductoCommand,
+                                                  RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                        CommandParameter="{Binding}"/>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+
+        </ScrollViewer>
+
+        <DataGrid Grid.Row="4"
+                  AutomationProperties.AutomationId="INV-TBL-PRODUCTOS"
+                  ItemsSource="{Binding Productos}"
+                  SelectedItem="{Binding ProductoSeleccionado}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  SelectionMode="Single"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal">
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="ID"
+                                    Binding="{Binding IdProducto}"
+                                    Width="70"/>
+
+                <DataGridTextColumn Header="Producto"
+                                    Binding="{Binding Nombre}"
+                                    Width="2*"/>
+
+                <DataGridTextColumn Header="Acción terapéutica"
+                                    Binding="{Binding AccionTerapeutica}"
+                                    Width="2*"/>
+
+                <DataGridTextColumn Header="Precio (S/)"
+                                    Binding="{Binding PrecioVenta, StringFormat=N2}"
+                                    Width="110"/>
+
+                <DataGridTextColumn Header="Estado"
+                                    Binding="{Binding EstadoProducto}"
+                                    Width="120"/>
+
+                <DataGridTextColumn Header="Stock físico"
+                                    Binding="{Binding StockFisico}"
+                                    Width="110"/>
+
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <Border Grid.Row="5"
+                BorderBrush="#D0D0D0"
+                BorderThickness="1"
+                CornerRadius="6"
+                Padding="12"
+                Margin="0,14,0,0">
+
+            <StackPanel>
+
+                <TextBlock Text="Ficha del producto"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Margin="0,0,0,8"/>
+
+                <TextBlock Text="{Binding ProductoSeleccionado.Nombre,
+                                         TargetNullValue=Seleccione un producto}"
+                           FontWeight="SemiBold"/>
+
+                <WrapPanel Margin="0,5,0,0">
+
+                    <TextBlock Margin="0,0,20,0">
+                        <Run Text="ID: "/>
+                        <Run Text="{Binding ProductoSeleccionado.IdProducto}"/>
+                    </TextBlock>
+
+                    <TextBlock Margin="0,0,20,0">
+                        <Run Text="Acción terapéutica: "/>
+                        <Run Text="{Binding ProductoSeleccionado.AccionTerapeutica}"/>
+                    </TextBlock>
+
+                    <TextBlock Margin="0,0,20,0">
+                        <Run Text="Precio: S/ "/>
+                        <Run Text="{Binding ProductoSeleccionado.PrecioVenta,
+                                           StringFormat=N2}"/>
+                    </TextBlock>
+
+                    <TextBlock Margin="0,0,20,0">
+                        <Run Text="Estado: "/>
+                        <Run Text="{Binding ProductoSeleccionado.EstadoProducto}"/>
+                    </TextBlock>
+
+                    <TextBlock>
+                        <Run Text="Stock físico: "/>
+                        <Run Text="{Binding ProductoSeleccionado.StockFisico}"/>
+                    </TextBlock>
+
+                </WrapPanel>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+</UserControl>

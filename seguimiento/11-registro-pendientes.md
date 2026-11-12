@@ -2,9 +2,17 @@
 
 | Artefacto | Registro de pendientes y decisiones |
 | --- | --- |
-| Versión | 09.00 |
+| Versión | 10.00 |
 | Fecha | 12/11/2026 |
 | Responsable | AUT-0001 |
+
+## Historial de versiones
+
+| Versión | Fecha | Cambio |
+| --- | --- | --- |
+| 08.00 | 11/11/2026 | Se incorporan las decisiones DEC-061 y DEC-062 de nomenclatura de buscadores, filtros y tarjetas para Inventario y Lotes. |
+| 09.00 | 12/11/2026 | PR #161: se incorpora DEC-063 sobre la presentación e identificación de proveedores. |
+| 10.00 | 12/11/2026 | PR #159 / issue #73: se incorporan DEC-064 sobre dependencias seguras y DEC-065 sobre el aislamiento de Inventario respecto de Proveedores. |
 
 ## 1. Para qué existe y por qué tiene esta forma
 
@@ -151,6 +159,8 @@ Preguntas en el orden en que conviene hacerlas, para salir de la reunión con to
 | DEC-061 | 11/11/2026 | El campo de texto con el que se busca se nombra `<MOD>-SRH-<ENTIDAD o CAMPO>`, del tipo SRH de la guía (`INV-SRH-PRODUCTO`, `LOT-SRH-NUMERO-LOTE`); los filtros de lista cerrada se nombran `<MOD>-CMB-FILTRO-<CAMPO>`. Rige para todos los módulos. | El PR #157 dejó dos patrones distintos para el mismo tipo de control (`INV-TXT-BUSQUEDA-PRODUCTO` y `LOT-TXT-FILTRO-NUMERO-LOTE`) y la guía ya define el tipo SRH; con un solo patrón el nombre se deduce del tipo de control. | Leyni | Guía v10.00 (§5), ILA-0006, ILA-0042, ESP-0006, ESP-0042, plan de pruebas v09.00, issue #158 |
 | DEC-062 | 11/11/2026 | Cuando una pantalla muestra los registros en tarjetas y en tabla, la lista de tarjetas tiene identificadores propios: contenedor `<MOD>-PNL-<COLECCIÓN>`, tarjeta `<MOD>-CRD-<ENTIDAD>` y, si la tarjeta lo tiene, botón `<MOD>-BTN-SELECCIONAR-<ENTIDAD>`. Los textos internos de la tarjeta no llevan identificador propio y `<MOD>-TBL-…` identifica solo la tabla. Las especificaciones de consulta cargan ambos y la selección, en tarjeta o en fila, carga la ficha. Se aplica a Inventario (`INV-PNL-CATALOGO`, `INV-CRD-PRODUCTO`, `INV-BTN-SELECCIONAR-PRODUCTO`) y a Lotes (`LOT-PNL-REMESAS`, `LOT-CRD-REMESA`); la imagen y el visor 3D siguen fuera del alcance (PEN-027). | Es el criterio C2 de DEC-042 (un identificador por componente): `INV-TBL-PRODUCTOS` y `LOT-TBL-LOTES` rotulaban a la vez la lista de tarjetas y la tabla, y los textos de la tarjeta reutilizaban los identificadores de la ficha (AUD-MKP-claude-036, 037 y 119; AUD-MKP-gpt-027 y 095). | Leyni | DEC-042, guía v10.00 (§5 y §6), ILA y ESP 0006, 0007 y 0042 a 0044, plan de pruebas v09.00, issue #158 |
 | DEC-063 | 12/11/2026 | En la consulta de Proveedores, `id_proveedor` no se muestra en `PRV-TBL-PROVEEDORES` ni en las tarjetas `PRV-CRD-PROVEEDOR`: se conserva como clave de selección no visible, y el RUC es la clave visible del proveedor. Es un cambio de la especificación hacia el mockup aprobado, no una aplicación de C4 (DEC-042). | La especificación anterior mostraba el identificador y el mockup no. El identificador interno no le sirve a la dueña, y el RUC ya identifica a cada proveedor de forma única. | Leyni | ESP-0038 v02.00, ILA-0038 v02.00 (revisión del PR #161; AUD-MKP-claude-114, AUD-MKP-gpt-092) |
+| DEC-064 | 11/11/2026 | Las dependencias NuGet deben mantenerse sin vulnerabilidades conocidas. `Microsoft.Data.SqlClient` se conserva en la última versión estable compatible con .NET 10 y `System.Security.Cryptography.Pkcs` se fija como `PackageReference` directa en Persistencia a la versión parcheada más reciente compatible. Antes de revisión, `dotnet list package --vulnerable --include-transitive` no debe listar vulnerabilidades y el build no debe introducir advertencias adicionales. | La dependencia transitiva de `System.Security.Cryptography.Pkcs` generaba NU1902 y NU1903. Fijar explícitamente la versión parcheada elimina las vulnerabilidades sin cambiar el proveedor de acceso a SQL Server. | Leyni | `src/FarmasilApp.Persistencia/FarmasilApp.Persistencia.csproj`, issue #73 |
+| DEC-065 | 11/11/2026 | Inventario no lee directamente `TBL_PROVEEDORES`. Mientras no exista `IProveedores` del issue #67, el filtro de proveedor de ESP-0006 muestra el `id_proveedor` obtenido de los productos de Inventario. Cuando la interfaz exista, el combo se conectará a ella para mostrar la información del proveedor sin crear una lectura cruzada. | Mantiene el límite entre módulos establecido por la arquitectura: Inventario puede trabajar con la clave foránea que posee en `TBL_PRODUCTOS`, pero no debe consultar directamente la tabla propiedad del módulo Proveedores. | Leyni | ESP-0006, `InventarioRepositorio`, issue #67, issue #73 |
 
 ## 6. Cuestiones cerradas
 

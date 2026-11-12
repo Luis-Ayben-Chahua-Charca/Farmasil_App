@@ -1,4 +1,5 @@
 using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Modelo.INV;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FarmasilApp.Pruebas.Modelo;
@@ -16,13 +17,17 @@ public class RegistroDependenciasPruebas
     }
 
     [Fact]
-    public void AgregarModeloTodaviaNoRegistraNingunServicio()
+    public void AgregarModeloRegistraInventarioServicio()
     {
         var servicios = new ServiceCollection();
 
         servicios.AgregarModelo();
 
-        Assert.Empty(servicios);
+        var registro = Assert.Single(
+            servicios,
+            servicio => servicio.ServiceType == typeof(InventarioServicio));
+
+        Assert.Equal(ServiceLifetime.Transient, registro.Lifetime);
     }
 
     [Fact]

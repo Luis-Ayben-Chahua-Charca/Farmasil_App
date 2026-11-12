@@ -1,3 +1,4 @@
+using FarmasilApp.Modelo.INV;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FarmasilApp.Modelo.Comun;
@@ -13,6 +14,8 @@ public static class RegistroDependencias
     /// </summary>
     public static IServiceCollection AgregarModelo(this IServiceCollection servicios)
     {
+        servicios.AddTransient<InventarioServicio>();
+
         return servicios;
     }
 }
