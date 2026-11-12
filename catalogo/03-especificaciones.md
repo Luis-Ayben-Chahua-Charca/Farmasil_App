@@ -690,8 +690,8 @@
 | Código especificación | ESP-0037 |
 | --- | --- |
 | Nombre | Registro de proveedor |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -702,62 +702,62 @@
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PROVEEDORES.ruc = UNICO**<br>&nbsp;&nbsp;**VERIFICAR PRV-TBL-PROVEEDORES = ACTUALIZADA**<br>&nbsp;&nbsp;**SI estado = 'Activo' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR PROVEEDOR DISPONIBLE EN INV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR PROVEEDOR DISPONIBLE EN DEV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**FIN SI**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-PRV-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Especificación nueva. La tabla **TBL_PROVEEDORES** existía y era referenciada desde **TBL_PRODUCTOS** y **TBL_ORDENES_DEVOLUCION**, pero ningún procedimiento la alimentaba: ESP-0025 exigía proveedores válidos como precondición sin que existiera forma de crearlos.<br>La validación de once dígitos corresponde a la restricción `NVARCHAR(11)` con UNIQUE del Diccionario de Datos v03.00.<br>Queda Pendiente porque el mockup **ART-MKP-PRV-0001** aún no ha sido diseñado. |
+| Estado | Concluido |
+| Comentario | Especificación nueva. La tabla **TBL_PROVEEDORES** existía y era referenciada desde **TBL_PRODUCTOS** y **TBL_ORDENES_DEVOLUCION**, pero ningún procedimiento la alimentaba: ESP-0025 exigía proveedores válidos como precondición sin que existiera forma de crearlos.<br>La validación de once dígitos corresponde a la restricción `NVARCHAR(11)` con UNIQUE del Diccionario de Datos v03.00.<br>**Versión 02.00:** (DEC-042 C2; AUD-MKP-claude-112, AUD-MKP-gpt-089) el registro usa el panel «Ficha de Proveedor» de **ART-MKP-PRV-0001**. **PRV-TXT-RUC**, **PRV-TXT-RAZON-SOCIAL**, **PRV-TXT-TELEFONO** y **PRV-CMB-ESTADO-PROVEEDOR** identifican solo los campos de la ficha; la barra superior usa **PRV-SRH-PROVEEDOR** y **PRV-CMB-FILTRO-ESTADO** (ESP-0038). |
 
 | Código especificación | ESP-0038 |
 | --- | --- |
 | Nombre | Consulta de proveedores |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0038 |
-| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PROVEEDORES <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PRV-0002**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**ruc = PRV-TXT-RUC**<br>&nbsp;&nbsp;**razonSocial = PRV-TXT-RAZON-SOCIAL**<br>&nbsp;&nbsp;**PRESIONAR PRV-BTN-LEER-PROVEEDOR**<br>&nbsp;&nbsp;**VALIDAR ruc O razonSocial <> VACIO**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_PROVEEDORES**<br>&nbsp;&nbsp;**APLICAR FILTRO ruc = ruc**<br>&nbsp;&nbsp;**APLICAR FILTRO razon_social = razonSocial**<br>&nbsp;&nbsp;**CARGAR PRV-TBL-PROVEEDORES CON (id_proveedor, ruc, razon_social, telefono, estado)**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR PRV-TBL-PROVEEDORES = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PROVEEDORES = SIN_MODIFICACION**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-PRV-0002 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PROVEEDORES <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PRV-0001**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**busqueda = PRV-SRH-PROVEEDOR**<br>&nbsp;&nbsp;**estadoFiltro = PRV-CMB-FILTRO-ESTADO**<br>&nbsp;&nbsp;**PRESIONAR PRV-BTN-LEER-PROVEEDOR**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_PROVEEDORES**<br>&nbsp;&nbsp;**SI busqueda <> VACIO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**APLICAR FILTRO ruc = busqueda O razon_social CONTIENE busqueda**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**SI estadoFiltro <> VACIO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VALIDAR estadoFiltro EN ('Activo', 'Inactivo')**<br>&nbsp;&nbsp;&nbsp;&nbsp;**APLICAR FILTRO estado = estadoFiltro**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**CARGAR PRV-TBL-PROVEEDORES CON (id_proveedor NO VISIBLE, ruc, razon_social, telefono, estado)**<br>&nbsp;&nbsp;**CARGAR PRV-PNL-PROVEEDORES CON UNA PRV-CRD-PROVEEDOR (razon_social, ruc, estado) POR CADA PROVEEDOR DEL RESULTADO**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR PRV-TBL-PROVEEDORES = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR PRV-PNL-PROVEEDORES = MISMO RESULTADO QUE PRV-TBL-PROVEEDORES**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PROVEEDORES = SIN_MODIFICACION**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-PRV-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Permite ubicar los datos de contacto de la droguería al momento de coordinar el retiro de un lote, que según la Entrevista 1 se gestiona por comunicación directa con el proveedor.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-PRV-0002**. |
+| Estado | Concluido |
+| Comentario | Permite ubicar los datos de contacto de la droguería al momento de coordinar el retiro de un lote, que según la Entrevista 1 se gestiona por comunicación directa con el proveedor.<br>**Versión 02.00:** adecuación a la pantalla única **ART-MKP-PRV-0001** (DEC-042). C1: se cita ART-MKP-PRV-0001 en lugar de 0002 (AUD-MKP-claude-116, AUD-MKP-gpt-088). C2: un solo criterio de texto en **PRV-SRH-PROVEEDOR**, que busca por RUC exacto o razón social parcial, y el filtro **PRV-CMB-FILTRO-ESTADO**, separados de los campos de la ficha; **PRV-TBL-PROVEEDORES** identifica solo la tabla y la lista de tarjetas usa **PRV-PNL-PROVEEDORES** y **PRV-CRD-PROVEEDOR**, con el mismo resultado (AUD-MKP-claude-111, AUD-MKP-claude-112, AUD-MKP-gpt-089). C3: filtro opcional de estado sobre la columna `estado`, sin columnas nuevas (AUD-MKP-claude-113, AUD-MKP-gpt-090). C4: la tabla muestra el teléfono aunque el mockup no lo tenga (AUD-MKP-claude-114, AUD-MKP-gpt-092). Por DEC-063, y no por C4, `id_proveedor` deja de mostrarse y se conserva como clave de selección no visible; el RUC es la clave visible del proveedor. Ya no se exige un criterio: sin criterios se listan todos los proveedores. La pantalla es exclusiva del Administrador según la matriz de permisos; para el Técnico la interfaz oculta o inhabilita el módulo (DEC-050, AUD-MKP-gpt-093). |
 
 | Código especificación | ESP-0039 |
 | --- | --- |
 | Nombre | Actualización de proveedor |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0039 |
-| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PROVEEDORES <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PRV-0003**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR proveedor EN PRV-TBL-PROVEEDORES**<br>&nbsp;&nbsp;**PRESIONAR PRV-BTN-ACTUALIZAR-PROVEEDOR**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PRV-0003 CON INFORMACION VIGENTE**<br>&nbsp;&nbsp;**ruc = PRV-TXT-RUC**<br>&nbsp;&nbsp;**razonSocial = PRV-TXT-RAZON-SOCIAL**<br>&nbsp;&nbsp;**telefono = PRV-TXT-TELEFONO**<br>&nbsp;&nbsp;**estado = PRV-CMB-ESTADO-PROVEEDOR**<br>&nbsp;&nbsp;**PRESIONAR PRV-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR ruc = 11 DIGITOS NUMERICOS**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_PROVEEDORES, ruc = ruc Y id_proveedor <> proveedor)**<br>&nbsp;&nbsp;**VALIDAR razonSocial <> VACIO**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PROVEEDORES DONDE id_proveedor = proveedor**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR PRV-TBL-PROVEEDORES**<br>&nbsp;&nbsp;**MOSTRAR "Proveedor actualizado correctamente"**<br>**FIN** |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PROVEEDORES <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PRV-0001**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR proveedor EN PRV-TBL-PROVEEDORES O EN PRV-PNL-PROVEEDORES**<br>&nbsp;&nbsp;**PRESIONAR PRV-BTN-ACTUALIZAR-PROVEEDOR**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PRV-0001 CON INFORMACION VIGENTE**<br>&nbsp;&nbsp;**HABILITAR PRV-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**ruc = PRV-TXT-RUC**<br>&nbsp;&nbsp;**razonSocial = PRV-TXT-RAZON-SOCIAL**<br>&nbsp;&nbsp;**telefono = PRV-TXT-TELEFONO**<br>&nbsp;&nbsp;**estado = PRV-CMB-ESTADO-PROVEEDOR**<br>&nbsp;&nbsp;**PRESIONAR PRV-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR ruc = 11 DIGITOS NUMERICOS**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_PROVEEDORES, ruc = ruc Y id_proveedor <> proveedor)**<br>&nbsp;&nbsp;**VALIDAR razonSocial <> VACIO**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PROVEEDORES DONDE id_proveedor = proveedor**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR PRV-TBL-PROVEEDORES**<br>&nbsp;&nbsp;**MOSTRAR "Proveedor actualizado correctamente"**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PROVEEDORES.id_proveedor = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR REFERENCIAS(TBL_PRODUCTOS, TBL_ORDENES_DEVOLUCION) = INTACTAS**<br>&nbsp;&nbsp;**SI estado = 'Inactivo' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR PROVEEDOR NO DISPONIBLE EN INV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR PROVEEDOR NO DISPONIBLE EN DEV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**VERIFICAR PRV-TBL-PROVEEDORES = ACTUALIZADA**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-PRV-0003 |
+| Código de artefactos asociados | ART-MKP-PRV-0001 |
 | Importancia | Media |
-| Estado | Pendiente |
-| Comentario | Permite mantener vigentes los datos de contacto de las distribuidoras, que cambian con más frecuencia que la propia relación comercial.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-PRV-0003**. |
+| Estado | Concluido |
+| Comentario | Permite mantener vigentes los datos de contacto de las distribuidoras, que cambian con más frecuencia que la propia relación comercial.<br>**Versión 02.00:** (DEC-042 C1 y C4, DEC-046) la actualización se hace en la ficha de la pantalla única **ART-MKP-PRV-0001** (AUD-MKP-claude-116, AUD-MKP-gpt-088). **PRV-BTN-ACTUALIZAR-PROVEEDOR** inicia la edición y **PRV-BTN-CONFIRMAR-ACTUALIZACION**, rotulado «Guardar cambios», confirma los cambios. El mockup no muestra ese botón, pero se conserva porque la especificación lo exige (AUD-MKP-claude-115, AUD-MKP-gpt-091). |
 
 | Código especificación | ESP-0040 |
 | --- | --- |
 | Nombre | Desactivación de proveedor |
-| Versión | 03.00 |
-| Fecha | 08/11/2026 |
+| Versión | 04.00 |
+| Fecha | 11/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0040 |
-| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PROVEEDORES <> VACIA**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_ORDENES_DEVOLUCION, id_proveedor = proveedor Y estado_orden = 'Pendiente')**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PRV-0004**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR proveedor EN PRV-TBL-PROVEEDORES**<br>&nbsp;&nbsp;**PRESIONAR PRV-BTN-ELIMINAR-PROVEEDOR**<br>&nbsp;&nbsp;**SI EXISTE(DB_FARMASIL.TBL_ORDENES_DEVOLUCION, id_proveedor = proveedor Y estado_orden = 'Pendiente') ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "El proveedor tiene órdenes de devolución pendientes de despacho"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**MOSTRAR PRV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR PRV-TXT-MSJ = "¿Está seguro de dar de baja este proveedor? Los productos y devoluciones ya registrados no se verán afectados."**<br>&nbsp;&nbsp;**SI PRESIONAR PRV-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**resultado = INTENTAR ELIMINAR DB_FARMASIL.TBL_PROVEEDORES DONDE id_proveedor = proveedor**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI resultado = RECHAZADO_POR_REFERENCIAS ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PROVEEDORES.estado = 'Inactivo' DONDE id_proveedor = proveedor**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Proveedor dado de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR PRV-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR PRV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR PRV-TBL-PROVEEDORES**<br>**FIN** |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PROVEEDORES <> VACIA**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_ORDENES_DEVOLUCION, id_proveedor = proveedor Y estado_orden = 'Pendiente')**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PRV-0001**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR proveedor EN PRV-TBL-PROVEEDORES O EN PRV-PNL-PROVEEDORES**<br>&nbsp;&nbsp;**PRESIONAR PRV-BTN-ELIMINAR-PROVEEDOR**<br>&nbsp;&nbsp;**SI EXISTE(DB_FARMASIL.TBL_ORDENES_DEVOLUCION, id_proveedor = proveedor Y estado_orden = 'Pendiente') ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "El proveedor tiene órdenes de devolución pendientes de despacho"**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CANCELAR OPERACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**MOSTRAR PRV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR PRV-TXT-MSJ = "¿Está seguro de dar de baja este proveedor? Los productos y devoluciones ya registrados no se verán afectados."**<br>&nbsp;&nbsp;**SI PRESIONAR PRV-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**resultado = INTENTAR ELIMINAR DB_FARMASIL.TBL_PROVEEDORES DONDE id_proveedor = proveedor**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI resultado = RECHAZADO_POR_REFERENCIAS ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PROVEEDORES.estado = 'Inactivo' DONDE id_proveedor = proveedor**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Proveedor dado de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR PRV-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR PRV-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR PRV-TBL-PROVEEDORES**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR BAJA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR PROVEEDOR_CON_REGISTROS.estado = 'Inactivo'**<br>&nbsp;&nbsp;**VERIFICAR PROVEEDOR NO DISPONIBLE EN INV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**VERIFICAR PROVEEDOR NO DISPONIBLE EN DEV-CMB-PROVEEDOR**<br>&nbsp;&nbsp;**VERIFICAR NINGUNA ORDEN PENDIENTE = SIN_DESTINATARIO**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-PRV-0004 |
+| Código de artefactos asociados | ART-MKP-PRV-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Se aplica el mismo criterio de baja lógica del resto del catálogo, más una verificación adicional: un proveedor con una devolución aún no despachada no puede darse de baja, porque la orden quedaría sin destinatario.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-PRV-0004**.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B). El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_LOTES.id_proveedor` y `TBL_COTIZACIONES_PROVEEDOR.id_proveedor`). La verificación de órdenes pendientes se conserva porque es una regla de negocio, no de integridad.<br>**Versión 03.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
+| Estado | Concluido |
+| Comentario | Se aplica el mismo criterio de baja lógica del resto del catálogo, más una verificación adicional: un proveedor con una devolución aún no despachada no puede darse de baja, porque la orden quedaría sin destinatario.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B). El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía (`TBL_LOTES.id_proveedor` y `TBL_COTIZACIONES_PROVEEDOR.id_proveedor`). La verificación de órdenes pendientes se conserva porque es una regla de negocio, no de integridad.<br>**Versión 03.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022.<br>**Versión 04.00:** (DEC-042 C1 y C4, DEC-047) la baja se inicia desde la pantalla única **ART-MKP-PRV-0001** (AUD-MKP-claude-116, AUD-MKP-gpt-088). El modal usa los componentes `PRV-MDL-*` de la plantilla `ART-MKP-CONFIRM-0001` con el texto de esta especificación; el HTML del mockup muestra un texto más corto que no se usa (AUD-MKP-claude-150). La lectura de **TBL_ORDENES_DEVOLUCION** es la lectura H4 autorizada por DEC-055. |
 
 ---
 
