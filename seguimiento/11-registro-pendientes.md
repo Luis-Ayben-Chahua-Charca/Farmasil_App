@@ -14,7 +14,6 @@
 | 09.00 | 12/11/2026 | PR #161: se incorpora DEC-063 sobre la presentación e identificación de proveedores. |
 | 10.00 | 12/11/2026 | PR #159 / issue #73: se incorporan DEC-064 sobre dependencias seguras y DEC-065 sobre el aislamiento de Inventario respecto de Proveedores. |
 
-
 ## 1. Para qué existe y por qué tiene esta forma
 
 El catálogo arrastraba pendientes dispersos en seis lugares distintos: comentarios de ilaciones y especificaciones, el Anexo de `02-ilaciones.md`, los huecos de `04-trazabilidad.md`, los vacíos del Diccionario de Datos, los pendientes de `09-pruebas-software.md` y los riesgos abiertos. Ninguno decía quién debía resolverlos ni qué bloqueaban, y varios ya estaban resueltos en un documento mientras otro seguía declarándolos abiertos.

@@ -78,11 +78,17 @@ public sealed class InventarioViewModel : ViewModelBase
 
     private async Task InicializarAsync()
     {
-        await CargarFiltrosAsync();
+        var filtrosCargados = await CargarFiltrosAsync();
         await ConsultarAsync();
+
+        // La consulta reemplaza el mensaje: el aviso de los filtros se antepone para que no se pierda.
+        if (!filtrosCargados)
+        {
+            Mensaje = $"No se pudieron cargar los filtros del inventario. {Mensaje}";
+        }
     }
 
-    private async Task CargarFiltrosAsync()
+    private async Task<bool> CargarFiltrosAsync()
     {
         try
         {
@@ -110,6 +116,8 @@ public sealed class InventarioViewModel : ViewModelBase
 
             ProveedorSeleccionado = Todos;
             AccionTerapeuticaSeleccionada = Todos;
+
+            return true;
         }
         catch (Exception ex)
         {
@@ -121,7 +129,7 @@ public sealed class InventarioViewModel : ViewModelBase
             AccionesTerapeuticas.Clear();
             AccionesTerapeuticas.Add(Todos);
 
-            Mensaje = "No se pudieron cargar los filtros del inventario.";
+            return false;
         }
     }
 

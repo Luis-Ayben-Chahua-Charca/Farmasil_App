@@ -1,5 +1,3 @@
-using FarmasilApp.Modelo.INV;
-
 namespace FarmasilApp.Modelo.INV;
 
 /// <summary>
