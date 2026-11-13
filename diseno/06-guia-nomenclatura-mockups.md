@@ -298,10 +298,19 @@ El módulo 2 conserva únicamente los datos de catálogo del medicamento: nombre
 
 | Componente | Tipo | Función | Mockup afectado |
 | --- | --- | --- | --- |
-| VEN-TBL-DETALLE-VENTA | Tabla | Líneas de productos de la venta en curso: producto, cantidad, precio unitario y subtotal. Es el componente que hace visible la venta de varios productos. | ART-MKP-VEN-0001 |
+| VEN-TBL-DETALLE-VENTA | Tabla | Líneas de la venta en curso, con las columnas Medicamento, Lote, Cantidad, Precio unitario y Subtotal. Identifica solo la tabla; el panel que la contiene es **VEN-PNL-DETALLE-VENTA** (DEC-051). Es el componente que hace visible la venta de varios productos. | ART-MKP-VEN-0001 |
 | VEN-BTN-AGREGAR-PRODUCTO | Botón | Agrega el producto y la cantidad seleccionados como una línea del detalle. | ART-MKP-VEN-0001 |
 | VEN-BTN-QUITAR-PRODUCTO | Botón | Retira del detalle la línea seleccionada. | ART-MKP-VEN-0001 |
 | VEN-LBL-MONTO-TOTAL | Etiqueta | Suma calculada del detalle. No editable. | ART-MKP-VEN-0001 |
+| VEN-PNL-CATALOGO | Panel | Vista del inventario: catálogo de los medicamentos que se pueden vender, con una tarjeta **VEN-CRD-PRODUCTO** por medicamento. Lo alimenta `ILotes.medicamentosVendibles()` (DEC-044, DEC-066). | ART-MKP-VEN-0001 |
+| VEN-CRD-PRODUCTO | Tarjeta | Tarjeta de un medicamento vendible: nombre y precio. Sus textos no llevan identificador propio; la imagen y el visor 3D quedan fuera del alcance (PEN-027). | ART-MKP-VEN-0001 |
+| VEN-BTN-SELECCIONAR-PRODUCTO | Botón | «Añadir» de la tarjeta: elige el medicamento y prepara la remesa FEFO con cantidad 1. No agrega la línea: eso lo hace **VEN-BTN-AGREGAR-PRODUCTO**, el único camino que valida (PEN-031). | ART-MKP-VEN-0001 |
+| VEN-SRH-PRODUCTO | Barra de búsqueda | Búsqueda de medicamentos del catálogo por nombre (DEC-061). Filtra la selección de ESP-0001, no la consulta de ventas. | ART-MKP-VEN-0001 |
+| VEN-CMB-FILTRO-ACCION-TERAPEUTICA | ComboBox | Filtro opcional del catálogo por categoría. Mientras PEN-010 permanezca abierto, se interpreta mediante `accion_terapeutica`. | ART-MKP-VEN-0001 |
+| VEN-PNL-DETALLE-MEDICAMENTO | Panel | Detalle del medicamento elegido: nombre, acción terapéutica, precio y stock vendible (PEN-028), la remesa FEFO propuesta, la opción de elegir otra y la cantidad. | ART-MKP-VEN-0001 |
+| VEN-LBL-FECHA-VENCIMIENTO | Etiqueta | Fecha de vencimiento de la remesa elegida, solo lectura. Sustituye al selector de fecha que el mockup rotulaba **VEN-FEC-FECHA-VENTA**, que queda solo como filtro de la consulta (ESP-0002). | ART-MKP-VEN-0001 |
+| VEN-PNL-DETALLE-VENTA | Panel | Detalle de la venta: tabla de líneas, monto total, método de pago y registro. Su rótulo es «Detalle de la venta» y sustituye a «Carrito de compras» (DEC-066). | ART-MKP-VEN-0001 |
+| VEN-LBL-ADVERTENCIAS | Etiqueta | Área de los mensajes de vendibilidad y de restricción al agregar una línea (PEN-030). | ART-MKP-VEN-0001 |
 | INV-TXT-STOCK-PRODUCTO | Campo de texto | Cantidad de unidades recibidas o disponibles. | ART-MKP-INV-0001 |
 | INV-CMB-PROVEEDOR | ComboBox | Proveedor que abastece el producto. Se alimenta del módulo 10. | ART-MKP-INV-0001 |
 | INV-SRH-PRODUCTO | Barra de búsqueda | Búsqueda única de productos por identificador o nombre. Sustituye los criterios separados de búsqueda. | ART-MKP-INV-0001 |
@@ -320,7 +329,7 @@ Los componentes ya definidos en las especificaciones se mantienen. El inventario
 
 | Módulo | Componentes |
 | --- | --- |
-| **VEN** | VEN-TBL-REGISTRO-VENTAS, VEN-TBL-DETALLE-VENTA, VEN-CMB-PRODUCTO-VENTA, VEN-CMB-LOTE-VENTA, VEN-CMB-METODO-PAGO, VEN-NUM-CANTIDAD-VENTA, VEN-LBL-FECHA-VENTA, VEN-FEC-FECHA-VENTA, VEN-LBL-MONTO-TOTAL, VEN-BTN-AGREGAR-PRODUCTO, VEN-BTN-QUITAR-PRODUCTO, VEN-BTN-CREAR-VENTA, VEN-BTN-LEER-VENTA, VEN-BTN-ACTUALIZAR-VENTA, VEN-BTN-CONFIRMAR-ACTUALIZACION, VEN-BTN-ELIMINAR-VENTA, VEN-MDL-CONFIRMAR-ELIMINACION, VEN-TXT-MSJ, VEN-BTN-CONFIRMAR-SI, VEN-BTN-CONFIRMAR-NO |
+| **VEN** | VEN-TBL-REGISTRO-VENTAS, VEN-PNL-CATALOGO, VEN-CRD-PRODUCTO, VEN-BTN-SELECCIONAR-PRODUCTO, VEN-SRH-PRODUCTO, VEN-CMB-FILTRO-ACCION-TERAPEUTICA, VEN-PNL-DETALLE-MEDICAMENTO, VEN-LBL-FECHA-VENCIMIENTO, VEN-PNL-DETALLE-VENTA, VEN-TBL-DETALLE-VENTA, VEN-LBL-ADVERTENCIAS, VEN-CMB-PRODUCTO-VENTA (filtro de la consulta, ESP-0002), VEN-CMB-LOTE-VENTA, VEN-CMB-METODO-PAGO, VEN-NUM-CANTIDAD-VENTA, VEN-LBL-FECHA-VENTA, VEN-FEC-FECHA-VENTA, VEN-LBL-MONTO-TOTAL, VEN-BTN-AGREGAR-PRODUCTO, VEN-BTN-QUITAR-PRODUCTO, VEN-BTN-CREAR-VENTA, VEN-BTN-LEER-VENTA, VEN-BTN-ACTUALIZAR-VENTA, VEN-BTN-CONFIRMAR-ACTUALIZACION, VEN-BTN-ELIMINAR-VENTA, VEN-MDL-CONFIRMAR-ELIMINACION, VEN-TXT-MSJ, VEN-BTN-CONFIRMAR-SI, VEN-BTN-CONFIRMAR-NO |
 | **INV** | INV-PNL-CATALOGO, INV-CRD-PRODUCTO, INV-TBL-PRODUCTOS, INV-LBL-ID-PRODUCTO, INV-SRH-PRODUCTO, INV-TXT-NOMBRE-PRODUCTO, INV-TXT-ACCION-TERAPEUTICA, INV-NUM-PRECIO-PRODUCTO, INV-CMB-PROVEEDOR, INV-NUM-STOCK-MINIMO, INV-CMB-FILTRO-PROVEEDOR, INV-CMB-FILTRO-ACCION-TERAPEUTICA, INV-BTN-CREAR-PRODUCTO, INV-BTN-LEER-PRODUCTO, INV-BTN-SELECCIONAR-PRODUCTO, INV-BTN-ACTUALIZAR-PRODUCTO, INV-BTN-CONFIRMAR-ACTUALIZACION, INV-BTN-ELIMINAR-PRODUCTO, INV-MDL-CONFIRMAR-ELIMINACION, INV-TXT-MSJ, INV-BTN-CONFIRMAR-SI, INV-BTN-CONFIRMAR-NO |
 | **DOC** | DOC-TBL-COMPROBANTES, DOC-TXT-NUMERO-COMPROBANTE, DOC-CMB-TIPO-COMPROBANTE, DOC-CMB-CODIGO-VENTA, DOC-LBL-MONTO-TOTAL, DOC-FEC-FECHA-EMISION, DOC-BTN-CREAR-COMPROBANTE, DOC-BTN-LEER-COMPROBANTE, DOC-BTN-ACTUALIZAR-COMPROBANTE, DOC-BTN-CONFIRMAR-ACTUALIZACION, DOC-BTN-ELIMINAR-COMPROBANTE, DOC-MDL-CONFIRMAR-ELIMINACION, DOC-TXT-MSJ, DOC-BTN-CONFIRMAR-SI, DOC-BTN-CONFIRMAR-NO |
 | **ALV** | ALV-TBL-ALERTAS-VENCIMIENTO, ALV-CMB-LOTE-ALERTA, ALV-LBL-FECHA-VENCIMIENTO, ALV-CHK-LOTE-DEFECTUOSO, ALV-TXT-ALERTA-DIGEMID, ALV-BTN-CREAR-ALERTA, ALV-BTN-LEER-ALERTA, ALV-BTN-ACTUALIZAR-ALERTA, ALV-BTN-CONFIRMAR-ACTUALIZACION, ALV-BTN-ELIMINAR-ALERTA, ALV-MDL-CONFIRMAR-ELIMINACION, ALV-TXT-MSJ, ALV-BTN-CONFIRMAR-SI, ALV-BTN-CONFIRMAR-NO |
