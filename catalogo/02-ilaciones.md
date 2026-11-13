@@ -642,8 +642,8 @@
 | Código ilación | ILA-0033 |
 | --- | --- |
 | Nombre | Creación de usuario |
-| Versión | 02.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
@@ -651,69 +651,69 @@
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0033 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. Se carga el mockup **ART-MKP-USR-0001**.<br>5. Los campos **USR-TXT-NOMBRE-USUARIO**, **USR-PWD-CONTRASENA**, **USR-CMB-ROL** y **USR-CMB-ESTADO-USUARIO** se encuentran habilitados.<br>6. El botón **USR-BTN-CREAR-USUARIO** se encuentra habilitado. |
-| Procedimiento | 1. La dueña accede al módulo de gestión de usuarios.<br>2. La dueña ingresa el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**.<br>3. La dueña ingresa la contraseña en **USR-PWD-CONTRASENA**, cuyo contenido se muestra enmascarado.<br>4. La dueña selecciona el rol en **USR-CMB-ROL**, con los valores 'Administrador' o 'Tecnico'.<br>5. La dueña selecciona el estado inicial de la cuenta en **USR-CMB-ESTADO-USUARIO**.<br>6. La dueña presiona **USR-BTN-CREAR-USUARIO**.<br>7. El sistema valida que el nombre de usuario no esté vacío y que no exista otra cuenta con el mismo nombre, dado que `nombre_usuario` es único.<br>8. El sistema transforma la contraseña en un hash con sal antes de persistirla, conforme a la condición 5 de RNF-0006.<br>9. El sistema registra la cuenta en **DB_FARMASIL.TBL_USUARIOS**.<br>10. El sistema actualiza **USR-TBL-USUARIOS**. |
+| Procedimiento | 1. La dueña accede al módulo de gestión de usuarios.<br>2. La dueña ingresa el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**.<br>3. La dueña ingresa la contraseña en **USR-PWD-CONTRASENA**, cuyo contenido se muestra enmascarado.<br>4. La dueña selecciona el rol en **USR-CMB-ROL**, con los valores 'Administrador' o 'Tecnico'.<br>5. La dueña selecciona el estado inicial de la cuenta en **USR-CMB-ESTADO-USUARIO**.<br>6. La dueña presiona **USR-BTN-CREAR-USUARIO**.<br>7. El sistema valida que el nombre de usuario no esté vacío y que no exista otra cuenta con el mismo nombre, dado que `nombre_usuario` es único.<br>8. El sistema transforma la contraseña en un hash con sal antes de persistirla, conforme a la condición 5 de RNF-0006.<br>9. El sistema registra la cuenta en **DB_FARMASIL.TBL_USUARIOS**.<br>10. El sistema actualiza **USR-PNL-CUENTAS** y **USR-TBL-USUARIOS**. |
 | Postcondición | 1. La cuenta queda registrada en **DB_FARMASIL.TBL_USUARIOS** con la contraseña almacenada como hash con sal, nunca en texto plano ni con cifrado reversible.<br>2. La cuenta aparece en **USR-TBL-USUARIOS** sin exponer la contraseña en ninguna columna.<br>3. Si su estado es 'Activo', la cuenta queda habilitada para iniciar sesión según la condición 1 de RNF-0006 y para ser registrada como responsable de una venta o de una orden de devolución. |
 | Código de artefactos asociados | ART-MKP-USR-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Módulo nuevo, derivado de la confirmación de la dueña de que requiere saber qué personal realiza cada venta.<br>La tabla **TBL_USUARIOS** ya existe en el Diccionario de Datos y es referenciada desde **TBL_ORDENES_DEVOLUCION**, pero ninguna ilación alimentaba su contenido: las cuentas existían en el modelo sin ningún procedimiento que las creara.<br>Queda Pendiente porque requiere el mockup **ART-MKP-USR-0001**, que aún no ha sido diseñado. Ver Anexo.<br>**Versión 02.00:** se precisa el mecanismo de protección de la contraseña (hash con sal, RNF-0006 v05.00). |
+| Estado | Concluido |
+| Comentario | Módulo nuevo, derivado de la confirmación de la dueña de que requiere saber qué personal realiza cada venta.<br>La tabla **TBL_USUARIOS** ya existe en el Diccionario de Datos y es referenciada desde **TBL_ORDENES_DEVOLUCION**, pero ninguna ilación alimentaba su contenido: las cuentas existían en el modelo sin ningún procedimiento que las creara.<br>**Versión 02.00:** se precisa el mecanismo de protección de la contraseña (hash con sal, RNF-0006 v05.00).<br>**Versión 03.00:** (issue #66; DEC-042, DEC-068) adecuación a la pantalla única **ART-MKP-USR-0001**. C2: **USR-TXT-NOMBRE-USUARIO** y **USR-CMB-ROL** identifican solo los campos de la ficha; la búsqueda y el filtro de la consulta tienen identificadores propios (ILA-0034; AUD-MKP-claude-105). |
 
 | Código ilación | ILA-0034 |
 | --- | --- |
 | Nombre | Consulta de usuarios |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
 | Experto | Ninguno |
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0034 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-USR-0002**. |
-| Procedimiento | 1. La dueña accede al módulo de gestión de usuarios.<br>2. La dueña ingresa el nombre de usuario a buscar en **USR-TXT-NOMBRE-USUARIO** o filtra por rol en **USR-CMB-ROL**.<br>3. La dueña presiona **USR-BTN-LEER-USUARIO**.<br>4. El sistema consulta **DB_FARMASIL.TBL_USUARIOS**.<br>5. El sistema muestra en **USR-TBL-USUARIOS** el identificador, el nombre de usuario, el rol y el estado de cada cuenta encontrada. |
-| Postcondición | 1. Las cuentas consultadas se visualizan en **USR-TBL-USUARIOS**.<br>2. El campo de contraseña no se muestra ni se devuelve en ningún resultado de la consulta.<br>3. No se modifica ninguna información en **DB_FARMASIL.TBL_USUARIOS**. |
-| Código de artefactos asociados | ART-MKP-USR-0002 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-USR-0001**. |
+| Procedimiento | 1. La dueña accede al módulo de gestión de usuarios.<br>2. La dueña ingresa el nombre de usuario a buscar en **USR-SRH-USUARIO** o filtra por rol en **USR-CMB-FILTRO-ROL**.<br>3. La dueña presiona **USR-BTN-LEER-USUARIO**.<br>4. El sistema consulta **DB_FARMASIL.TBL_USUARIOS**.<br>5. El sistema muestra el nombre de usuario, el rol y el estado de cada cuenta encontrada en **USR-PNL-CUENTAS**, con una tarjeta **USR-CRD-USUARIO** por cuenta, y en **USR-TBL-USUARIOS**. El identificador no se muestra: se conserva como clave de selección (DEC-068). |
+| Postcondición | 1. Las cuentas consultadas se visualizan en **USR-PNL-CUENTAS** y en **USR-TBL-USUARIOS**.<br>2. El campo de contraseña no se muestra ni se devuelve en ningún resultado de la consulta.<br>3. No se modifica ninguna información en **DB_FARMASIL.TBL_USUARIOS**. |
+| Código de artefactos asociados | ART-MKP-USR-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | La exclusión explícita de la contraseña en el resultado de la consulta responde al atributo de seguridad declarado en RNF-0006.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0002**. |
+| Estado | Concluido |
+| Comentario | La exclusión explícita de la contraseña en el resultado de la consulta responde al atributo de seguridad declarado en RNF-0006.<br>**Versión 02.00:** (issue #66; DEC-042, DEC-068) adecuación a la pantalla única **ART-MKP-USR-0001**. C1: se cita ART-MKP-USR-0001 en lugar de 0002 (AUD-MKP-claude-110). C2: la búsqueda es **USR-SRH-USUARIO** y el filtro es **USR-CMB-FILTRO-ROL**, separados de la ficha; la lista de tarjetas usa **USR-PNL-CUENTAS** y **USR-CRD-USUARIO**, y **USR-TBL-USUARIOS** identifica solo la tabla (AUD-MKP-claude-105). Por DEC-068, y no por C4, el identificador deja de mostrarse y la clave visible es el nombre de usuario (AUD-MKP-claude-108). |
 
 | Código ilación | ILA-0035 |
 | --- | --- |
 | Nombre | Actualización de usuario |
-| Versión | 02.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
 | Experto | Ninguno |
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0035 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-USR-0003**. |
-| Procedimiento | 1. La dueña selecciona una cuenta en **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ACTUALIZAR-USUARIO**.<br>3. El sistema carga el mockup **ART-MKP-USR-0003** con la información vigente de la cuenta, dejando **USR-PWD-CONTRASENA** en blanco.<br>4. La dueña modifica el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**, el rol en **USR-CMB-ROL** o el estado en **USR-CMB-ESTADO-USUARIO**. Si desea restablecer la contraseña, ingresa una nueva en **USR-PWD-CONTRASENA**; si deja el campo en blanco, la contraseña vigente se conserva.<br>5. La dueña presiona **USR-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo nombre de usuario no colisione con otra cuenta.<br>7. El sistema verifica que la operación no deje al sistema sin ninguna cuenta activa con rol 'Administrador'.<br>8. El sistema actualiza el registro en **DB_FARMASIL.TBL_USUARIOS**, guardando el hash con sal de la contraseña si fue modificada.<br>9. El sistema actualiza **USR-TBL-USUARIOS**. |
-| Postcondición | 1. La cuenta queda actualizada en **DB_FARMASIL.TBL_USUARIOS**.<br>2. El identificador de la cuenta permanece inalterado, preservando las referencias desde **TBL_ORDENES_DEVOLUCION** y desde el histórico de ventas.<br>3. Siempre existe al menos una cuenta activa con rol de administrador.<br>4. Los cambios se reflejan en **USR-TBL-USUARIOS**. |
-| Código de artefactos asociados | ART-MKP-USR-0003 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-USR-0001**. |
+| Procedimiento | 1. La dueña selecciona una cuenta con un clic en su tarjeta **USR-CRD-USUARIO** o en una fila de **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ACTUALIZAR-USUARIO**.<br>3. El sistema carga en la ficha de **ART-MKP-USR-0001** la información vigente de la cuenta, dejando **USR-PWD-CONTRASENA** en blanco.<br>4. La dueña modifica el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**, el rol en **USR-CMB-ROL** o el estado en **USR-CMB-ESTADO-USUARIO**. Si desea restablecer la contraseña, ingresa una nueva en **USR-PWD-CONTRASENA**; si deja el campo en blanco, la contraseña vigente se conserva.<br>5. La dueña presiona **USR-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo nombre de usuario no colisione con otra cuenta.<br>7. El sistema verifica que la operación no deje al sistema sin ninguna cuenta activa con rol 'Administrador'.<br>8. El sistema actualiza el registro en **DB_FARMASIL.TBL_USUARIOS**, guardando el hash con sal de la contraseña si fue modificada.<br>9. El sistema actualiza **USR-PNL-CUENTAS** y **USR-TBL-USUARIOS**. |
+| Postcondición | 1. La cuenta queda actualizada en **DB_FARMASIL.TBL_USUARIOS**.<br>2. El identificador de la cuenta permanece inalterado, preservando las referencias desde **TBL_ORDENES_DEVOLUCION** y desde el histórico de ventas.<br>3. Siempre existe al menos una cuenta activa con rol de administrador.<br>4. Los cambios se reflejan en **USR-PNL-CUENTAS** y en **USR-TBL-USUARIOS**. |
+| Código de artefactos asociados | ART-MKP-USR-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | La validación del paso 7 evita el bloqueo total del sistema: si la única cuenta administradora se degrada a técnico o se desactiva, nadie podría volver a administrar usuarios.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0003**.<br>**Versión 02.00:** la contraseña nueva se guarda como hash con sal (RNF-0006 v05.00). |
+| Estado | Concluido |
+| Comentario | La validación del paso 7 evita el bloqueo total del sistema: si la única cuenta administradora se degrada a técnico o se desactiva, nadie podría volver a administrar usuarios.<br>**Versión 02.00:** la contraseña nueva se guarda como hash con sal (RNF-0006 v05.00).<br>**Versión 03.00:** (issue #66; DEC-042, DEC-068) adecuación a la pantalla única **ART-MKP-USR-0001**. C1: se cita ART-MKP-USR-0001 en lugar de 0003 (AUD-MKP-claude-110). La cuenta se selecciona con un clic en su tarjeta o en una fila (DEC-062). En la ficha de una cuenta existente la contraseña se muestra vacía (AUD-MKP-claude-106). C4: **USR-BTN-CONFIRMAR-ACTUALIZACION**, con el rótulo «Guardar cambios», no aparece en el mockup y la pantalla WPF lo incluye (DEC-046; AUD-MKP-claude-109). |
 
 | Código ilación | ILA-0036 |
 | --- | --- |
 | Nombre | Desactivación de usuario |
-| Versión | 03.00 |
-| Fecha | 08/11/2026 |
+| Versión | 04.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
 | Experto | Ninguno |
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0036 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. La cuenta seleccionada no es la cuenta con la que se encuentra abierta la sesión actual.<br>6. Se carga el mockup **ART-MKP-USR-0004**. |
-| Procedimiento | 1. La dueña selecciona una cuenta en **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ELIMINAR-USUARIO**.<br>3. El sistema muestra el modal **USR-MDL-CONFIRMAR-ELIMINACION** con el mensaje **USR-TXT-MSJ**: "¿Está seguro de dar de baja esta cuenta? El histórico de operaciones que registró se conservará."<br>4. Al confirmar, el sistema intenta eliminar físicamente el registro; si la base de datos lo rechaza porque otro registro lo referencia, aplica en su lugar la baja lógica.<br>5. Si la dueña presiona **USR-BTN-CONFIRMAR-SI** y la cuenta no tiene operaciones asociadas, el sistema elimina el registro de **DB_FARMASIL.TBL_USUARIOS**.<br>6. Si la dueña presiona **USR-BTN-CONFIRMAR-SI** y la cuenta sí tiene operaciones asociadas, el sistema actualiza su `estado` a 'Inactivo', conservando el registro.<br>7. Si la dueña presiona **USR-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>8. El sistema actualiza **USR-TBL-USUARIOS**. |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. La cuenta seleccionada no es la cuenta con la que se encuentra abierta la sesión actual.<br>6. Se carga el mockup **ART-MKP-USR-0001**. |
+| Procedimiento | 1. La dueña selecciona una cuenta con un clic en su tarjeta **USR-CRD-USUARIO** o en una fila de **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ELIMINAR-USUARIO**.<br>3. El sistema muestra el modal **USR-MDL-CONFIRMAR-ELIMINACION** con el mensaje **USR-TXT-MSJ**: "¿Está seguro de dar de baja esta cuenta? El histórico de operaciones que registró se conservará."<br>4. Al confirmar, el sistema intenta eliminar físicamente el registro; si la base de datos lo rechaza porque otro registro lo referencia, aplica en su lugar la baja lógica.<br>5. Si la dueña presiona **USR-BTN-CONFIRMAR-SI** y la cuenta no tiene operaciones asociadas, el sistema elimina el registro de **DB_FARMASIL.TBL_USUARIOS**.<br>6. Si la dueña presiona **USR-BTN-CONFIRMAR-SI** y la cuenta sí tiene operaciones asociadas, el sistema actualiza su `estado` a 'Inactivo', conservando el registro.<br>7. Si la dueña presiona **USR-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>8. El sistema actualiza **USR-PNL-CUENTAS** y **USR-TBL-USUARIOS**. |
 | Postcondición | 1. La cuenta sin operaciones asociadas queda eliminada de **DB_FARMASIL.TBL_USUARIOS**.<br>2. La cuenta con operaciones asociadas queda en estado 'Inactivo' y conserva la trazabilidad de las ventas y devoluciones que registró.<br>3. En ambos casos la cuenta deja de poder iniciar sesión.<br>4. La sesión activa nunca resulta desactivada a sí misma.<br>5. No se produce ninguna violación de integridad referencial. |
-| Código de artefactos asociados | ART-MKP-USR-0004 |
+| Código de artefactos asociados | ART-MKP-USR-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | La baja lógica es obligatoria aquí: eliminar físicamente una cuenta que registró ventas o devoluciones destruiría precisamente la verificación de identidad que la dueña solicitó.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0004**.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011). El rechazo del inicio de sesión de una cuenta inactiva lo establece la condición 1 de RNF-0006.<br>**Versión 03.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
+| Estado | Concluido |
+| Comentario | La baja lógica es obligatoria aquí: eliminar físicamente una cuenta que registró ventas o devoluciones destruiría precisamente la verificación de identidad que la dueña solicitó.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011). El rechazo del inicio de sesión de una cuenta inactiva lo establece la condición 1 de RNF-0006.<br>**Versión 03.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022.<br>**Versión 04.00:** (issue #66; DEC-042, DEC-068) adecuación a la pantalla única **ART-MKP-USR-0001**. C1: se cita ART-MKP-USR-0001 en lugar de 0004 (AUD-MKP-claude-110). La cuenta se selecciona con un clic en su tarjeta o en una fila (DEC-062). C4: el modal de confirmación no aparece en el mockup y la pantalla WPF lo incluye con el texto de esta ilación. |
 
 ---
 

@@ -189,11 +189,15 @@ Para que los nombres sean predecibles, la función de los componentes que implem
 
 | Componente | Tipo | Función | Mockup |
 | --- | --- | --- | --- |
-| USR-TBL-USUARIOS | Tabla | Listado de cuentas: identificador, nombre de usuario, rol y estado. Nunca muestra la contraseña. | ART-MKP-USR-0001 |
-| USR-TXT-NOMBRE-USUARIO | Campo de texto | Nombre de usuario para el inicio de sesión. Único. | ART-MKP-USR-0001 |
+| USR-TBL-USUARIOS | Tabla | Tabla de cuentas: nombre de usuario, rol y estado. Identifica solo la tabla; la lista de tarjetas es **USR-PNL-CUENTAS** (DEC-062). No muestra el identificador, que se conserva como clave de selección (DEC-068), y nunca muestra la contraseña. | ART-MKP-USR-0001 |
+| USR-TXT-NOMBRE-USUARIO | Campo de texto | Nombre de usuario para el inicio de sesión. Único. Es el campo de la ficha; la búsqueda de la consulta es **USR-SRH-USUARIO**. | ART-MKP-USR-0001 |
 | USR-PWD-CONTRASENA | Campo de contraseña | Contraseña, con el contenido enmascarado. En el formulario de actualización se muestra vacío: si no se completa, la contraseña vigente se conserva. | ART-MKP-USR-0001 |
-| USR-CMB-ROL | ComboBox | Rol de la cuenta: 'Administrador' o 'Tecnico'. | ART-MKP-USR-0001 |
+| USR-CMB-ROL | ComboBox | Rol de la cuenta: 'Administrador' o 'Tecnico'. Es el campo de la ficha; el filtro de la consulta es **USR-CMB-FILTRO-ROL**. | ART-MKP-USR-0001 |
 | USR-CMB-ESTADO-USUARIO | ComboBox | Estado de la cuenta: 'Activo' o 'Inactivo'. | ART-MKP-USR-0001 |
+| USR-SRH-USUARIO | Barra de búsqueda | Búsqueda de cuentas por nombre de usuario (DEC-061). Se mantiene separada de **USR-TXT-NOMBRE-USUARIO**, usado en la ficha. | ART-MKP-USR-0001 |
+| USR-CMB-FILTRO-ROL | ComboBox | Filtro opcional de consulta por rol. Se mantiene separado de **USR-CMB-ROL**, usado en la ficha. | ART-MKP-USR-0001 |
+| USR-PNL-CUENTAS | Panel | Lista de tarjetas «Cuentas de Usuario»: contiene una tarjeta **USR-CRD-USUARIO** por cuenta (DEC-062). | ART-MKP-USR-0001 |
+| USR-CRD-USUARIO | Tarjeta | Tarjeta de una cuenta: nombre de usuario, rol y estado. No tiene botón: al hacer clic en ella, o en una fila de **USR-TBL-USUARIOS**, se carga la ficha (DEC-062). | ART-MKP-USR-0001 |
 | USR-BTN-CREAR-USUARIO | Botón | Valida y registra la cuenta nueva. | ART-MKP-USR-0001 |
 | USR-BTN-LEER-USUARIO | Botón | Ejecuta la búsqueda por nombre de usuario o rol. | ART-MKP-USR-0001 |
 | USR-BTN-ACTUALIZAR-USUARIO | Botón | Abre el formulario de actualización de la cuenta seleccionada. | ART-MKP-USR-0001 |
