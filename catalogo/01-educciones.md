@@ -31,17 +31,17 @@ Los códigos se mantienen reservados y **no se reasignan**, de modo que el salto
 | Código educción | EDU-0001 |
 | --- | --- |
 | Nombre | Gestión de ventas |
-| Versión | 04.00 |
-| Fecha | 05/09/2026 |
+| Versión | 05.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0005 |
 | Actor | ACT-0002 |
-| Fuente | FUE-0001 |
+| Fuente | FUE-0001, Revisión de los mockups con la dueña (07/11/2026) |
 | Experto | Ninguno |
 | Código ilación | ILA-0001, ILA-0002, ILA-0003, ILA-0004 |
-| Descripción | La técnica farmacéutica manifiesta la necesidad de registrar digitalmente las ventas realizadas en la farmacia, almacenando información como:<br>• Fecha<br>• Productos vendidos<br>• Cantidades<br>• Método de pago<br>El módulo debe permitir crear, leer, actualizar y borrar registros de ventas. |
+| Descripción | La técnica farmacéutica manifiesta la necesidad de registrar digitalmente las ventas realizadas en la farmacia, almacenando información como:<br>• Fecha<br>• Productos vendidos<br>• Cantidades<br>• Método de pago<br>El módulo debe permitir crear, leer, actualizar y borrar registros de ventas.<br>En la revisión de los mockups, la dueña pidió que la pantalla de registro de venta se organice en tres secciones:<br>• Vista del inventario: el catálogo de los medicamentos que se pueden vender, con un buscador y un filtro.<br>• Detalle del medicamento: el medicamento elegido, con la remesa que corresponde vender primero según su vencimiento, la opción de elegir otra remesa y la cantidad. Muestra solo datos que ya existen: nombre, acción terapéutica, precio y stock vendible.<br>• Detalle de la venta: las líneas de la venta, la opción de quitar una línea, el monto total, el método de pago y el registro de la venta. |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Actualmente las ventas se registran de manera manual mediante boletas físicas y apoyo parcial del sistema POS. |
+| Comentario | Actualmente las ventas se registran de manera manual mediante boletas físicas y apoyo parcial del sistema POS.<br>**Versión 05.00:** (issue #65; DEC-066) se incorpora el pedido que hizo la dueña en la revisión de los mockups: la pantalla de ventas se organiza en tres secciones. Es un pedido nuevo de la clienta, por eso se modifica la educción; DEC-042 solo impide modificar las educciones para interpretar un mockup. Siguen fuera de alcance el visor 3D, las sugerencias y la ubicación (PEN-027, PEN-030, PEN-029). |
 
 ---
 
@@ -289,6 +289,8 @@ Los códigos se mantienen reservados y **no se reasignan**, de modo que el salto
 > **Ampliación del 05/09/2026 (lotes).** Tras la decisión del equipo de incorporar `TBL_LOTES` al modelo, se agregó **EDU-0015 (Gestión de lotes)** y se ajustaron EDU-0002, EDU-0004 y EDU-0011, que hasta ahora describían el lote como un atributo del medicamento.
 >
 > **Ampliación del 02/10/2026 (reabastecimiento y comparación de precios).** Tras la Entrevista 3 con la dueña se agregaron **EDU-0016 (Gestión de reabastecimiento)** y **EDU-0017 (Gestión de comparación de precios de proveedores)**, ambas exclusivas del rol Administrador. Decisiones confirmadas con la dueña: el umbral de stock mínimo se configura por medicamento (`TBL_PRODUCTOS.stock_minimo`, capturado desde EDU-0002); cada cotización de proveedor es una fila nueva con fecha y nunca se sobrescribe; la exportación de pedidos por proveedor es efímera y no deja historial en la base de datos; y el proveedor real de cada remesa se registra en `TBL_LOTES.id_proveedor`, lo que corrige ILA-0025/ESP-0025 y amplía ILA-0041/ILA-0043 e ILA-0005/ILA-0007. El código FUE de la Entrevista 3 queda pendiente de asignar.
+>
+> **Ampliación del 13/11/2026 (ventas).** En la revisión de los mockups con la dueña (07/11/2026) se pidió organizar la pantalla de ventas en tres secciones: vista del inventario, detalle del medicamento y detalle de la venta. **EDU-0001** pasa a la versión 05.00 y agrega esa revisión a su fuente (DEC-066, issue #65).
 >
 > El inicio y cierre de sesión **no** se incorporan como educción: son un requisito de seguridad ya cubierto por RNF-0006, y una sesión no es una entidad sobre la que aplique el ciclo CRUD que estructura este catálogo.
 
