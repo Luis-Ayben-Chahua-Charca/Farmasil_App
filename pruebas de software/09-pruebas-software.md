@@ -2,10 +2,12 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 10.00 |
-| Fecha | 11/11/2026 |
+| Versión | 11.00 |
+| Fecha | 13/11/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 11.00.** Alinea las pruebas de Ventas y Usuarios con la adecuación de los mockups del issue #66 (DEC-042, DEC-066, DEC-067 y DEC-068). La prueba de ESP-0001 selecciona el medicamento en el catálogo **VEN-PNL-CATALOGO** (búsqueda **VEN-SRH-PRODUCTO** y filtro **VEN-CMB-FILTRO-ACCION-TERAPEUTICA**) y verifica la remesa FEFO con cantidad 1 y la validación al presionar **VEN-BTN-AGREGAR-PRODUCTO**; la de ESP-0034 verifica la lista de tarjetas **USR-PNL-CUENTAS** y la tabla, sin mostrar el identificador. No cambia el número de pruebas: 275.
+>
 > **Versión 10.00.** Alinea las pruebas de Proveedores con la adecuación del mockup del issue #81 (DEC-042, DEC-061 y DEC-062). La consulta usa la búsqueda única **PRV-SRH-PROVEEDOR** y el filtro opcional **PRV-CMB-FILTRO-ESTADO**; sin criterios se listan todos los proveedores, y la lista de tarjetas muestra el mismo resultado que la tabla. La actualización confirma con **PRV-BTN-CONFIRMAR-ACTUALIZACION** (DEC-046). No cambia el número de pruebas: 275.
 >
 > **Versión 09.00.** Completa la adecuación de Inventario y Lotes (issue #158, revisión del PR #157; DEC-061 y DEC-062). El buscador de texto de Inventario pasa de `INV-TXT-BUSQUEDA-PRODUCTO` a **INV-SRH-PRODUCTO** y el de Lotes, de `LOT-TXT-FILTRO-NUMERO-LOTE` a **LOT-SRH-NUMERO-LOTE**. Las pruebas de consulta (ESP-0006 y ESP-0042) verifican también la lista de tarjetas, **INV-PNL-CATALOGO** y **LOT-PNL-REMESAS**, y las de actualización y baja (ESP-0007, ESP-0043 y ESP-0044) aceptan la selección desde la tarjeta o desde la fila. No cambia el número de pruebas: 275.
@@ -70,7 +72,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 
 | Clave | Requisito (Nombre / Operación) | Descripción de la prueba | Tipo |
 | --- | --- | --- | --- |
-| ESP-0001 | Creación del registro de venta (Crear) | Camino básico: selección de medicamento, propuesta de remesa por FEFO, cantidad, cálculo del monto, método de pago y confirmación. | T-002 |
+| ESP-0001 | Creación del registro de venta (Crear) | Camino básico: selección del medicamento en el catálogo (con búsqueda y filtro), propuesta de remesa por FEFO con cantidad 1, cantidad, agregar producto, cálculo del monto, método de pago y confirmación. | T-002 |
 |  |  | Partición de equivalencia sobre la cantidad: menor al stock, igual al stock, mayor al stock, cero, negativa y no numérica. | T-001 |
 |  |  | Con tres remesas disponibles de vencimientos distintos, verificar que el sistema proponga la más próxima a vencer. | T-004 |
 |  |  | Registrar una venta con cuatro medicamentos y verificar que se creen cuatro filas de detalle con su id_lote y una sola cabecera. | T-006 |
@@ -279,7 +281,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Verificar que el campo de contraseña enmascare el contenido y que la tabla de la interfaz no tenga columna de contraseña. | T-012 |
 |  |  | Crear una cuenta 'Activo' y verificar que pueda iniciar sesión; crearla 'Inactivo' y verificar que no pueda. | T-006 |
 |  |  | Crear dos cuentas con la misma contraseña y verificar que sus hashes almacenados sean distintos, lo que confirma la sal individual. | T-012 |
-| ESP-0034 | Consulta de usuarios (Leer) | Camino básico: aplicar filtros por nombre y rol y desplegar el resultado. | T-002 |
+| ESP-0034 | Consulta de usuarios (Leer) | Camino básico: aplicar filtros por nombre y rol y desplegar el resultado en las tarjetas y en la tabla, sin mostrar el identificador. | T-002 |
 |  |  | Inspeccionar la respuesta y verificar que no incluya el campo de contraseña ni su hash. | T-012 |
 |  |  | Verificar que el resultado muestre el estado de cada cuenta, para distinguir activas de dadas de baja. | T-004 |
 | ESP-0035 | Actualización de usuario (Actualizar) | Camino básico: seleccionar cuenta, modificar nombre, rol o estado y confirmar. | T-002 |

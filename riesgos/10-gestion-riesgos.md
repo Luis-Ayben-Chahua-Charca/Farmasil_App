@@ -1,6 +1,6 @@
 # Gestión de Riesgos — FARMASIL
 
-**Versión:** 10.00 · **Fecha:** 11/11/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
+**Versión:** 11.00 · **Fecha:** 13/11/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
 
 Insumo para la plantilla de gestión de riesgos GRI_0002: el equipo revisa, ajusta y traslada estas
 filas a la hoja de cálculo. Cubre **las 52 ilaciones de los 13 módulos** más un bloque de **riesgos
@@ -20,6 +20,7 @@ generales (RG)**, según la observación del profesor.
 | 08.00 | 08/11/2026 | Terminología vigente (DEC-031, DEC-040): ILA-0046-R01 habla de stock vendible y ILA-0045-R01 usa el literal 'Automatico'. No cambia ningún estado ni el conteo de riesgos. |
 | 09.00 | 09/11/2026 | RG-011 cita la regla de lecturas de verificación (DEC-055): DEC-009 cubre la elección entre borrado físico y baja lógica, y las guardas sobre devoluciones pendientes de ESP-0040 y ESP-0044 son lecturas permitidas y enumeradas. No cambia ningún estado ni el conteo de riesgos. |
 | 10.00 | 11/11/2026 | ILA-0006-R03 cita el mockup ART-MKP-INV-0001: la versión 09.00 citaba un mockup numerado que DEC-042 retiró, porque Inventario tiene una sola pantalla (issue #158, que completa la adecuación de Inventario y Lotes del #72). No cambia ningún estado ni el conteo de riesgos. |
+| 11.00 | 13/11/2026 | ILA-0002-R03 cita el mockup ART-MKP-VEN-0001, porque DEC-042 retiró el mockup numerado 0002 (issue #66). ILA-0003-R03 aclara que la cantidad de una línea ya no se edita: se quita la línea y se vuelve a agregar con la validación del alta (DEC-067). No cambia ningún estado ni el conteo de riesgos. |
 
 En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"**, **"v05 —"**, **"v06 —"**, **"v07 —"** o **"v09 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
 
@@ -72,10 +73,10 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0001-R04 | No se especifica rango de fechas permitido para la fecha de venta. | Baja | 10% | 1 | Resuelto | v02 — ESP-0001 toma `FECHA_HORA_SISTEMA` y la muestra en VEN-LBL-FECHA-VENTA: el usuario no la captura. | ESP-0001 |
 | ILA-0002-R01 | No se define comportamiento cuando el filtro por fecha/producto no arroja resultados. | Media | 50% | 1 | Pendiente | Mensaje "Sin resultados" en vez de tabla vacía. | ESP-0002 |
 | ILA-0002-R02 | Ambigüedad sobre si la búsqueda por producto admite coincidencia parcial o exacta. | Baja | 10% | 2 | Resuelto | v02 — ESP-0002 v03.00 selecciona el producto desde VEN-CMB-PRODUCTO-VENTA y filtra por `id_producto` (coincidencia exacta). | ESP-0002 |
-| ILA-0002-R03 | No se define límite de registros mostrados (rendimiento). | Media-alta | 75% | 2 | Pendiente | Implementar paginación. | ART-MKP-VEN-0002 |
+| ILA-0002-R03 | No se define límite de registros mostrados (rendimiento). | Media-alta | 75% | 2 | Pendiente | Implementar paginación. | ART-MKP-VEN-0001 |
 | ILA-0003-R01 | No se define si se puede editar una venta cuyo comprobante ya fue emitido. | Baja | 10% | 4 | Resuelto | v02 — ESP-0003 v03.00 bloquea la edición si existe comprobante con `estado_documento = 'Emitido'`. | ESP-0003, ESP-0009 |
 | ILA-0003-R02 | Conflicto si dos usuarios actualizan el mismo registro simultáneamente sin bloqueo optimista. | Baja | 10% | 2 | Resuelto | v07 — No aplica: una sola sesión activa (RNF-0003 v02.00). | ESP-0003 |
-| ILA-0003-R03 | El recálculo de cantidad no valida disponibilidad actual de stock. | Baja | 10% | 3 | Resuelto | v02 — ESP-0003 valida `diferencia <= linea.lote.stock_actual` y ajusta el stock por diferencia. | ESP-0003 |
+| ILA-0003-R03 | El recálculo de cantidad no valida disponibilidad actual de stock. | Baja | 10% | 3 | Resuelto | v02 — ESP-0003 valida `diferencia <= linea.lote.stock_actual` y ajusta el stock por diferencia. Desde la versión 11.00 de este documento (DEC-067), la cantidad de una línea no se edita: se quita la línea y se vuelve a agregar con la validación de stock acumulado de ESP-0001. | ESP-0003 |
 | ILA-0004-R01 | No se define si la eliminación de una venta es física o lógica. | Baja | 10% | 4 | Resuelto | v02 — ESP-0004 v03.00 define eliminación física en cascada (detalle y cabecera) con restitución del stock, permitida solo si no hay comprobante 'Emitido'. | ESP-0004 |
 | ILA-0004-R02 | Falta de validación sobre si una venta con comprobante emitido puede eliminarse. | Baja | 10% | 4 | Resuelto | v02 — ESP-0004 bloquea la eliminación si existe comprobante 'Emitido'. | ESP-0004 |
 | ILA-0004-R03 | Una venta con comprobante **'Anulado'** sí puede eliminarse físicamente, pero `TBL_COMPROBANTES_TRIBUTARIOS.id_venta` sigue apuntando a ella: violación de integridad referencial y pérdida del vínculo que la auditoría tributaria necesita. | Baja | 10% | 4 | Resuelto | v05 — ESP-0004 v04.00 e ILA-0004 v07.00 bloquean la eliminación ante cualquier comprobante asociado, 'Emitido' o 'Anulado'; la corrección se hace con ESP-0003. Prueba T-006 ampliada. | ESP-0004, ESP-0012 |

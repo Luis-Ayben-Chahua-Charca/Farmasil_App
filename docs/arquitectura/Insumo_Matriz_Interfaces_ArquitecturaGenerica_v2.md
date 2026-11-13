@@ -88,7 +88,7 @@ Cada fila es una interfaz nombrada con el prefijo `I` seguido del nombre del mó
 - **Confianza:** alta.
 
 ### ILotes (provista por Lotes)
-- **Expone:** consulta de remesas disponibles (criterio FEFO), descuento/restitución de `stock_actual`, cambio de `estado_lote`, `medicamentosVendibles()` (DEC-044) y `datosRemesas(idsLote)` (DEC-057).
+- **Expone:** consulta de remesas disponibles (criterio FEFO), descuento/restitución de `stock_actual`, cambio de `estado_lote`, `medicamentosVendibles()` (DEC-044), que devuelve por cada medicamento `id_producto`, `nombre`, `accion_terapeutica`, `precio_venta` y el stock vendible (la firma formal la fija el issue #67), y `datosRemesas(idsLote)` (DEC-057).
 - **Requerida por:**
   - Ventas (ESP-0001: selección de remesa por FEFO y descuento de stock al confirmar la venta).
   - Alertas de Vencimiento (ESP-0014: bloquea la remesa cambiando `estado_lote` a `'Bloqueado por devolucion'`, y obtiene los datos de la remesa para el retiro; ESP-0016 la restituye a `'Disponible'`).
