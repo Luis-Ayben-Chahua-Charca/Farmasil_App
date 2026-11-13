@@ -2,8 +2,8 @@
 
 | Artefacto | Registro de pendientes y decisiones |
 | --- | --- |
-| Versión | 10.00 |
-| Fecha | 12/11/2026 |
+| Versión | 11.00 |
+| Fecha | 13/11/2026 |
 | Responsable | AUT-0001 |
 
 ## Historial de versiones
@@ -13,6 +13,7 @@
 | 08.00 | 11/11/2026 | Se incorporan las decisiones DEC-061 y DEC-062 de nomenclatura de buscadores, filtros y tarjetas para Inventario y Lotes. |
 | 09.00 | 12/11/2026 | PR #161: se incorpora DEC-063 sobre la presentación e identificación de proveedores. |
 | 10.00 | 12/11/2026 | PR #159 / issue #73: se incorporan DEC-064 sobre dependencias seguras y DEC-065 sobre el aislamiento de Inventario respecto de Proveedores. |
+| 11.00 | 13/11/2026 | Issue #65: se incorpora DEC-066 sobre el cambio de Ventas pedido por la dueña en la revisión de los mockups. |
 
 ## 1. Para qué existe y por qué tiene esta forma
 
@@ -161,6 +162,7 @@ Preguntas en el orden en que conviene hacerlas, para salir de la reunión con to
 | DEC-063 | 12/11/2026 | En la consulta de Proveedores, `id_proveedor` no se muestra en `PRV-TBL-PROVEEDORES` ni en las tarjetas `PRV-CRD-PROVEEDOR`: se conserva como clave de selección no visible, y el RUC es la clave visible del proveedor. Es un cambio de la especificación hacia el mockup aprobado, no una aplicación de C4 (DEC-042). | La especificación anterior mostraba el identificador y el mockup no. El identificador interno no le sirve a la dueña, y el RUC ya identifica a cada proveedor de forma única. | Leyni | ESP-0038 v02.00, ILA-0038 v02.00 (revisión del PR #161; AUD-MKP-claude-114, AUD-MKP-gpt-092) |
 | DEC-064 | 11/11/2026 | Las dependencias NuGet deben mantenerse sin vulnerabilidades conocidas. `Microsoft.Data.SqlClient` se conserva en la última versión estable compatible con .NET 10 y `System.Security.Cryptography.Pkcs` se fija como `PackageReference` directa en Persistencia a la versión parcheada más reciente compatible. Antes de revisión, `dotnet list package --vulnerable --include-transitive` no debe listar vulnerabilidades y el build no debe introducir advertencias adicionales. | La dependencia transitiva de `System.Security.Cryptography.Pkcs` generaba NU1902 y NU1903. Fijar explícitamente la versión parcheada elimina las vulnerabilidades sin cambiar el proveedor de acceso a SQL Server. | Leyni | `src/FarmasilApp.Persistencia/FarmasilApp.Persistencia.csproj`, issue #73 |
 | DEC-065 | 11/11/2026 | Inventario no lee directamente `TBL_PROVEEDORES`. Mientras no exista `IProveedores` del issue #67, el filtro de proveedor de ESP-0006 muestra el `id_proveedor` obtenido de los productos de Inventario. Cuando la interfaz exista, el combo se conectará a ella para mostrar la información del proveedor sin crear una lectura cruzada. | Mantiene el límite entre módulos establecido por la arquitectura: Inventario puede trabajar con la clave foránea que posee en `TBL_PRODUCTOS`, pero no debe consultar directamente la tabla propiedad del módulo Proveedores. | Leyni | ESP-0006, `InventarioRepositorio`, issue #67, issue #73 |
+| DEC-066 | 13/11/2026 | Cambio de Ventas pedido por la dueña en la revisión de los mockups: ART-MKP-VEN-0001 se organiza en tres secciones (vista del inventario con los medicamentos vendibles por ILotes, DEC-044; detalle del medicamento con remesa FEFO y cantidad; detalle de la venta). La sección «Carrito de compras» pasa a llamarse «Detalle de la venta» y se quita el botón «Carrito de compras». Siguen fuera de alcance el visor 3D, las sugerencias y la ubicación (PEN-027, PEN-030, PEN-029). Se documenta en EDU-0001 v05.00 e ILA-0001 en el #65; ESP-0001 y los identificadores, en el #66. | Es un pedido nuevo de la clienta, por eso se modifica la educción; DEC-042 solo impide modificar educciones para interpretar mockups. | Leyni / Instancia maestra | EDU-0001, ILA-0001, ESP-0001, ART-MKP-VEN-0001, #65, #66 |
 
 ## 6. Cuestiones cerradas
 
