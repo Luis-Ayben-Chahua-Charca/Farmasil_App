@@ -1,0 +1,99 @@
+<Window x:Class="FarmasilApp.Vista.Comun.ConfirmacionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Titulo}"
+        Width="520"
+        Height="360"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterScreen"
+        AutomationProperties.AutomationId="{Binding AutomationIdModal}">
+    <Window.InputBindings>
+        <KeyBinding Key="Escape"
+                    Command="{Binding CancelarCommand}"/>
+    </Window.InputBindings>
+    <Grid Background="#A60F172A">
+        <Border Width="480"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="White"
+                BorderBrush="#E2E8F0"
+                BorderThickness="1"
+                CornerRadius="8">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20"
+                                  Opacity="0.3"
+                                  ShadowDepth="10"/>
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                        Padding="20,16"
+                        Background="#FEF2F2"
+                        BorderBrush="#FEE2E2"
+                        BorderThickness="0,0,0,1"
+                        CornerRadius="8,8,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="36"
+                                Height="36"
+                                Margin="0,0,12,0"
+                                Background="#DC2626"
+                                CornerRadius="18">
+                            <TextBlock Text="!"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       FontWeight="Bold"/>
+                        </Border>
+                        <TextBlock Text="{Binding Titulo}"
+                                   VerticalAlignment="Center"
+                                   Foreground="#991B1B"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Row="1"
+                            Margin="24,20">
+                    <TextBlock AutomationProperties.AutomationId="{Binding AutomationIdMensaje}"
+                               Text="{Binding Mensaje}"
+                               Foreground="#334155"
+                               FontSize="14"
+                               LineHeight="21"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <Border Grid.Row="2"
+                        Padding="20,16"
+                        Background="#F8FAFC"
+                        BorderBrush="#F1F5F9"
+                        BorderThickness="0,1,0,0"
+                        CornerRadius="0,0,8,8">
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+                        <Button AutomationProperties.AutomationId="{Binding AutomationIdCancelar}"
+                                Command="{Binding CancelarCommand}"
+                                Content="Cancelar"
+                                Style="{StaticResource ConfirmationCancelButtonStyle}"/>
+                        <Button AutomationProperties.AutomationId="{Binding AutomationIdConfirmar}"
+                                Command="{Binding ConfirmarCommand}"
+                                Content="Sí, Confirmar Acción"
+                                IsDefault="True"
+                                Margin="12,0,0,0"
+                                Style="{StaticResource ConfirmationAcceptButtonStyle}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -133,6 +133,19 @@ Tu primer issue de código es la consulta de tu módulo. Sigue estos pasos, que 
 7. **Persistencia.** Pon el repositorio en `src/FarmasilApp.Persistencia/<Modulo>/` y regístralo en `AgregarPersistencia`. Toda consulta SQL usa parámetros.
 8. **Pruebas.** Agrégalas en `tests/FarmasilApp.Pruebas/<Modulo>/`, según `pruebas de software/09-pruebas-software.md`. Los nombres y los atributos de trazabilidad están en la sección [Pruebas](#pruebas).
 
+### Controles y mensajes comunes
+
+`src/FarmasilApp.Vista/Comun/ControlesComunes.xaml` se carga desde `Plantillas.xaml` y define:
+
+- `ListaComun` (`ListBox`) y `CommonListStyle` para listas seleccionables de tarjetas. La vista enlaza `ItemsSource`, `SelectedItem`, aporta su `ItemTemplate` y asigna los IDs del panel y la tarjeta según la guía.
+- `BusquedaComun` (`TextBox`) y `CommonSearchStyle` para la entrada de búsqueda. Enlaza `Text` al ViewModel con `UpdateSourceTrigger=PropertyChanged` si la consulta debe actualizarse al escribir.
+- `FiltroComun` (`ComboBox`) y `CommonFilterStyle` para la selección del filtro. Enlaza `ItemsSource` y `SelectedItem` al ViewModel.
+- `ConfirmUpdateButtonStyle` para el segundo paso de actualización con el rótulo «Guardar cambios» (DEC-046).
+
+Los controles comunes conservan los bindings nativos de WPF; el ViewModel de cada módulo aplica los criterios de búsqueda y filtro de su especificación. Los recursos compartidos no asignan identificadores de módulo: cada vista los establece en el control correspondiente.
+
+La capa VistaModelo consume `IMensajeServicio`: `Confirmar(modulo, titulo, mensaje)` presenta el modal común y devuelve si se confirmó; `MostrarExito` y `MostrarError` presentan el título y el mensaje recibidos. Los textos son responsabilidad de cada especificación y no deben fijarse en el control común.
+
 Dentro de cada proyecto, el código va en la carpeta de su módulo (plan, sección 2). Si la carpeta no existe, créala: el esqueleto solo trae `Comun`, `Principal` y `Seguridad`, porque git no guarda carpetas vacías.
 
 ## Pruebas

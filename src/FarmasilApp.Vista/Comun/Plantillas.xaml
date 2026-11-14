@@ -4,6 +4,10 @@
                     xmlns:vmInv="clr-namespace:FarmasilApp.VistaModelo.INV;assembly=FarmasilApp.VistaModelo"
                     xmlns:vista="clr-namespace:FarmasilApp.Vista.Principal"
                     xmlns:vistaInv="clr-namespace:FarmasilApp.Vista.INV">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="ControlesComunes.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
     <!-- Cada VistaModelo se asocia con su pantalla aquí. La navegación solo cambia la VistaModelo activa. -->
     <DataTemplate DataType="{x:Type vm:InicioViewModel}">
         <vista:InicioView />
