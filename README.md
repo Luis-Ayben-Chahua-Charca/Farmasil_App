@@ -94,3 +94,11 @@ Al ejecutar `database/recrear.ps1` se cargan datos iniciales para pruebas locale
 
 Estas credenciales son exclusivamente para el entorno local de desarrollo y pruebas.
 Las contraseñas se almacenan en `TBL_USUARIOS` como hashes PBKDF2-SHA256 con sal, nunca como texto plano.
+
+### Pruebas Automatizadas
+
+En la carpeta donde se ubica el archivo de solución "FarmasilApp.slnx" ejecutar:
+
+```bash
+dotnet test
+```
