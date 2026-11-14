@@ -61,6 +61,7 @@
 
                 <ComboBox AutomationProperties.AutomationId="INV-CMB-FILTRO-PROVEEDOR"
                           ItemsSource="{Binding Proveedores}"
+                          DisplayMemberPath="Nombre"
                           SelectedItem="{Binding ProveedorSeleccionado}"
                           Height="32"
                           Margin="0,5,0,0"/>
