@@ -1,0 +1,222 @@
+<UserControl x:Class="FarmasilApp.Vista.PRV.ProveedoresView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:comun="clr-namespace:FarmasilApp.Vista.Comun"
+             MinWidth="800"
+             MinHeight="500"
+             comun:ComandoAlCargar.Command="{Binding InicializarCommand}">
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0"
+                    Margin="0,0,0,20">
+
+            <TextBlock Text="Proveedores"
+                       FontSize="28"
+                       FontWeight="Bold"/>
+
+            <TextBlock Text="Consulta de proveedores"
+                       Margin="0,4,0,0"
+                       FontSize="15"
+                       Foreground="Gray"/>
+
+        </StackPanel>
+
+        <Grid Grid.Row="1"
+              Margin="0,0,0,16">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0"
+                        Margin="0,0,10,0">
+
+                <TextBlock Text="Proveedor"/>
+
+                <TextBox AutomationProperties.AutomationId="PRV-SRH-PROVEEDOR"
+                         Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}"
+                         Height="32"
+                         Margin="0,5,0,0"
+                         ToolTip="Buscar por RUC o razón social"/>
+
+            </StackPanel>
+
+            <StackPanel Grid.Column="1"
+                        Margin="0,0,10,0">
+
+                <TextBlock Text="Estado"/>
+
+                <ComboBox AutomationProperties.AutomationId="PRV-CMB-FILTRO-ESTADO"
+                          ItemsSource="{Binding Estados}"
+                          SelectedItem="{Binding EstadoSeleccionado}"
+                          Height="32"
+                          Margin="0,5,0,0"/>
+
+            </StackPanel>
+
+            <Button Grid.Column="2"
+                    AutomationProperties.AutomationId="PRV-BTN-LEER-PROVEEDOR"
+                    Content="Buscar"
+                    Command="{Binding BuscarCommand}"
+                    Height="32"
+                    MinWidth="90"
+                    Margin="0,22,0,0"
+                    Padding="12,0"/>
+
+        </Grid>
+
+        <TextBlock Grid.Row="2"
+                   Text="{Binding Mensaje}"
+                   Margin="0,0,0,10"
+                   Foreground="Gray"/>
+
+        <ScrollViewer Grid.Row="3"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      MaxHeight="190"
+                      Margin="0,0,0,14">
+
+            <ItemsControl AutomationProperties.AutomationId="PRV-PNL-PROVEEDORES"
+                          ItemsSource="{Binding Proveedores}">
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                        <Border AutomationProperties.AutomationId="PRV-CRD-PROVEEDOR"
+                                BorderBrush="#D0D0D0"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="12"
+                                Margin="0,0,10,10"
+                                Width="230">
+
+                            <StackPanel>
+
+                                <TextBlock Text="{Binding RazonSocial}"
+                                           FontWeight="Bold"
+                                           FontSize="15"
+                                           TextWrapping="Wrap"/>
+
+                                <TextBlock Margin="0,5,0,0">
+                                    <Run Text="RUC: "/>
+                                    <Run Text="{Binding Ruc}"/>
+                                </TextBlock>
+
+                                <TextBlock>
+                                    <Run Text="Estado: "/>
+                                    <Run Text="{Binding Estado}"/>
+                                </TextBlock>
+
+                                <Button AutomationProperties.AutomationId="PRV-BTN-SELECCIONAR-PROVEEDOR"
+                                        Content="Seleccionar"
+                                        Margin="0,10,0,0"
+                                        Padding="10,4"
+                                        Command="{Binding DataContext.SeleccionarProveedorCommand,
+                                                  RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                        CommandParameter="{Binding}"/>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+
+        </ScrollViewer>
+
+        <DataGrid Grid.Row="4"
+                  AutomationProperties.AutomationId="PRV-TBL-PROVEEDORES"
+                  ItemsSource="{Binding Proveedores}"
+                  SelectedItem="{Binding ProveedorSeleccionado}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  SelectionMode="Single"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal">
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="RUC"
+                                    Binding="{Binding Ruc}"
+                                    Width="130"/>
+
+                <DataGridTextColumn Header="Razón social"
+                                    Binding="{Binding RazonSocial}"
+                                    Width="2*"/>
+
+                <DataGridTextColumn Header="Teléfono"
+                                    Binding="{Binding Telefono}"
+                                    Width="130"/>
+
+                <DataGridTextColumn Header="Estado"
+                                    Binding="{Binding Estado}"
+                                    Width="110"/>
+
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <Border Grid.Row="5"
+                BorderBrush="#D0D0D0"
+                BorderThickness="1"
+                CornerRadius="6"
+                Padding="12"
+                Margin="0,14,0,0">
+
+            <StackPanel>
+
+                <TextBlock Text="Ficha del proveedor"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Margin="0,0,0,8"/>
+
+                <TextBlock Text="{Binding ProveedorSeleccionado.RazonSocial,
+                                         TargetNullValue=Seleccione un proveedor}"
+                           FontWeight="SemiBold"/>
+
+                <WrapPanel Margin="0,5,0,0">
+
+                    <TextBlock Margin="0,0,20,0">
+                        <Run Text="RUC: "/>
+                        <Run Text="{Binding ProveedorSeleccionado.Ruc}"/>
+                    </TextBlock>
+
+                    <TextBlock Margin="0,0,20,0">
+                        <Run Text="Teléfono: "/>
+                        <Run Text="{Binding ProveedorSeleccionado.Telefono}"/>
+                    </TextBlock>
+
+                    <TextBlock>
+                        <Run Text="Estado: "/>
+                        <Run Text="{Binding ProveedorSeleccionado.Estado}"/>
+                    </TextBlock>
+
+                </WrapPanel>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+</UserControl>
