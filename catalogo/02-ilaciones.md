@@ -24,8 +24,8 @@
 | Código ilación | ILA-0002 |
 | --- | --- |
 | Nombre | Consulta del registro de venta |
-| Versión | 07.00 |
-| Fecha | 08/11/2026 |
+| Versión | 08.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | FUE-0001 |
@@ -33,18 +33,18 @@
 | Código educción | EDU-0001 |
 | Código especificación | ESP-0002 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador' o 'Tecnico'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_REGISTRO_VENTAS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-VEN-0001**. |
-| Procedimiento | 1. El usuario presiona **VEN-BTN-LEER-VENTA**.<br>2. El sistema carga el mockup **ART-MKP-VEN-0002**.<br>3. El usuario aplica los filtros de búsqueda disponibles: fecha en **VEN-FEC-FECHA-VENTA** y producto en **VEN-CMB-PRODUCTO-VENTA**.<br>4. El usuario presiona **VEN-BTN-LEER-VENTA**.<br>5. El sistema valida los criterios ingresados.<br>6. El sistema consulta **DB_FARMASIL.TBL_REGISTRO_VENTAS**, aplicando el filtro de fecha como un intervalo semiabierto (desde el inicio del día indicado hasta el inicio del día siguiente, sin incluirlo), y, cuando el filtro incluye un medicamento, la resuelve contra **DB_FARMASIL.TBL_DETALLE_VENTAS** y **DB_FARMASIL.TBL_LOTES**.<br>7. El sistema despliega las cabeceras encontradas en **VEN-TBL-REGISTRO-VENTAS**.<br>8. Al seleccionar una venta, el sistema muestra los productos que la componen, con el número de lote de cada línea, en **VEN-TBL-DETALLE-VENTA**. |
+| Procedimiento | 1. El usuario presiona **VEN-BTN-LEER-VENTA**.<br>2. El sistema carga el mockup **ART-MKP-VEN-0001**.<br>3. El usuario aplica los filtros de búsqueda disponibles: fecha en **VEN-FEC-FECHA-VENTA** y producto en **VEN-CMB-PRODUCTO-VENTA**.<br>4. El usuario presiona **VEN-BTN-LEER-VENTA**.<br>5. El sistema valida los criterios ingresados.<br>6. El sistema consulta **DB_FARMASIL.TBL_REGISTRO_VENTAS**, aplicando el filtro de fecha como un intervalo semiabierto (desde el inicio del día indicado hasta el inicio del día siguiente, sin incluirlo), y, cuando el filtro incluye un medicamento, la resuelve contra **DB_FARMASIL.TBL_DETALLE_VENTAS** y **DB_FARMASIL.TBL_LOTES**.<br>7. El sistema despliega las cabeceras encontradas en **VEN-TBL-REGISTRO-VENTAS**.<br>8. Al seleccionar una venta, el sistema muestra los productos que la componen, con el número de lote de cada línea, en **VEN-TBL-DETALLE-VENTA**. |
 | Postcondición | 1. El sistema devuelve los registros correspondientes a los criterios de búsqueda aplicados en **VEN-TBL-REGISTRO-VENTAS**.<br>2. El detalle de productos de la venta seleccionada se muestra en **VEN-TBL-DETALLE-VENTA**.<br>3. Ningún dato es modificado en **DB_FARMASIL**. |
-| Código de artefactos asociados | ART-MKP-VEN-0001, ART-MKP-VEN-0002 |
+| Código de artefactos asociados | ART-MKP-VEN-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Se corrigió el estado, que decía "conluido". Se agregó la resolución del filtro por producto contra la tabla de detalle y la visualización del detalle de la venta seleccionada, coherente con la venta de varios productos introducida en ILA-0001.<br>Queda Pendiente por depender del componente **VEN-TBL-DETALLE-VENTA**. Ver Anexo.<br>**Versión 07.00:** alinea el filtro de fecha con ESP-0002 v04.00 (AUD-claude-017; DEC-037). |
+| Estado | Concluido |
+| Comentario | Se corrigió el estado, que decía "conluido". Se agregó la resolución del filtro por producto contra la tabla de detalle y la visualización del detalle de la venta seleccionada, coherente con la venta de varios productos introducida en ILA-0001.<br>**Versión 07.00:** alinea el filtro de fecha con ESP-0002 v04.00 (AUD-claude-017; DEC-037).<br>**Versión 08.00:** (issue #66; DEC-042, DEC-067) adecuación a la pantalla única **ART-MKP-VEN-0001**. C1: se cita ART-MKP-VEN-0001 en lugar de 0002 (AUD-MKP-claude-027). C2: **VEN-FEC-FECHA-VENTA** y **VEN-CMB-PRODUCTO-VENTA** quedan solo como filtros de esta consulta, y **VEN-BTN-LEER-VENTA** solo como su botón (AUD-MKP-claude-001, 002, 007). C4: la tabla de ventas registradas no aparece en el mockup y la pantalla WPF la incluye (AUD-MKP-claude-023, 024). |
 
 | Código ilación | ILA-0003 |
 | --- | --- |
 | Nombre | Actualización del registro de venta |
-| Versión | 06.00 |
-| Fecha | 08/11/2026 |
+| Versión | 08.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0001 |
@@ -52,18 +52,18 @@
 | Código educción | EDU-0001 |
 | Código especificación | ESP-0003 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_REGISTRO_VENTAS** tiene entradas válidas.<br>5. La venta seleccionada no tiene un comprobante tributario asociado en estado 'Emitido' en **DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS**.<br>6. Se carga el mockup **ART-MKP-VEN-0001**. |
-| Procedimiento | 1. El usuario selecciona un registro de venta en **VEN-TBL-REGISTRO-VENTAS**.<br>2. El usuario presiona **VEN-BTN-ACTUALIZAR-VENTA**.<br>3. El sistema verifica que la venta no tenga comprobante emitido. Si lo tiene, cancela la operación e indica que la venta debe anularse mediante ILA-0004.<br>4. El sistema carga el mockup **ART-MKP-VEN-0003** con la cabecera y el detalle actuales de la venta.<br>5. El usuario modifica el método de pago en **VEN-CMB-METODO-PAGO**, la cantidad de una línea en **VEN-NUM-CANTIDAD-VENTA**, agrega productos con **VEN-BTN-AGREGAR-PRODUCTO** (con los mismos pasos de agregar línea de ILA-0001: remesa vendible por FEFO, todas las restricciones activas, `precio_venta` vigente y acumulación de la cantidad si la remesa ya figura en la venta) o retira líneas con **VEN-BTN-QUITAR-PRODUCTO**.<br>6. El sistema recalcula el monto total y lo muestra en **VEN-LBL-MONTO-TOTAL**.<br>7. El usuario presiona **VEN-BTN-CONFIRMAR-ACTUALIZACION**.<br>8. El sistema valida las cantidades contra el `stock_actual` de la remesa correspondiente, usando la cantidad acumulada por remesa, y la vendibilidad de toda remesa cuya cantidad aumenta. Las líneas existentes conservan su `precio_unitario`.<br>9. El sistema inicia una transacción, actualiza la cabecera en **DB_FARMASIL.TBL_REGISTRO_VENTAS**, sincroniza las líneas en **DB_FARMASIL.TBL_DETALLE_VENTAS**, aplica sobre **DB_FARMASIL.TBL_LOTES** la diferencia de stock resultante entre el detalle anterior y el nuevo (las líneas quitadas restituyen su stock), actualiza el estado de cada remesa afectada con la regla única del estado de la remesa (ILA-0043, paso 8) y confirma la transacción.<br>10. El sistema actualiza **VEN-TBL-REGISTRO-VENTAS** y notifica la actualización exitosa. |
+| Procedimiento | 1. El usuario selecciona un registro de venta en **VEN-TBL-REGISTRO-VENTAS**.<br>2. El usuario presiona **VEN-BTN-ACTUALIZAR-VENTA**.<br>3. El sistema verifica que la venta no tenga comprobante emitido. Si lo tiene, cancela la operación e indica que la venta debe anularse mediante ILA-0004.<br>4. El sistema carga el mockup **ART-MKP-VEN-0001** con la cabecera y el detalle actuales de la venta.<br>5. El usuario modifica el método de pago en **VEN-CMB-METODO-PAGO**, agrega productos con **VEN-BTN-AGREGAR-PRODUCTO** (con la misma selección por catálogo y los mismos pasos de agregar línea de ILA-0001: remesa vendible por FEFO, todas las restricciones activas, `precio_venta` vigente y acumulación de la cantidad si la remesa ya figura en la venta) o retira líneas con **VEN-BTN-QUITAR-PRODUCTO**. Para corregir la cantidad de una línea, el usuario la quita y la vuelve a agregar con la cantidad correcta, con la misma validación del alta.<br>6. El sistema recalcula el monto total y lo muestra en **VEN-LBL-MONTO-TOTAL**.<br>7. El usuario presiona **VEN-BTN-CONFIRMAR-ACTUALIZACION**.<br>8. El sistema valida las cantidades contra el `stock_actual` de la remesa correspondiente, usando la cantidad acumulada por remesa, y la vendibilidad de toda remesa cuya cantidad aumenta. Las líneas existentes conservan su `precio_unitario`.<br>9. El sistema inicia una transacción, actualiza la cabecera en **DB_FARMASIL.TBL_REGISTRO_VENTAS**, sincroniza las líneas en **DB_FARMASIL.TBL_DETALLE_VENTAS**, aplica sobre **DB_FARMASIL.TBL_LOTES** la diferencia de stock resultante entre el detalle anterior y el nuevo (las líneas quitadas restituyen su stock), actualiza el estado de cada remesa afectada con la regla única del estado de la remesa (ILA-0043, paso 8) y confirma la transacción.<br>10. El sistema actualiza **VEN-TBL-REGISTRO-VENTAS** y notifica la actualización exitosa. |
 | Postcondición | 1. La cabecera y el detalle de la venta quedan actualizados de forma consistente en **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS**.<br>2. El `monto_total` refleja la suma del nuevo detalle.<br>3. El `stock_actual` de las remesas afectadas queda ajustado en **DB_FARMASIL.TBL_LOTES** por la diferencia entre el detalle anterior y el nuevo.<br>4. La información actualizada se muestra en **VEN-TBL-REGISTRO-VENTAS**.<br>5. Ninguna venta con comprobante tributario emitido resulta modificada. |
-| Código de artefactos asociados | ART-MKP-VEN-0001, ART-MKP-VEN-0003 |
+| Código de artefactos asociados | ART-MKP-VEN-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Se restauró la numeración de los pasos, que se reiniciaba a mitad del procedimiento, y se corrigieron los componentes **VEN-TXT-FECHA**, **VEN-TXT-PRODUCTO** y **VEN-CANTIDAD**, que no respetaban la nomenclatura.<br>Se agregó la restricción de no modificar ventas con comprobante tributario emitido y el ajuste diferencial de stock, ambos ausentes en la versión anterior.<br>**Versión 06.00:** alinea la ilación con ESP-0003 v04.00 (AUD-claude-005, 015; AUD-gpt-018; DEC-033, DEC-034, DEC-036). |
+| Estado | Concluido |
+| Comentario | Se restauró la numeración de los pasos, que se reiniciaba a mitad del procedimiento, y se corrigieron los componentes **VEN-TXT-FECHA**, **VEN-TXT-PRODUCTO** y **VEN-CANTIDAD**, que no respetaban la nomenclatura.<br>Se agregó la restricción de no modificar ventas con comprobante tributario emitido y el ajuste diferencial de stock, ambos ausentes en la versión anterior.<br>**Versión 06.00:** alinea la ilación con ESP-0003 v04.00 (AUD-claude-005, 015; AUD-gpt-018; DEC-033, DEC-034, DEC-036).<br>**Versión 07.00:** (issue #66; DEC-042, DEC-067) adecuación a la pantalla única **ART-MKP-VEN-0001**. C1: se cita ART-MKP-VEN-0001 en lugar de 0003 (AUD-MKP-claude-027). C4: **VEN-BTN-ACTUALIZAR-VENTA** y **VEN-BTN-CONFIRMAR-ACTUALIZACION** no aparecen en el mockup y la pantalla WPF los incluye, habilitados solo para el Administrador (DEC-050; AUD-MKP-claude-025, 033).<br>**Versión 08.00:** (issue #66; DEC-067) en el paso 5, la cantidad de una línea ya no se modifica en **VEN-NUM-CANTIDAD-VENTA**: para corregirla, el usuario quita la línea y la vuelve a agregar con la misma validación del alta, de modo que **VEN-BTN-AGREGAR-PRODUCTO** sigue siendo el único camino que valida el stock acumulado, también al actualizar una venta registrada. La ilación queda alineada con ESP-0003, que no tiene un paso para editar cantidades. La línea que se vuelve a agregar toma el `precio_venta` vigente, como cualquier línea nueva. |
 
 | Código ilación | ILA-0004 |
 | --- | --- |
 | Nombre | Eliminación del registro de venta |
-| Versión | 09.00 |
-| Fecha | 08/11/2026 |
+| Versión | 10.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0003 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0001 |
@@ -71,12 +71,12 @@
 | Código educción | EDU-0001 |
 | Código especificación | ESP-0004 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_REGISTRO_VENTAS** tiene entradas válidas.<br>5. La venta seleccionada no tiene ningún comprobante tributario asociado en **DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS**, ni 'Emitido' ni 'Anulado'.<br>6. **VEN-TBL-REGISTRO-VENTAS** está habilitada para seleccionar una entrada. |
-| Procedimiento | 1. El usuario selecciona un registro de venta en **VEN-TBL-REGISTRO-VENTAS**.<br>2. El usuario presiona **VEN-BTN-ELIMINAR-VENTA**.<br>3. El sistema verifica que la venta no tenga ningún comprobante tributario asociado. Si lo tiene, cancela la operación e indica que, si la venta requiere corrección, debe anularse el comprobante (ILA-0012) y actualizarse la venta (ILA-0003).<br>4. El sistema carga el mockup **ART-MKP-VEN-0004** y muestra el modal **VEN-MDL-CONFIRMAR-ELIMINACION** con el mensaje **VEN-TXT-MSJ**: "¿Está seguro de eliminar este registro de venta? El stock de los productos será restituido."<br>5. Si el usuario presiona **VEN-BTN-CONFIRMAR-SI**, el sistema inicia una transacción, restituye al `stock_actual` de **DB_FARMASIL.TBL_LOTES** las cantidades de cada línea y actualiza el estado de cada remesa con la regla única del estado de la remesa (una remesa 'Agotado' no vencida que recupera existencias vuelve a 'Disponible'), elimina las líneas asociadas en **DB_FARMASIL.TBL_DETALLE_VENTAS**, elimina la cabecera en **DB_FARMASIL.TBL_REGISTRO_VENTAS** y confirma la transacción.<br>6. Si el usuario presiona **VEN-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>7. El sistema actualiza **VEN-TBL-REGISTRO-VENTAS**. |
+| Procedimiento | 1. El usuario selecciona un registro de venta en **VEN-TBL-REGISTRO-VENTAS**.<br>2. El usuario presiona **VEN-BTN-ELIMINAR-VENTA**.<br>3. El sistema verifica que la venta no tenga ningún comprobante tributario asociado. Si lo tiene, cancela la operación e indica que, si la venta requiere corrección, debe anularse el comprobante (ILA-0012) y actualizarse la venta (ILA-0003).<br>4. El sistema carga el mockup **ART-MKP-VEN-0001** y muestra el modal **VEN-MDL-CONFIRMAR-ELIMINACION** con el mensaje **VEN-TXT-MSJ**: "¿Está seguro de eliminar este registro de venta? El stock de los productos será restituido."<br>5. Si el usuario presiona **VEN-BTN-CONFIRMAR-SI**, el sistema inicia una transacción, restituye al `stock_actual` de **DB_FARMASIL.TBL_LOTES** las cantidades de cada línea y actualiza el estado de cada remesa con la regla única del estado de la remesa (una remesa 'Agotado' no vencida que recupera existencias vuelve a 'Disponible'), elimina las líneas asociadas en **DB_FARMASIL.TBL_DETALLE_VENTAS**, elimina la cabecera en **DB_FARMASIL.TBL_REGISTRO_VENTAS** y confirma la transacción.<br>6. Si el usuario presiona **VEN-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>7. El sistema actualiza **VEN-TBL-REGISTRO-VENTAS**. |
 | Postcondición | 1. La cabecera de la venta y todas sus líneas de detalle quedan eliminadas de **DB_FARMASIL.TBL_REGISTRO_VENTAS** y **DB_FARMASIL.TBL_DETALLE_VENTAS**, sin dejar detalle huérfano.<br>2. El `stock_actual` de las remesas involucradas queda restituido en **DB_FARMASIL.TBL_LOTES**.<br>3. La venta deja de mostrarse en **VEN-TBL-REGISTRO-VENTAS**.<br>4. Ninguna venta con comprobante tributario asociado, emitido o anulado, resulta eliminada. |
-| Código de artefactos asociados | ART-MKP-VEN-0001, ART-MKP-VEN-0004 |
+| Código de artefactos asociados | ART-MKP-VEN-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | El procedimiento cargaba **ART-MKP-VEN-0003** mientras la fila de artefactos declaraba **ART-MKP-VEN-0004**; se corrigió a favor del mockup de eliminación.<br>Se agregó la eliminación del detalle (el detalle lo elimina la operación), que de otro modo quedaba huérfano y rompía la integridad referencial, la restitución del stock y el bloqueo de la eliminación cuando existe comprobante tributario emitido.<br>**Versión 07.00:** el bloqueo se extiende a los comprobantes 'Anulado': un documento tributario anulado debe conservarse junto con su venta. La vía de corrección es la actualización (ILA-0003).<br>**Versión 08.00:** alinea la ilación con ESP-0004 v05.00 (AUD-claude-001, 007; DEC-034).<br>**Versión 09.00:** terminología: el detalle lo elimina la operación, no el motor. |
+| Estado | Concluido |
+| Comentario | El procedimiento cargaba **ART-MKP-VEN-0003** mientras la fila de artefactos declaraba **ART-MKP-VEN-0004**; se corrigió a favor del mockup de eliminación.<br>Se agregó la eliminación del detalle (el detalle lo elimina la operación), que de otro modo quedaba huérfano y rompía la integridad referencial, la restitución del stock y el bloqueo de la eliminación cuando existe comprobante tributario emitido.<br>**Versión 07.00:** el bloqueo se extiende a los comprobantes 'Anulado': un documento tributario anulado debe conservarse junto con su venta. La vía de corrección es la actualización (ILA-0003).<br>**Versión 08.00:** alinea la ilación con ESP-0004 v05.00 (AUD-claude-001, 007; DEC-034).<br>**Versión 09.00:** terminología: el detalle lo elimina la operación, no el motor.<br>**Versión 10.00:** (issue #66; DEC-042, DEC-067) adecuación a la pantalla única **ART-MKP-VEN-0001**. C1: se cita ART-MKP-VEN-0001 en lugar de 0004 (AUD-MKP-claude-027). C2: **VEN-BTN-ELIMINAR-VENTA** queda solo para la baja de una venta registrada; el botón «Cancelar» del mockup que lo rotulaba queda fuera de alcance (C3; AUD-MKP-claude-012). C4: el botón de baja y el modal de confirmación no aparecen en el mockup y la pantalla WPF los incluye (AUD-MKP-claude-026). |
 
 ---
 
@@ -642,8 +642,8 @@
 | Código ilación | ILA-0033 |
 | --- | --- |
 | Nombre | Creación de usuario |
-| Versión | 02.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
@@ -651,69 +651,69 @@
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0033 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. Se carga el mockup **ART-MKP-USR-0001**.<br>5. Los campos **USR-TXT-NOMBRE-USUARIO**, **USR-PWD-CONTRASENA**, **USR-CMB-ROL** y **USR-CMB-ESTADO-USUARIO** se encuentran habilitados.<br>6. El botón **USR-BTN-CREAR-USUARIO** se encuentra habilitado. |
-| Procedimiento | 1. La dueña accede al módulo de gestión de usuarios.<br>2. La dueña ingresa el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**.<br>3. La dueña ingresa la contraseña en **USR-PWD-CONTRASENA**, cuyo contenido se muestra enmascarado.<br>4. La dueña selecciona el rol en **USR-CMB-ROL**, con los valores 'Administrador' o 'Tecnico'.<br>5. La dueña selecciona el estado inicial de la cuenta en **USR-CMB-ESTADO-USUARIO**.<br>6. La dueña presiona **USR-BTN-CREAR-USUARIO**.<br>7. El sistema valida que el nombre de usuario no esté vacío y que no exista otra cuenta con el mismo nombre, dado que `nombre_usuario` es único.<br>8. El sistema transforma la contraseña en un hash con sal antes de persistirla, conforme a la condición 5 de RNF-0006.<br>9. El sistema registra la cuenta en **DB_FARMASIL.TBL_USUARIOS**.<br>10. El sistema actualiza **USR-TBL-USUARIOS**. |
+| Procedimiento | 1. La dueña accede al módulo de gestión de usuarios.<br>2. La dueña ingresa el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**.<br>3. La dueña ingresa la contraseña en **USR-PWD-CONTRASENA**, cuyo contenido se muestra enmascarado.<br>4. La dueña selecciona el rol en **USR-CMB-ROL**, con los valores 'Administrador' o 'Tecnico'.<br>5. La dueña selecciona el estado inicial de la cuenta en **USR-CMB-ESTADO-USUARIO**.<br>6. La dueña presiona **USR-BTN-CREAR-USUARIO**.<br>7. El sistema valida que el nombre de usuario no esté vacío y que no exista otra cuenta con el mismo nombre, dado que `nombre_usuario` es único.<br>8. El sistema transforma la contraseña en un hash con sal antes de persistirla, conforme a la condición 5 de RNF-0006.<br>9. El sistema registra la cuenta en **DB_FARMASIL.TBL_USUARIOS**.<br>10. El sistema actualiza **USR-PNL-CUENTAS** y **USR-TBL-USUARIOS**. |
 | Postcondición | 1. La cuenta queda registrada en **DB_FARMASIL.TBL_USUARIOS** con la contraseña almacenada como hash con sal, nunca en texto plano ni con cifrado reversible.<br>2. La cuenta aparece en **USR-TBL-USUARIOS** sin exponer la contraseña en ninguna columna.<br>3. Si su estado es 'Activo', la cuenta queda habilitada para iniciar sesión según la condición 1 de RNF-0006 y para ser registrada como responsable de una venta o de una orden de devolución. |
 | Código de artefactos asociados | ART-MKP-USR-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Módulo nuevo, derivado de la confirmación de la dueña de que requiere saber qué personal realiza cada venta.<br>La tabla **TBL_USUARIOS** ya existe en el Diccionario de Datos y es referenciada desde **TBL_ORDENES_DEVOLUCION**, pero ninguna ilación alimentaba su contenido: las cuentas existían en el modelo sin ningún procedimiento que las creara.<br>Queda Pendiente porque requiere el mockup **ART-MKP-USR-0001**, que aún no ha sido diseñado. Ver Anexo.<br>**Versión 02.00:** se precisa el mecanismo de protección de la contraseña (hash con sal, RNF-0006 v05.00). |
+| Estado | Concluido |
+| Comentario | Módulo nuevo, derivado de la confirmación de la dueña de que requiere saber qué personal realiza cada venta.<br>La tabla **TBL_USUARIOS** ya existe en el Diccionario de Datos y es referenciada desde **TBL_ORDENES_DEVOLUCION**, pero ninguna ilación alimentaba su contenido: las cuentas existían en el modelo sin ningún procedimiento que las creara.<br>**Versión 02.00:** se precisa el mecanismo de protección de la contraseña (hash con sal, RNF-0006 v05.00).<br>**Versión 03.00:** (issue #66; DEC-042, DEC-068) adecuación a la pantalla única **ART-MKP-USR-0001**. C2: **USR-TXT-NOMBRE-USUARIO** y **USR-CMB-ROL** identifican solo los campos de la ficha; la búsqueda y el filtro de la consulta tienen identificadores propios (ILA-0034; AUD-MKP-claude-105). |
 
 | Código ilación | ILA-0034 |
 | --- | --- |
 | Nombre | Consulta de usuarios |
-| Versión | 01.00 |
-| Fecha | 05/09/2026 |
+| Versión | 02.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
 | Experto | Ninguno |
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0034 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-USR-0002**. |
-| Procedimiento | 1. La dueña accede al módulo de gestión de usuarios.<br>2. La dueña ingresa el nombre de usuario a buscar en **USR-TXT-NOMBRE-USUARIO** o filtra por rol en **USR-CMB-ROL**.<br>3. La dueña presiona **USR-BTN-LEER-USUARIO**.<br>4. El sistema consulta **DB_FARMASIL.TBL_USUARIOS**.<br>5. El sistema muestra en **USR-TBL-USUARIOS** el identificador, el nombre de usuario, el rol y el estado de cada cuenta encontrada. |
-| Postcondición | 1. Las cuentas consultadas se visualizan en **USR-TBL-USUARIOS**.<br>2. El campo de contraseña no se muestra ni se devuelve en ningún resultado de la consulta.<br>3. No se modifica ninguna información en **DB_FARMASIL.TBL_USUARIOS**. |
-| Código de artefactos asociados | ART-MKP-USR-0002 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-USR-0001**. |
+| Procedimiento | 1. La dueña accede al módulo de gestión de usuarios.<br>2. La dueña ingresa el nombre de usuario a buscar en **USR-SRH-USUARIO** o filtra por rol en **USR-CMB-FILTRO-ROL**.<br>3. La dueña presiona **USR-BTN-LEER-USUARIO**.<br>4. El sistema consulta **DB_FARMASIL.TBL_USUARIOS**.<br>5. El sistema muestra el nombre de usuario, el rol y el estado de cada cuenta encontrada en **USR-PNL-CUENTAS**, con una tarjeta **USR-CRD-USUARIO** por cuenta, y en **USR-TBL-USUARIOS**. El identificador no se muestra: se conserva como clave de selección (DEC-068). |
+| Postcondición | 1. Las cuentas consultadas se visualizan en **USR-PNL-CUENTAS** y en **USR-TBL-USUARIOS**.<br>2. El campo de contraseña no se muestra ni se devuelve en ningún resultado de la consulta.<br>3. No se modifica ninguna información en **DB_FARMASIL.TBL_USUARIOS**. |
+| Código de artefactos asociados | ART-MKP-USR-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | La exclusión explícita de la contraseña en el resultado de la consulta responde al atributo de seguridad declarado en RNF-0006.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0002**. |
+| Estado | Concluido |
+| Comentario | La exclusión explícita de la contraseña en el resultado de la consulta responde al atributo de seguridad declarado en RNF-0006.<br>**Versión 02.00:** (issue #66; DEC-042, DEC-068) adecuación a la pantalla única **ART-MKP-USR-0001**. C1: se cita ART-MKP-USR-0001 en lugar de 0002 (AUD-MKP-claude-110). C2: la búsqueda es **USR-SRH-USUARIO** y el filtro es **USR-CMB-FILTRO-ROL**, separados de la ficha; la lista de tarjetas usa **USR-PNL-CUENTAS** y **USR-CRD-USUARIO**, y **USR-TBL-USUARIOS** identifica solo la tabla (AUD-MKP-claude-105). Por DEC-068, y no por C4, el identificador deja de mostrarse y la clave visible es el nombre de usuario (AUD-MKP-claude-108). |
 
 | Código ilación | ILA-0035 |
 | --- | --- |
 | Nombre | Actualización de usuario |
-| Versión | 02.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
 | Experto | Ninguno |
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0035 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-USR-0003**. |
-| Procedimiento | 1. La dueña selecciona una cuenta en **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ACTUALIZAR-USUARIO**.<br>3. El sistema carga el mockup **ART-MKP-USR-0003** con la información vigente de la cuenta, dejando **USR-PWD-CONTRASENA** en blanco.<br>4. La dueña modifica el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**, el rol en **USR-CMB-ROL** o el estado en **USR-CMB-ESTADO-USUARIO**. Si desea restablecer la contraseña, ingresa una nueva en **USR-PWD-CONTRASENA**; si deja el campo en blanco, la contraseña vigente se conserva.<br>5. La dueña presiona **USR-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo nombre de usuario no colisione con otra cuenta.<br>7. El sistema verifica que la operación no deje al sistema sin ninguna cuenta activa con rol 'Administrador'.<br>8. El sistema actualiza el registro en **DB_FARMASIL.TBL_USUARIOS**, guardando el hash con sal de la contraseña si fue modificada.<br>9. El sistema actualiza **USR-TBL-USUARIOS**. |
-| Postcondición | 1. La cuenta queda actualizada en **DB_FARMASIL.TBL_USUARIOS**.<br>2. El identificador de la cuenta permanece inalterado, preservando las referencias desde **TBL_ORDENES_DEVOLUCION** y desde el histórico de ventas.<br>3. Siempre existe al menos una cuenta activa con rol de administrador.<br>4. Los cambios se reflejan en **USR-TBL-USUARIOS**. |
-| Código de artefactos asociados | ART-MKP-USR-0003 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-USR-0001**. |
+| Procedimiento | 1. La dueña selecciona una cuenta con un clic en su tarjeta **USR-CRD-USUARIO** o en una fila de **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ACTUALIZAR-USUARIO**.<br>3. El sistema carga en la ficha de **ART-MKP-USR-0001** la información vigente de la cuenta, dejando **USR-PWD-CONTRASENA** en blanco.<br>4. La dueña modifica el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**, el rol en **USR-CMB-ROL** o el estado en **USR-CMB-ESTADO-USUARIO**. Si desea restablecer la contraseña, ingresa una nueva en **USR-PWD-CONTRASENA**; si deja el campo en blanco, la contraseña vigente se conserva.<br>5. La dueña presiona **USR-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo nombre de usuario no colisione con otra cuenta.<br>7. El sistema verifica que la operación no deje al sistema sin ninguna cuenta activa con rol 'Administrador'.<br>8. El sistema actualiza el registro en **DB_FARMASIL.TBL_USUARIOS**, guardando el hash con sal de la contraseña si fue modificada.<br>9. El sistema actualiza **USR-PNL-CUENTAS** y **USR-TBL-USUARIOS**. |
+| Postcondición | 1. La cuenta queda actualizada en **DB_FARMASIL.TBL_USUARIOS**.<br>2. El identificador de la cuenta permanece inalterado, preservando las referencias desde **TBL_ORDENES_DEVOLUCION** y desde el histórico de ventas.<br>3. Siempre existe al menos una cuenta activa con rol de administrador.<br>4. Los cambios se reflejan en **USR-PNL-CUENTAS** y en **USR-TBL-USUARIOS**. |
+| Código de artefactos asociados | ART-MKP-USR-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | La validación del paso 7 evita el bloqueo total del sistema: si la única cuenta administradora se degrada a técnico o se desactiva, nadie podría volver a administrar usuarios.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0003**.<br>**Versión 02.00:** la contraseña nueva se guarda como hash con sal (RNF-0006 v05.00). |
+| Estado | Concluido |
+| Comentario | La validación del paso 7 evita el bloqueo total del sistema: si la única cuenta administradora se degrada a técnico o se desactiva, nadie podría volver a administrar usuarios.<br>**Versión 02.00:** la contraseña nueva se guarda como hash con sal (RNF-0006 v05.00).<br>**Versión 03.00:** (issue #66; DEC-042, DEC-068) adecuación a la pantalla única **ART-MKP-USR-0001**. C1: se cita ART-MKP-USR-0001 en lugar de 0003 (AUD-MKP-claude-110). La cuenta se selecciona con un clic en su tarjeta o en una fila (DEC-062). En la ficha de una cuenta existente la contraseña se muestra vacía (AUD-MKP-claude-106). C4: **USR-BTN-CONFIRMAR-ACTUALIZACION**, con el rótulo «Guardar cambios», no aparece en el mockup y la pantalla WPF lo incluye (DEC-046; AUD-MKP-claude-109). |
 
 | Código ilación | ILA-0036 |
 | --- | --- |
 | Nombre | Desactivación de usuario |
-| Versión | 03.00 |
-| Fecha | 08/11/2026 |
+| Versión | 04.00 |
+| Fecha | 13/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
 | Experto | Ninguno |
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0036 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. La cuenta seleccionada no es la cuenta con la que se encuentra abierta la sesión actual.<br>6. Se carga el mockup **ART-MKP-USR-0004**. |
-| Procedimiento | 1. La dueña selecciona una cuenta en **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ELIMINAR-USUARIO**.<br>3. El sistema muestra el modal **USR-MDL-CONFIRMAR-ELIMINACION** con el mensaje **USR-TXT-MSJ**: "¿Está seguro de dar de baja esta cuenta? El histórico de operaciones que registró se conservará."<br>4. Al confirmar, el sistema intenta eliminar físicamente el registro; si la base de datos lo rechaza porque otro registro lo referencia, aplica en su lugar la baja lógica.<br>5. Si la dueña presiona **USR-BTN-CONFIRMAR-SI** y la cuenta no tiene operaciones asociadas, el sistema elimina el registro de **DB_FARMASIL.TBL_USUARIOS**.<br>6. Si la dueña presiona **USR-BTN-CONFIRMAR-SI** y la cuenta sí tiene operaciones asociadas, el sistema actualiza su `estado` a 'Inactivo', conservando el registro.<br>7. Si la dueña presiona **USR-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>8. El sistema actualiza **USR-TBL-USUARIOS**. |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. La cuenta seleccionada no es la cuenta con la que se encuentra abierta la sesión actual.<br>6. Se carga el mockup **ART-MKP-USR-0001**. |
+| Procedimiento | 1. La dueña selecciona una cuenta con un clic en su tarjeta **USR-CRD-USUARIO** o en una fila de **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ELIMINAR-USUARIO**.<br>3. El sistema muestra el modal **USR-MDL-CONFIRMAR-ELIMINACION** con el mensaje **USR-TXT-MSJ**: "¿Está seguro de dar de baja esta cuenta? El histórico de operaciones que registró se conservará."<br>4. Al confirmar, el sistema intenta eliminar físicamente el registro; si la base de datos lo rechaza porque otro registro lo referencia, aplica en su lugar la baja lógica.<br>5. Si la dueña presiona **USR-BTN-CONFIRMAR-SI** y la cuenta no tiene operaciones asociadas, el sistema elimina el registro de **DB_FARMASIL.TBL_USUARIOS**.<br>6. Si la dueña presiona **USR-BTN-CONFIRMAR-SI** y la cuenta sí tiene operaciones asociadas, el sistema actualiza su `estado` a 'Inactivo', conservando el registro.<br>7. Si la dueña presiona **USR-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>8. El sistema actualiza **USR-PNL-CUENTAS** y **USR-TBL-USUARIOS**. |
 | Postcondición | 1. La cuenta sin operaciones asociadas queda eliminada de **DB_FARMASIL.TBL_USUARIOS**.<br>2. La cuenta con operaciones asociadas queda en estado 'Inactivo' y conserva la trazabilidad de las ventas y devoluciones que registró.<br>3. En ambos casos la cuenta deja de poder iniciar sesión.<br>4. La sesión activa nunca resulta desactivada a sí misma.<br>5. No se produce ninguna violación de integridad referencial. |
-| Código de artefactos asociados | ART-MKP-USR-0004 |
+| Código de artefactos asociados | ART-MKP-USR-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | La baja lógica es obligatoria aquí: eliminar físicamente una cuenta que registró ventas o devoluciones destruiría precisamente la verificación de identidad que la dueña solicitó.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-USR-0004**.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011). El rechazo del inicio de sesión de una cuenta inactiva lo establece la condición 1 de RNF-0006.<br>**Versión 03.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
+| Estado | Concluido |
+| Comentario | La baja lógica es obligatoria aquí: eliminar físicamente una cuenta que registró ventas o devoluciones destruiría precisamente la verificación de identidad que la dueña solicitó.<br>**Versión 02.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011). El rechazo del inicio de sesión de una cuenta inactiva lo establece la condición 1 de RNF-0006.<br>**Versión 03.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022.<br>**Versión 04.00:** (issue #66; DEC-042, DEC-068) adecuación a la pantalla única **ART-MKP-USR-0001**. C1: se cita ART-MKP-USR-0001 en lugar de 0004 (AUD-MKP-claude-110). La cuenta se selecciona con un clic en su tarjeta o en una fila (DEC-062). C4: el modal de confirmación no aparece en el mockup y la pantalla WPF lo incluye con el texto de esta ilación. |
 
 ---
 
@@ -818,10 +818,10 @@
 
 | Mockup | Componentes nuevos | Motivo |
 | --- | --- | --- |
-| `ART-MKP-VEN-0001`, `ART-MKP-VEN-0003` | **VEN-BTN-AGREGAR-PRODUCTO**, **VEN-BTN-QUITAR-PRODUCTO**, **VEN-TBL-DETALLE-VENTA**, **VEN-LBL-MONTO-TOTAL** | Venta de varios productos en una misma transacción. |
-| `ART-MKP-VEN-0001`, `ART-MKP-VEN-0003` | **VEN-CMB-LOTE-VENTA** | Selección de la remesa de la que se descuenta, según el criterio FEFO. |
+| `ART-MKP-VEN-0001`, `ART-MKP-VEN-0003` | **VEN-BTN-AGREGAR-PRODUCTO**, **VEN-BTN-QUITAR-PRODUCTO**, **VEN-TBL-DETALLE-VENTA**, **VEN-LBL-MONTO-TOTAL** | Atendido: pantalla única publicada y catálogo adecuado en los issues #65 y #66 (DEC-066, DEC-067). Venta de varios productos en una misma transacción. |
+| `ART-MKP-VEN-0001`, `ART-MKP-VEN-0003` | **VEN-CMB-LOTE-VENTA** | Atendido: pantalla única publicada y catálogo adecuado en los issues #65 y #66 (DEC-066, DEC-067). Selección de la remesa de la que se descuenta, según el criterio FEFO. |
 | `ART-MKP-DEV-0001`, `ART-MKP-DEV-0003` | Tabla de detalle de la orden de devolución | Varios medicamentos por orden. |
-| `ART-MKP-USR-0001` a `ART-MKP-USR-0004` | Módulo completo, prefijo **USR** | Mockups aún no diseñados. Gestión de usuarios (EDU-0013). |
+| `ART-MKP-USR-0001` a `ART-MKP-USR-0004` | Módulo completo, prefijo **USR** | Atendido: pantalla única publicada y catálogo adecuado en el issue #66 (DEC-042, DEC-068). Gestión de usuarios (EDU-0013). |
 | `ART-MKP-PRV-0001` | Módulo completo, prefijo **PRV** | Atendido: pantalla única publicada y catálogo adecuado en el issue #81 (DEC-042). Gestión de proveedores (EDU-0014). |
 | `ART-MKP-REA-0001` a `ART-MKP-REA-0004` | Módulo completo, prefijo **REA** | Mockups aún no diseñados. Gestión de reabastecimiento (EDU-0016). |
 | `ART-MKP-COT-0001` a `ART-MKP-COT-0004` | Módulo completo, prefijo **COT** | Mockups aún no diseñados. Gestión de comparación de precios de proveedores (EDU-0017). |
