@@ -1,4 +1,8 @@
+using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Modelo.INV;
+using FarmasilApp.Pruebas.INV;
 using FarmasilApp.VistaModelo.Comun;
+using FarmasilApp.VistaModelo.INV;
 using FarmasilApp.VistaModelo.Principal;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,6 +13,8 @@ public class RegistroDependenciasPruebas
     private static ServiceProvider CrearProveedor()
     {
         var servicios = new ServiceCollection();
+        servicios.AgregarModelo();
+        servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
         servicios.AgregarVistaModelo();
         return servicios.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
     }
@@ -21,6 +27,7 @@ public class RegistroDependenciasPruebas
         Assert.NotNull(proveedor.GetRequiredService<MainViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<INavegacionServicio>());
         Assert.NotNull(proveedor.GetRequiredService<InicioViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<InventarioViewModel>());
     }
 
     [Fact]

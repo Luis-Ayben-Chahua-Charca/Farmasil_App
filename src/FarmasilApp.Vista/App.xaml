@@ -4,6 +4,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Comun/Estilos.xaml" />
                 <ResourceDictionary Source="Comun/Plantillas.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
