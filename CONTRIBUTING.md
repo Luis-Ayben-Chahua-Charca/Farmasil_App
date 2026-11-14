@@ -135,6 +135,25 @@ Tu primer issue de código es la consulta de tu módulo. Sigue estos pasos, que 
 
 Dentro de cada proyecto, el código va en la carpeta de su módulo (plan, sección 2). Si la carpeta no existe, créala: el esqueleto solo trae `Comun`, `Principal` y `Seguridad`, porque git no guarda carpetas vacías.
 
+## Pruebas
+
+- **Ubicación:** Cada prueba debe ubicarse estrictamente en la carpeta `tests/FarmasilApp.Pruebas/<Modulo>/`.
+- **Nombres de las pruebas:** El nombre del método describe con precisión lo que se comprueba, en prosa, sin guiones bajos (`_`), y la clase de prueba debe llamarse `XxxPruebas`. Ejemplos reales de `main`:
+  - `LosProveedoresDelFiltroSeMuestranPorRazonSocial` (en `INV/InventarioServicioPruebas.cs`)
+  - `SinCondicionElComandoSiempreSePuedeEjecutar` (en `VistaModelo/RelayCommandPruebas.cs`)
+- **Trazabilidad:** Cada método de prueba automatizado debe incluir dos atributos `[Trait]`, indicando el código de la especificación y la técnica descrita en `pruebas de software/09-pruebas-software.md`:
+  ```csharp
+  [Fact]
+  [Trait("Especificacion", "ESP-0006")]
+  [Trait("Tecnica", "T-001")]
+  public void NombreDeLaPruebaEnProsa()
+  {
+      // ...
+  }
+  ```
+- **Alcance de la regla:** Se aplica a partir de los módulos siguientes (como Módulo 9). **No se deben agregar estos atributos a las 185 pruebas preexistentes** en este PR para evitar refactorizaciones innecesarias.
+- **Pruebas de integración:** Las pruebas contra la base de datos `DB_FARMASIL_PRUEBAS` no corresponden a este issue; están programadas para la iteración S4 (sección 11 del plan).
+
 ## Checklist rápido
 
 1. `git checkout main && git pull`

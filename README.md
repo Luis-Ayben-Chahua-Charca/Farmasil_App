@@ -97,8 +97,21 @@ Las contraseñas se almacenan en `TBL_USUARIOS` como hashes PBKDF2-SHA256 con sa
 
 ### Pruebas Automatizadas
 
-En la carpeta donde se ubica el archivo de solución "FarmasilApp.slnx" ejecutar:
+La solución cuenta con un proyecto de pruebas oficial ubicado en `tests/FarmasilApp.Pruebas`. Para ejecutar toda la suite de pruebas automatizadas, ejecute el siguiente comando desde la raíz del repositorio (donde se ubica `FarmasilApp.slnx`):
 
 ```bash
 dotnet test
+```
+
+### Filtrado de pruebas
+Una vez que las pruebas incorporen las etiquetas de trazabilidad (según los lineamientos de CONTRIBUTING.md §8), podrá ejecutar pruebas específicas mediante filtros de CLI:
+
+Por especificación: 
+```bash
+dotnet test --filter Especificacion=ESP-0033
+```
+
+Por nombre o clase:
+```bash
+dotnet test --filter "FullyQualifiedName~InventarioServicioPruebas"
 ```
