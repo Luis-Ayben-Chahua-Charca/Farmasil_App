@@ -8,6 +8,8 @@ public class ProveedoresServicioPruebas
         new(repositorio);
 
     [Fact]
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-002")]
     public void ConsultarNormalizaLosCriteriosAntesDeLlamarAlRepositorio()
     {
         var repositorio = new RepositorioDeProveedoresFalso();
@@ -21,6 +23,8 @@ public class ProveedoresServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-002")]
     public void ConsultarConBusquedaVaciaLaPasaComoNulo()
     {
         var repositorio = new RepositorioDeProveedoresFalso();
@@ -34,6 +38,8 @@ public class ProveedoresServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-002")]
     public void ConsultarConEstadoVacioLoPasaComoNulo()
     {
         var repositorio = new RepositorioDeProveedoresFalso();
@@ -46,6 +52,8 @@ public class ProveedoresServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-001")]
     public void ConsultarSinCriteriosListaTodos()
     {
         var repositorio = new RepositorioDeProveedoresFalso();
@@ -69,68 +77,31 @@ public class ProveedoresServicioPruebas
         Assert.Null(consulta.Value.Estado);
     }
 
-    [Fact]
-    public void ConsultarPorRucExactoPasaElCriterioAlRepositorio()
+    [Theory]
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-001")]
+    [InlineData("20100070970", null, "20100070970", null)]
+    [InlineData("Andina", null, "Andina", null)]
+    [InlineData(null, "Activo", null, "Activo")]
+    [InlineData(null, "Inactivo", null, "Inactivo")]
+    [InlineData("Salud", "Activo", "Salud", "Activo")]
+    public void ConsultarPasaElCriterioAlRepositorio(
+        string? busqueda, string? estado,
+        string? busquedaEsperada, string? estadoEsperado)
     {
         var repositorio = new RepositorioDeProveedoresFalso();
 
-        Servicio(repositorio).Consultar("20100070970", null);
+        Servicio(repositorio).Consultar(busqueda, estado);
 
         var consulta = repositorio.UltimaConsulta;
         Assert.NotNull(consulta);
-        Assert.Equal("20100070970", consulta.Value.Busqueda);
+        Assert.Equal(busquedaEsperada, consulta.Value.Busqueda);
+        Assert.Equal(estadoEsperado, consulta.Value.Estado);
     }
 
     [Fact]
-    public void ConsultarPorRazonSocialParcialPasaElCriterioAlRepositorio()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Servicio(repositorio).Consultar("Andina", null);
-
-        var consulta = repositorio.UltimaConsulta;
-        Assert.NotNull(consulta);
-        Assert.Equal("Andina", consulta.Value.Busqueda);
-    }
-
-    [Fact]
-    public void ConsultarPorEstadoActivoPasaElFiltroAlRepositorio()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Servicio(repositorio).Consultar(null, "Activo");
-
-        var consulta = repositorio.UltimaConsulta;
-        Assert.NotNull(consulta);
-        Assert.Equal("Activo", consulta.Value.Estado);
-    }
-
-    [Fact]
-    public void ConsultarPorEstadoInactivoPasaElFiltroAlRepositorio()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Servicio(repositorio).Consultar(null, "Inactivo");
-
-        var consulta = repositorio.UltimaConsulta;
-        Assert.NotNull(consulta);
-        Assert.Equal("Inactivo", consulta.Value.Estado);
-    }
-
-    [Fact]
-    public void ConsultarCombinandoBusquedaYEstadoPasaAmbosCriterios()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Servicio(repositorio).Consultar("Salud", "Activo");
-
-        var consulta = repositorio.UltimaConsulta;
-        Assert.NotNull(consulta);
-        Assert.Equal("Salud", consulta.Value.Busqueda);
-        Assert.Equal("Activo", consulta.Value.Estado);
-    }
-
-    [Fact]
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-001")]
     public void ConsultarSinResultadosDevuelveListaVacia()
     {
         var repositorio = new RepositorioDeProveedoresFalso();
@@ -141,6 +112,8 @@ public class ProveedoresServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-002")]
     public void ConsultarDevuelveProveedorConTelefonoNulo()
     {
         var repositorio = new RepositorioDeProveedoresFalso();
@@ -161,6 +134,22 @@ public class ProveedoresServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-001")]
+    public void ConsultarConEstadoInvalidoLanzaArgumentException()
+    {
+        var repositorio = new RepositorioDeProveedoresFalso();
+
+        var excepcion = Assert.Throws<ArgumentException>(
+            () => Servicio(repositorio).Consultar(null, "Suspendido"));
+
+        Assert.Equal("estado", excepcion.ParamName);
+        Assert.Null(repositorio.UltimaConsulta);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-002")]
     public void ElRepositorioEsObligatorio()
     {
         Assert.Throws<ArgumentNullException>(() => new ProveedoresServicio(null!));
