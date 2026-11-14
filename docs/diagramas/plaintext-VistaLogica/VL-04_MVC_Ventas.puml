@@ -20,14 +20,19 @@ hide empty members
 package "Vista" <<layer>> #FAFAFA {
   class VentaView <<view, XAML>> {
     VEN-LBL-FECHA-VENTA
-    VEN-CMB-PRODUCTO-VENTA
+    VEN-SRH-PRODUCTO
+    VEN-CMB-FILTRO-ACCION-TERAPEUTICA
+    VEN-PNL-CATALOGO
+    VEN-BTN-SELECCIONAR-PRODUCTO
     VEN-CMB-LOTE-VENTA
+    VEN-LBL-FECHA-VENCIMIENTO
     VEN-NUM-CANTIDAD-VENTA
     VEN-BTN-AGREGAR-PRODUCTO
     VEN-BTN-QUITAR-PRODUCTO
     VEN-TBL-DETALLE-VENTA
     VEN-CMB-METODO-PAGO
     VEN-LBL-MONTO-TOTAL
+    VEN-LBL-ADVERTENCIAS
     VEN-BTN-CREAR-VENTA
   }
 }
@@ -77,12 +82,14 @@ package "Modelo" <<layer>> #FAFAFA {
     interface ILotes <<provista>> {
       + medicamentosVendibles() : IList<MedicamentoVendibleDto>
       + sugerirFEFO(idProducto : int) : IList<RemesaVendibleDto>
+      + datosRemesas(idsLote : IList<int>) : IList<DatosRemesaDto>
       + descontar(idLote : int, cantidad : int) : void
+      + restituir(idLote : int, cantidad : int) : void
     }
   }
   package "RestriccionesVenta (RES)" {
     interface IRestricciones <<provista>> {
-      + restriccionActiva(idProducto : int) : RestriccionDto [0..1]
+      + restriccionesActivas(idProducto : int) : IList<RestriccionDto>
     }
   }
   package "MetodosPago (PAG)" {
@@ -92,7 +99,7 @@ package "Modelo" <<layer>> #FAFAFA {
   }
   package "Seguridad (transversal)" {
     interface ISesion {
-      + UsuarioActual : Usuario
+      + UsuarioActual : SesionUsuario
       + exigirRol(rol : Rol) : void
     }
   }
@@ -147,5 +154,7 @@ note bottom of VentaServicio
   (PAG, RES, LOT). El precio y el nombre del medicamento llegan en
   RemesaVendibleDto a través de ILotes (LOT → INV), sin dependencia
   directa Ventas → Inventario.
+  ISesion entrega un SesionUsuario (IdUsuario, NombreUsuario, Rol), sin
+  el hash de la contraseña. ILotes completa: matriz de interfaces, 5 bis.
 end note
 @enduml
