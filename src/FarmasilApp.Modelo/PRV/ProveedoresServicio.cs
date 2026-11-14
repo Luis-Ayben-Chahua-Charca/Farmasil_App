@@ -17,9 +17,18 @@ public sealed class ProveedoresServicio
         string? busqueda,
         string? estado)
     {
-        return _repositorio.Consultar(
-            Normalizar(busqueda),
-            Normalizar(estado));
+        var busquedaNormalizada = Normalizar(busqueda);
+        var estadoNormalizado = Normalizar(estado);
+
+        if (estadoNormalizado is not null
+            && estadoNormalizado != "Activo"
+            && estadoNormalizado != "Inactivo")
+        {
+            throw new ArgumentException(
+                "El estado debe ser Activo o Inactivo.", nameof(estado));
+        }
+
+        return _repositorio.Consultar(busquedaNormalizada, estadoNormalizado);
     }
 
     private static string? Normalizar(string? valor)

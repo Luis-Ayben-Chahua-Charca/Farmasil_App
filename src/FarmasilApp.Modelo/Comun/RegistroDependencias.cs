@@ -24,7 +24,7 @@ public static class RegistroDependencias
     public static IServiceCollection AgregarModelo(this IServiceCollection servicios)
     {
         servicios.AddTransient<InventarioServicio>();
-        servicios.AddTransient<FarmasilApp.Modelo.PRV.ProveedoresServicio>();
+        servicios.AddTransient<ProveedoresServicio>();
 
         // Contratos entre módulos (DEC-069): una línea por interfaz. Cuando el módulo dueño esté listo,
         // se cambia solo la implementación de su línea por la real; las simuladas no tienen estado.
