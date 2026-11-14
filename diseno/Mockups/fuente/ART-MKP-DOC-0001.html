@@ -1,380 +1,434 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>ART-MKP-DOC-0002 - Documentación Tributaria (v002)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ART-MKP-DOC-0001 - Documentación Tributaria</title>
   <style>
-    * { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    body { background-color: #f0f2f5; color: #333; padding: 20px; }
-    .element-wrapper { display: flex; flex-direction: column; margin-bottom: 10px; width: 100%; }
-    .ui-tag { font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: bold; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 2px 5px; border-radius: 3px; margin-top: 3px; display: inline-block; width: fit-content; }
-    .ui-tag-btn { font-family: 'Courier New', Courier, monospace; font-size: 10px; font-weight: bold; background: #cce5ff; color: #004085; border: 1px solid #b8daff; padding: 2px 5px; border-radius: 3px; margin-top: 3px; text-align: center; }
-    header { display: flex; gap: 15px; background-color: #0d6efd; padding: 15px; border-radius: 6px; color: white; align-items: flex-start; margin-bottom: 20px; }
-    .layout { display: grid; grid-template-columns: 320px 1fr 360px; gap: 20px; }
-    .panel { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .sales-list { max-height: 500px; overflow-y: auto; padding-right: 5px; }
-    .sale-img { width: 60px; height: 60px; background: #e8f5e9; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #2e7d32; border: 1px dashed #81c784; flex-shrink: 0; }
-    input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
-    button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .card { border: 1px solid #ddd; padding: 10px; border-radius: 4px; background: #fafafa; margin-bottom: 10px; display: flex; gap: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
-    table th, table td { border: 1px solid #ddd; padding: 6px; text-align: left; }
-    table th { background: #f8f9fa; }
-    .monto-box { background: #e8f5e9; border: 1px solid #2e7d32; padding: 10px; border-radius: 4px; margin-top: 10px; }
-    .btn-actions { display: flex; gap: 10px; margin-top: 15px; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-    .modal.show { display: flex; }
-    #DOC-MDL-PREVISUALIZAR-COMPROBANTE { z-index: 10; }
-    #DOC-MDL-PREVISUALIZAR-COMPROBANTE .modal-content { width: 720px; max-height: 92vh; overflow-y: auto; text-align: left; padding: 0; border-radius: 12px; }
-    .doc-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; background: linear-gradient(135deg, #0d6efd, #6610f2); color: white; border-radius: 12px 12px 0 0; }
-    .doc-modal-header h3 { font-size: 16px; }
-    .doc-preview-wrap { padding: 22px; background: #f0f2f5; }
-    .doc-paper { background: #ffffff; border: 1px solid #d0d4da; border-radius: 8px; padding: 26px 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); position: relative; font-family: 'Courier New', Courier, monospace; color: #1a1a1a; font-size: 12px; }
-    .doc-paper::before { content: "PREVISUALIZACIÓN"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-28deg); font-family: Arial, sans-serif; font-size: 72px; font-weight: 900; color: rgba(220, 53, 69, 0.08); pointer-events: none; letter-spacing: 4px; white-space: nowrap; z-index: 1; }
-    .doc-emisor { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px dashed #999; padding-bottom: 14px; margin-bottom: 14px; position: relative; z-index: 2; }
-    .doc-emisor-info h2 { font-family: Arial, sans-serif; font-size: 18px; color: #0d6efd; margin-bottom: 4px; letter-spacing: 0.5px; }
-    .doc-emisor-info p { font-size: 11px; color: #555; line-height: 1.5; }
-    .doc-tipo-badge { background: #0d6efd; color: white; padding: 10px 18px; border-radius: 8px; text-align: center; min-width: 150px; }
-    .doc-tipo-badge .tipo { font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; }
-    .doc-tipo-badge .numero { font-size: 15px; font-weight: bold; margin-top: 4px; letter-spacing: 1px; }
-    .doc-cliente-box { background: #f8f9fa; border: 1px solid #e0e3e8; border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; position: relative; z-index: 2; font-size: 11.5px; }
-    .doc-cliente-box .linea { margin: 3px 0; }
-    .doc-cliente-box .linea b { display: inline-block; min-width: 80px; color: #333; }
-    .doc-detalle { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 11.5px; position: relative; z-index: 2; }
-    .doc-detalle th { background: #0d6efd; color: white; text-align: left; padding: 7px 8px; font-family: Arial, sans-serif; font-size: 11px; border: none; }
-    .doc-detalle td { padding: 7px 8px; border-bottom: 1px solid #eee; }
-    .doc-detalle tr:nth-child(even) td { background: #fafbfc; }
-    .doc-detalle .num { text-align: right; }
-    .doc-detalle .money { text-align: right; font-family: 'Courier New', monospace; }
-    .doc-totales { display: flex; justify-content: flex-end; margin-top: 8px; position: relative; z-index: 2; }
-    .doc-totales table { width: 55%; }
-    .doc-totales td { padding: 4px 8px; font-size: 12px; border: none; }
-    .doc-totales td.label { text-align: right; color: #555; }
-    .doc-totales td.valor { text-align: right; font-family: 'Courier New', monospace; min-width: 90px; }
-    .doc-totales .total-final td { border-top: 2px solid #0d6efd; font-size: 16px; font-weight: bold; color: #0d6efd; padding-top: 8px; }
-    .doc-footer { border-top: 2px dashed #999; margin-top: 16px; padding-top: 10px; font-size: 10px; color: #666; text-align: center; line-height: 1.6; position: relative; z-index: 2; }
-    .doc-hash { font-family: 'Courier New', monospace; font-size: 9px; color: #999; word-break: break-all; margin-top: 4px; }
-    .doc-cliente-edit { background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 12px 14px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
-    .doc-cliente-edit label { font-size: 11px; font-weight: bold; color: #856404; display: block; margin-bottom: 3px; font-family: Arial, sans-serif; }
-    .doc-cliente-edit input { padding: 6px 8px; font-size: 12px; border: 1px solid #ffe082; border-radius: 4px; width: 100%; background: white; }
-    .doc-modal-actions { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; background: #f8f9fa; border-top: 1px solid #e9ecef; border-radius: 0 0 12px 12px; }
-    .doc-modal-actions .left { display: flex; gap: 10px; }
-    .doc-modal-actions .right { display: flex; gap: 10px; }
-    .doc-modal-actions button { font-size: 13px; padding: 10px 16px; }
-    .doc-warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 14px; border-radius: 4px; font-size: 11px; color: #856404; margin-bottom: 14px; font-family: Arial, sans-serif; }
-    #DOC-MDL-CONFIRMAR-EMISION { z-index: 20; }
-    #DOC-MDL-CONFIRMAR-EMISION .modal-content { width: 460px; text-align: center; padding: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
-    .confirm-header { background: linear-gradient(135deg, #dc3545, #b02a37); color: white; padding: 20px; }
-    .confirm-icon { width: 64px; height: 64px; margin: 0 auto 10px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; }
-    .confirm-header h3 { font-size: 17px; }
-    .confirm-header p { font-size: 12px; opacity: 0.9; margin-top: 4px; }
-    .confirm-body { padding: 20px 24px; }
-    .confirm-summary { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; text-align: left; font-size: 12.5px; }
-    .confirm-summary .row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #e0e3e8; }
-    .confirm-summary .row:last-child { border-bottom: none; }
-    .confirm-summary .row .k { color: #6c757d; }
-    .confirm-summary .row .v { font-weight: bold; color: #333; }
-    .confirm-summary .row.total { margin-top: 6px; padding-top: 8px; border-top: 2px solid #0d6efd; border-bottom: none; }
-    .confirm-summary .row.total .v { color: #0d6efd; font-size: 15px; }
-    .confirm-warning { background: #fff3cd; border: 1px solid #ffe082; color: #856404; border-radius: 6px; padding: 10px 14px; font-size: 11.5px; text-align: left; line-height: 1.5; margin-bottom: 16px; }
-    .confirm-warning code { background: rgba(0,0,0,0.06); padding: 1px 4px; border-radius: 3px; font-size: 11px; }
-    .confirm-actions { display: flex; gap: 10px; justify-content: center; }
-    .confirm-actions button { flex: 1; padding: 11px 16px; font-size: 13px; }
+    :root {
+      --primary:#0d6efd; --primary-dark:#084298; --success:#198754;
+      --warning:#ffc107; --danger:#dc3545; --muted:#6c757d;
+      --bg:#f0f2f5; --border:#dee2e6; --text:#212529; --white:#fff;
+    }
+    * { box-sizing:border-box; font-family:Arial,sans-serif; }
+    body { margin:0; padding:22px; background:var(--bg); color:var(--text); }
+    header {
+      display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:12px;
+      align-items:end; background:var(--primary); color:white;
+      padding:16px; border-radius:9px; margin-bottom:20px;
+    }
+    h1 { font-size:21px; margin:0 0 5px; }
+    h2 { font-size:18px; margin:0 0 13px; }
+    h3 { font-size:16px; margin:0 0 12px; }
+    p { line-height:1.45; }
+    .header-title { grid-column:1/-1; }
+    .layout { display:grid; grid-template-columns:minmax(230px, .9fr) minmax(300px,1fr) minmax(360px,1.2fr); gap:18px; }
+    .panel { min-width:0; background:white; padding:16px; border-radius:9px; box-shadow:0 2px 8px #0000000d; }
+    .field { display:flex; flex-direction:column; gap:5px; margin:11px 0; min-width:0; }
+    label { font-size:13px; font-weight:700; }
+    input,select { width:100%; min-width:0; padding:9px 10px; border:1px solid #ced4da; border-radius:5px; background:white; color:var(--text); }
+    input:focus,select:focus,button:focus { outline:2px solid #9ec5fe; outline-offset:1px; }
+    button { border:0; border-radius:5px; padding:9px 13px; cursor:pointer; font-weight:700; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    .btn-primary { background:var(--primary); color:white; }
+    .btn-success { background:var(--success); color:white; }
+    .btn-warning { background:var(--warning); color:#212529; }
+    .btn-danger { background:var(--danger); color:white; }
+    .btn-secondary { background:var(--muted); color:white; }
+    .btn-light { background:#e9ecef; color:#212529; }
+    .tag { display:inline-block; width:max-content; max-width:100%; padding:2px 5px; margin-top:2px; border:1px solid #ffe69c; border-radius:4px; background:#fff3cd; color:#664d03; font:700 10px "Courier New",monospace; overflow-wrap:anywhere; }
+    .tag-button { border-color:#9ec5fe; background:#cfe2ff; color:#084298; }
+    .sales-list { display:flex; flex-direction:column; gap:9px; max-height:520px; overflow:auto; margin-top:12px; }
+    .sale-card { display:flex; gap:10px; align-items:center; border:1px solid var(--border); border-radius:7px; padding:11px; background:#fff; }
+    .sale-card.selected { border:2px solid var(--primary); background:#f0f6ff; }
+    .sale-info { flex:1; min-width:0; }
+    .sale-info strong { color:var(--primary-dark); }
+    .sale-info small { display:block; margin-top:5px; color:var(--muted); }
+    .sale-card button { flex-shrink:0; }
+    .divider { border:0; border-top:1px solid var(--border); margin:12px 0; }
+    .readonly-box { background:#e8f5e9; border:1px solid #a3cfbb; padding:12px; border-radius:6px; margin-top:14px; }
+    .readonly-value { color:#146c43; font-size:20px; font-weight:700; margin-top:5px; }
+    .actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:12px; }
+    th,td { border:1px solid var(--border); padding:8px; text-align:left; white-space:nowrap; }
+    th { background:#f8f9fa; }
+    .status { display:inline-block; padding:4px 7px; border-radius:20px; font-size:11px; font-weight:700; }
+    .status-issued { background:#d1e7dd; color:#0f5132; }
+    .status-cancelled { background:#f8d7da; color:#842029; }
+    .empty { text-align:center; color:var(--muted); padding:18px; }
+    .notice { padding:10px 12px; background:#e7f1ff; color:#084298; border-radius:6px; font-size:12px; margin-top:12px; }
+    .modal { display:none; position:fixed; inset:0; z-index:100; padding:18px; background:#0008; align-items:center; justify-content:center; }
+    .modal.show { display:flex; }
+    .modal-content { width:min(650px,100%); max-height:92vh; overflow:auto; background:white; border-radius:10px; box-shadow:0 12px 40px #0004; }
+    .modal-header { padding:16px 20px; background:linear-gradient(135deg,var(--primary),#6610f2); color:white; border-radius:10px 10px 0 0; }
+    .modal-header h2 { margin:0; }
+    .modal-body { padding:20px; }
+    .document-preview { border:1px solid #ced4da; border-radius:7px; padding:22px; background:white; }
+    .document-preview h3 { color:var(--primary); margin-bottom:5px; }
+    .preview-meta { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
+    .preview-meta div { padding:9px; background:#f8f9fa; border:1px solid #e9ecef; border-radius:5px; font-size:13px; }
+    .preview-total { margin-top:16px; padding-top:12px; border-top:2px solid var(--primary); text-align:right; font-size:19px; font-weight:700; color:var(--primary-dark); }
+    .modal-actions { display:flex; justify-content:flex-end; gap:9px; padding:15px 20px; background:#f8f9fa; border-top:1px solid var(--border); }
+    .muted { color:var(--muted); font-size:12px; }
+    @media (max-width:1050px) { .layout { grid-template-columns:1fr 1fr; } .layout .panel:last-child { grid-column:1/-1; } }
+    @media (max-width:700px) { body { padding:12px; } header { grid-template-columns:1fr 1fr; } .header-title { grid-column:1/-1; } .layout { grid-template-columns:1fr; } .layout .panel:last-child { grid-column:auto; } .preview-meta { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
   <header>
-    <div class="element-wrapper" style="flex: 1;">
-      <select><option>-- Tipo de Comprobante --</option></select>
-      <span class="ui-tag">ComboBox: DOC-CMB-TIPO-COMPROBANTE</span>
+    <div class="header-title">
+      <h1>Documentación Tributaria</h1>
+      <div class="muted" style="color:#eaf2ff">Consulta del historial de comprobantes</div>
     </div>
-    <div class="element-wrapper" style="flex: 2;">
-      <input type="text" placeholder="Buscar por N° Comprobante...">
-      <span class="ui-tag">Campo Texto: DOC-TXT-NUMERO-COMPROBANTE</span>
+    <div class="field">
+      <label for="DOC-CMB-FILTRO-TIPO">Tipo de comprobante</label>
+      <select id="DOC-CMB-FILTRO-TIPO">
+        <option value="">Todos</option>
+        <option value="Boleta">Boleta</option>
+        <option value="Factura">Factura</option>
+      </select>
+      <span class="tag">DOC-CMB-FILTRO-TIPO</span>
     </div>
-    <div class="element-wrapper" style="width: auto;">
-      <button style="background: #198754; color: white;">Consultar</button>
-      <span class="ui-tag-btn">Botón: DOC-BTN-LEER-COMPROBANTE</span>
+    <div class="field">
+      <label for="DOC-SRH-NUMERO-COMPROBANTE">Número de comprobante</label>
+      <input id="DOC-SRH-NUMERO-COMPROBANTE" type="search" placeholder="Buscar número...">
+      <span class="tag">DOC-SRH-NUMERO-COMPROBANTE</span>
+    </div>
+    <div class="field">
+      <label for="DOC-FEC-FILTRO-EMISION">Fecha de emisión</label>
+      <input id="DOC-FEC-FILTRO-EMISION" type="date">
+      <span class="tag">DOC-FEC-FILTRO-EMISION</span>
+    </div>
+    <div class="field">
+      <button id="DOC-BTN-LEER-COMPROBANTE" class="btn-success" type="button">Consultar</button>
+      <span class="tag tag-button">DOC-BTN-LEER-COMPROBANTE</span>
     </div>
   </header>
-  <div class="layout">
-    <div class="panel">
-      <h3>Ventas Disponibles</h3>
-      <div class="element-wrapper" style="margin-top: 5px;">
-        <select><option>Filtrar Venta por Código o Fecha</option></select>
-        <span class="ui-tag">Filtro: DOC-CMB-CODIGO-VENTA</span>
+
+  <main class="layout">
+    <section class="panel" aria-labelledby="sales-heading">
+      <h2 id="sales-heading">Ventas disponibles</h2>
+      <div class="field">
+        <label for="DOC-TXT-FILTRO-VENTA">Buscar venta por código</label>
+        <input id="DOC-TXT-FILTRO-VENTA" type="search" placeholder="Ej. VEN-2026-091">
+        <span class="tag">DOC-TXT-FILTRO-VENTA</span>
       </div>
-      <hr style="margin-bottom: 10px;">
-      <div class="sales-list">
-        <div class="card">
-          <div class="sale-img">[ TICKET ]</div>
-          <div style="flex: 1;">
-            <div class="element-wrapper">
-              <h4 style="color: #0d6efd;">Venta #VEN-2026-091</h4>
-              <span class="ui-tag">DOC-CMB-CODIGO-VENTA</span>
-            </div>
-            <div class="element-wrapper">
-              <p style="font-weight: bold; font-size: 12px;">Monto: S/ 45.50</p>
-              <span class="ui-tag">DOC-LBL-MONTO-TOTAL</span>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="sale-img">[ TICKET ]</div>
-          <div style="flex: 1;">
-            <div class="element-wrapper">
-              <h4 style="color: #0d6efd;">Venta #VEN-2026-092</h4>
-              <span class="ui-tag">DOC-CMB-CODIGO-VENTA</span>
-            </div>
-            <div class="element-wrapper">
-              <p style="font-weight: bold; font-size: 12px;">Monto: S/ 120.00</p>
-              <span class="ui-tag">DOC-LBL-MONTO-TOTAL</span>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="sale-img">[ TICKET ]</div>
-          <div style="flex: 1;">
-            <div class="element-wrapper">
-              <h4 style="color: #0d6efd;">Venta #VEN-2026-093</h4>
-              <span class="ui-tag">DOC-CMB-CODIGO-VENTA</span>
-            </div>
-            <div class="element-wrapper">
-              <p style="font-weight: bold; font-size: 12px;">Monto: S/ 88.00</p>
-              <span class="ui-tag">DOC-LBL-MONTO-TOTAL</span>
-            </div>
-          </div>
-        </div>
+      <div class="field">
+        <label for="DOC-FEC-FILTRO-VENTA">Filtrar ventas por fecha</label>
+        <input id="DOC-FEC-FILTRO-VENTA" type="date">
+        <span class="tag">DOC-FEC-FILTRO-VENTA</span>
       </div>
-    </div>
-    <div class="panel">
-      <h3>Emisión de Comprobante</h3>
-      <hr style="margin-bottom: 10px;">
-      <div class="element-wrapper">
-        <label><b>Venta Seleccionada:</b></label>
-        <select><option>VEN-2026-091 (S/ 45.50)</option></select>
-        <span class="ui-tag">ComboBox: DOC-CMB-CODIGO-VENTA</span>
+      <div class="muted">Selecciona una venta para preparar su comprobante.</div>
+      <div class="sales-list" id="DOC-LST-VENTAS">
+        <article class="sale-card" data-component="DOC-CRD-VENTA" data-code="VEN-2026-091" data-date="2026-09-27" data-total="45.50">
+          <div class="sale-info"><strong>Venta #VEN-2026-091</strong><small>Fecha: 27/09/2026 · Monto: S/ 45.50</small><span class="tag">Componente repetible: DOC-CRD-VENTA</span></div>
+          <button class="btn-primary" type="button" data-select-sale="VEN-2026-091">Seleccionar</button>
+        </article>
+        <article class="sale-card" data-component="DOC-CRD-VENTA" data-code="VEN-2026-092" data-date="2026-09-28" data-total="120.00">
+          <div class="sale-info"><strong>Venta #VEN-2026-092</strong><small>Fecha: 28/09/2026 · Monto: S/ 120.00</small><span class="tag">Componente repetible: DOC-CRD-VENTA</span></div>
+          <button class="btn-primary" type="button" data-select-sale="VEN-2026-092">Seleccionar</button>
+        </article>
+        <article class="sale-card" data-component="DOC-CRD-VENTA" data-code="VEN-2026-093" data-date="2026-09-29" data-total="88.00">
+          <div class="sale-info"><strong>Venta #VEN-2026-093</strong><small>Fecha: 29/09/2026 · Monto: S/ 88.00</small><span class="tag">Componente repetible: DOC-CRD-VENTA</span></div>
+          <button class="btn-primary" type="button" data-select-sale="VEN-2026-093">Seleccionar</button>
+        </article>
       </div>
-      <div class="element-wrapper">
-        <label><b>Tipo de Comprobante:</b></label>
-        <select>
-          <option>Boleta Electrónica</option>
-          <option>Factura Electrónica</option>
+    </section>
+
+    <section class="panel" aria-labelledby="emission-heading">
+      <h2 id="emission-heading">Emisión de comprobante</h2>
+      <div class="field">
+        <label for="DOC-CMB-CODIGO-VENTA">Venta seleccionada</label>
+        <select id="DOC-CMB-CODIGO-VENTA">
+          <option value="">Selecciona una venta</option>
+          <option value="VEN-2026-091" selected>VEN-2026-091 (S/ 45.50)</option>
+          <option value="VEN-2026-092">VEN-2026-092 (S/ 120.00)</option>
+          <option value="VEN-2026-093">VEN-2026-093 (S/ 88.00)</option>
         </select>
-        <span class="ui-tag">ComboBox: DOC-CMB-TIPO-COMPROBANTE</span>
+        <span class="tag">DOC-CMB-CODIGO-VENTA</span>
       </div>
-      <div class="element-wrapper">
-        <label><b>Número de Comprobante:</b></label>
-        <input type="text" value="B001-00001284">
-        <span class="ui-tag">Campo Texto: DOC-TXT-NUMERO-COMPROBANTE</span>
+      <div class="field">
+        <label for="DOC-CMB-TIPO-COMPROBANTE">Tipo de comprobante</label>
+        <select id="DOC-CMB-TIPO-COMPROBANTE">
+          <option value="Boleta">Boleta</option>
+          <option value="Factura">Factura</option>
+        </select>
+        <span class="tag">DOC-CMB-TIPO-COMPROBANTE</span>
       </div>
-      <div class="element-wrapper">
-        <label><b>Fecha de Emisión:</b></label>
-        <input type="date" value="2026-09-27">
-        <span class="ui-tag">Fecha: DOC-FEC-FECHA-EMISION</span>
+      <div class="field">
+        <label for="DOC-TXT-NUMERO-COMPROBANTE">Número de comprobante</label>
+        <input id="DOC-TXT-NUMERO-COMPROBANTE" type="text" value="B001-00001284" placeholder="Ej. B001-00001284">
+        <span class="tag">DOC-TXT-NUMERO-COMPROBANTE</span>
       </div>
-    </div>
-    <div class="panel">
-      <h3>Historial de Emisión</h3>
-      <hr style="margin-bottom: 10px;">
-      <div class="element-wrapper">
+      <div class="field">
+        <label for="DOC-FEC-FECHA-EMISION">Fecha de emisión</label>
+        <input id="DOC-FEC-FECHA-EMISION" type="date" value="2026-09-27">
+        <span class="tag">DOC-FEC-FECHA-EMISION</span>
+      </div>
+      <div class="readonly-box">
+        <strong>Monto total calculado (solo lectura)</strong>
+        <div class="readonly-value" id="DOC-LBL-MONTO-TOTAL">S/ 45.50</div>
+        <span class="tag">DOC-LBL-MONTO-TOTAL</span>
+      </div>
+      <div class="actions">
+        <div><button id="DOC-BTN-CREAR-COMPROBANTE" class="btn-success" type="button">Emitir</button><br><span class="tag tag-button">DOC-BTN-CREAR-COMPROBANTE</span></div>
+        <div><button id="DOC-BTN-ACTUALIZAR-COMPROBANTE" class="btn-warning" type="button">Modificar</button><br><span class="tag tag-button">DOC-BTN-ACTUALIZAR-COMPROBANTE</span></div>
+        <div id="GRP-GUARDAR" hidden><button id="DOC-BTN-CONFIRMAR-ACTUALIZACION" class="btn-success" type="button">Guardar cambios</button><br><span class="tag tag-button">DOC-BTN-CONFIRMAR-ACTUALIZACION</span></div>
+        <div><button id="DOC-BTN-ELIMINAR-COMPROBANTE" class="btn-danger" type="button">Anular</button><br><span class="tag tag-button">DOC-BTN-ELIMINAR-COMPROBANTE</span></div>
+        <div id="GRP-CANCELAR-EDICION" hidden><button id="DOC-BTN-CANCELAR-ACTUALIZACION" class="btn-secondary" type="button">Cancelar edición</button></div>
+      </div>
+      <div class="notice">Prototipo de interfaz: las acciones se simulan localmente en esta página. No realiza conexión con la base de datos ni envía comprobantes a SUNAT/OSE.</div>
+    </section>
+
+    <section class="panel" aria-labelledby="history-heading">
+      <h2 id="history-heading">Historial de emisión</h2>
+      <div class="table-wrap">
         <table>
-          <thead><tr><th>N° Comp.</th><th>Tipo</th><th>Total</th></tr></thead>
-          <tbody>
-            <tr><td>B001-001284</td><td>Boleta</td><td>S/ 45.50</td></tr>
+          <thead><tr><th>N.º comprobante</th><th>Tipo</th><th>Fecha de emisión</th><th>Total</th><th>Estado</th></tr></thead>
+          <tbody id="DOC-TBL-COMPROBANTES">
+            <tr data-sale="VEN-2026-091">
+              <td>B001-001284</td><td>Boleta</td><td>27/09/2026</td><td>S/ 45.50</td><td><span class="status status-issued">Emitido</span></td>
+            </tr>
           </tbody>
         </table>
-        <span class="ui-tag">Tabla: DOC-TBL-COMPROBANTES</span>
       </div>
-      <div class="monto-box">
-        <div class="element-wrapper" style="margin-bottom:0;">
-          <p style="font-size: 12px; font-weight: bold;">Monto Total Calculado:</p>
-          <div style="font-size: 18px; font-weight: bold; color: #2e7d32;">S/ 45.50</div>
-          <span class="ui-tag">Label Solo Lectura: DOC-LBL-MONTO-TOTAL</span>
-        </div>
-      </div>
-      <div class="btn-actions">
-        <div class="element-wrapper">
-          <button style="background: #198754; color: white;" onclick="abrirPreview()">Emitir</button>
-          <span class="ui-tag-btn">DOC-BTN-CREAR-COMPROBANTE</span>
-        </div>
-        <div class="element-wrapper">
-          <button style="background: #ffc107; color: #333;">Modificar</button>
-          <span class="ui-tag-btn">DOC-BTN-ACTUALIZAR-COMPROBANTE</span>
-        </div>
-        <div class="element-wrapper">
-          <button style="background: #dc3545; color: white;" onclick="abrirModal('DOC-MDL-CONFIRMAR-ELIMINACION')">Anular</button>
-          <span class="ui-tag-btn">DOC-BTN-ELIMINAR-COMPROBANTE</span>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="modal" id="DOC-MDL-PREVISUALIZAR-COMPROBANTE">
+      <span class="tag">DOC-TBL-COMPROBANTES</span>
+      <p class="muted" id="DOC-LBL-SIN-RESULTADOS" hidden>No se encontraron comprobantes con los filtros indicados.</p>
+    </section>
+  </main>
+
+  <div class="modal" id="DOC-MDL-PREVISUALIZAR-COMPROBANTE" role="dialog" aria-modal="true" aria-labelledby="DOC-LBL-TITULO-PREVIEW">
     <div class="modal-content">
-      <div class="doc-modal-header">
-        <h3>Vista Previa del Comprobante Electrónico</h3>
-        <span style="font-size:11px;opacity:0.85;">Paso 1 de 2 · Revisa los datos antes de emitir</span>
+      <div class="modal-header">
+        <h2 id="DOC-LBL-TITULO-PREVIEW">Previsualización del comprobante</h2>
       </div>
-      <div class="doc-preview-wrap">
-        <div class="doc-warning">
-          Atención: Este es un <b>borrador de previsualización</b>. Al confirmar se generará el comprobante oficial y se enviará al OSE/SUNAT. No se podrá modificar después.
+      <div class="modal-body">
+        <div class="document-preview">
+          <h3 id="DOC-LBL-PREVIEW-TIPO">BOLETA</h3>
+          <strong id="DOC-LBL-PREVIEW-NUMERO">B001-00001284</strong>
+          <div class="preview-meta">
+            <div><b>Fecha de emisión</b><br><span id="DOC-LBL-PREVIEW-FECHA">27/09/2026</span></div>
+            <div><b>Venta asociada</b><br><span id="DOC-LBL-PREVIEW-VENTA">VEN-2026-091</span></div>
+            <div><b>Estado</b><br>Previsualización (no emitido)</div>
+          </div>
+          <div class="preview-total">TOTAL: <span id="DOC-LBL-PREVIEW-TOTAL">S/ 45.50</span></div>
         </div>
-        <div class="doc-cliente-edit">
-          <div>
-            <label>DNI / RUC del cliente</label>
-            <input type="text" id="DOC-TXT-PREVIEW-DNI-CLIENTE" value="45678912" placeholder="Opcional en boleta" oninput="syncDNI(this.value)">
-          </div>
-          <div>
-            <label>Nombre / Razón Social</label>
-            <input type="text" id="DOC-TXT-PREVIEW-NOMBRE-CLIENTE" value="Consumidor Final" placeholder="Opcional en boleta" oninput="syncNombre(this.value)">
-          </div>
-        </div>
-        <div class="doc-paper" id="DOC-PNL-PREVIEW-COMPROBANTE">
-          <div class="doc-emisor">
-            <div class="doc-emisor-info">
-              <h2>FARMASIL</h2>
-              <p>
-                Droguería y Botica<br>
-                RUC: 20512345678<br>
-                Av. Los Farmacéuticos 456, Lima<br>
-                Tel: (01) 555-1234
-              </p>
-            </div>
-            <div class="doc-tipo-badge">
-              <div class="tipo" id="DOC-LBL-PREVIEW-TIPO">BOLETA ELECTRÓNICA</div>
-              <div class="numero" id="DOC-LBL-PREVIEW-NUMERO">B001-00001284</div>
-              <div style="font-size:10px;margin-top:4px;opacity:0.85;">RUC: 20512345678</div>
-            </div>
-          </div>
-          <div class="doc-cliente-box">
-            <div class="linea"><b>Cliente:</b> <span id="DOC-LBL-PREVIEW-CLIENTE-NOMBRE">Consumidor Final</span></div>
-            <div class="linea"><b>DNI/RUC:</b> <span id="DOC-LBL-PREVIEW-CLIENTE-DNI">45678912</span></div>
-            <div class="linea"><b>Fecha Emisión:</b> 27/09/2026 14:32</div>
-            <div class="linea"><b>Venta Ref.:</b> VEN-2026-091 &nbsp;·&nbsp; <b>Forma de Pago:</b> Efectivo</div>
-          </div>
-          <table class="doc-detalle" id="DOC-TBL-PREVIEW-DETALLE">
-            <thead>
-              <tr>
-                <th style="width:8%;">Cant.</th>
-                <th style="width:52%;">Descripción</th>
-                <th style="width:15%;" class="num">P. Unit.</th>
-                <th style="width:25%;" class="num">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>2</td><td>Paracetamol 500mg — Lote LT-2026-A</td><td class="money">S/ 3.50</td><td class="money">S/ 7.00</td></tr>
-              <tr><td>3</td><td>Amoxicilina 500mg — Lote LT-2026-B</td><td class="money">S/ 12.00</td><td class="money">S/ 36.00</td></tr>
-              <tr><td>1</td><td>Ibuprofeno 400mg — Lote LT-2026-C</td><td class="money">S/ 2.50</td><td class="money">S/ 2.50</td></tr>
-            </tbody>
-          </table>
-          <div class="doc-totales">
-            <table>
-              <tr><td class="label">Subtotal:</td><td class="valor" id="DOC-LBL-PREVIEW-SUBTOTAL">S/ 38.56</td></tr>
-              <tr><td class="label">IGV (18%):</td><td class="valor" id="DOC-LBL-PREVIEW-IGV">S/ 6.94</td></tr>
-              <tr class="total-final"><td class="label">TOTAL:</td><td class="valor" id="DOC-LBL-PREVIEW-TOTAL">S/ 45.50</td></tr>
-            </table>
-          </div>
-          <div class="doc-footer">
-            <div>Son: <b>CUARENTA Y CINCO CON 50/100 SOLES</b></div>
-            <div style="margin-top:4px;">Representación impresa del comprobante electrónico. Consulte su validez en <b>www.sunat.gob.pe</b></div>
-            <div class="doc-hash">Hash: <span id="DOC-LBL-PREVIEW-HASH">a3f5c8d1e92b47f0c6a8... (pendiente de generar al emitir)</span></div>
-          </div>
-        </div>
+        <p class="muted" style="margin-top:12px">Revisa el tipo, número, fecha y monto antes de confirmar la emisión.</p>
       </div>
-      <div class="doc-modal-actions">
-        <div class="left">
-          <div class="element-wrapper" style="margin-bottom:0;">
-            <button style="background:#0dcaf0;color:white;" onclick="alert('Descargando borrador PDF (sin emitir)...')">Descargar borrador PDF</button>
-            <span class="ui-tag-btn">DOC-BTN-DESCARGAR-PDF</span>
-          </div>
-        </div>
-        <div class="right">
-          <div class="element-wrapper" style="margin-bottom:0;">
-            <button style="background:#6c757d;color:white;" onclick="cerrarModal('DOC-MDL-PREVISUALIZAR-COMPROBANTE')">Volver a editar</button>
-            <span class="ui-tag-btn">DOC-BTN-CANCELAR-EMISION</span>
-          </div>
-          <div class="element-wrapper" style="margin-bottom:0;">
-            <button style="background:#198754;color:white;" onclick="abrirConfirmacion()">Continuar</button>
-            <span class="ui-tag-btn">DOC-BTN-CONFIRMAR-EMISION</span>
-          </div>
-        </div>
+      <div class="modal-actions">
+        <button id="DOC-BTN-CANCELAR-EMISION" class="btn-secondary" type="button">Volver a editar</button>
+        <button id="DOC-BTN-CONFIRMAR-EMISION" class="btn-success" type="button">Confirmar y emitir</button>
       </div>
     </div>
   </div>
-  <div class="modal" id="DOC-MDL-CONFIRMAR-EMISION">
-    <div class="modal-content">
-      <div class="confirm-header">
-        <div class="confirm-icon">!</div>
-        <h3>Confirmar Emisión Definitiva</h3>
-        <p>Esta es la última verificación antes de enviar a SUNAT</p>
+
+  <div class="modal" id="DOC-MDL-CONFIRMAR-ELIMINACION" role="dialog" aria-modal="true" aria-labelledby="DOC-LBL-TITULO-ANULACION">
+    <div class="modal-content" style="max-width:430px">
+      <div class="modal-header" style="background:var(--danger)">
+        <h2 id="DOC-LBL-TITULO-ANULACION">Anulación de comprobante</h2>
       </div>
-      <div class="confirm-body">
-        <div class="confirm-summary">
-          <div class="row"><span class="k">Venta de referencia</span><span class="v" id="DOC-LBL-CONFIRMAR-VENTA">VEN-2026-091</span></div>
-          <div class="row"><span class="k">Tipo de comprobante</span><span class="v" id="DOC-LBL-CONFIRMAR-TIPO">Boleta Electrónica</span></div>
-          <div class="row"><span class="k">Número</span><span class="v" id="DOC-LBL-CONFIRMAR-NUMERO">B001-00001284</span></div>
-          <div class="row"><span class="k">Cliente</span><span class="v" id="DOC-LBL-CONFIRMAR-CLIENTE">Consumidor Final</span></div>
-          <div class="row total"><span class="k">Total a emitir</span><span class="v" id="DOC-LBL-CONFIRMAR-TOTAL">S/ 45.50</span></div>
-        </div>
-        <div class="confirm-warning" id="DOC-TXT-MSJ-EMISION">
-          <b>Atención:</b> al confirmar, el comprobante se enviará a SUNAT y quedará registrado de forma permanente en <code>TBL_COMPROBANTES_TRIBUTARIOS</code>.<br><br>Si hay un error en los datos fiscales (RUC del emisor, monto, tipo), la corrección solo puede hacerse emitiendo una <b>nota de crédito</b>, no editando este documento.
-        </div>
-        <div class="confirm-actions">
-          <div class="element-wrapper" style="margin-bottom:0;">
-            <button style="background:#6c757d;color:white;" onclick="volverAlPreview()">No, volver al preview</button>
-            <span class="ui-tag-btn">DOC-BTN-EMITIR-NO</span>
-          </div>
-          <div class="element-wrapper" style="margin-bottom:0;">
-            <button style="background:#dc3545;color:white;" onclick="emitirDefinitivo()">Sí, emitir definitivamente</button>
-            <span class="ui-tag-btn">DOC-BTN-EMITIR-SI</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="modal" id="DOC-MDL-CONFIRMAR-ELIMINACION">
-    <div class="modal-content" style="width:380px;">
-      <div class="element-wrapper" style="align-items: center;">
-        <h4>Anulación de Comprobante</h4>
-        <span class="ui-tag">Modal: DOC-MDL-CONFIRMAR-ELIMINACION</span>
-      </div>
-      <div class="element-wrapper" style="align-items: center; margin: 15px 0;">
+      <div class="modal-body">
         <p>¿Está seguro de anular el comprobante seleccionado?</p>
-        <span class="ui-tag">Mensaje: DOC-TXT-MSJ</span>
+        <p class="muted">El comprobante permanecerá visible en el historial con estado «Anulado».</p>
       </div>
-      <div style="display: flex; gap: 15px; justify-content: center;">
-        <div class="element-wrapper" style="width: auto;">
-          <button style="background: #dc3545; color: white;">Sí, Anular</button>
-          <span class="ui-tag-btn">DOC-BTN-CONFIRMAR-SI</span>
-        </div>
-        <div class="element-wrapper" style="width: auto;">
-          <button style="background: #6c757d; color: white;" onclick="cerrarModal('DOC-MDL-CONFIRMAR-ELIMINACION')">Cancelar</button>
-          <span class="ui-tag-btn">DOC-BTN-CONFIRMAR-NO</span>
-        </div>
+      <div class="modal-actions">
+        <button id="DOC-BTN-CONFIRMAR-NO" class="btn-secondary" type="button">Cancelar</button>
+        <button id="DOC-BTN-CONFIRMAR-SI" class="btn-danger" type="button">Sí, anular</button>
       </div>
     </div>
   </div>
+
   <script>
-    function abrirModal(id) { document.getElementById(id).classList.add('show'); }
-    function cerrarModal(id) { document.getElementById(id).classList.remove('show'); }
-    function abrirPreview() { abrirModal('DOC-MDL-PREVISUALIZAR-COMPROBANTE'); }
-    function abrirConfirmacion() {
-      var numero = document.getElementById('DOC-LBL-PREVIEW-NUMERO').innerText;
-      var cliente = document.getElementById('DOC-LBL-PREVIEW-CLIENTE-NOMBRE').innerText;
-      var total = document.getElementById('DOC-LBL-PREVIEW-TOTAL').innerText;
-      document.getElementById('DOC-LBL-CONFIRMAR-NUMERO').innerText = numero;
-      document.getElementById('DOC-LBL-CONFIRMAR-CLIENTE').innerText = cliente;
-      document.getElementById('DOC-LBL-CONFIRMAR-TOTAL').innerText = total;
-      abrirModal('DOC-MDL-CONFIRMAR-EMISION');
+    "use strict";
+
+    const ventas = [
+      { codigo: "VEN-2026-091", fecha: "2026-09-27", monto: 45.50 },
+      { codigo: "VEN-2026-092", fecha: "2026-09-28", monto: 120.00 },
+      { codigo: "VEN-2026-093", fecha: "2026-09-29", monto: 88.00 }
+    ];
+    let comprobanteEnEdicion = null;
+    let comprobanteSeleccionado = null;
+
+    const $ = id => document.getElementById(id);
+    const formatoSoles = monto => "S/ " + Number(monto).toFixed(2);
+    const fechaDMY = fecha => {
+      if (!fecha) return "";
+      const [anio, mes, dia] = fecha.split("-");
+      return `${dia}/${mes}/${anio}`;
+    };
+    const mostrarModal = id => $(id).classList.add("show");
+    const cerrarModal = id => $(id).classList.remove("show");
+
+    function obtenerVenta(codigo) {
+      return ventas.find(venta => venta.codigo === codigo);
     }
-    function volverAlPreview() { cerrarModal('DOC-MDL-CONFIRMAR-EMISION'); }
-    function emitirDefinitivo() {
-      cerrarModal('DOC-MDL-CONFIRMAR-EMISION');
-      cerrarModal('DOC-MDL-PREVISUALIZAR-COMPROBANTE');
-      alert('Comprobante emitido y registrado correctamente.');
+
+    function actualizarMonto() {
+      const venta = obtenerVenta($("DOC-CMB-CODIGO-VENTA").value);
+      $("DOC-LBL-MONTO-TOTAL").textContent = venta ? formatoSoles(venta.monto) : "S/ 0.00";
     }
-    function syncDNI(valor) { document.getElementById('DOC-LBL-PREVIEW-CLIENTE-DNI').innerText = valor || '—'; }
-    function syncNombre(valor) { document.getElementById('DOC-LBL-PREVIEW-CLIENTE-NOMBRE').innerText = valor || '—'; }
+
+    function seleccionarVenta(codigo) {
+      $("DOC-CMB-CODIGO-VENTA").value = codigo;
+      actualizarMonto();
+      document.querySelectorAll('[data-component="DOC-CRD-VENTA"]').forEach(card => {
+        card.classList.toggle("selected", card.dataset.code === codigo);
+      });
+    }
+
+    function filtrarVentas() {
+      const codigo = $("DOC-TXT-FILTRO-VENTA").value.trim().toLowerCase();
+      const fecha = $("DOC-FEC-FILTRO-VENTA").value;
+      document.querySelectorAll('[data-component="DOC-CRD-VENTA"]').forEach(card => {
+        const coincideCodigo = !codigo || card.dataset.code.toLowerCase().includes(codigo);
+        const coincideFecha = !fecha || card.dataset.date === fecha;
+        card.hidden = !(coincideCodigo && coincideFecha);
+      });
+    }
+
+    function consultarComprobantes() {
+      const tipo = $("DOC-CMB-FILTRO-TIPO").value;
+      const numero = $("DOC-SRH-NUMERO-COMPROBANTE").value.trim().toLowerCase();
+      const fecha = $("DOC-FEC-FILTRO-EMISION").value;
+      let visibles = 0;
+      [...$("DOC-TBL-COMPROBANTES").rows].forEach(fila => {
+        const celdas = fila.cells;
+        const coincideTipo = !tipo || celdas[1].textContent.trim() === tipo;
+        const coincideNumero = !numero || celdas[0].textContent.trim().toLowerCase().includes(numero);
+        const fechaFila = celdas[2].textContent.trim().split("/").reverse().join("-");
+        const coincideFecha = !fecha || fechaFila === fecha;
+        const mostrar = coincideTipo && coincideNumero && coincideFecha;
+        fila.hidden = !mostrar;
+        if (mostrar) visibles++;
+      });
+      $("DOC-LBL-SIN-RESULTADOS").hidden = visibles !== 0;
+    }
+
+    function abrirPrevisualizacion() {
+      const venta = obtenerVenta($("DOC-CMB-CODIGO-VENTA").value);
+      const tipo = $("DOC-CMB-TIPO-COMPROBANTE").value;
+      const numero = $("DOC-TXT-NUMERO-COMPROBANTE").value.trim();
+      const fecha = $("DOC-FEC-FECHA-EMISION").value;
+
+      if (!venta) { alert("Selecciona una venta."); return; }
+      if (!numero || !fecha) { alert("Completa el número y la fecha de emisión."); return; }
+      if (comprobanteEnEdicion === null) {
+        const yaExisteParaVenta = [...$("DOC-TBL-COMPROBANTES").rows].some(fila =>
+          fila.dataset.sale === venta.codigo && fila.cells[4].textContent.trim() !== "Anulado"
+        );
+        if (yaExisteParaVenta) { alert("La venta ya tiene un comprobante emitido."); return; }
+      }
+      const numeroDuplicado = [...$("DOC-TBL-COMPROBANTES").rows].some(fila =>
+        fila !== comprobanteEnEdicion && fila.cells[0].textContent.trim() === numero
+      );
+      if (numeroDuplicado) { alert("El número de comprobante ya está registrado."); return; }
+
+      $("DOC-LBL-PREVIEW-TIPO").textContent = tipo.toUpperCase();
+      $("DOC-LBL-PREVIEW-NUMERO").textContent = numero;
+      $("DOC-LBL-PREVIEW-FECHA").textContent = fechaDMY(fecha);
+      $("DOC-LBL-PREVIEW-VENTA").textContent = venta.codigo;
+      $("DOC-LBL-PREVIEW-TOTAL").textContent = formatoSoles(venta.monto);
+      mostrarModal("DOC-MDL-PREVISUALIZAR-COMPROBANTE");
+    }
+
+    function emitirComprobante() {
+      const venta = obtenerVenta($("DOC-CMB-CODIGO-VENTA").value);
+      const tipo = $("DOC-CMB-TIPO-COMPROBANTE").value;
+      const numero = $("DOC-TXT-NUMERO-COMPROBANTE").value.trim();
+      const fecha = $("DOC-FEC-FECHA-EMISION").value;
+      if (!venta || !numero || !fecha) return;
+
+      const fila = document.createElement("tr");
+      fila.dataset.sale = venta.codigo;
+      fila.innerHTML = `
+        <td></td><td></td><td></td><td></td>
+        <td><span class="status status-issued">Emitido</span></td>`;
+      fila.cells[0].textContent = numero;
+      fila.cells[1].textContent = tipo;
+      fila.cells[2].textContent = fechaDMY(fecha);
+      fila.cells[3].textContent = formatoSoles(venta.monto);
+
+      if (comprobanteEnEdicion) {
+        comprobanteEnEdicion.replaceWith(fila);
+        comprobanteEnEdicion = null;
+        finalizarEdicion();
+      } else {
+        $("DOC-TBL-COMPROBANTES").appendChild(fila);
+      }
+      cerrarModal("DOC-MDL-PREVISUALIZAR-COMPROBANTE");
+      consultarComprobantes();
+      alert("Operación registrada en el prototipo. No se realizó un envío a SUNAT/OSE.");
+    }
+
+    function iniciarEdicion() {
+      const fila = [...$("DOC-TBL-COMPROBANTES").rows].find(row =>
+        !row.hidden && row.cells[4].textContent.trim() === "Emitido"
+      );
+      if (!fila) { alert("Selecciona un comprobante emitido del historial."); return; }
+      comprobanteEnEdicion = fila;
+      const codigoVenta = fila.dataset.sale;
+      $("DOC-CMB-CODIGO-VENTA").value = codigoVenta || "";
+      $("DOC-CMB-CODIGO-VENTA").disabled = true;
+      $("DOC-TXT-NUMERO-COMPROBANTE").value = fila.cells[0].textContent.trim();
+      $("DOC-CMB-TIPO-COMPROBANTE").value = fila.cells[1].textContent.trim();
+      const [dia, mes, anio] = fila.cells[2].textContent.trim().split("/");
+      $("DOC-FEC-FECHA-EMISION").value = `${anio}-${mes}-${dia}`;
+      actualizarMonto();
+      $("DOC-BTN-CREAR-COMPROBANTE").hidden = true;
+      $("DOC-BTN-ACTUALIZAR-COMPROBANTE").hidden = true;
+      $("GRP-GUARDAR").hidden = false;
+      $("GRP-CANCELAR-EDICION").hidden = false;
+    }
+
+    function finalizarEdicion() {
+      comprobanteEnEdicion = null;
+      $("DOC-CMB-CODIGO-VENTA").disabled = false;
+      $("DOC-BTN-CREAR-COMPROBANTE").hidden = false;
+      $("DOC-BTN-ACTUALIZAR-COMPROBANTE").hidden = false;
+      $("GRP-GUARDAR").hidden = true;
+      $("GRP-CANCELAR-EDICION").hidden = true;
+    }
+
+    function solicitarAnulacion() {
+      const fila = [...$("DOC-TBL-COMPROBANTES").rows].find(row =>
+        !row.hidden && row.cells[4].textContent.trim() === "Emitido"
+      );
+      if (!fila) { alert("Selecciona un comprobante emitido del historial."); return; }
+      comprobanteSeleccionado = fila;
+      mostrarModal("DOC-MDL-CONFIRMAR-ELIMINACION");
+    }
+
+    function anularComprobante() {
+      if (!comprobanteSeleccionado) return;
+      comprobanteSeleccionado.cells[4].innerHTML = '<span class="status status-cancelled">Anulado</span>';
+      comprobanteSeleccionado = null;
+      cerrarModal("DOC-MDL-CONFIRMAR-ELIMINACION");
+      consultarComprobantes();
+    }
+
+    $("DOC-BTN-LEER-COMPROBANTE").addEventListener("click", consultarComprobantes);
+    $("DOC-BTN-CREAR-COMPROBANTE").addEventListener("click", abrirPrevisualizacion);
+    $("DOC-BTN-CONFIRMAR-EMISION").addEventListener("click", emitirComprobante);
+    $("DOC-BTN-CANCELAR-EMISION").addEventListener("click", () => cerrarModal("DOC-MDL-PREVISUALIZAR-COMPROBANTE"));
+    $("DOC-BTN-ACTUALIZAR-COMPROBANTE").addEventListener("click", iniciarEdicion);
+    $("DOC-BTN-CONFIRMAR-ACTUALIZACION").addEventListener("click", abrirPrevisualizacion);
+    $("DOC-BTN-CANCELAR-ACTUALIZACION").addEventListener("click", finalizarEdicion);
+    $("DOC-BTN-ELIMINAR-COMPROBANTE").addEventListener("click", solicitarAnulacion);
+    $("DOC-BTN-CONFIRMAR-SI").addEventListener("click", anularComprobante);
+    $("DOC-BTN-CONFIRMAR-NO").addEventListener("click", () => {
+      comprobanteSeleccionado = null;
+      cerrarModal("DOC-MDL-CONFIRMAR-ELIMINACION");
+    });
+    $("DOC-CMB-CODIGO-VENTA").addEventListener("change", actualizarMonto);
+    $("DOC-TXT-FILTRO-VENTA").addEventListener("input", filtrarVentas);
+    $("DOC-FEC-FILTRO-VENTA").addEventListener("change", filtrarVentas);
+    document.querySelectorAll("[data-select-sale]").forEach(button => {
+      button.addEventListener("click", () => seleccionarVenta(button.dataset.selectSale));
+    });
+
+    seleccionarVenta("VEN-2026-091");
+    consultarComprobantes();
   </script>
 </body>
 </html>
