@@ -185,16 +185,15 @@
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) EN ('Administrador', 'Tecnico')**<br>&nbsp;&nbsp;**CARGAR ART-MKP-DOC-0001**<br>**FIN** |
 | Procedimiento | **INICIO**<br>&nbsp;&nbsp;**tipoComprobante = DOC-CMB-FILTRO-TIPO**<br>&nbsp;&nbsp;**numeroComprobante = DOC-SRH-NUMERO-COMPROBANTE**<br>&nbsp;&nbsp;**fechaEmision = DOC-FEC-FILTRO-EMISION**<br>&nbsp;&nbsp;**PRESIONAR DOC-BTN-LEER-COMPROBANTE**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS UNIENDO DB_FARMASIL.TBL_REGISTRO_VENTAS POR id_venta**<br>&nbsp;&nbsp;**SI tipoComprobante <> VACIO, APLICAR FILTRO tipo_comprobante = tipoComprobante**<br>&nbsp;&nbsp;**SI numeroComprobante <> VACIO, APLICAR FILTRO numero_comprobante CONTIENE numeroComprobante**<br>&nbsp;&nbsp;**SI fechaEmision <> VACIO, APLICAR FILTRO fecha_emision = fechaEmision**<br>&nbsp;&nbsp;**CARGAR DOC-TBL-COMPROBANTES CON (numero_comprobante, tipo_comprobante, fecha_emision, monto_total DE VENTA, estado_documento)**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR COMPROBANTES_ANULADOS = VISIBLES**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR DOC-TBL-COMPROBANTES = ACTUALIZADA**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-DOC-0001
-|
+| Código de artefactos asociados | ART-MKP-DOC-0001|
 | Importancia | Vital |
 | Estado | Concluido |
 | Comentario | El monto se resuelve contra **DB_FARMASIL.TBL_REGISTRO_VENTAS**, ya que no es una columna de la tabla de comprobantes. Los comprobantes anulados permanecen visibles para auditoría.<br>**Versión 03.00:** se alinean los filtros con **ART-MKP-DOC-0001**: tipo **DOC-CMB-FILTRO-TIPO**, número **DOC-SRH-NUMERO-COMPROBANTE** y fecha **DOC-FEC-FILTRO-EMISION**. La búsqueda de ventas por código y fecha corresponde a ESP-0009, durante la selección de la venta que se documentará. Se permite ejecutar la consulta sin filtros y obtener una tabla vacía. |
 | Código especificación | ESP-0011 |
 | --- | --- |
 | Nombre | Actualización de comprobante tributario |
-| Versión | 03.00 |
-| Fecha | 08/11/2026 |
+| Versión | 04.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002, FUE-0003 |
@@ -206,13 +205,13 @@
 | Código de artefactos asociados | ART-MKP-DOC-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Se enumeraron los campos corregibles, que la versión anterior dejaba como "datos permitidos" sin precisar, y se declaró de solo lectura la venta asociada: reasignar un comprobante a otra venta rompería la relación venta–comprobante del modelo (a lo sumo un comprobante 'Emitido' por venta).<br>**Versión 03.00:** (AUD-claude-014, AUD-gpt-017; DEC-017) se elimina la referencia a la relación uno a uno, que contradecía DEC-017. |
+| Comentario | Se enumeraron los campos corregibles, que la versión anterior dejaba como "datos permitidos" sin precisar, y se declaró de solo lectura la venta asociada: reasignar un comprobante a otra venta rompería la relación venta–comprobante del modelo (a lo sumo un comprobante 'Emitido' por venta).<br>**Versión 03.00:** (AUD-claude-014, AUD-gpt-017; DEC-017) se elimina la referencia a la relación uno a uno, que contradecía DEC-017. <br>**Versión 04.00:** La pantalla es ART-MKP-DOC-0001; ART-MKP-DOC-0003 no existe como artefacto.   |
 
 | Código especificación | ESP-0012 |
 | --- | --- |
 | Nombre | Anulación de comprobante tributario |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 14/09/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002, FUE-0003 |
@@ -221,11 +220,10 @@
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS <> VACIA**<br>&nbsp;&nbsp;**VALIDAR comprobante.estado_documento = 'Emitido'**<br>&nbsp;&nbsp;**CARGAR ART-MKP-DOC-0001**<br>**FIN** |
 | Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR comprobante EN DOC-TBL-COMPROBANTES**<br>&nbsp;&nbsp;**PRESIONAR DOC-BTN-ELIMINAR-COMPROBANTE**<br>&nbsp;&nbsp;**CARGAR ART-MKP-DOC-0001**<br>&nbsp;&nbsp;**MOSTRAR DOC-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR DOC-TXT-MSJ = "¿Está seguro de anular este comprobante? El documento se conservará con estado Anulado."**<br>&nbsp;&nbsp;**SI PRESIONAR DOC-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS.estado_documento = 'Anulado' DONDE id_comprobante = comprobante**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Comprobante anulado correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR DOC-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR DOC-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR DOC-TBL-COMPROBANTES**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR ANULACION_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS.estado_documento = 'Anulado'**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CONSERVADO_PARA_AUDITORIA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR VENTA_ASOCIADA = HABILITADA_PARA_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR DOC-TBL-COMPROBANTES = ACTUALIZADA**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-DOC-0001
-|
+| Código de artefactos asociados | ART-MKP-DOC-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La fase Eliminar del CRUD se implementa como baja lógica. Un documento tributario emitido no puede borrarse del registro, y el diccionario define el valor 'Anulado' precisamente para este caso.<br>La postcondición anterior afirmaba que se eliminaba "el registro de venta", confundiendo el comprobante con la venta. |
+| Comentario | La fase Eliminar del CRUD se implementa como baja lógica. Un documento tributario emitido no puede borrarse del registro, y el diccionario define el valor 'Anulado' precisamente para este caso.<br>La postcondición anterior afirmaba que se eliminaba "el registro de venta", confundiendo el comprobante con la venta. <br>**Versión 03.00:** La pantalla es ART-MKP-DOC-0001; ART-MKP-DOC-0004 no existe como artefacto.  |
 
 ---
 

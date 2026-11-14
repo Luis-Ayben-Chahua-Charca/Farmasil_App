@@ -200,8 +200,8 @@
 | Código ilación | ILA-0011 |
 | --- | --- |
 | Nombre | Actualizar comprobante tributario |
-| Versión | 07.00 |
-| Fecha | 08/11/2026 |
+| Versión | 08.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002, FUE-0003 |
@@ -214,13 +214,13 @@
 | Código de artefactos asociados | ART-MKP-DOC-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | El procedimiento anterior decía que el usuario "modifica datos permitidos" sin precisar cuáles; se enumeraron los campos corregibles y se declaró de solo lectura la venta asociada, ya que reasignar un comprobante a otra venta rompería la relación uno a uno definida en el modelo ER.<br>Se corrigió el código **ILA_0011** y la referencia **DB_FARMASIL_TBL_COMPROBANTES_TRIBUTARIOS**, que usaba guion bajo en lugar del punto separador.<br>**Versión 07.00:** alinea la ilación con DEC-017 y ESP-0011 v03.00 (AUD-claude-014, AUD-gpt-017). |
+| Comentario | El procedimiento anterior decía que el usuario "modifica datos permitidos" sin precisar cuáles; se enumeraron los campos corregibles y se declaró de solo lectura la venta asociada, ya que reasignar un comprobante a otra venta rompería la relación uno a uno definida en el modelo ER.<br>Se corrigió el código **ILA_0011** y la referencia **DB_FARMASIL_TBL_COMPROBANTES_TRIBUTARIOS**, que usaba guion bajo en lugar del punto separador.<br>**Versión 07.00:** alinea la ilación con DEC-017 y ESP-0011 v03.00 (AUD-claude-014, AUD-gpt-017). <br>**Versión 08.00:** La pantalla es ART-MKP-DOC-0001; ART-MKP-DOC-0003 no existe como artefacto. |
 
 | Código ilación | ILA-0012 |
 | --- | --- |
 | Nombre | Anulación de comprobante tributario |
-| Versión | 05.00 |
-| Fecha | 05/09/2026 |
+| Versión | 06.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002, FUE-0003 |
@@ -233,7 +233,7 @@
 | Código de artefactos asociados | ART-MKP-DOC-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La versión anterior eliminaba físicamente el comprobante. Un documento tributario emitido no puede borrarse del registro: el propio Diccionario de Datos define el valor 'Anulado' en `estado_documento` precisamente para este caso. La fase Eliminar del CRUD se implementa como baja lógica.<br>La postcondición anterior además decía que se eliminaba "el registro de venta", confundiendo el comprobante con la venta.<br>Se corrigieron el código **ILA_0012** y los componentes escritos con guion bajo (**DOC_BTN_ELIMINAR_COMPROBANTE**, **DOC_MDL_CONFIRMACION_ELIMINACION**, **DOC_BTN_CONFIRMAR_SI**, **DOC_BTN_CONFIRMAR_NO**). |
+| Comentario | La versión anterior eliminaba físicamente el comprobante. Un documento tributario emitido no puede borrarse del registro: el propio Diccionario de Datos define el valor 'Anulado' en `estado_documento` precisamente para este caso. La fase Eliminar del CRUD se implementa como baja lógica.<br>La postcondición anterior además decía que se eliminaba "el registro de venta", confundiendo el comprobante con la venta.<br>Se corrigieron el código **ILA_0012** y los componentes escritos con guion bajo (**DOC_BTN_ELIMINAR_COMPROBANTE**, **DOC_MDL_CONFIRMACION_ELIMINACION**, **DOC_BTN_CONFIRMAR_SI**, **DOC_BTN_CONFIRMAR_NO**). <br>**Versión 06.00:** La pantalla es ART-MKP-DOC-0001; ART-MKP-DOC-0004 no existe como artefacto. |
 
 ---
 
