@@ -17,6 +17,7 @@
 | 11/11/2026 | 10.00 | Se completa la adecuación de Inventario y Lotes del issue #72 (revisión del PR #157, issue #158). Se adopta `<MOD>-SRH-<ENTIDAD o CAMPO>` para los buscadores de texto y `<MOD>-CMB-FILTRO-<CAMPO>` para los filtros de lista cerrada (DEC-061), y la lista de tarjetas recibe identificadores propios, `<MOD>-PNL-<COLECCIÓN>`, `<MOD>-CRD-<ENTIDAD>` y `<MOD>-BTN-SELECCIONAR-<ENTIDAD>` (DEC-062): `INV-PNL-CATALOGO`, `INV-CRD-PRODUCTO`, `INV-BTN-SELECCIONAR-PRODUCTO`, `LOT-PNL-REMESAS` y `LOT-CRD-REMESA`. `INV-TXT-BUSQUEDA-PRODUCTO` pasa a `INV-SRH-PRODUCTO` y `LOT-TXT-FILTRO-NUMERO-LOTE` a `LOT-SRH-NUMERO-LOTE`. Se restauran en el módulo 11 `LOT-CMB-ESTADO-LOTE` y `LOT-BTN-CREAR-LOTE`, que la versión 09.00 había retirado de la tabla, y se agrega `LOT-CMB-PROVEEDOR-LOTE`. | AUT-0001 |
 | 11/11/2026 | 11.00 | Adecuación de Proveedores al mockup aprobado (issue #81, DEC-042; nomenclatura según DEC-061 y DEC-062): se incorporan **PRV-SRH-PROVEEDOR** (búsqueda única por RUC o razón social), **PRV-CMB-FILTRO-ESTADO** (filtro de consulta separado del estado de la ficha), **PRV-PNL-PROVEEDORES** y **PRV-CRD-PROVEEDOR** (lista de tarjetas, separada de **PRV-TBL-PROVEEDORES**). La tabla conserva el teléfono y usa el identificador como clave no visible. | AUT-0001 |
 | 13/11/2026 | 12.00 | Adecuación de Ventas y Usuarios a los mockups (issue #66; DEC-042, DEC-066, DEC-067 y DEC-068): se incorporan en VEN **VEN-PNL-CATALOGO**, **VEN-CRD-PRODUCTO**, **VEN-BTN-SELECCIONAR-PRODUCTO**, **VEN-SRH-PRODUCTO**, **VEN-CMB-FILTRO-ACCION-TERAPEUTICA**, **VEN-PNL-DETALLE-MEDICAMENTO**, **VEN-LBL-FECHA-VENCIMIENTO**, **VEN-PNL-DETALLE-VENTA** y **VEN-LBL-ADVERTENCIAS**, y **VEN-TBL-DETALLE-VENTA** identifica solo la tabla; en USR, **USR-SRH-USUARIO**, **USR-CMB-FILTRO-ROL**, **USR-PNL-CUENTAS** y **USR-CRD-USUARIO**. | AUT-0001 |
+| 14/11/2026 | 13.00 | Adecuación documental y visual de Métodos de Pago (#76): se separan los IDs de búsqueda, filtro, lista de tarjetas y tabla según DEC-061/062; las especificaciones y el mockup se alinean con **ART-MKP-PAG-0001**. Se registran DEC-071 y PEN-036 para las discrepancias restantes. | AUT-0001 |
 
 ---
 
@@ -301,6 +302,23 @@ El módulo 2 conserva únicamente los datos de catálogo del medicamento: nombre
 
 ### Componentes nuevos en módulos existentes
 
+Los identificadores nuevos se organizan por módulo. En PAG, el mockup y las especificaciones usan los identificadores canónicos; la descripción e icono de cada método y el panel de previsualización no son requisitos aprobados y se consultan en PEN-036.
+
+#### PAG
+
+| Componente | Tipo | Función | Mockup afectado |
+| --- | --- | --- | --- |
+| PAG-PNL-METODOS-PAGO | Panel | Lista de métodos en tarjetas; contiene una tarjeta **PAG-CRD-METODO-PAGO** por método. | ART-MKP-PAG-0001 |
+| PAG-CRD-METODO-PAGO | Tarjeta | Tarjeta de método de pago con nombre y estado. Al seleccionarla se carga el método en la ficha; sus textos no llevan identificadores propios. | ART-MKP-PAG-0001 |
+| PAG-TBL-METODOS-PAGO | Tabla | Tabla de métodos dentro de «Gestión CRUD». Identifica solo la tabla, no la lista de tarjetas. | ART-MKP-PAG-0001 |
+| PAG-SRH-METODO | Barra de búsqueda | Filtro opcional de consulta por coincidencia parcial en `nombre_metodo` (ESP-0018). Se mantiene separado de **PAG-TXT-METODO-PAGO**, usado en captura y edición. | ART-MKP-PAG-0001 |
+| PAG-CMB-FILTRO-ESTADO | ComboBox | Filtro opcional de consulta por estado. Se mantiene separado de **PAG-CMB-ESTADO-METODO**, usado en captura y edición. | ART-MKP-PAG-0001 |
+| PAG-BTN-LEER-METODO | Botón | Ejecuta la consulta con los filtros opcionales de nombre y estado. | ART-MKP-PAG-0001 |
+| PAG-BTN-ACTUALIZAR-METODO | Botón | «Modificar»: inicia la edición del método seleccionado. | ART-MKP-PAG-0001 |
+| PAG-BTN-CONFIRMAR-ACTUALIZACION | Botón | «Guardar cambios» confirma la edición (DEC-046); se agrega al mockup en el #76. | ART-MKP-PAG-0001 |
+
+#### VEN
+
 | Componente | Tipo | Función | Mockup afectado |
 | --- | --- | --- | --- |
 | VEN-TBL-DETALLE-VENTA | Tabla | Líneas de la venta en curso, con las columnas Medicamento, Lote, Cantidad, Precio unitario y Subtotal. Identifica solo la tabla; el panel que la contiene es **VEN-PNL-DETALLE-VENTA** (DEC-051). Es el componente que hace visible la venta de varios productos. | ART-MKP-VEN-0001 |
@@ -316,6 +334,11 @@ El módulo 2 conserva únicamente los datos de catálogo del medicamento: nombre
 | VEN-LBL-FECHA-VENCIMIENTO | Etiqueta | Fecha de vencimiento de la remesa elegida, solo lectura. Sustituye al selector de fecha que el mockup rotulaba **VEN-FEC-FECHA-VENTA**, que queda solo como filtro de la consulta (ESP-0002). | ART-MKP-VEN-0001 |
 | VEN-PNL-DETALLE-VENTA | Panel | Detalle de la venta: tabla de líneas, monto total, método de pago y registro. Su rótulo es «Detalle de la venta» y sustituye a «Carrito de compras» (DEC-066). | ART-MKP-VEN-0001 |
 | VEN-LBL-ADVERTENCIAS | Etiqueta | Área de los mensajes de vendibilidad y de restricción al agregar una línea (PEN-030). | ART-MKP-VEN-0001 |
+
+#### INV y DEV
+
+| Componente | Tipo | Función | Mockup afectado |
+| --- | --- | --- | --- |
 | INV-TXT-STOCK-PRODUCTO | Campo de texto | Cantidad de unidades recibidas o disponibles. | ART-MKP-INV-0001 |
 | INV-CMB-PROVEEDOR | ComboBox | Proveedor que abastece el producto. Se alimenta del módulo 10. | ART-MKP-INV-0001 |
 | INV-SRH-PRODUCTO | Barra de búsqueda | Búsqueda única de productos por identificador o nombre. Sustituye los criterios separados de búsqueda. | ART-MKP-INV-0001 |
@@ -338,7 +361,7 @@ Los componentes ya definidos en las especificaciones se mantienen. El inventario
 | **INV** | INV-PNL-CATALOGO, INV-CRD-PRODUCTO, INV-TBL-PRODUCTOS, INV-LBL-ID-PRODUCTO, INV-SRH-PRODUCTO, INV-TXT-NOMBRE-PRODUCTO, INV-TXT-ACCION-TERAPEUTICA, INV-NUM-PRECIO-PRODUCTO, INV-CMB-PROVEEDOR, INV-NUM-STOCK-MINIMO, INV-CMB-FILTRO-PROVEEDOR, INV-CMB-FILTRO-ACCION-TERAPEUTICA, INV-BTN-CREAR-PRODUCTO, INV-BTN-LEER-PRODUCTO, INV-BTN-SELECCIONAR-PRODUCTO, INV-BTN-ACTUALIZAR-PRODUCTO, INV-BTN-CONFIRMAR-ACTUALIZACION, INV-BTN-ELIMINAR-PRODUCTO, INV-MDL-CONFIRMAR-ELIMINACION, INV-TXT-MSJ, INV-BTN-CONFIRMAR-SI, INV-BTN-CONFIRMAR-NO |
 | **DOC** | DOC-TBL-COMPROBANTES, DOC-TXT-NUMERO-COMPROBANTE, DOC-CMB-TIPO-COMPROBANTE, DOC-CMB-CODIGO-VENTA, DOC-LBL-MONTO-TOTAL, DOC-FEC-FECHA-EMISION, DOC-BTN-CREAR-COMPROBANTE, DOC-BTN-LEER-COMPROBANTE, DOC-BTN-ACTUALIZAR-COMPROBANTE, DOC-BTN-CONFIRMAR-ACTUALIZACION, DOC-BTN-ELIMINAR-COMPROBANTE, DOC-MDL-CONFIRMAR-ELIMINACION, DOC-TXT-MSJ, DOC-BTN-CONFIRMAR-SI, DOC-BTN-CONFIRMAR-NO |
 | **ALV** | ALV-TBL-ALERTAS-VENCIMIENTO, ALV-CMB-LOTE-ALERTA, ALV-LBL-FECHA-VENCIMIENTO, ALV-CHK-LOTE-DEFECTUOSO, ALV-TXT-ALERTA-DIGEMID, ALV-BTN-CREAR-ALERTA, ALV-BTN-LEER-ALERTA, ALV-BTN-ACTUALIZAR-ALERTA, ALV-BTN-CONFIRMAR-ACTUALIZACION, ALV-BTN-ELIMINAR-ALERTA, ALV-MDL-CONFIRMAR-ELIMINACION, ALV-TXT-MSJ, ALV-BTN-CONFIRMAR-SI, ALV-BTN-CONFIRMAR-NO |
-| **PAG** | PAG-TBL-METODOS-PAGO, PAG-TXT-METODO-PAGO, PAG-CMB-ESTADO-METODO, PAG-BTN-CREAR-METODO, PAG-BTN-LEER-METODO, PAG-BTN-ACTUALIZAR-METODO, PAG-BTN-CONFIRMAR-ACTUALIZACION, PAG-BTN-ELIMINAR-METODO, PAG-MDL-CONFIRMAR-ELIMINACION, PAG-TXT-MSJ, PAG-BTN-CONFIRMAR-SI, PAG-BTN-CONFIRMAR-NO |
+| **PAG** | PAG-PNL-METODOS-PAGO, PAG-CRD-METODO-PAGO, PAG-SRH-METODO, PAG-CMB-FILTRO-ESTADO, PAG-TBL-METODOS-PAGO, PAG-TXT-METODO-PAGO, PAG-CMB-ESTADO-METODO, PAG-BTN-CREAR-METODO, PAG-BTN-LEER-METODO, PAG-BTN-ACTUALIZAR-METODO, PAG-BTN-CONFIRMAR-ACTUALIZACION, PAG-BTN-ELIMINAR-METODO, PAG-MDL-CONFIRMAR-ELIMINACION, PAG-TXT-MSJ, PAG-BTN-CONFIRMAR-SI, PAG-BTN-CONFIRMAR-NO |
 | **REP** | REP-TBL-REPORTES, REP-CMB-TIPO-REPORTE, REP-CMB-FORMATO-REPORTE, REP-FEC-FECHA-INICIO, REP-FEC-FECHA-FIN, REP-BTN-GENERAR-REPORTE, REP-BTN-LEER-REPORTE, REP-BTN-ACTUALIZAR-REPORTE, REP-BTN-CONFIRMAR-ACTUALIZACION, REP-BTN-ELIMINAR-REPORTE, REP-MDL-CONFIRMAR-ELIMINACION, REP-TXT-MSJ, REP-BTN-CONFIRMAR-SI, REP-BTN-CONFIRMAR-NO |
 | **DEV** | DEV-TBL-ORDENES-DEVOLUCION, DEV-TBL-DETALLE-DEVOLUCION, DEV-CMB-PROVEEDOR, DEV-CMB-LOTE-DEVOLUCION, DEV-CMB-MOTIVO-DEVOLUCION, DEV-NUM-CANTIDAD-DEVOLVER, DEV-TXA-COMENTARIO, DEV-FEC-FECHA-DEVOLUCION, DEV-BTN-CREAR-DEVOLUCION, DEV-BTN-LEER-DEVOLUCION, DEV-BTN-ACTUALIZAR-DEVOLUCION, DEV-BTN-CONFIRMAR-ACTUALIZACION, DEV-BTN-ELIMINAR-DEVOLUCION, DEV-MDL-CONFIRMAR-ELIMINACION, DEV-TXT-MSJ, DEV-BTN-CONFIRMAR-SI, DEV-BTN-CONFIRMAR-NO |
 | **LOT** | LOT-PNL-REMESAS, LOT-CRD-REMESA, LOT-TBL-LOTES, LOT-CMB-PRODUCTO, LOT-CMB-PROVEEDOR-LOTE, LOT-TXT-NUMERO-LOTE, LOT-FEC-FECHA-VENCIMIENTO, LOT-NUM-STOCK-LOTE, LOT-FEC-FECHA-INGRESO, LOT-CMB-ESTADO-LOTE, LOT-CMB-FILTRO-PRODUCTO, LOT-SRH-NUMERO-LOTE, LOT-CMB-FILTRO-ESTADO-LOTE, LOT-BTN-CREAR-LOTE, LOT-BTN-LEER-LOTE, LOT-BTN-ACTUALIZAR-LOTE, LOT-BTN-CONFIRMAR-ACTUALIZACION, LOT-BTN-ELIMINAR-LOTE, LOT-MDL-CONFIRMAR-ELIMINACION, LOT-TXT-MSJ, LOT-BTN-CONFIRMAR-SI, LOT-BTN-CONFIRMAR-NO |

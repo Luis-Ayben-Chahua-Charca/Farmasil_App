@@ -3,7 +3,9 @@
                     xmlns:vm="clr-namespace:FarmasilApp.VistaModelo.Principal;assembly=FarmasilApp.VistaModelo"
                     xmlns:vmInv="clr-namespace:FarmasilApp.VistaModelo.INV;assembly=FarmasilApp.VistaModelo"
                     xmlns:vista="clr-namespace:FarmasilApp.Vista.Principal"
-                    xmlns:vistaInv="clr-namespace:FarmasilApp.Vista.INV">
+                    xmlns:vistaInv="clr-namespace:FarmasilApp.Vista.INV"
+                    xmlns:vmPrv="clr-namespace:FarmasilApp.VistaModelo.PRV;assembly=FarmasilApp.VistaModelo"
+                    xmlns:vistaPrv="clr-namespace:FarmasilApp.Vista.PRV">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="ControlesComunes.xaml"/>
     </ResourceDictionary.MergedDictionaries>
@@ -16,5 +18,10 @@
     <!-- Consulta de Inventario (ESP-0006). -->
     <DataTemplate DataType="{x:Type vmInv:InventarioViewModel}">
         <vistaInv:InventarioView />
+    </DataTemplate>
+
+    <!-- Consulta de Proveedores (ESP-0038). -->
+    <DataTemplate DataType="{x:Type vmPrv:ProveedoresViewModel}">
+        <vistaPrv:ProveedoresView />
     </DataTemplate>
 </ResourceDictionary>
