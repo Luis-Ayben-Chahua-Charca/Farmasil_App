@@ -1,6 +1,6 @@
 # Gestión de Riesgos — FARMASIL
 
-**Versión:** 11.00 · **Fecha:** 13/11/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
+**Versión:** 12.00 · **Fecha:** 14/11/2026 · **Base de verificación:** `catalogo/02-ilaciones.md`, `catalogo/03-especificaciones.md` y `modelo/05-diccionario-datos.md` v06.00 de este repositorio.
 
 Insumo para la plantilla de gestión de riesgos GRI_0002: el equipo revisa, ajusta y traslada estas
 filas a la hoja de cálculo. Cubre **las 52 ilaciones de los 13 módulos** más un bloque de **riesgos
@@ -21,6 +21,7 @@ generales (RG)**, según la observación del profesor.
 | 09.00 | 09/11/2026 | RG-011 cita la regla de lecturas de verificación (DEC-055): DEC-009 cubre la elección entre borrado físico y baja lógica, y las guardas sobre devoluciones pendientes de ESP-0040 y ESP-0044 son lecturas permitidas y enumeradas. No cambia ningún estado ni el conteo de riesgos. |
 | 10.00 | 11/11/2026 | ILA-0006-R03 cita el mockup ART-MKP-INV-0001: la versión 09.00 citaba un mockup numerado que DEC-042 retiró, porque Inventario tiene una sola pantalla (issue #158, que completa la adecuación de Inventario y Lotes del #72). No cambia ningún estado ni el conteo de riesgos. |
 | 11.00 | 13/11/2026 | ILA-0002-R03 cita el mockup ART-MKP-VEN-0001, porque DEC-042 retiró el mockup numerado 0002 (issue #66). ILA-0003-R03 aclara que la cantidad de una línea ya no se edita: se quita la línea y se vuelve a agregar con la validación del alta (DEC-067). No cambia ningún estado ni el conteo de riesgos. |
+| 12.00 | 14/11/2026 | ILA-0020-R03 cita ART-MKP-PAG-0001: DEC-042 consolidó en esa pantalla las operaciones de Métodos de Pago (issue #76). No cambia ningún estado ni el conteo de riesgos. |
 
 En la columna *Plan de mitigación*, el prefijo **"v02 —"**, **"v03 —"**, **"v04 —"**, **"v05 —"**, **"v06 —"**, **"v07 —"** o **"v09 —"** indica en qué versión se resolvió el riesgo y cita la especificación que lo resuelve.
 
@@ -142,7 +143,7 @@ afectan a **todo** el sistema FARMASIL (todas las especificaciones dependen, por
 | ILA-0019-R02 | Renombrar nombreMetodo rompe la trazabilidad con ventas históricas. | Baja | 10% | 3 | Resuelto | v02 — Las ventas referencian `id_metodo_pago`, que es inmutable. | ESP-0019 |
 | ILA-0020-R01 | Física o lógica. | Baja | 10% | 1 | Resuelto | ESP-0020: física si no hay ventas, baja lógica 'Inactivo' en caso contrario. | ESP-0020 |
 | ILA-0020-R02 | Visibilidad de un método dado de baja en históricos. | Baja | 10% | 2 | Resuelto | v02 — Se excluye de VEN-CMB-METODO-PAGO y las ventas conservan su referencia (ESP-0020). | ESP-0020 |
-| ILA-0020-R03 | Falta de mensaje claro al intentar dar de baja el único método de pago activo. | Media-baja | 25% | 2 | Pendiente | Bloquear la desactivación si es el único método activo. | ART-MKP-PAG-0004 |
+| ILA-0020-R03 | Falta de mensaje claro al intentar dar de baja el único método de pago activo. | Media-baja | 25% | 2 | Pendiente | Bloquear la desactivación si es el único método activo. | ART-MKP-PAG-0001 |
 
 ## Módulo 6 — Gestión de Reportes de Ventas (EDU-0010 v05.00) · ILA-0021 a ILA-0024 · prefijo REP
 
