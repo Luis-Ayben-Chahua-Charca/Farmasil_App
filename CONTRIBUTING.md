@@ -131,9 +131,28 @@ Tu primer issue de código es la consulta de tu módulo. Sigue estos pasos, que 
 5. **Navega** a la pantalla con `INavegacionServicio.NavegarA<XxxViewModel>()`.
 6. **Modelo.** Pon el servicio y las entidades en `src/FarmasilApp.Modelo/<Modulo>/`, y regístralos en `AgregarModelo` (`src/FarmasilApp.Modelo/Comun/RegistroDependencias.cs`). Si necesitas otro módulo, usa su interfaz (`ILotes`, `IPagos`, …), nunca sus clases ni sus tablas (DEC-055).
 7. **Persistencia.** Pon el repositorio en `src/FarmasilApp.Persistencia/<Modulo>/` y regístralo en `AgregarPersistencia`. Toda consulta SQL usa parámetros.
-8. **Pruebas.** Agrégalas en `tests/FarmasilApp.Pruebas/<Modulo>/`, según `pruebas de software/09-pruebas-software.md`.
+8. **Pruebas.** Agrégalas en `tests/FarmasilApp.Pruebas/<Modulo>/`, según `pruebas de software/09-pruebas-software.md`. Los nombres y los atributos de trazabilidad están en la sección [Pruebas](#pruebas).
 
 Dentro de cada proyecto, el código va en la carpeta de su módulo (plan, sección 2). Si la carpeta no existe, créala: el esqueleto solo trae `Comun`, `Principal` y `Seguridad`, porque git no guarda carpetas vacías.
+
+## Pruebas
+
+- **Ubicación:** Cada prueba debe ubicarse estrictamente en la carpeta `tests/FarmasilApp.Pruebas/<Modulo>/`.
+- **Nombres de las pruebas:** El nombre del método describe con precisión lo que se comprueba, en prosa, sin guiones bajos (`_`), y la clase de prueba debe llamarse `XxxPruebas`. Ejemplos reales de `main`:
+  - `LosProveedoresDelFiltroSeMuestranPorRazonSocial` (en `INV/InventarioServicioPruebas.cs`)
+  - `SinCondicionElComandoSiempreSePuedeEjecutar` (en `VistaModelo/RelayCommandPruebas.cs`)
+- **Trazabilidad:** Cada método de prueba automatizado debe incluir dos atributos `[Trait]`, indicando el código de la especificación y la técnica descrita en `pruebas de software/09-pruebas-software.md`:
+  ```csharp
+  [Fact]
+  [Trait("Especificacion", "ESP-0006")]
+  [Trait("Tecnica", "T-001")]
+  public void NombreDeLaPruebaEnProsa()
+  {
+      // ...
+  }
+  ```
+- **Alcance de la regla:** Se aplica a las pruebas que se escriban desde el #79. Las pruebas anteriores todavía no llevan los atributos y se etiquetan aparte, sin mezclarlo con otros cambios (DEC-070).
+- **Pruebas de integración:** Las pruebas contra la base de datos `DB_FARMASIL_PRUEBAS` no corresponden a este issue; están programadas para la iteración S4 (sección 11 del plan).
 
 ## Checklist rápido
 

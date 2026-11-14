@@ -94,3 +94,25 @@ Al ejecutar `database/recrear.ps1` se cargan datos iniciales para pruebas locale
 
 Estas credenciales son exclusivamente para el entorno local de desarrollo y pruebas.
 Las contraseñas se almacenan en `TBL_USUARIOS` como hashes PBKDF2-SHA256 con sal, nunca como texto plano.
+
+### Pruebas Automatizadas
+
+La solución tiene un solo proyecto de pruebas, `tests/FarmasilApp.Pruebas`. Para ejecutar todas las pruebas, corre este comando desde la raíz del repositorio (donde está `FarmasilApp.slnx`):
+
+```bash
+dotnet test
+```
+
+La CI (`build-and-test`) ejecuta las mismas pruebas en cada PR hacia `main`, y un PR con la CI en rojo no se fusiona.
+
+Para ejecutar solo una parte:
+
+```bash
+# Por nombre de clase
+dotnet test --filter "FullyQualifiedName~InventarioServicioPruebas"
+
+# Por especificación, para las pruebas que ya llevan el atributo Trait
+dotnet test --filter Especificacion=ESP-0033
+```
+
+Dónde se escriben las pruebas, cómo se nombran y cómo se enlazan con el plan están en [CONTRIBUTING.md, sección «Pruebas»](CONTRIBUTING.md#pruebas). Qué se prueba por especificación está en [`pruebas de software/09-pruebas-software.md`](pruebas%20de%20software/09-pruebas-software.md).
