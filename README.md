@@ -97,21 +97,22 @@ Las contraseñas se almacenan en `TBL_USUARIOS` como hashes PBKDF2-SHA256 con sa
 
 ### Pruebas Automatizadas
 
-La solución cuenta con un proyecto de pruebas oficial ubicado en `tests/FarmasilApp.Pruebas`. Para ejecutar toda la suite de pruebas automatizadas, ejecute el siguiente comando desde la raíz del repositorio (donde se ubica `FarmasilApp.slnx`):
+La solución tiene un solo proyecto de pruebas, `tests/FarmasilApp.Pruebas`. Para ejecutar todas las pruebas, corre este comando desde la raíz del repositorio (donde está `FarmasilApp.slnx`):
 
 ```bash
 dotnet test
 ```
 
-### Filtrado de pruebas
-Una vez que las pruebas incorporen las etiquetas de trazabilidad (según los lineamientos de CONTRIBUTING.md §8), podrá ejecutar pruebas específicas mediante filtros de CLI:
+La CI (`build-and-test`) ejecuta las mismas pruebas en cada PR hacia `main`, y un PR con la CI en rojo no se fusiona.
 
-Por especificación: 
+Para ejecutar solo una parte:
+
 ```bash
+# Por nombre de clase
+dotnet test --filter "FullyQualifiedName~InventarioServicioPruebas"
+
+# Por especificación, para las pruebas que ya llevan el atributo Trait
 dotnet test --filter Especificacion=ESP-0033
 ```
 
-Por nombre o clase:
-```bash
-dotnet test --filter "FullyQualifiedName~InventarioServicioPruebas"
-```
+Dónde se escriben las pruebas, cómo se nombran y cómo se enlazan con el plan están en [CONTRIBUTING.md, sección «Pruebas»](CONTRIBUTING.md#pruebas). Qué se prueba por especificación está en [`pruebas de software/09-pruebas-software.md`](pruebas%20de%20software/09-pruebas-software.md).
