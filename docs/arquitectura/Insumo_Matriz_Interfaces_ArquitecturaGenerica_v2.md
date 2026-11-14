@@ -88,7 +88,7 @@ Cada fila es una interfaz nombrada con el prefijo `I` seguido del nombre del mó
 - **Confianza:** alta.
 
 ### ILotes (provista por Lotes)
-- **Expone:** consulta de remesas disponibles (criterio FEFO), descuento/restitución de `stock_actual`, cambio de `estado_lote`, `medicamentosVendibles()` (DEC-044) y `datosRemesas(idsLote)` (DEC-057).
+- **Expone:** consulta de remesas disponibles (criterio FEFO), descuento/restitución de `stock_actual`, cambio de `estado_lote`, `medicamentosVendibles()` (DEC-044), que devuelve por cada medicamento `id_producto`, `nombre`, `accion_terapeutica`, `precio_venta` y el stock vendible (firmas formales en la sección 5 bis), y `datosRemesas(idsLote)` (DEC-057).
 - **Requerida por:**
   - Ventas (ESP-0001: selección de remesa por FEFO y descuento de stock al confirmar la venta).
   - Alertas de Vencimiento (ESP-0014: bloquea la remesa cambiando `estado_lote` a `'Bloqueado por devolucion'`, y obtiene los datos de la remesa para el retiro; ESP-0016 la restituye a `'Disponible'`).
@@ -132,8 +132,8 @@ Cada fila es una interfaz nombrada con el prefijo `I` seguido del nombre del mó
 - **Requerida por:** Comparación de Precios (ESP-0050: la exportación CSV por proveedor une `TBL_LISTA_REABASTECIMIENTO` con la comparativa de cotizaciones para incluir solo los medicamentos pendientes).
 - **Confianza:** alta.
 
-### IUsuarios (provista por Usuarios) — transversal
-- **Expone:** verificación de sesión activa y rol, registro de autoría (`id_usuario`).
+### ISesion (provista por Usuarios) — transversal
+- **Expone:** verificación de sesión activa y rol, registro de autoría (`id_usuario`): `UsuarioActual` y `ExigirRol(rol)`. Hasta el issue #67 se llamaba `IUsuarios`; DEC-069 la nombra `ISesion`, como en VL-04.
 - **Requerida transversalmente por:** Ventas (`TBL_REGISTRO_VENTAS.id_usuario`, FK almacenada), Devoluciones (`TBL_ORDENES_DEVOLUCION.id_usuario`, FK almacenada), Comparación de Precios (`TBL_COTIZACIONES_PROVEEDOR.id_usuario`, FK almacenada) y Reportes de Ventas (`usuario_responsable`, **calculado al vuelo** — ver nota).
 - **Confianza:** alta (las tres primeras son FK declaradas en el diccionario de datos; la cuarta está sustentada en el pseudocódigo de ESP-0021, no en una columna de la tabla — ver nota).
 - **Nota sobre Reportes de Ventas:** `TBL_REPORTES_VENTAS` **no tiene ninguna clave foránea** (el diccionario lo dice explícito: "log de salida sin referencias foráneas, por lo que su eliminación física en ILA-0024 es legítima"). `usuario_responsable` no es una columna de esa tabla: ESP-0021 lo consolida en el momento de generar el reporte vía `CONSULTAR TBL_REGISTRO_VENTAS UNIENDO TBL_DETALLE_VENTAS UNIENDO TBL_USUARIOS`, y el valor solo vive en el archivo de salida (PDF/Excel), nunca se persiste. La dependencia `REP→USR` sigue siendo real (sin ese JOIN no hay forma de mostrar el usuario), pero un agente que solo lea el esquema de `TBL_REPORTES_VENTAS` no la va a encontrar ahí — por eso se deja esta aclaración explícita.
@@ -141,6 +141,39 @@ Cada fila es una interfaz nombrada con el prefijo `I` seguido del nombre del mó
 
 ### IDocumentacion, IAlertasVencimiento, IReportes, IComparacionPrecios — sin consumidores
 Documentación Tributaria, Alertas de Vencimiento, Reportes de Ventas y Comparación de Precios de Proveedores no son requeridas por ningún otro módulo (sus columnas están en 0 en toda la matriz). Son módulos **terminales**: consumen de otros pero nadie consume de ellos. Esto es coherente con su naturaleza: son los módulos más cercanos a "vista de salida" del sistema (comprobante fiscal, alerta operativa, reporte gerencial, comparativo de proveedores), no infraestructura que otros módulos necesiten para funcionar. En el diagrama, ninguno de los cuatro necesita dibujar una bola de interfaz de salida.
+
+---
+
+## 5 bis. Firmas formales de las interfaces (issue #67, DEC-069)
+
+Cada interfaz vive en `src/FarmasilApp.Modelo/<MOD>/` y tiene una implementación simulada, `<Modulo>Simulado`, con datos fijos tomados de `database/002_datos_prueba.sql` (mismos ids, sin estado en memoria). Todas se registran en un solo lugar, `AgregarModelo`, y cambiar la simulada por la real es cambiar esa línea. Los nombres de las operaciones van en PascalCase en C#. Las operaciones que escriben participan de la transacción que tenga abierta quien las llama (contexto de arquitectura, §5 punto 11).
+
+| Interfaz (módulo) | Operación | Devuelve | Para qué |
+| --- | --- | --- | --- |
+| `ISesion` (Seguridad) | `UsuarioActual` | `SesionUsuario`: `IdUsuario`, `NombreUsuario`, `Rol`. Nunca el hash de la contraseña. | Autoría (`id_usuario`) y rol de la sesión. |
+| `ISesion` | `ExigirRol(rol)` | Nada. Lanza `AccesoDenegadoException` si el rol de la sesión no es el pedido. | Defensa adicional: la interfaz sigue ocultando o inhabilitando lo que el rol no puede usar (DEC-050). |
+| `IPagos` (PAG) | `MetodosActivos()` | Lista de `MetodoPagoDto`: `IdMetodoPago`, `Nombre`. | Combo de método de pago de Ventas. |
+| `IRestricciones` (RES) | `RestriccionesActivas(idProducto)` | Lista de `RestriccionDto`: `IdRestriccion`, `IdProducto`, `CondicionCliente`, `Tipo` ('Informativa' o 'Bloqueante') y `MotivoAdvertencia`. | Ventas evalúa todas las restricciones activas: si alguna es bloqueante rechaza la línea y muestra las informativas (ESP-0001, DEC-033). |
+| `IProveedores` (PRV) | `ProveedoresActivos()` | Lista de `ProveedorDto`: `IdProveedor`, `Ruc`, `RazonSocial`, `Telefono` (puede ser nulo) y `Estado`. | Combos de proveedor de INV, LOT, DEV y COT. |
+| `IProveedores` | `ObtenerProveedor(idProveedor)` | `ProveedorDto` o nulo, aunque el proveedor esté inactivo. | Mostrar el nombre del proveedor de un registro existente. |
+| `IInventario` (INV) | `Medicamentos()` | Lista de `MedicamentoDto`: `IdProducto`, `Nombre`, `AccionTerapeutica`, `PrecioVenta`, `Estado`, `IdProveedor`, `StockMinimo`. | Combos y validación de `id_producto` de RES, LOT, REA y COT. |
+| `IInventario` | `ObtenerMedicamento(idProducto)` | `MedicamentoDto` o nulo. | Validar un medicamento y leer su `stock_minimo`. |
+| `ILotes` (LOT) | `MedicamentosVendibles()` | Lista de `MedicamentoVendibleDto`: `IdProducto`, `Nombre`, `AccionTerapeutica`, `PrecioVenta`, `StockVendible` (DEC-044). | Catálogo de Ventas: solo medicamentos con alguna remesa vendible. |
+| `ILotes` | `SugerirFefo(idProducto)` | Lista de `RemesaVendibleDto` vendibles, por vencimiento ascendente: `IdLote`, `IdProducto`, `NombreMedicamento`, `PrecioVenta`, `NumeroLote`, `FechaVencimiento`, `StockActual`. La primera es la sugerida. | Remesa FEFO y combo de remesas de Ventas. |
+| `ILotes` | `DatosRemesas(idsLote)` | Lista de `DatosRemesaDto`: `IdLote`, `NumeroLote`, `FechaVencimiento`, `NombreMedicamento`, `IdProveedor`, `EstadoLote`, `StockActual` (DEC-057). | Detalle de órdenes de devolución y de retiros; validar estado y stock de una remesa (ESP-0003, ESP-0025, ESP-0027). |
+| `ILotes` | `RemesasDevolvibles(idProveedor)` | Lista de `DatosRemesaDto` del proveedor con `EstadoLote` 'Disponible' o 'Bloqueado por devolucion' y `StockActual` > 0, por vencimiento ascendente. | `DEV-CMB-LOTE-DEVOLUCION` (ESP-0025). |
+| `ILotes` | `RemesasPorVencer(fechaLimite)` | Lista de `DatosRemesaDto` 'Disponible' con `StockActual` > 0 y vencimiento hasta la fecha límite, por vencimiento ascendente. | Consulta de ESP-0013 y proceso 1 de RNF-0010. Alertas calcula la fecha límite con su umbral; Lotes no conoce el umbral. |
+| `ILotes` | `RemesasDisponibles()` | Lista de `DatosRemesaDto` con `EstadoLote` 'Disponible' o 'Bloqueado por devolucion' y `StockActual` > 0, de cualquier proveedor, por vencimiento ascendente. | `ALV-CMB-LOTE-ALERTA` (ESP-0014): una remesa ya bloqueada admite otra alerta (PEN-020). |
+| `ILotes` | `Descontar(idLote, cantidad)` y `Restituir(idLote, cantidad)` | Nada. Aplican la regla única del estado de la remesa (DEC-034). | Ventas (ESP-0001, ESP-0003, ESP-0004) y Devoluciones (`Descontar`, ESP-0027). |
+| `ILotes` | `Bloquear(idLote)` y `Liberar(idLote)` | Nada. `Bloquear` deja 'Bloqueado por devolucion'; `Liberar` deja 'Disponible' si hay stock y 'Agotado' si no (DEC-034). | Alertas de Vencimiento (ESP-0014 y ESP-0016). |
+| `IVentas` (VEN) | `ConsultarVentas(filtro)` | Lista de `VentaDto`: `IdVenta`, `FechaHora`, `MontoTotal`, `IdMetodoPago`, `IdUsuario` y su `Detalle` (`DetalleVentaDto`: `IdLote`, `Cantidad`, `PrecioUnitario`). El `FiltroVentas` tiene `Desde`, `Hasta` (ambos días inclusive) e `IdProducto`, todos opcionales. | Documentación (ESP-0009) y Reportes (ESP-0021). |
+| `IVentas` | `ObtenerVenta(idVenta)` | `VentaDto` o nulo. | Documentación: recuperar `monto_total` de una venta. |
+| `IDevoluciones` (DEV) | `OrdenesPendientesDeRemesa(idLote)` | Lista de `OrdenPendienteDto`: `IdDevolucion`, `FechaCreacion`, `CantidadDevolver`. | Alertas impide eliminar una alerta si la remesa está en una orden pendiente (ESP-0016). |
+| `IReabastecimiento` (REA) | `ListaReabastecimiento()` | Lista de `ItemReabastecimientoDto`: `IdProducto`, `Origen` ('Automatico' o 'Manual'), `Prioridad` ('Normal' o 'Urgente'), `FechaInclusion`. | Comparación de precios: solo los medicamentos pendientes (ESP-0050). |
+
+**Reglas comunes.** Las listas son de solo lectura (`IReadOnlyList`). Las operaciones rechazan argumentos inválidos (identificadores o cantidades no positivos) con `ArgumentOutOfRangeException` o `ArgumentNullException`. Las que escriben, en la implementación real, lanzan `InvalidOperationException` si la remesa no existe o el stock no alcanza. Un módulo solo usa las interfaces de los módulos a los que apunta el grafo de la sección 4.
+
+**Pendiente fuera de este issue.** Reportes necesita el nombre del usuario responsable de cada venta (ESP-0021, DEC-059) y `ISesion` solo expone la sesión actual; esa consulta transversal se define cuando se implemente REP.
 
 ---
 
@@ -167,5 +200,5 @@ El diagrama de componentes en FigJam (13 módulos) ya fue construido y verificad
 
 ## 8. Ambigüedades detectadas en la auditoría final (no bloquean el cierre de este issue)
 
-1. **`usuario_responsable` de Reportes de Ventas no es una columna de BD.** Ver la nota en la explicación de `IUsuarios` (Sección 5). Si en algún momento se decide persistir quién generó cada reporte (hoy no se persiste, `TBL_REPORTES_VENTAS` no tiene FKs), eso sería un cambio al diccionario de datos, no a esta arquitectura.
+1. **`usuario_responsable` de Reportes de Ventas no es una columna de BD.** Ver la nota en la explicación de `ISesion` (Sección 5). Si en algún momento se decide persistir quién generó cada reporte (hoy no se persiste, `TBL_REPORTES_VENTAS` no tiene FKs), eso sería un cambio al diccionario de datos, no a esta arquitectura.
 2. ~~**El valor `'Mermas'` de `TBL_REPORTES_VENTAS.tipo_reporte` no tiene una fuente de datos distinta documentada.**~~ **Resuelto el 13/10/2026:** se descartó el tipo 'Mermas', que no tenía respaldo en ningún requisito (ESP-0021 v04.00, Diccionario de Datos v06.00). No hace falta la arista `Reportes de Ventas → Alertas de Vencimiento`.

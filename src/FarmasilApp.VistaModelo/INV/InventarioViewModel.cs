@@ -15,7 +15,7 @@ public sealed class InventarioViewModel : ViewModelBase
     private readonly InventarioServicio _servicio;
 
     private string? _busqueda;
-    private string _proveedorSeleccionado = Todos;
+    private ProveedorFiltro? _proveedorSeleccionado = ProveedorFiltro.Todos;
     private string _accionTerapeuticaSeleccionada = Todos;
     private ProductoInventario? _productoSeleccionado;
     private string _mensaje = string.Empty;
@@ -36,7 +36,7 @@ public sealed class InventarioViewModel : ViewModelBase
 
     public ObservableCollection<ProductoInventario> Productos { get; } = new();
 
-    public ObservableCollection<string> Proveedores { get; } = new();
+    public ObservableCollection<ProveedorFiltro> Proveedores { get; } = new();
 
     public ObservableCollection<string> AccionesTerapeuticas { get; } = new();
 
@@ -52,7 +52,7 @@ public sealed class InventarioViewModel : ViewModelBase
         set => Establecer(ref _busqueda, value);
     }
 
-    public string ProveedorSeleccionado
+    public ProveedorFiltro? ProveedorSeleccionado
     {
         get => _proveedorSeleccionado;
         set => Establecer(ref _proveedorSeleccionado, value);
@@ -99,11 +99,11 @@ public sealed class InventarioViewModel : ViewModelBase
                 () => _servicio.ObtenerAccionesTerapeuticas());
 
             Proveedores.Clear();
-            Proveedores.Add(Todos);
+            Proveedores.Add(ProveedorFiltro.Todos);
 
             foreach (var proveedor in proveedores)
             {
-                Proveedores.Add(proveedor.ToString());
+                Proveedores.Add(proveedor);
             }
 
             AccionesTerapeuticas.Clear();
@@ -114,7 +114,7 @@ public sealed class InventarioViewModel : ViewModelBase
                 AccionesTerapeuticas.Add(accion);
             }
 
-            ProveedorSeleccionado = Todos;
+            ProveedorSeleccionado = ProveedorFiltro.Todos;
             AccionTerapeuticaSeleccionada = Todos;
 
             return true;
@@ -124,7 +124,7 @@ public sealed class InventarioViewModel : ViewModelBase
             RegistrarError("Carga de filtros", ex);
 
             Proveedores.Clear();
-            Proveedores.Add(Todos);
+            Proveedores.Add(ProveedorFiltro.Todos);
 
             AccionesTerapeuticas.Clear();
             AccionesTerapeuticas.Add(Todos);
@@ -172,17 +172,7 @@ public sealed class InventarioViewModel : ViewModelBase
 
     private int? ObtenerProveedorSeleccionado()
     {
-        if (string.IsNullOrWhiteSpace(ProveedorSeleccionado)
-            || ProveedorSeleccionado == Todos)
-        {
-            return null;
-        }
-
-        return int.TryParse(
-            ProveedorSeleccionado,
-            out var idProveedor)
-            ? idProveedor
-            : null;
+        return ProveedorSeleccionado?.IdProveedor;
     }
 
     private string? ObtenerAccionTerapeuticaSeleccionada()

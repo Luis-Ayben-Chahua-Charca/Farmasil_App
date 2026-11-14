@@ -16,6 +16,7 @@
 | 11/11/2026 | 09.00 | Adecuación de Inventario y Lotes a los mockups aprobados (issue #72, DEC-042): se incorporan identificadores propios para los filtros de consulta de INV y LOT, evitando reutilizar los controles de captura y edición; Inventario adopta una búsqueda única por identificador o nombre y el filtro de categoría mediante `accion_terapeutica` (PEN-010). | AUT-0001 |
 | 11/11/2026 | 10.00 | Se completa la adecuación de Inventario y Lotes del issue #72 (revisión del PR #157, issue #158). Se adopta `<MOD>-SRH-<ENTIDAD o CAMPO>` para los buscadores de texto y `<MOD>-CMB-FILTRO-<CAMPO>` para los filtros de lista cerrada (DEC-061), y la lista de tarjetas recibe identificadores propios, `<MOD>-PNL-<COLECCIÓN>`, `<MOD>-CRD-<ENTIDAD>` y `<MOD>-BTN-SELECCIONAR-<ENTIDAD>` (DEC-062): `INV-PNL-CATALOGO`, `INV-CRD-PRODUCTO`, `INV-BTN-SELECCIONAR-PRODUCTO`, `LOT-PNL-REMESAS` y `LOT-CRD-REMESA`. `INV-TXT-BUSQUEDA-PRODUCTO` pasa a `INV-SRH-PRODUCTO` y `LOT-TXT-FILTRO-NUMERO-LOTE` a `LOT-SRH-NUMERO-LOTE`. Se restauran en el módulo 11 `LOT-CMB-ESTADO-LOTE` y `LOT-BTN-CREAR-LOTE`, que la versión 09.00 había retirado de la tabla, y se agrega `LOT-CMB-PROVEEDOR-LOTE`. | AUT-0001 |
 | 11/11/2026 | 11.00 | Adecuación de Proveedores al mockup aprobado (issue #81, DEC-042; nomenclatura según DEC-061 y DEC-062): se incorporan **PRV-SRH-PROVEEDOR** (búsqueda única por RUC o razón social), **PRV-CMB-FILTRO-ESTADO** (filtro de consulta separado del estado de la ficha), **PRV-PNL-PROVEEDORES** y **PRV-CRD-PROVEEDOR** (lista de tarjetas, separada de **PRV-TBL-PROVEEDORES**). La tabla conserva el teléfono y usa el identificador como clave no visible. | AUT-0001 |
+| 13/11/2026 | 12.00 | Adecuación de Ventas y Usuarios a los mockups (issue #66; DEC-042, DEC-066, DEC-067 y DEC-068): se incorporan en VEN **VEN-PNL-CATALOGO**, **VEN-CRD-PRODUCTO**, **VEN-BTN-SELECCIONAR-PRODUCTO**, **VEN-SRH-PRODUCTO**, **VEN-CMB-FILTRO-ACCION-TERAPEUTICA**, **VEN-PNL-DETALLE-MEDICAMENTO**, **VEN-LBL-FECHA-VENCIMIENTO**, **VEN-PNL-DETALLE-VENTA** y **VEN-LBL-ADVERTENCIAS**, y **VEN-TBL-DETALLE-VENTA** identifica solo la tabla; en USR, **USR-SRH-USUARIO**, **USR-CMB-FILTRO-ROL**, **USR-PNL-CUENTAS** y **USR-CRD-USUARIO**. | AUT-0001 |
 
 ---
 
@@ -189,11 +190,15 @@ Para que los nombres sean predecibles, la función de los componentes que implem
 
 | Componente | Tipo | Función | Mockup |
 | --- | --- | --- | --- |
-| USR-TBL-USUARIOS | Tabla | Listado de cuentas: identificador, nombre de usuario, rol y estado. Nunca muestra la contraseña. | ART-MKP-USR-0001 |
-| USR-TXT-NOMBRE-USUARIO | Campo de texto | Nombre de usuario para el inicio de sesión. Único. | ART-MKP-USR-0001 |
+| USR-TBL-USUARIOS | Tabla | Tabla de cuentas: nombre de usuario, rol y estado. Identifica solo la tabla; la lista de tarjetas es **USR-PNL-CUENTAS** (DEC-062). No muestra el identificador, que se conserva como clave de selección (DEC-068), y nunca muestra la contraseña. | ART-MKP-USR-0001 |
+| USR-TXT-NOMBRE-USUARIO | Campo de texto | Nombre de usuario para el inicio de sesión. Único. Es el campo de la ficha; la búsqueda de la consulta es **USR-SRH-USUARIO**. | ART-MKP-USR-0001 |
 | USR-PWD-CONTRASENA | Campo de contraseña | Contraseña, con el contenido enmascarado. En el formulario de actualización se muestra vacío: si no se completa, la contraseña vigente se conserva. | ART-MKP-USR-0001 |
-| USR-CMB-ROL | ComboBox | Rol de la cuenta: 'Administrador' o 'Tecnico'. | ART-MKP-USR-0001 |
+| USR-CMB-ROL | ComboBox | Rol de la cuenta: 'Administrador' o 'Tecnico'. Es el campo de la ficha; el filtro de la consulta es **USR-CMB-FILTRO-ROL**. | ART-MKP-USR-0001 |
 | USR-CMB-ESTADO-USUARIO | ComboBox | Estado de la cuenta: 'Activo' o 'Inactivo'. | ART-MKP-USR-0001 |
+| USR-SRH-USUARIO | Barra de búsqueda | Búsqueda de cuentas por nombre de usuario (DEC-061). Se mantiene separada de **USR-TXT-NOMBRE-USUARIO**, usado en la ficha. | ART-MKP-USR-0001 |
+| USR-CMB-FILTRO-ROL | ComboBox | Filtro opcional de consulta por rol. Se mantiene separado de **USR-CMB-ROL**, usado en la ficha. | ART-MKP-USR-0001 |
+| USR-PNL-CUENTAS | Panel | Lista de tarjetas «Cuentas de Usuario»: contiene una tarjeta **USR-CRD-USUARIO** por cuenta (DEC-062). | ART-MKP-USR-0001 |
+| USR-CRD-USUARIO | Tarjeta | Tarjeta de una cuenta: nombre de usuario, rol y estado. No tiene botón: al hacer clic en ella, o en una fila de **USR-TBL-USUARIOS**, se carga la ficha (DEC-062). | ART-MKP-USR-0001 |
 | USR-BTN-CREAR-USUARIO | Botón | Valida y registra la cuenta nueva. | ART-MKP-USR-0001 |
 | USR-BTN-LEER-USUARIO | Botón | Ejecuta la búsqueda por nombre de usuario o rol. | ART-MKP-USR-0001 |
 | USR-BTN-ACTUALIZAR-USUARIO | Botón | Abre el formulario de actualización de la cuenta seleccionada. | ART-MKP-USR-0001 |
@@ -298,10 +303,19 @@ El módulo 2 conserva únicamente los datos de catálogo del medicamento: nombre
 
 | Componente | Tipo | Función | Mockup afectado |
 | --- | --- | --- | --- |
-| VEN-TBL-DETALLE-VENTA | Tabla | Líneas de productos de la venta en curso: producto, cantidad, precio unitario y subtotal. Es el componente que hace visible la venta de varios productos. | ART-MKP-VEN-0001 |
+| VEN-TBL-DETALLE-VENTA | Tabla | Líneas de la venta en curso, con las columnas Medicamento, Lote, Cantidad, Precio unitario y Subtotal. Identifica solo la tabla; el panel que la contiene es **VEN-PNL-DETALLE-VENTA** (DEC-051). Es el componente que hace visible la venta de varios productos. | ART-MKP-VEN-0001 |
 | VEN-BTN-AGREGAR-PRODUCTO | Botón | Agrega el producto y la cantidad seleccionados como una línea del detalle. | ART-MKP-VEN-0001 |
 | VEN-BTN-QUITAR-PRODUCTO | Botón | Retira del detalle la línea seleccionada. | ART-MKP-VEN-0001 |
 | VEN-LBL-MONTO-TOTAL | Etiqueta | Suma calculada del detalle. No editable. | ART-MKP-VEN-0001 |
+| VEN-PNL-CATALOGO | Panel | Vista del inventario: catálogo de los medicamentos que se pueden vender, con una tarjeta **VEN-CRD-PRODUCTO** por medicamento. Lo alimenta `ILotes.medicamentosVendibles()` (DEC-044, DEC-066). | ART-MKP-VEN-0001 |
+| VEN-CRD-PRODUCTO | Tarjeta | Tarjeta de un medicamento vendible: nombre y precio. Sus textos no llevan identificador propio; la imagen y el visor 3D quedan fuera del alcance (PEN-027). | ART-MKP-VEN-0001 |
+| VEN-BTN-SELECCIONAR-PRODUCTO | Botón | «Añadir» de la tarjeta: elige el medicamento y prepara la remesa FEFO con cantidad 1. No agrega la línea: eso lo hace **VEN-BTN-AGREGAR-PRODUCTO**, el único camino que valida (PEN-031). | ART-MKP-VEN-0001 |
+| VEN-SRH-PRODUCTO | Barra de búsqueda | Búsqueda de medicamentos del catálogo por nombre (DEC-061). Filtra la selección de ESP-0001, no la consulta de ventas. | ART-MKP-VEN-0001 |
+| VEN-CMB-FILTRO-ACCION-TERAPEUTICA | ComboBox | Filtro opcional del catálogo por categoría. Mientras PEN-010 permanezca abierto, se interpreta mediante `accion_terapeutica`. | ART-MKP-VEN-0001 |
+| VEN-PNL-DETALLE-MEDICAMENTO | Panel | Detalle del medicamento elegido: nombre, acción terapéutica, precio y stock vendible (PEN-028), la remesa FEFO propuesta, la opción de elegir otra y la cantidad. | ART-MKP-VEN-0001 |
+| VEN-LBL-FECHA-VENCIMIENTO | Etiqueta | Fecha de vencimiento de la remesa elegida, solo lectura. Sustituye al selector de fecha que el mockup rotulaba **VEN-FEC-FECHA-VENTA**, que queda solo como filtro de la consulta (ESP-0002). | ART-MKP-VEN-0001 |
+| VEN-PNL-DETALLE-VENTA | Panel | Detalle de la venta: tabla de líneas, monto total, método de pago y registro. Su rótulo es «Detalle de la venta» y sustituye a «Carrito de compras» (DEC-066). | ART-MKP-VEN-0001 |
+| VEN-LBL-ADVERTENCIAS | Etiqueta | Área de los mensajes de vendibilidad y de restricción al agregar una línea (PEN-030). | ART-MKP-VEN-0001 |
 | INV-TXT-STOCK-PRODUCTO | Campo de texto | Cantidad de unidades recibidas o disponibles. | ART-MKP-INV-0001 |
 | INV-CMB-PROVEEDOR | ComboBox | Proveedor que abastece el producto. Se alimenta del módulo 10. | ART-MKP-INV-0001 |
 | INV-SRH-PRODUCTO | Barra de búsqueda | Búsqueda única de productos por identificador o nombre. Sustituye los criterios separados de búsqueda. | ART-MKP-INV-0001 |
@@ -320,7 +334,7 @@ Los componentes ya definidos en las especificaciones se mantienen. El inventario
 
 | Módulo | Componentes |
 | --- | --- |
-| **VEN** | VEN-TBL-REGISTRO-VENTAS, VEN-TBL-DETALLE-VENTA, VEN-CMB-PRODUCTO-VENTA, VEN-CMB-LOTE-VENTA, VEN-CMB-METODO-PAGO, VEN-NUM-CANTIDAD-VENTA, VEN-LBL-FECHA-VENTA, VEN-FEC-FECHA-VENTA, VEN-LBL-MONTO-TOTAL, VEN-BTN-AGREGAR-PRODUCTO, VEN-BTN-QUITAR-PRODUCTO, VEN-BTN-CREAR-VENTA, VEN-BTN-LEER-VENTA, VEN-BTN-ACTUALIZAR-VENTA, VEN-BTN-CONFIRMAR-ACTUALIZACION, VEN-BTN-ELIMINAR-VENTA, VEN-MDL-CONFIRMAR-ELIMINACION, VEN-TXT-MSJ, VEN-BTN-CONFIRMAR-SI, VEN-BTN-CONFIRMAR-NO |
+| **VEN** | VEN-TBL-REGISTRO-VENTAS, VEN-PNL-CATALOGO, VEN-CRD-PRODUCTO, VEN-BTN-SELECCIONAR-PRODUCTO, VEN-SRH-PRODUCTO, VEN-CMB-FILTRO-ACCION-TERAPEUTICA, VEN-PNL-DETALLE-MEDICAMENTO, VEN-LBL-FECHA-VENCIMIENTO, VEN-PNL-DETALLE-VENTA, VEN-TBL-DETALLE-VENTA, VEN-LBL-ADVERTENCIAS, VEN-CMB-PRODUCTO-VENTA (filtro de la consulta, ESP-0002), VEN-CMB-LOTE-VENTA, VEN-CMB-METODO-PAGO, VEN-NUM-CANTIDAD-VENTA, VEN-LBL-FECHA-VENTA, VEN-FEC-FECHA-VENTA, VEN-LBL-MONTO-TOTAL, VEN-BTN-AGREGAR-PRODUCTO, VEN-BTN-QUITAR-PRODUCTO, VEN-BTN-CREAR-VENTA, VEN-BTN-LEER-VENTA, VEN-BTN-ACTUALIZAR-VENTA, VEN-BTN-CONFIRMAR-ACTUALIZACION, VEN-BTN-ELIMINAR-VENTA, VEN-MDL-CONFIRMAR-ELIMINACION, VEN-TXT-MSJ, VEN-BTN-CONFIRMAR-SI, VEN-BTN-CONFIRMAR-NO |
 | **INV** | INV-PNL-CATALOGO, INV-CRD-PRODUCTO, INV-TBL-PRODUCTOS, INV-LBL-ID-PRODUCTO, INV-SRH-PRODUCTO, INV-TXT-NOMBRE-PRODUCTO, INV-TXT-ACCION-TERAPEUTICA, INV-NUM-PRECIO-PRODUCTO, INV-CMB-PROVEEDOR, INV-NUM-STOCK-MINIMO, INV-CMB-FILTRO-PROVEEDOR, INV-CMB-FILTRO-ACCION-TERAPEUTICA, INV-BTN-CREAR-PRODUCTO, INV-BTN-LEER-PRODUCTO, INV-BTN-SELECCIONAR-PRODUCTO, INV-BTN-ACTUALIZAR-PRODUCTO, INV-BTN-CONFIRMAR-ACTUALIZACION, INV-BTN-ELIMINAR-PRODUCTO, INV-MDL-CONFIRMAR-ELIMINACION, INV-TXT-MSJ, INV-BTN-CONFIRMAR-SI, INV-BTN-CONFIRMAR-NO |
 | **DOC** | DOC-TBL-COMPROBANTES, DOC-TXT-NUMERO-COMPROBANTE, DOC-CMB-TIPO-COMPROBANTE, DOC-CMB-CODIGO-VENTA, DOC-LBL-MONTO-TOTAL, DOC-FEC-FECHA-EMISION, DOC-BTN-CREAR-COMPROBANTE, DOC-BTN-LEER-COMPROBANTE, DOC-BTN-ACTUALIZAR-COMPROBANTE, DOC-BTN-CONFIRMAR-ACTUALIZACION, DOC-BTN-ELIMINAR-COMPROBANTE, DOC-MDL-CONFIRMAR-ELIMINACION, DOC-TXT-MSJ, DOC-BTN-CONFIRMAR-SI, DOC-BTN-CONFIRMAR-NO |
 | **ALV** | ALV-TBL-ALERTAS-VENCIMIENTO, ALV-CMB-LOTE-ALERTA, ALV-LBL-FECHA-VENCIMIENTO, ALV-CHK-LOTE-DEFECTUOSO, ALV-TXT-ALERTA-DIGEMID, ALV-BTN-CREAR-ALERTA, ALV-BTN-LEER-ALERTA, ALV-BTN-ACTUALIZAR-ALERTA, ALV-BTN-CONFIRMAR-ACTUALIZACION, ALV-BTN-ELIMINAR-ALERTA, ALV-MDL-CONFIRMAR-ELIMINACION, ALV-TXT-MSJ, ALV-BTN-CONFIRMAR-SI, ALV-BTN-CONFIRMAR-NO |
