@@ -308,74 +308,74 @@
 | Código especificación | ESP-0017 |
 | --- | --- |
 | Nombre | Registro de método de pago |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
 | Experto | Ninguno |
 | Código ilación | ILA-0017 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0001**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**nombreMetodo = PAG-TXT-METODO-PAGO**<br>&nbsp;&nbsp;**estado = PAG-CMB-ESTADO-METODO**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-CREAR-METODO**<br>&nbsp;&nbsp;**VALIDAR nombreMetodo <> VACIO**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_METODOS_PAGO, nombre_metodo = nombreMetodo)**<br>&nbsp;&nbsp;**VALIDAR estado EN ('Activo', 'Inactivo')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (nombreMetodo, estado) EN DB_FARMASIL.TBL_METODOS_PAGO**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR PAG-TBL-METODOS-PAGO**<br>&nbsp;&nbsp;**MOSTRAR "Método de pago registrado correctamente"**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_METODOS_PAGO.nombre_metodo = UNICO**<br>&nbsp;&nbsp;**VERIFICAR PAG-TBL-METODOS-PAGO = ACTUALIZADA**<br>&nbsp;&nbsp;**SI estado = 'Activo' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR METODO DISPONIBLE EN VEN-CMB-METODO-PAGO**<br>&nbsp;&nbsp;**FIN SI**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**nombreMetodo = PAG-TXT-METODO-PAGO**<br>&nbsp;&nbsp;**estado = PAG-CMB-ESTADO-METODO**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-CREAR-METODO**<br>&nbsp;&nbsp;**VALIDAR nombreMetodo <> VACIO**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_METODOS_PAGO, nombre_metodo = nombreMetodo)**<br>&nbsp;&nbsp;**VALIDAR estado EN ('Activo', 'Inactivo')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (nombreMetodo, estado) EN DB_FARMASIL.TBL_METODOS_PAGO**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR PAG-PNL-METODOS-PAGO Y PAG-TBL-METODOS-PAGO**<br>&nbsp;&nbsp;**MOSTRAR "Método de pago registrado correctamente"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_METODOS_PAGO.nombre_metodo = UNICO**<br>&nbsp;&nbsp;**VERIFICAR PAG-PNL-METODOS-PAGO Y PAG-TBL-METODOS-PAGO = ACTUALIZADAS**<br>&nbsp;&nbsp;**SI estado = 'Activo' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR METODO DISPONIBLE EN VEN-CMB-METODO-PAGO**<br>&nbsp;&nbsp;**FIN SI**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-PAG-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Se incorporó la validación de unicidad exigida por la restricción UNIQUE del diccionario, ausente en la versión anterior, y se invirtió el orden de la postcondición, que declaraba la actualización de la interfaz antes que la persistencia en base de datos. |
+| Comentario | Se incorporó la validación de unicidad exigida por la restricción UNIQUE del diccionario, ausente en la versión anterior, y se invirtió el orden de la postcondición, que declaraba la actualización de la interfaz antes que la persistencia en base de datos.<br>**Versión 03.00:** la lista de tarjetas y la tabla CRUD se identifican por separado y ambas se actualizan al registrar un método. |
 
 | Código especificación | ESP-0018 |
 | --- | --- |
 | Nombre | Consulta de métodos de pago |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | FUE-0002 |
 | Experto | Ninguno |
 | Código ilación | ILA-0018 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) EN ('Administrador', 'Tecnico')**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_METODOS_PAGO <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0001**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0002**<br>&nbsp;&nbsp;**estado = PAG-CMB-ESTADO-METODO**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_METODOS_PAGO**<br>&nbsp;&nbsp;**APLICAR FILTRO estado = estado**<br>&nbsp;&nbsp;**CARGAR PAG-TBL-METODOS-PAGO CON (id_metodo_pago, nombre_metodo, estado)**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR PAG-TBL-METODOS-PAGO = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_METODOS_PAGO = SIN_MODIFICACION**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-PAG-0001, ART-MKP-PAG-0002 |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**nombreMetodo = PAG-SRH-METODO (OPCIONAL)**<br>&nbsp;&nbsp;**estadoFiltro = PAG-CMB-FILTRO-ESTADO (OPCIONAL)**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-LEER-METODO**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_METODOS_PAGO**<br>&nbsp;&nbsp;**SI nombreMetodo INFORMADO, FILTRAR POR nombre_metodo CONTIENE nombreMetodo**<br>&nbsp;&nbsp;**SI estadoFiltro INFORMADO, FILTRAR POR estado USANDO estadoFiltro**<br>&nbsp;&nbsp;**CARGAR PAG-PNL-METODOS-PAGO CON tarjetas (nombre_metodo, estado)**<br>&nbsp;&nbsp;**CARGAR PAG-TBL-METODOS-PAGO CON (id_metodo_pago NO VISIBLE, clave de selección; nombre_metodo, estado)**<br>&nbsp;&nbsp;**SI SELECCIONAR tarjeta O fila ENTONCES CARGAR método EN LA FICHA**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR PAG-PNL-METODOS-PAGO Y PAG-TBL-METODOS-PAGO = ACTUALIZADAS**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_METODOS_PAGO = SIN_MODIFICACION**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-PAG-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | El procedimiento anterior tenía dos pasos y no explicaba de dónde salía la información mostrada; se completó el flujo de consulta.<br>Es una de las nueve operaciones disponibles para ambos roles: la técnica necesita conocer qué métodos están habilitados durante la atención. |
+| Comentario | El procedimiento anterior tenía dos pasos y no explicaba de dónde salía la información mostrada; se completó el flujo de consulta.<br>Es una de las nueve operaciones disponibles para ambos roles: la técnica necesita conocer qué métodos están habilitados durante la atención.<br>**Versión 03.00:** se unifica la consulta en **ART-MKP-PAG-0001**, se agregan los filtros opcionales por nombre y estado con **PAG-BTN-LEER-METODO**, y se cargan por separado las tarjetas y la tabla. La búsqueda por nombre es parcial (`nombre_metodo` CONTIENE `nombreMetodo`); `id_metodo_pago` queda como clave de selección no visible y la tabla muestra solo «Método» y «Estado». |
 
 | Código especificación | ESP-0019 |
 | --- | --- |
 | Nombre | Actualización de método de pago |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
 | Experto | Ninguno |
 | Código ilación | ILA-0019 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_METODOS_PAGO <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0001**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR metodo EN PAG-TBL-METODOS-PAGO**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-ACTUALIZAR-METODO**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0003**<br>&nbsp;&nbsp;**nombreMetodo = PAG-TXT-METODO-PAGO**<br>&nbsp;&nbsp;**estado = PAG-CMB-ESTADO-METODO**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR nombreMetodo <> VACIO**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_METODOS_PAGO, nombre_metodo = nombreMetodo Y id_metodo_pago <> metodo)**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_METODOS_PAGO DONDE id_metodo_pago = metodo**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR PAG-TBL-METODOS-PAGO**<br>&nbsp;&nbsp;**MOSTRAR "Método de pago actualizado correctamente"**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR PAG-TBL-METODOS-PAGO = ACTUALIZADA**<br>&nbsp;&nbsp;**SI estado = 'Inactivo' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR METODO NO DISPONIBLE EN VEN-CMB-METODO-PAGO**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR REFERENCIAS(TBL_REGISTRO_VENTAS) = INTACTAS**<br>&nbsp;&nbsp;**FIN SI**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-PAG-0001, ART-MKP-PAG-0003 |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR metodo EN PAG-TBL-METODOS-PAGO O PAG-PNL-METODOS-PAGO**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-ACTUALIZAR-METODO**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0001 EN MODO DE ACTUALIZACION CON LA INFORMACION VIGENTE**<br>&nbsp;&nbsp;**nombreMetodo = PAG-TXT-METODO-PAGO**<br>&nbsp;&nbsp;**estado = PAG-CMB-ESTADO-METODO**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR nombreMetodo <> VACIO**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_METODOS_PAGO, nombre_metodo = nombreMetodo Y id_metodo_pago <> metodo)**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_METODOS_PAGO DONDE id_metodo_pago = metodo**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR PAG-PNL-METODOS-PAGO Y PAG-TBL-METODOS-PAGO**<br>&nbsp;&nbsp;**MOSTRAR "Método de pago actualizado correctamente"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR PAG-PNL-METODOS-PAGO Y PAG-TBL-METODOS-PAGO = ACTUALIZADAS**<br>&nbsp;&nbsp;**SI estado = 'Inactivo' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR METODO NO DISPONIBLE EN VEN-CMB-METODO-PAGO**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR REFERENCIAS(TBL_REGISTRO_VENTAS) = INTACTAS**<br>&nbsp;&nbsp;**FIN SI**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-PAG-0001 |
 | Importancia | Media |
 | Estado | Concluido |
-| Comentario | Se explicitó que la desactivación de un método no afecta a las ventas ya registradas con él, punto que enlaza esta especificación con ESP-0020. |
+| Comentario | Se explicitó que la desactivación de un método no afecta a las ventas ya registradas con él, punto que enlaza esta especificación con ESP-0020.<br>**Versión 03.00:** la actualización se realiza en **ART-MKP-PAG-0001** y conserva la confirmación **PAG-BTN-CONFIRMAR-ACTUALIZACION**; tras guardar, se actualizan por separado tarjetas y tabla. |
 
 | Código especificación | ESP-0020 |
 | --- | --- |
 | Nombre | Desactivación de método de pago |
-| Versión | 04.00 |
-| Fecha | 08/11/2026 |
+| Versión | 05.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
 | Experto | Ninguno |
 | Código ilación | ILA-0020 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_METODOS_PAGO <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0001**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR metodo EN PAG-TBL-METODOS-PAGO**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-ELIMINAR-METODO**<br>&nbsp;&nbsp;**CARGAR ART-MKP-PAG-0004**<br>&nbsp;&nbsp;**MOSTRAR PAG-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR PAG-TXT-MSJ = "¿Está seguro de dar de baja este método de pago? Las ventas ya registradas con él no se verán afectadas."**<br>&nbsp;&nbsp;**SI PRESIONAR PAG-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**resultado = INTENTAR ELIMINAR DB_FARMASIL.TBL_METODOS_PAGO DONDE id_metodo_pago = metodo**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI resultado = RECHAZADO_POR_REFERENCIAS ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_METODOS_PAGO.estado = 'Inactivo'**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Método de pago dado de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR PAG-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR PAG-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR PAG-TBL-METODOS-PAGO**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR BAJA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR METODO_CON_VENTAS.estado = 'Inactivo'**<br>&nbsp;&nbsp;**VERIFICAR METODO NO DISPONIBLE EN VEN-CMB-METODO-PAGO**<br>&nbsp;&nbsp;**VERIFICAR HISTORICO_VENTAS = INTACTO**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-PAG-0001, ART-MKP-PAG-0004 |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR metodo EN PAG-TBL-METODOS-PAGO O PAG-PNL-METODOS-PAGO**<br>&nbsp;&nbsp;**PRESIONAR PAG-BTN-ELIMINAR-METODO**<br>&nbsp;&nbsp;**MOSTRAR PAG-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR PAG-TXT-MSJ = "¿Está seguro de dar de baja este método de pago? Las ventas ya registradas con él no se verán afectadas."**<br>&nbsp;&nbsp;**SI PRESIONAR PAG-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**resultado = INTENTAR ELIMINAR DB_FARMASIL.TBL_METODOS_PAGO DONDE id_metodo_pago = metodo**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**SI resultado = RECHAZADO_POR_REFERENCIAS ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_METODOS_PAGO.estado = 'Inactivo'**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Método de pago dado de baja correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR PAG-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR PAG-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR PAG-PNL-METODOS-PAGO Y PAG-TBL-METODOS-PAGO**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR BAJA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR METODO_CON_VENTAS.estado = 'Inactivo'**<br>&nbsp;&nbsp;**VERIFICAR METODO NO DISPONIBLE EN VEN-CMB-METODO-PAGO**<br>&nbsp;&nbsp;**VERIFICAR HISTORICO_VENTAS = INTACTO**<br>&nbsp;&nbsp;**VERIFICAR PAG-PNL-METODOS-PAGO Y PAG-TBL-METODOS-PAGO = ACTUALIZADAS**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-PAG-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La postcondición anterior era contradictoria: para una eliminación afirmaba que el método "queda registrado correctamente".<br>La eliminación física era además inviable, porque `id_metodo_pago` es clave foránea en **TBL_REGISTRO_VENTAS**. Se resolvió con baja lógica cuando existen ventas asociadas.<br>**Versión 03.00:** Baja condicional según DEC-009 y DEC-029 (VP-B). El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía.<br>**Versión 04.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
+| Comentario | La postcondición anterior era contradictoria: para una eliminación afirmaba que el método "queda registrado correctamente".<br>La eliminación física era además inviable, porque `id_metodo_pago` es clave foránea en **TBL_REGISTRO_VENTAS**. Se resolvió con baja lógica cuando existen ventas asociadas.<br>**Versión 03.00:** Baja condicional según DEC-009 y DEC-029 (VP-B). El módulo ya no consulta tablas de otros módulos para decidirlo (RG-011), y la verificación cubre cualquier referencia, incluidas las que la versión anterior omitía.<br>**Versión 04.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022.<br>**Versión 05.00:** se unifica el modo de baja en **ART-MKP-PAG-0001** y se establece la actualización separada de tarjetas y tabla; se conserva el mensaje de baja condicional y su efecto sobre las ventas existentes. |
 
 ---
 

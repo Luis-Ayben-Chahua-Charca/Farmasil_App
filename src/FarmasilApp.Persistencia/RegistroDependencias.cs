@@ -1,5 +1,7 @@
 using FarmasilApp.Modelo.INV;
+using FarmasilApp.Modelo.PRV;
 using FarmasilApp.Persistencia.INV;
+using FarmasilApp.Persistencia.PRV;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,6 +26,7 @@ public static class RegistroDependencias
 
         servicios.AddSingleton(new OpcionesBaseDatos(cadena));
         servicios.AddTransient<IInventarioRepositorio, InventarioRepositorio>();
+        servicios.AddTransient<IProveedoresRepositorio, ProveedoresRepositorio>();
         return servicios;
     }
 }
