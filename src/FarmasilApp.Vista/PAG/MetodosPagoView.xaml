@@ -1,0 +1,179 @@
+<UserControl x:Class="FarmasilApp.Vista.PAG.MetodosPagoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:comun="clr-namespace:FarmasilApp.Vista.Comun"
+             MinWidth="800"
+             MinHeight="500"
+             comun:ComandoAlCargar.Command="{Binding InicializarCommand}">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0"
+                    Margin="0,0,0,20">
+            <TextBlock Text="Métodos de pago"
+                       FontSize="28"
+                       FontWeight="Bold"/>
+            <TextBlock Text="Consulta de métodos de pago"
+                       Margin="0,4,0,0"
+                       FontSize="15"
+                       Foreground="Gray"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1"
+              Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0"
+                        Margin="0,0,10,0">
+                <TextBlock Text="Estado"/>
+                <comun:FiltroComun AutomationProperties.AutomationId="PAG-CMB-FILTRO-ESTADO"
+                                   ItemsSource="{Binding FiltrosEstado}"
+                                   SelectedItem="{Binding EstadoFiltro}"
+                                   Style="{StaticResource EstiloFiltroComun}"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1"
+                        Margin="0,0,10,0">
+                <TextBlock Text="Método de pago"/>
+                <comun:BusquedaComun AutomationProperties.AutomationId="PAG-SRH-METODO"
+                                     Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="Buscar método de pago..."
+                                     Style="{StaticResource EstiloBusquedaComun}"/>
+            </StackPanel>
+
+            <Button Grid.Column="2"
+                    AutomationProperties.AutomationId="PAG-BTN-LEER-METODO"
+                    Content="Buscar"
+                    Command="{Binding BuscarCommand}"
+                    Height="32"
+                    MinWidth="90"
+                    Margin="0,22,0,0"
+                    Padding="12,0"/>
+        </Grid>
+
+        <TextBlock Grid.Row="2"
+                   Text="{Binding Mensaje}"
+                   Margin="0,0,0,10"
+                   Foreground="Gray"/>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.1*"/>
+                <ColumnDefinition Width="0.9*"/>
+                <ColumnDefinition Width="1.2*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    BorderBrush="#D0D0D0"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="12"
+                    Margin="0,0,10,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Text="Selecciona el Método de Pago"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Margin="0,0,0,8"/>
+
+                    <comun:ListaComun Grid.Row="1"
+                                      AutomationProperties.AutomationId="PAG-PNL-METODOS-PAGO"
+                                      ItemsSource="{Binding Metodos}"
+                                      SelectedItem="{Binding MetodoSeleccionado, Mode=TwoWay}"
+                                      Style="{StaticResource EstiloListaComun}">
+                        <!-- ListaComun es un ListBox: el identificador de la tarjeta va en su ListBoxItem,
+                             que aparece en UI Automation; un Border dentro de la plantilla no aparece. -->
+                        <comun:ListaComun.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="AutomationProperties.AutomationId" Value="PAG-CRD-METODO-PAGO"/>
+                            </Style>
+                        </comun:ListaComun.ItemContainerStyle>
+                        <comun:ListaComun.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="#D0D0D0"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="12"
+                                        Margin="0,0,8,8"
+                                        Width="210">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding NombreMetodo}"
+                                                   FontWeight="Bold"
+                                                   FontSize="15"
+                                                   TextWrapping="Wrap"/>
+                                        <TextBlock Margin="0,5,0,0">
+                                            <Run Text="Estado: "/>
+                                            <Run Text="{Binding Estado}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </comun:ListaComun.ItemTemplate>
+                    </comun:ListaComun>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1"
+                    BorderBrush="#D0D0D0"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="12"
+                    Margin="0,0,10,0">
+                <StackPanel>
+                    <TextBlock Text="Ficha del Método de Pago"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Nombre del Método"/>
+                    <TextBox AutomationProperties.AutomationId="PAG-TXT-METODO-PAGO"
+                             Text="{Binding MetodoSeleccionado.NombreMetodo, Mode=OneWay}"
+                             IsReadOnly="True"
+                             Margin="0,5,0,12"/>
+
+                    <TextBlock Text="Estado"/>
+                    <ComboBox AutomationProperties.AutomationId="PAG-CMB-ESTADO-METODO"
+                              ItemsSource="{Binding EstadosMetodo}"
+                              SelectedItem="{Binding MetodoSeleccionado.Estado, Mode=OneWay}"
+                              IsEnabled="False"
+                              Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <DataGrid Grid.Column="2"
+                      AutomationProperties.AutomationId="PAG-TBL-METODOS-PAGO"
+                      ItemsSource="{Binding Metodos}"
+                      SelectedItem="{Binding MetodoSeleccionado, Mode=TwoWay}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      SelectionMode="Single"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="Horizontal">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Método"
+                                        Binding="{Binding NombreMetodo}"
+                                        Width="*"/>
+                    <DataGridTextColumn Header="Estado"
+                                        Binding="{Binding Estado}"
+                                        Width="110"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</UserControl>

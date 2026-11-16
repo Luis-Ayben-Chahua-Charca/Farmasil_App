@@ -1,4 +1,5 @@
 using System.Windows;
+using FarmasilApp.Vista.Comun;
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Persistencia;
 using FarmasilApp.Vista.Principal;
@@ -31,6 +32,7 @@ public partial class App : Application
         servicios.AgregarPersistencia(configuracion);
         servicios.AgregarModelo();
         servicios.AgregarVistaModelo();
+        servicios.AddSingleton<IMensajeServicio, MensajeServicio>();
         servicios.AddSingleton<MainWindow>();
         _proveedor = servicios.BuildServiceProvider();
 

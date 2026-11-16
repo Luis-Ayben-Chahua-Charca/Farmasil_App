@@ -1,16 +1,22 @@
-using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Modelo.Seguridad;
 using FarmasilApp.VistaModelo.Comun;
 
 namespace FarmasilApp.VistaModelo.Principal;
 
-/// <summary>VistaModelo de la ventana principal: contiene la pantalla activa y arranca en la de inicio.</summary>
+/// <summary>
+/// VistaModelo de la ventana principal: contiene la pantalla activa, arma el menú para el rol de la sesión
+/// y arranca en la pantalla de inicio.
+/// </summary>
+/// <remarks>
+/// Es única en la aplicación y arma el menú una sola vez, con la sesión simulada. Cuando exista el inicio de
+/// sesión (#88), el menú tendrá que rehacerse al iniciar y al cerrar sesión.
+/// </remarks>
 public class MainViewModel : ViewModelBase
 {
     public MainViewModel(
         INavegacionServicio navegacion,
         ISesion sesion,
-        IEnumerable<ModuloMenuViewModel> modulosRegistrados)
+        IEnumerable<ModuloMenu> modulosRegistrados)
     {
         Navegacion = navegacion ?? throw new ArgumentNullException(nameof(navegacion));
         ArgumentNullException.ThrowIfNull(sesion);
@@ -23,41 +29,15 @@ public class MainViewModel : ViewModelBase
         }
 
         Modulos = modulosRegistrados
-            .Where(modulo => modulo.PuedeAbrirsePara(rol))
+            .Select(modulo => new ModuloMenuViewModel(modulo, rol))
             .ToArray();
         Navegacion.NavegarA<InicioViewModel>();
     }
 
     public INavegacionServicio Navegacion { get; }
 
+    /// <summary>Todos los módulos registrados; los que el rol no puede abrir quedan deshabilitados (DEC-075).</summary>
     public IReadOnlyList<ModuloMenuViewModel> Modulos { get; }
 
     public string Titulo => "FARMASIL";
-}
-
-public sealed class ModuloMenuViewModel
-{
-    private readonly HashSet<Rol> _rolesPermitidos;
-
-    public ModuloMenuViewModel(
-        string nombre,
-        RelayCommand abrirCommand,
-        params Rol[] rolesPermitidos)
-    {
-        Nombre = nombre ?? throw new ArgumentNullException(nameof(nombre));
-        AbrirCommand = abrirCommand ?? throw new ArgumentNullException(nameof(abrirCommand));
-        ArgumentNullException.ThrowIfNull(rolesPermitidos);
-        if (rolesPermitidos.Length == 0 || rolesPermitidos.Any(rol => !Enum.IsDefined(rol)))
-        {
-            throw new ArgumentException("Se requieren roles válidos para el módulo.", nameof(rolesPermitidos));
-        }
-
-        _rolesPermitidos = new HashSet<Rol>(rolesPermitidos);
-    }
-
-    public string Nombre { get; }
-
-    public RelayCommand AbrirCommand { get; }
-
-    public bool PuedeAbrirsePara(Rol rol) => _rolesPermitidos.Contains(rol);
 }

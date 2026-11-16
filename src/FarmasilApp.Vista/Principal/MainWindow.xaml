@@ -4,7 +4,7 @@
         Title="{Binding Titulo}" Height="720" Width="1180"
         MinHeight="600" MinWidth="1080"
         WindowStartupLocation="CenterScreen"
-        Style="{StaticResource MainWindowStyle}">
+        Style="{StaticResource EstiloVentanaPrincipal}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
@@ -12,18 +12,22 @@
         </Grid.ColumnDefinitions>
 
         <Border Grid.Column="0"
-                Style="{StaticResource NavigationSidebarStyle}">
+                Style="{StaticResource EstiloBarraMenu}">
             <StackPanel>
                 <TextBlock Text="FARMASIL"
-                           Style="{StaticResource NavigationTitleStyle}" />
+                           Style="{StaticResource EstiloTituloMenu}" />
                 <TextBlock Text="Módulos"
-                           Style="{StaticResource NavigationSectionStyle}" />
+                           Style="{StaticResource EstiloSeccionMenu}" />
+                <!-- Los botones del menú todavía no tienen identificador en la guía de nomenclatura (PEN-037):
+                     no se inventa uno (DEC-060). El botón queda deshabilitado cuando el rol no puede abrir el
+                     módulo, porque su comando no se puede ejecutar, y el tooltip muestra el motivo (DEC-075). -->
                 <ItemsControl ItemsSource="{Binding Modulos}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button Content="{Binding Nombre}"
                                     Command="{Binding AbrirCommand}"
-                                    Style="{StaticResource NavigationButtonStyle}" />
+                                    ToolTip="{Binding Motivo}"
+                                    Style="{StaticResource EstiloBotonMenu}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -32,7 +36,7 @@
 
         <Border Grid.Column="1"
                 Margin="16"
-                Style="{StaticResource MainContentStyle}">
+                Style="{StaticResource EstiloContenidoPrincipal}">
             <ContentControl Content="{Binding Navegacion.Actual}" />
         </Border>
     </Grid>
