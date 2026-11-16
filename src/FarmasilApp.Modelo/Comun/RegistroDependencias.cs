@@ -24,6 +24,7 @@ public static class RegistroDependencias
     public static IServiceCollection AgregarModelo(this IServiceCollection servicios)
     {
         servicios.AddTransient<InventarioServicio>();
+        servicios.AddTransient<MetodosPagoServicio>();
         servicios.AddTransient<ProveedoresServicio>();
 
         // Contratos entre módulos (DEC-069): una línea por interfaz. Cuando el módulo dueño esté listo,

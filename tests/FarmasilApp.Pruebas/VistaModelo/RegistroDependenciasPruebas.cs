@@ -1,10 +1,13 @@
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Modelo.INV;
+using FarmasilApp.Modelo.PAG;
 using FarmasilApp.Modelo.PRV;
 using FarmasilApp.Pruebas.INV;
+using FarmasilApp.Pruebas.PAG;
 using FarmasilApp.Pruebas.PRV;
 using FarmasilApp.VistaModelo.Comun;
 using FarmasilApp.VistaModelo.Principal;
+using FarmasilApp.VistaModelo.PAG;
 using FarmasilApp.VistaModelo.PRV;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +20,7 @@ public class RegistroDependenciasPruebas
         var servicios = new ServiceCollection();
         servicios.AgregarModelo();
         servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
+        servicios.AddSingleton<IMetodosPagoRepositorio, RepositorioDeMetodosPagoFalso>();
         servicios.AddSingleton<IProveedoresRepositorio, RepositorioDeProveedoresFalso>();
         servicios.AgregarVistaModelo();
         return servicios.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
@@ -30,6 +34,7 @@ public class RegistroDependenciasPruebas
         Assert.NotNull(proveedor.GetRequiredService<MainViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<INavegacionServicio>());
         Assert.NotNull(proveedor.GetRequiredService<InicioViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<MetodosPagoViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<ProveedoresViewModel>());
     }
 

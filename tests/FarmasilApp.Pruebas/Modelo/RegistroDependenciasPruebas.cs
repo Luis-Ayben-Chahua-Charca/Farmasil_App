@@ -67,6 +67,20 @@ public class RegistroDependenciasPruebas
     }
 
     [Fact]
+    public void AgregarModeloRegistraMetodosPagoServicio()
+    {
+        var servicios = new ServiceCollection();
+
+        servicios.AgregarModelo();
+
+        var registro = Assert.Single(
+            servicios,
+            servicio => servicio.ServiceType == typeof(MetodosPagoServicio));
+
+        Assert.Equal(ServiceLifetime.Transient, registro.Lifetime);
+    }
+
+    [Fact]
     public void AgregarModeloRegistraProveedoresServicio()
     {
         var servicios = new ServiceCollection();

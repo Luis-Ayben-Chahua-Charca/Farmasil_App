@@ -1,4 +1,5 @@
 using FarmasilApp.VistaModelo.Principal;
+using FarmasilApp.VistaModelo.PAG;
 using FarmasilApp.VistaModelo.PRV;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,7 @@ public static class RegistroDependencias
 
         servicios.AddSingleton<MainViewModel>();
         servicios.AddTransient<InicioViewModel>();
+        servicios.AddTransient<MetodosPagoViewModel>();
         servicios.AddTransient<ProveedoresViewModel>();
 
         return servicios;
