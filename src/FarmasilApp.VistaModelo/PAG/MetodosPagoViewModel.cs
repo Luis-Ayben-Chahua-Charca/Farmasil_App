@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Data.Common;
 using System.Diagnostics;
 using FarmasilApp.Modelo.PAG;
 using FarmasilApp.VistaModelo.Comun;
@@ -11,12 +10,13 @@ namespace FarmasilApp.VistaModelo.PAG;
 /// </summary>
 public sealed class MetodosPagoViewModel : ViewModelBase
 {
-    private const string SinFiltroEstado = "-- Filtrar por Estado --";
+    /// <summary>Opción del filtro de estado que no filtra, como en los demás módulos.</summary>
+    public const string TodosLosEstados = "Todos";
 
     private readonly MetodosPagoServicio _servicio;
 
     private string? _busqueda;
-    private string _estadoFiltro = SinFiltroEstado;
+    private string _estadoFiltro = TodosLosEstados;
     private MetodoPagoConsulta? _metodoSeleccionado;
     private string _mensaje = string.Empty;
 
@@ -25,7 +25,7 @@ public sealed class MetodosPagoViewModel : ViewModelBase
         _servicio = servicio
             ?? throw new ArgumentNullException(nameof(servicio));
 
-        FiltrosEstado.Add(SinFiltroEstado);
+        FiltrosEstado.Add(TodosLosEstados);
         FiltrosEstado.Add("Activo");
         FiltrosEstado.Add("Inactivo");
 
@@ -91,15 +91,14 @@ public sealed class MetodosPagoViewModel : ViewModelBase
             }
 
             MetodoSeleccionado = null;
-            Mensaje = string.Empty;
+            Mensaje = Metodos.Count == 0
+                ? "No se encontraron métodos de pago."
+                : $"Métodos de pago encontrados: {Metodos.Count}.";
         }
-        catch (DbException ex)
+        catch (Exception ex)
         {
-            RegistrarError(ex);
-            MostrarErrorConsulta();
-        }
-        catch (InvalidOperationException ex)
-        {
+            // Cualquier falla se registra y se informa sin el detalle técnico: el comando asíncrono
+            // no debe dejar escapar una excepción, porque cerraría la aplicación.
             RegistrarError(ex);
             MostrarErrorConsulta();
         }
@@ -108,7 +107,7 @@ public sealed class MetodosPagoViewModel : ViewModelBase
     private string? ObtenerEstadoFiltro()
     {
         return string.IsNullOrWhiteSpace(EstadoFiltro)
-            || EstadoFiltro == SinFiltroEstado
+            || EstadoFiltro == TodosLosEstados
                 ? null
                 : EstadoFiltro;
     }

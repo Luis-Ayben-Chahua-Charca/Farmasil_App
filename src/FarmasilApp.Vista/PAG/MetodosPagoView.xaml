@@ -96,10 +96,16 @@
                                       ItemsSource="{Binding Metodos}"
                                       SelectedItem="{Binding MetodoSeleccionado, Mode=TwoWay}"
                                       Style="{StaticResource EstiloListaComun}">
+                        <!-- ListaComun es un ListBox: el identificador de la tarjeta va en su ListBoxItem,
+                             que aparece en UI Automation; un Border dentro de la plantilla no aparece. -->
+                        <comun:ListaComun.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="AutomationProperties.AutomationId" Value="PAG-CRD-METODO-PAGO"/>
+                            </Style>
+                        </comun:ListaComun.ItemContainerStyle>
                         <comun:ListaComun.ItemTemplate>
                             <DataTemplate>
-                                <Border AutomationProperties.AutomationId="PAG-CRD-METODO-PAGO"
-                                        BorderBrush="#D0D0D0"
+                                <Border BorderBrush="#D0D0D0"
                                         BorderThickness="1"
                                         CornerRadius="6"
                                         Padding="12"
@@ -136,14 +142,14 @@
 
                     <TextBlock Text="Nombre del Método"/>
                     <TextBox AutomationProperties.AutomationId="PAG-TXT-METODO-PAGO"
-                             Text="{Binding MetodoSeleccionado.NombreMetodo}"
+                             Text="{Binding MetodoSeleccionado.NombreMetodo, Mode=OneWay}"
                              IsReadOnly="True"
                              Margin="0,5,0,12"/>
 
                     <TextBlock Text="Estado"/>
                     <ComboBox AutomationProperties.AutomationId="PAG-CMB-ESTADO-METODO"
                               ItemsSource="{Binding EstadosMetodo}"
-                              SelectedItem="{Binding MetodoSeleccionado.Estado}"
+                              SelectedItem="{Binding MetodoSeleccionado.Estado, Mode=OneWay}"
                               IsEnabled="False"
                               Margin="0,5,0,0"/>
                 </StackPanel>

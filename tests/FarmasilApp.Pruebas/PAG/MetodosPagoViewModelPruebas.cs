@@ -22,11 +22,47 @@ public class MetodosPagoViewModelPruebas
         await vistaModelo.InicializarCommand.ExecuteAsync();
 
         Assert.Equal(
-            new[] { "-- Filtrar por Estado --", "Activo", "Inactivo" },
+            new[] { MetodosPagoViewModel.TodosLosEstados, "Activo", "Inactivo" },
             vistaModelo.FiltrosEstado);
         Assert.Equal(new[] { "Activo", "Inactivo" }, vistaModelo.EstadosMetodo);
         Assert.Equal(new[] { "Efectivo", "Yape", "Tarjeta" }, vistaModelo.Metodos.Select(metodo => metodo.NombreMetodo));
         Assert.Equal((null, null), repositorio.UltimaConsulta);
+        Assert.Equal("Métodos de pago encontrados: 3.", vistaModelo.Mensaje);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0018")]
+    [Trait("Tecnica", "T-001")]
+    public async Task VolverATodosQuitaElFiltroDeEstado()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        var vistaModelo = new MetodosPagoViewModel(new MetodosPagoServicio(repositorio))
+        {
+            EstadoFiltro = "Activo"
+        };
+        await vistaModelo.BuscarCommand.ExecuteAsync();
+
+        vistaModelo.EstadoFiltro = MetodosPagoViewModel.TodosLosEstados;
+        await vistaModelo.BuscarCommand.ExecuteAsync();
+
+        Assert.Equal((null, null), repositorio.UltimaConsulta);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0018")]
+    [Trait("Tecnica", "T-001")]
+    public async Task SinResultadosMuestraQueNoSeEncontraronMetodos()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        var vistaModelo = new MetodosPagoViewModel(new MetodosPagoServicio(repositorio))
+        {
+            Busqueda = "Cheque"
+        };
+
+        await vistaModelo.BuscarCommand.ExecuteAsync();
+
+        Assert.Empty(vistaModelo.Metodos);
+        Assert.Equal("No se encontraron métodos de pago.", vistaModelo.Mensaje);
     }
 
     [Fact]
