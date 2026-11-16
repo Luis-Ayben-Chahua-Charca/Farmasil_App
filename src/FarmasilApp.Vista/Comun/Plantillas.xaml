@@ -10,10 +10,6 @@
                     xmlns:vistaPrv="clr-namespace:FarmasilApp.Vista.PRV"
                     xmlns:vmUsr="clr-namespace:FarmasilApp.VistaModelo.USR;assembly=FarmasilApp.VistaModelo"
                     xmlns:vistaUsr="clr-namespace:FarmasilApp.Vista.USR">
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="ControlesComunes.xaml"/>
-    </ResourceDictionary.MergedDictionaries>
-
     <!-- Cada VistaModelo se asocia con su pantalla aquí. La navegación solo cambia la VistaModelo activa. -->
     <DataTemplate DataType="{x:Type vm:InicioViewModel}">
         <vista:InicioView />

@@ -8,6 +8,7 @@ using FarmasilApp.Pruebas.PAG;
 using FarmasilApp.Pruebas.PRV;
 using FarmasilApp.Pruebas.USR;
 using FarmasilApp.VistaModelo.Comun;
+using FarmasilApp.VistaModelo.INV;
 using FarmasilApp.VistaModelo.Principal;
 using FarmasilApp.VistaModelo.PAG;
 using FarmasilApp.VistaModelo.PRV;
@@ -40,9 +41,20 @@ public class RegistroDependenciasPruebas
         Assert.NotNull(proveedor.GetRequiredService<MainViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<INavegacionServicio>());
         Assert.NotNull(proveedor.GetRequiredService<InicioViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<InventarioViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<MetodosPagoViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<ProveedoresViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<UsuariosViewModel>());
+    }
+
+    [Fact]
+    public void CadaModuloNavegableSeRegistraUnaSolaVez()
+    {
+        using var proveedor = CrearProveedor();
+
+        var modulos = proveedor.GetServices<ModuloMenu>().Select(modulo => modulo.Nombre).ToArray();
+
+        Assert.Equal(new[] { "Inventario", "Métodos de pago", "Usuarios", "Proveedores" }, modulos);
     }
 
     [Fact]
