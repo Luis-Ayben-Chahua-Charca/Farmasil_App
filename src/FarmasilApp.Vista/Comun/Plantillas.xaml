@@ -5,7 +5,9 @@
                     xmlns:vista="clr-namespace:FarmasilApp.Vista.Principal"
                     xmlns:vistaInv="clr-namespace:FarmasilApp.Vista.INV"
                     xmlns:vmPrv="clr-namespace:FarmasilApp.VistaModelo.PRV;assembly=FarmasilApp.VistaModelo"
-                    xmlns:vistaPrv="clr-namespace:FarmasilApp.Vista.PRV">
+                    xmlns:vistaPrv="clr-namespace:FarmasilApp.Vista.PRV"
+                    xmlns:vmUsr="clr-namespace:FarmasilApp.VistaModelo.USR;assembly=FarmasilApp.VistaModelo"
+                    xmlns:vistaUsr="clr-namespace:FarmasilApp.Vista.USR">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="ControlesComunes.xaml"/>
     </ResourceDictionary.MergedDictionaries>
@@ -23,5 +25,10 @@
     <!-- Consulta de Proveedores (ESP-0038). -->
     <DataTemplate DataType="{x:Type vmPrv:ProveedoresViewModel}">
         <vistaPrv:ProveedoresView />
+    </DataTemplate>
+
+    <!-- Usuarios, pantalla única de las cuatro operaciones (ESP-0033 a ESP-0036). -->
+    <DataTemplate DataType="{x:Type vmUsr:UsuariosViewModel}">
+        <vistaUsr:UsuariosView />
     </DataTemplate>
 </ResourceDictionary>
