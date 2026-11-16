@@ -1,8 +1,10 @@
 using FarmasilApp.Modelo.INV;
 using FarmasilApp.Modelo.PRV;
+using FarmasilApp.Modelo.USR;
 using FarmasilApp.Persistencia;
 using FarmasilApp.Persistencia.INV;
 using FarmasilApp.Persistencia.PRV;
+using FarmasilApp.Persistencia.USR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -110,6 +112,21 @@ public class RegistroDependenciasPruebas
             servicio => servicio.ServiceType == typeof(IProveedoresRepositorio));
 
         Assert.Equal(typeof(ProveedoresRepositorio), registro.ImplementationType);
+        Assert.Equal(ServiceLifetime.Transient, registro.Lifetime);
+    }
+
+    [Fact]
+    public void AgregarPersistenciaRegistraUsuariosRepositorio()
+    {
+        var servicios = new ServiceCollection();
+
+        servicios.AgregarPersistencia(Configuracion("Server=prueba"));
+
+        var registro = Assert.Single(
+            servicios,
+            servicio => servicio.ServiceType == typeof(IUsuariosRepositorio));
+
+        Assert.Equal(typeof(UsuariosRepositorio), registro.ImplementationType);
         Assert.Equal(ServiceLifetime.Transient, registro.Lifetime);
     }
 }
