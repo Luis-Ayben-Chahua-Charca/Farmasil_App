@@ -1,3 +1,4 @@
+using FarmasilApp.Modelo.Comun;
 using FarmasilApp.VistaModelo.INV;
 using FarmasilApp.VistaModelo.Principal;
 using FarmasilApp.VistaModelo.PRV;
@@ -17,8 +18,32 @@ public static class RegistroDependencias
 
         servicios.AddSingleton<MainViewModel>();
         servicios.AddTransient<InicioViewModel>();
-        servicios.AddTransient<InventarioViewModel>();
-        servicios.AddTransient<ProveedoresViewModel>();
+        servicios.AgregarModuloNavegable<InventarioViewModel>(
+            "Inventario",
+            Rol.Administrador,
+            Rol.Tecnico);
+        servicios.AgregarModuloNavegable<ProveedoresViewModel>(
+            "Proveedores",
+            Rol.Administrador);
+
+        return servicios;
+    }
+
+    public static IServiceCollection AgregarModuloNavegable<TViewModel>(
+        this IServiceCollection servicios,
+        string nombre,
+        params Rol[] rolesPermitidos)
+        where TViewModel : ViewModelBase
+    {
+        ArgumentNullException.ThrowIfNull(servicios);
+
+        servicios.AddTransient<TViewModel>();
+        servicios.AddTransient<ModuloMenuViewModel>(proveedor =>
+            new ModuloMenuViewModel(
+                nombre,
+                new RelayCommand(() =>
+                    proveedor.GetRequiredService<INavegacionServicio>().NavegarA<TViewModel>()),
+                rolesPermitidos));
 
         return servicios;
     }

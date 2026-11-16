@@ -53,6 +53,20 @@ public class NavegacionServicioPruebas
     }
 
     [Fact]
+    public void VolverAUnModuloCreaUnaVistaModeloNueva()
+    {
+        var navegacion = CrearServicio();
+        navegacion.NavegarA<PantallaA>();
+        var anterior = navegacion.Actual;
+
+        navegacion.NavegarA<PantallaB>();
+        navegacion.NavegarA<PantallaA>();
+
+        Assert.IsType<PantallaA>(navegacion.Actual);
+        Assert.NotSame(anterior, navegacion.Actual);
+    }
+
+    [Fact]
     public void NavegarNotificaElCambioDeActual()
     {
         var navegacion = CrearServicio();
