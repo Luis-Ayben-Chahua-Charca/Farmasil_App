@@ -5,7 +5,7 @@ namespace FarmasilApp.Vista.Comun;
 
 public sealed class MensajeServicio : IMensajeServicio
 {
-    public bool Confirmar(string modulo, string titulo, string mensaje)
+    public bool Confirmar(string modulo, string? titulo, string mensaje)
     {
         var vistaModelo = new ConfirmacionDialogViewModel(modulo, titulo, mensaje);
         var dialogo = new ConfirmacionDialog(vistaModelo);

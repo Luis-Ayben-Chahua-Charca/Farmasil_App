@@ -52,6 +52,28 @@ public class ConfirmacionDialogViewModelPruebas
             () => new ConfirmacionDialogViewModel(modulo, "Título", "Mensaje"));
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void SinTituloUsaElDelMockup(string? titulo)
+    {
+        var vistaModelo = new ConfirmacionDialogViewModel(
+            "INV",
+            titulo,
+            "¿Está seguro de dar de baja este producto?");
+
+        Assert.Equal("Confirmación de Acción Crítica", vistaModelo.Titulo);
+    }
+
+    [Fact]
+    public void ConservaElTituloRecibido()
+    {
+        var vistaModelo = CrearVistaModelo();
+
+        Assert.Equal("Confirmar baja", vistaModelo.Titulo);
+    }
+
     private static ConfirmacionDialogViewModel CrearVistaModelo()
     {
         return new ConfirmacionDialogViewModel("PAG", "Confirmar baja", "¿Dar de baja el método?");

@@ -137,14 +137,15 @@ Tu primer issue de código es la consulta de tu módulo. Sigue estos pasos, que 
 
 `src/FarmasilApp.Vista/Comun/ControlesComunes.xaml` se carga desde `Plantillas.xaml` y define:
 
-- `ListaComun` (`ListBox`) y `CommonListStyle` para listas seleccionables de tarjetas. La vista enlaza `ItemsSource`, `SelectedItem`, aporta su `ItemTemplate` y asigna los IDs del panel y la tarjeta según la guía.
-- `BusquedaComun` (`TextBox`) y `CommonSearchStyle` para la entrada de búsqueda. Enlaza `Text` al ViewModel con `UpdateSourceTrigger=PropertyChanged` si la consulta debe actualizarse al escribir.
-- `FiltroComun` (`ComboBox`) y `CommonFilterStyle` para la selección del filtro. Enlaza `ItemsSource` y `SelectedItem` al ViewModel.
-- `ConfirmUpdateButtonStyle` para el segundo paso de actualización con el rótulo «Guardar cambios» (DEC-046).
+- `ListaComun` (`ListBox`) y `EstiloListaComun` para listas seleccionables de tarjetas. La vista enlaza `ItemsSource`, `SelectedItem`, aporta su `ItemTemplate` y asigna los IDs del panel y la tarjeta según la guía.
+- `BusquedaComun` (`TextBox`) y `EstiloBusquedaComun` para la entrada de búsqueda. Enlaza `Text` a la VistaModelo con `UpdateSourceTrigger=PropertyChanged` si la consulta debe actualizarse al escribir.
+- `FiltroComun` (`ComboBox`) y `EstiloFiltroComun` para la selección del filtro. Enlaza `ItemsSource` y `SelectedItem` a la VistaModelo.
+- `EstiloBotonConfirmarActualizacion` para el segundo paso de actualización con el rótulo «Guardar cambios» (DEC-046).
+- `EstiloBotonConfirmarSi` y `EstiloBotonConfirmarNo` para los botones del modal de confirmación.
 
-Los controles comunes conservan los bindings nativos de WPF; el ViewModel de cada módulo aplica los criterios de búsqueda y filtro de su especificación. Los recursos compartidos no asignan identificadores de módulo: cada vista los establece en el control correspondiente.
+Los controles comunes conservan los bindings nativos de WPF; la VistaModelo de cada módulo aplica los criterios de búsqueda y filtro de su especificación. Los recursos compartidos no asignan identificadores de módulo: cada vista los establece en el control correspondiente.
 
-La capa VistaModelo consume `IMensajeServicio`: `Confirmar(modulo, titulo, mensaje)` presenta el modal común y devuelve si se confirmó; `MostrarExito` y `MostrarError` presentan el título y el mensaje recibidos. Los textos son responsabilidad de cada especificación y no deben fijarse en el control común.
+La capa VistaModelo consume `IMensajeServicio`: `Confirmar(modulo, titulo, mensaje)` presenta el modal común y devuelve si se confirmó; `MostrarExito` y `MostrarError` presentan el título y el mensaje recibidos. El mensaje del modal es el que fija la especificación de cada baja. Como las especificaciones no fijan un título, `titulo` puede ser `null` y el modal usa entonces el del mockup `ART-MKP-CONFIRM-0001`, «Confirmación de Acción Crítica». Los rótulos de los botones también son los del mockup y Enter no confirma la baja: hay que presionar el botón; Escape cancela.
 
 Dentro de cada proyecto, el código va en la carpeta de su módulo (plan, sección 2). Si la carpeta no existe, créala: el esqueleto solo trae `Comun`, `Principal` y `Seguridad`, porque git no guarda carpetas vacías.
 

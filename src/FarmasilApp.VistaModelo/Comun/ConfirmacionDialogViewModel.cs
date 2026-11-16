@@ -3,10 +3,12 @@ namespace FarmasilApp.VistaModelo.Comun;
 /// <summary>Datos y comandos del modal común de confirmación de baja.</summary>
 public sealed class ConfirmacionDialogViewModel
 {
-    public ConfirmacionDialogViewModel(string modulo, string titulo, string mensaje)
+    /// <summary>Título del mockup ART-MKP-CONFIRM-0001, que se usa cuando la especificación no fija otro.</summary>
+    public const string TituloPredeterminado = "Confirmación de Acción Crítica";
+
+    public ConfirmacionDialogViewModel(string modulo, string? titulo, string mensaje)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(modulo);
-        ArgumentException.ThrowIfNullOrWhiteSpace(titulo);
         ArgumentException.ThrowIfNullOrWhiteSpace(mensaje);
 
         if (modulo.Length != 3 || modulo.Any(caracter => caracter is < 'A' or > 'Z'))
@@ -14,7 +16,7 @@ public sealed class ConfirmacionDialogViewModel
             throw new ArgumentException("El prefijo del módulo debe tener tres letras mayúsculas.", nameof(modulo));
         }
 
-        Titulo = titulo;
+        Titulo = string.IsNullOrWhiteSpace(titulo) ? TituloPredeterminado : titulo;
         Mensaje = mensaje;
         AutomationIdModal = $"{modulo}-MDL-CONFIRMAR-ELIMINACION";
         AutomationIdMensaje = $"{modulo}-TXT-MSJ";
