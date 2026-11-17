@@ -253,7 +253,7 @@
 | --- | --- |
 | Nombre | Registro manual de alerta de producto vencido |
 | Versión | 04.00 |
-| Fecha | 14/10/2026 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0007 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | FUE-0005 |
@@ -280,7 +280,7 @@
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-ALV-0001**<br>&nbsp;&nbsp;**VALIDAR ALV-BTN-ACTUALIZAR-ALERTA = HABILITADO**<br>**FIN** |
 | Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR alerta EN ALV-TBL-ALERTAS-VENCIMIENTO**<br>&nbsp;&nbsp;**MOSTRAR PANEL SANITARIO DE ART-MKP-ALV-0001 EN MODO MODIFICACION (SOLO ADMINISTRADOR Y RETIRO REGISTRADO)**<br>&nbsp;&nbsp;**lote = alerta.id_lote**<br>&nbsp;&nbsp;**MOSTRAR lote EN ALV-CMB-LOTE-ALERTA = SOLO_LECTURA**<br>&nbsp;&nbsp;**MOSTRAR lote.fecha_vencimiento EN ALV-LBL-FECHA-VENCIMIENTO**<br>&nbsp;&nbsp;**loteDefectuoso = ALV-CHK-LOTE-DEFECTUOSO**<br>&nbsp;&nbsp;**alertaDigemid = ALV-TXT-ALERTA-DIGEMID**<br>&nbsp;&nbsp;**PRESIONAR ALV-BTN-ACTUALIZAR-ALERTA**<br>&nbsp;&nbsp;**PRESIONAR ALV-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR lote = alerta.id_lote (SIN_MODIFICACION)**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS SET es_lote_defectuoso, alerta_digemid DONDE id_retiro = alerta (id_lote, nombre_producto, numero_lote Y fecha_vencimiento SIN_MODIFICACION)**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR ALV-TBL-ALERTAS-VENCIMIENTO**<br>&nbsp;&nbsp;**MOSTRAR "Alerta actualizada correctamente"**<br>**FIN** |
 | Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR BLOQUEO_DE_VENTA = VIGENTE**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_PRODUCTOS_RETIRADOS.id_lote = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR ALV-TBL-ALERTAS-VENCIMIENTO = ACTUALIZADA**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-ALV-0001, ART-MKP-ALV-0002 |
+| Código de artefactos asociados | ART-MKP-ALV-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
 | Comentario | Se incorporó el paso de confirmación explícito, coherente con el resto de operaciones de actualización del catálogo, y se mantiene vigente el bloqueo de venta mientras la alerta exista.<br>**Versión 03.00:** (AUD-claude-002, AUD-gpt-004; DEC-035) la remesa de un retiro es de solo lectura, igual que las claves foráneas de ESP-0047 y ESP-0051. Cambiarla dejaba la remesa anterior bloqueada sin retiro que la sostuviera y la nueva vendible, y desalineaba las copias históricas. Para cambiar de remesa se elimina la alerta (ESP-0016) y se registra otra (ESP-0014). Las copias `nombre_producto`, `numero_lote` y `fecha_vencimiento` no se editan. El combo **ALV-CMB-LOTE-ALERTA** de **ART-MKP-ALV-0001** debe mostrarse de solo lectura.<br>**Issue #86 (14/11/2026):** Adecuación a los criterios C1-C4 del plan de implementación. Se unifica el uso del mockup ALV-0001, se diferencian los identificadores, se incorporan los filtros de consulta y se aclara el significado de la casilla de defecto físico, manteniendo los permisos y reglas de negocio existentes.  |
