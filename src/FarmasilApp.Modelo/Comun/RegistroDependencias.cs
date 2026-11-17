@@ -1,3 +1,4 @@
+using FarmasilApp.Modelo.ALV;
 using FarmasilApp.Modelo.DEV;
 using FarmasilApp.Modelo.INV;
 using FarmasilApp.Modelo.LOT;
@@ -24,6 +25,7 @@ public static class RegistroDependencias
     /// </summary>
     public static IServiceCollection AgregarModelo(this IServiceCollection servicios)
     {
+        servicios.AddTransient<AlertasServicio>();
         servicios.AddTransient<InventarioServicio>();
         servicios.AddTransient<MetodosPagoServicio>();
         servicios.AddTransient<ProveedoresServicio>();

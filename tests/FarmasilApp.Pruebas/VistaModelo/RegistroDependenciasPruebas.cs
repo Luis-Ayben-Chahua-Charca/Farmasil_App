@@ -1,4 +1,6 @@
+using FarmasilApp.Modelo.ALV;
 using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Pruebas.ALV;
 using FarmasilApp.Modelo.INV;
 using FarmasilApp.Modelo.PAG;
 using FarmasilApp.Modelo.PRV;
@@ -7,6 +9,7 @@ using FarmasilApp.Pruebas.INV;
 using FarmasilApp.Pruebas.PAG;
 using FarmasilApp.Pruebas.PRV;
 using FarmasilApp.Pruebas.USR;
+using FarmasilApp.VistaModelo.ALV;
 using FarmasilApp.VistaModelo.Comun;
 using FarmasilApp.VistaModelo.INV;
 using FarmasilApp.VistaModelo.Principal;
@@ -23,6 +26,7 @@ public class RegistroDependenciasPruebas
     {
         var servicios = new ServiceCollection();
         servicios.AgregarModelo();
+        servicios.AddSingleton<IAlertasRepositorio, AlertasRepositorioFalso>();
         servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
         servicios.AddSingleton<IMetodosPagoRepositorio, RepositorioDeMetodosPagoFalso>();
         servicios.AddSingleton<IProveedoresRepositorio, RepositorioDeProveedoresFalso>();
@@ -41,6 +45,7 @@ public class RegistroDependenciasPruebas
         Assert.NotNull(proveedor.GetRequiredService<MainViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<INavegacionServicio>());
         Assert.NotNull(proveedor.GetRequiredService<InicioViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<AlertasViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<InventarioViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<MetodosPagoViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<ProveedoresViewModel>());
@@ -54,7 +59,7 @@ public class RegistroDependenciasPruebas
 
         var modulos = proveedor.GetServices<ModuloMenu>().Select(modulo => modulo.Nombre).ToArray();
 
-        Assert.Equal(new[] { "Inventario", "Métodos de pago", "Usuarios", "Proveedores" }, modulos);
+        Assert.Equal(new[] { "Alertas de vencimiento", "Inventario", "Métodos de pago", "Usuarios", "Proveedores" }, modulos);
     }
 
     [Fact]
