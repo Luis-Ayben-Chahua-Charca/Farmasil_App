@@ -1,6 +1,8 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:vm="clr-namespace:FarmasilApp.VistaModelo.Principal;assembly=FarmasilApp.VistaModelo"
+                    xmlns:vmAlv="clr-namespace:FarmasilApp.VistaModelo.ALV;assembly=FarmasilApp.VistaModelo"
+                    xmlns:vistaAlv="clr-namespace:FarmasilApp.Vista.ALV"
                     xmlns:vmInv="clr-namespace:FarmasilApp.VistaModelo.INV;assembly=FarmasilApp.VistaModelo"
                     xmlns:vmPag="clr-namespace:FarmasilApp.VistaModelo.PAG;assembly=FarmasilApp.VistaModelo"
                     xmlns:vista="clr-namespace:FarmasilApp.Vista.Principal"
@@ -13,6 +15,11 @@
     <!-- Cada VistaModelo se asocia con su pantalla aquí. La navegación solo cambia la VistaModelo activa. -->
     <DataTemplate DataType="{x:Type vm:InicioViewModel}">
         <vista:InicioView />
+    </DataTemplate>
+
+    <!-- Consulta de alertas de vencimiento (ESP-0013, Issue #87). -->
+    <DataTemplate DataType="{x:Type vmAlv:AlertasViewModel}">
+        <vistaAlv:AlertasView />
     </DataTemplate>
 
     <!-- Consulta de Inventario (ESP-0006). -->

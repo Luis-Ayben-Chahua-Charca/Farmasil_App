@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Modelo.Seguridad;
+using FarmasilApp.VistaModelo.ALV;
 using FarmasilApp.VistaModelo.Comun;
 using FarmasilApp.VistaModelo.INV;
 using FarmasilApp.VistaModelo.PAG;
@@ -13,7 +14,7 @@ namespace FarmasilApp.Pruebas.VistaModelo;
 
 public class MainViewModelPruebas
 {
-    private static readonly string[] ModulosDelMenu = { "Inventario", "Métodos de pago", "Usuarios", "Proveedores" };
+    private static readonly string[] ModulosDelMenu = { "Inventario", "Alertas de vencimiento", "Métodos de pago", "Usuarios", "Proveedores" };
 
     [Fact]
     [Trait("Especificacion", "RNF-0006")]
@@ -41,7 +42,7 @@ public class MainViewModelPruebas
 
         Assert.Equal(ModulosDelMenu, principal.Modulos.Select(modulo => modulo.Nombre));
         Assert.Equal(
-            new[] { "Inventario", "Métodos de pago" },
+            new[] { "Inventario", "Alertas de vencimiento", "Métodos de pago" },
             principal.Modulos.Where(modulo => modulo.Habilitado).Select(modulo => modulo.Nombre));
     }
 
@@ -67,6 +68,7 @@ public class MainViewModelPruebas
     [Theory]
     [Trait("Especificacion", "RNF-0006")]
     [Trait("Tecnica", "T-012")]
+    [InlineData("Alertas de vencimiento", typeof(AlertasViewModel))]
     [InlineData("Inventario", typeof(InventarioViewModel))]
     [InlineData("Métodos de pago", typeof(MetodosPagoViewModel))]
     [InlineData("Usuarios", typeof(UsuariosViewModel))]
