@@ -2,10 +2,14 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 11.00 |
-| Fecha | 13/11/2026 |
+| Versión | 13.00 |
+| Fecha | 14/11/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 13.00.** Alinea ESP-0013 con los filtros opcionales de la consulta de alertas (issue #86; DEC-076): el camino básico elige remesa y estado, y la partición cubre remesa (una o todas) por estado (Todos, Por vencer, Retirados). No cambia el número de pruebas: 275.
+>
+> **Versión 12.00.** Alinea ESP-0018 con la búsqueda opcional por nombre: el camino básico consulta nombre y estado, y la partición cubre nombre exacto, nombre parcial, estado, combinación y ausencia de criterios (issue #76). No cambia el número de pruebas: 275.
+>
 > **Versión 11.00.** Alinea las pruebas de Ventas y Usuarios con la adecuación de los mockups del issue #66 (DEC-042, DEC-066, DEC-067 y DEC-068). La prueba de ESP-0001 selecciona el medicamento en el catálogo **VEN-PNL-CATALOGO** (búsqueda **VEN-SRH-PRODUCTO** y filtro **VEN-CMB-FILTRO-ACCION-TERAPEUTICA**) y verifica la remesa FEFO con cantidad 1 y la validación al presionar **VEN-BTN-AGREGAR-PRODUCTO**; la de ESP-0034 verifica la lista de tarjetas **USR-PNL-CUENTAS** y la tabla, sin mostrar el identificador. No cambia el número de pruebas: 275.
 >
 > **Versión 10.00.** Alinea las pruebas de Proveedores con la adecuación del mockup del issue #81 (DEC-042, DEC-061 y DEC-062). La consulta usa la búsqueda única **PRV-SRH-PROVEEDOR** y el filtro opcional **PRV-CMB-FILTRO-ESTADO**; sin criterios se listan todos los proveedores, y la lista de tarjetas muestra el mismo resultado que la tabla. La actualización confirma con **PRV-BTN-CONFIRMAR-ACTUALIZACION** (DEC-046). No cambia el número de pruebas: 275.
@@ -160,9 +164,9 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 
 | Clave | Requisito (Nombre / Operación) | Descripción de la prueba | Tipo |
 | --- | --- | --- | --- |
-| ESP-0013 | Consulta de alertas de productos vencidos (Leer) | Camino básico: leer el umbral, comparar los vencimientos de las remesas y consolidar con las ya retiradas. | T-002 |
+| ESP-0013 | Consulta de alertas de productos vencidos (Leer) | Camino básico: elegir opcionalmente remesa y estado, leer el umbral, comparar los vencimientos de las remesas y consolidar con las ya retiradas. | T-002 |
 |  |  | Valores límite sobre el umbral: remesa que vence justo en el límite, un día antes y un día después. | T-001 |
-|  |  | Verificar que el resultado identifique cada entrada por medicamento y número de lote. | T-006 |
+|  |  | Verificar que el resultado identifique cada entrada por medicamento y número de lote, y que los filtros de remesa (una o todas) y de estado (Todos, Por vencer, Retirados) devuelvan solo lo elegido sin modificar datos. | T-006 |
 |  |  | Modificar el umbral en la base y verificar que la consulta refleje el nuevo criterio sin cambios en el código. | T-018 |
 |  |  | Verificar que una remesa 'Bloqueado por devolucion' o 'Agotado' no se cuente entre las próximas a vencer y que el conteo coincida con el aviso del proceso 1 de RNF-0010. | T-006 |
 | ESP-0014 | Registro manual de alerta de producto vencido (Crear) | Camino básico: seleccionar remesa, marcar lote defectuoso, registrar código DIGEMID y confirmar. | T-002 |
@@ -189,8 +193,8 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 | ESP-0017 | Registro de método de pago (Crear) | Camino básico: ingresar nombre y estado, validar unicidad y registrar. | T-002 |
 |  |  | Partición sobre el nombre: válido, duplicado, vacío y con longitud superior a la permitida. | T-001 |
 |  |  | Registrar un método 'Activo' y verificar que aparezca en el combo de ventas; registrarlo 'Inactivo' y verificar que no aparezca. | T-006 |
-| ESP-0018 | Consulta de métodos de pago (Leer) | Camino básico: aplicar el filtro de estado y desplegar el resultado. | T-002 |
-|  |  | Partición sobre el filtro: 'Activo', 'Inactivo' y sin filtro. | T-001 |
+| ESP-0018 | Consulta de métodos de pago (Leer) | Camino básico: buscar por nombre, aplicar el filtro de estado y desplegar el resultado. | T-002 |
+|  |  | Partición de criterios: nombre exacto, nombre parcial, estado ('Activo' o 'Inactivo'), combinación de nombre y estado, y sin criterios. | T-001 |
 | ESP-0019 | Actualización de método de pago (Actualizar) | Camino básico: seleccionar método, modificar nombre o estado y confirmar. | T-002 |
 |  |  | Intentar asignar un nombre que ya pertenece a otro método y verificar el rechazo. | T-001 |
 |  |  | Cambiar un método a 'Inactivo' y verificar que deje de ofrecerse pero que las ventas históricas conserven su referencia. | T-007 |

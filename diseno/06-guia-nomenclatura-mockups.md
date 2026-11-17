@@ -16,8 +16,9 @@
 | 11/11/2026 | 09.00 | Adecuación de Inventario y Lotes a los mockups aprobados (issue #72, DEC-042): se incorporan identificadores propios para los filtros de consulta de INV y LOT, evitando reutilizar los controles de captura y edición; Inventario adopta una búsqueda única por identificador o nombre y el filtro de categoría mediante `accion_terapeutica` (PEN-010). | AUT-0001 |
 | 11/11/2026 | 10.00 | Se completa la adecuación de Inventario y Lotes del issue #72 (revisión del PR #157, issue #158). Se adopta `<MOD>-SRH-<ENTIDAD o CAMPO>` para los buscadores de texto y `<MOD>-CMB-FILTRO-<CAMPO>` para los filtros de lista cerrada (DEC-061), y la lista de tarjetas recibe identificadores propios, `<MOD>-PNL-<COLECCIÓN>`, `<MOD>-CRD-<ENTIDAD>` y `<MOD>-BTN-SELECCIONAR-<ENTIDAD>` (DEC-062): `INV-PNL-CATALOGO`, `INV-CRD-PRODUCTO`, `INV-BTN-SELECCIONAR-PRODUCTO`, `LOT-PNL-REMESAS` y `LOT-CRD-REMESA`. `INV-TXT-BUSQUEDA-PRODUCTO` pasa a `INV-SRH-PRODUCTO` y `LOT-TXT-FILTRO-NUMERO-LOTE` a `LOT-SRH-NUMERO-LOTE`. Se restauran en el módulo 11 `LOT-CMB-ESTADO-LOTE` y `LOT-BTN-CREAR-LOTE`, que la versión 09.00 había retirado de la tabla, y se agrega `LOT-CMB-PROVEEDOR-LOTE`. | AUT-0001 |
 | 11/11/2026 | 11.00 | Adecuación de Proveedores al mockup aprobado (issue #81, DEC-042; nomenclatura según DEC-061 y DEC-062): se incorporan **PRV-SRH-PROVEEDOR** (búsqueda única por RUC o razón social), **PRV-CMB-FILTRO-ESTADO** (filtro de consulta separado del estado de la ficha), **PRV-PNL-PROVEEDORES** y **PRV-CRD-PROVEEDOR** (lista de tarjetas, separada de **PRV-TBL-PROVEEDORES**). La tabla conserva el teléfono y usa el identificador como clave no visible. | AUT-0001 |
-| 13/11/2026 | 12.00 | Adecuación de Ventas y Usuarios a los mockups (issue #66; DEC-042, DEC-066, DEC-067 y DEC-068): se incorporan en VEN **VEN-PNL-CATALOGO**, **VEN-CRD-PRODUCTO**, **VEN-BTN-SELECCIONAR-PRODUCTO**, **VEN-SRH-PRODUCTO**, **VEN-CMB-FILTRO-ACCION-TERAPEUTICA**, **VEN-PNL-DETALLE-MEDICAMENTO**, **VEN-LBL-FECHA-VENCIMIENTO**, **VEN-PNL-DETALLE-VENTA** y **VEN-LBL-ADVERTENCIAS**, y **VEN-TBL-DETALLE-VENTA** identifica solo la tabla; en USR, **USR-SRH-USUARIO**, **USR-CMB-FILTRO-ROL**, **USR-PNL-CUENTAS** y **USR-CRD-USUARIO**. | AUT-0001 ||
-| 14/11/2026 | 13.00 | Adecuación del módulo ALV a los mockups (Issue #86). Se incorporan identificadores exclusivos para filtros, panel y tarjetas, manteniendo una pantalla única. | AUT-0006 |
+| 13/11/2026 | 12.00 | Adecuación de Ventas y Usuarios a los mockups (issue #66; DEC-042, DEC-066, DEC-067 y DEC-068): se incorporan en VEN **VEN-PNL-CATALOGO**, **VEN-CRD-PRODUCTO**, **VEN-BTN-SELECCIONAR-PRODUCTO**, **VEN-SRH-PRODUCTO**, **VEN-CMB-FILTRO-ACCION-TERAPEUTICA**, **VEN-PNL-DETALLE-MEDICAMENTO**, **VEN-LBL-FECHA-VENCIMIENTO**, **VEN-PNL-DETALLE-VENTA** y **VEN-LBL-ADVERTENCIAS**, y **VEN-TBL-DETALLE-VENTA** identifica solo la tabla; en USR, **USR-SRH-USUARIO**, **USR-CMB-FILTRO-ROL**, **USR-PNL-CUENTAS** y **USR-CRD-USUARIO**. | AUT-0001 |
+| 14/11/2026 | 13.00 | Adecuación documental y visual de Métodos de Pago (#76): se separan los IDs de búsqueda, filtro, lista de tarjetas y tabla según DEC-061/062; las especificaciones y el mockup se alinean con **ART-MKP-PAG-0001**. Se registran DEC-071 y PEN-036 para las discrepancias restantes. | AUT-0001 |
+| 14/11/2026 | 14.00 | Adecuación de Alertas de Vencimiento al mockup aprobado (issue #86, DEC-042 y DEC-076; nomenclatura según DEC-061 y DEC-062): se incorporan **ALV-CMB-FILTRO-LOTE** (filtro opcional de remesa), **ALV-CMB-FILTRO-ESTADO-VENCIMIENTO** (Todos, Por vencer o Retirados), **ALV-PNL-LOTES-RIESGO** y **ALV-CRD-LOTE** (lista de tarjetas, separada de **ALV-TBL-ALERTAS-VENCIMIENTO**); **ALV-CMB-LOTE-ALERTA** y **ALV-LBL-FECHA-VENCIMIENTO** quedan reservados a la ficha sanitaria, y **ALV-CHK-LOTE-DEFECTUOSO** indica solo el defecto físico. Una sola pantalla, **ART-MKP-ALV-0001**. | AUT-0001 |
 
 ---
 
@@ -302,6 +303,23 @@ El módulo 2 conserva únicamente los datos de catálogo del medicamento: nombre
 
 ### Componentes nuevos en módulos existentes
 
+Los identificadores nuevos se organizan por módulo. En PAG, el mockup y las especificaciones usan los identificadores canónicos; la descripción e icono de cada método y el panel de previsualización no son requisitos aprobados y se consultan en PEN-036.
+
+#### PAG
+
+| Componente | Tipo | Función | Mockup afectado |
+| --- | --- | --- | --- |
+| PAG-PNL-METODOS-PAGO | Panel | Lista de métodos en tarjetas; contiene una tarjeta **PAG-CRD-METODO-PAGO** por método. | ART-MKP-PAG-0001 |
+| PAG-CRD-METODO-PAGO | Tarjeta | Tarjeta de método de pago con nombre y estado. Al seleccionarla se carga el método en la ficha; sus textos no llevan identificadores propios. | ART-MKP-PAG-0001 |
+| PAG-TBL-METODOS-PAGO | Tabla | Tabla de métodos dentro de «Gestión CRUD». Identifica solo la tabla, no la lista de tarjetas. | ART-MKP-PAG-0001 |
+| PAG-SRH-METODO | Barra de búsqueda | Filtro opcional de consulta por coincidencia parcial en `nombre_metodo` (ESP-0018). Se mantiene separado de **PAG-TXT-METODO-PAGO**, usado en captura y edición. | ART-MKP-PAG-0001 |
+| PAG-CMB-FILTRO-ESTADO | ComboBox | Filtro opcional de consulta por estado. Se mantiene separado de **PAG-CMB-ESTADO-METODO**, usado en captura y edición. | ART-MKP-PAG-0001 |
+| PAG-BTN-LEER-METODO | Botón | Ejecuta la consulta con los filtros opcionales de nombre y estado. | ART-MKP-PAG-0001 |
+| PAG-BTN-ACTUALIZAR-METODO | Botón | «Modificar»: inicia la edición del método seleccionado. | ART-MKP-PAG-0001 |
+| PAG-BTN-CONFIRMAR-ACTUALIZACION | Botón | «Guardar cambios» confirma la edición (DEC-046); se agrega al mockup en el #76. | ART-MKP-PAG-0001 |
+
+#### VEN
+
 | Componente | Tipo | Función | Mockup afectado |
 | --- | --- | --- | --- |
 | VEN-TBL-DETALLE-VENTA | Tabla | Líneas de la venta en curso, con las columnas Medicamento, Lote, Cantidad, Precio unitario y Subtotal. Identifica solo la tabla; el panel que la contiene es **VEN-PNL-DETALLE-VENTA** (DEC-051). Es el componente que hace visible la venta de varios productos. | ART-MKP-VEN-0001 |
@@ -317,6 +335,11 @@ El módulo 2 conserva únicamente los datos de catálogo del medicamento: nombre
 | VEN-LBL-FECHA-VENCIMIENTO | Etiqueta | Fecha de vencimiento de la remesa elegida, solo lectura. Sustituye al selector de fecha que el mockup rotulaba **VEN-FEC-FECHA-VENTA**, que queda solo como filtro de la consulta (ESP-0002). | ART-MKP-VEN-0001 |
 | VEN-PNL-DETALLE-VENTA | Panel | Detalle de la venta: tabla de líneas, monto total, método de pago y registro. Su rótulo es «Detalle de la venta» y sustituye a «Carrito de compras» (DEC-066). | ART-MKP-VEN-0001 |
 | VEN-LBL-ADVERTENCIAS | Etiqueta | Área de los mensajes de vendibilidad y de restricción al agregar una línea (PEN-030). | ART-MKP-VEN-0001 |
+
+#### INV y DEV
+
+| Componente | Tipo | Función | Mockup afectado |
+| --- | --- | --- | --- |
 | INV-TXT-STOCK-PRODUCTO | Campo de texto | Cantidad de unidades recibidas o disponibles. | ART-MKP-INV-0001 |
 | INV-CMB-PROVEEDOR | ComboBox | Proveedor que abastece el producto. Se alimenta del módulo 10. | ART-MKP-INV-0001 |
 | INV-SRH-PRODUCTO | Barra de búsqueda | Búsqueda única de productos por identificador o nombre. Sustituye los criterios separados de búsqueda. | ART-MKP-INV-0001 |
@@ -329,27 +352,20 @@ El módulo 2 conserva únicamente los datos de catálogo del medicamento: nombre
 | DEV-NUM-CANTIDAD-DEVOLVER | Campo numérico | Unidades físicas a devolver por cada línea de la orden. | ART-MKP-DEV-0001 |
 | DEV-TXA-COMENTARIO | Área de texto | Observaciones de la orden. Obligatorio cuando el motivo es la depuración de un error. | ART-MKP-DEV-0001 |
 
-### Adecuación ALV a la pantalla única (Issue #86)
+#### ALV
 
-El módulo de Alertas de Vencimiento utiliza ART-MKP-ALV-0001 como única pantalla para consulta, registro, modificación y eliminación de alertas.
+| Componente | Tipo | Función | Mockup afectado |
+| --- | --- | --- | --- |
+| ALV-CMB-FILTRO-LOTE | ComboBox | Filtro opcional de consulta por remesa, en la parte superior (ESP-0013). Se mantiene separado de **ALV-CMB-LOTE-ALERTA**, usado en la ficha sanitaria. | ART-MKP-ALV-0001 |
+| ALV-CMB-FILTRO-ESTADO-VENCIMIENTO | ComboBox | Filtro de consulta por origen: Todos, Por vencer o Retirados. No modifica el umbral ni el estado de la remesa. | ART-MKP-ALV-0001 |
+| ALV-PNL-LOTES-RIESGO | Panel | Lista de remesas en riesgo; contiene una tarjeta **ALV-CRD-LOTE** por remesa (DEC-062). | ART-MKP-ALV-0001 |
+| ALV-CRD-LOTE | Tarjeta | Tarjeta de una remesa en riesgo: medicamento, lote y vencimiento. Sus textos no llevan identificador propio; la imagen queda fuera del alcance (C3). | ART-MKP-ALV-0001 |
+| ALV-CMB-LOTE-ALERTA | ComboBox | Remesa de la ficha sanitaria. Solo lectura al modificar (DEC-035). | ART-MKP-ALV-0001 |
+| ALV-LBL-FECHA-VENCIMIENTO | Etiqueta | Fecha de vencimiento de la remesa de la ficha; solo lectura. | ART-MKP-ALV-0001 |
+| ALV-CHK-LOTE-DEFECTUOSO | Casilla | Indica exclusivamente defecto físico (`es_lote_defectuoso`). El bloqueo lo causa el registro de la alerta, no la casilla. | ART-MKP-ALV-0001 |
+| ALV-TBL-ALERTAS-VENCIMIENTO | Tabla | Medicamento, lote, vencimiento, defecto y origen. Identifica solo la tabla, no la lista de tarjetas. | ART-MKP-ALV-0001 |
 
-Los controles de filtros, tarjetas y captura de información deben utilizar identificadores diferentes.
-
-| Identificador | Descripción |
-| --- | --- |
-| ALV-CMB-FILTRO-LOTE | Filtro opcional de remesa en la parte superior de la pantalla. |
-| ALV-CMB-FILTRO-ESTADO-VENCIMIENTO | Filtro de consulta: Todos, Por vencer o Retirados. |
-| ALV-PNL-LOTES-RIESGO | Panel que contiene las tarjetas de remesas en riesgo. |
-| ALV-CRD-LOTE | Tarjeta de una remesa en riesgo. |
-| ALV-CMB-LOTE-ALERTA | Selector de remesa de la ficha sanitaria. |
-| ALV-LBL-FECHA-VENCIMIENTO | Fecha de vencimiento de la remesa seleccionada en la ficha. |
-| ALV-CHK-LOTE-DEFECTUOSO | Casilla que indica exclusivamente defecto físico de la remesa. |
-| ALV-TBL-ALERTAS-VENCIMIENTO | Tabla que muestra remesa, medicamento, vencimiento, defecto y origen. |
-
-Los botones de modificación, confirmación y eliminación se habilitan únicamente para el Administrador y para las alertas registradas.
-
-La implementación posterior en WPF debe utilizar AutomationProperties.AutomationId para estos identificadores, conforme a DEC-060.
-
+Modificar, confirmar y eliminar se habilitan solo para el Administrador y para alertas registradas; para la Técnica quedan visibles y deshabilitados con el motivo (RNF-0006, DEC-075). La implementación en WPF usa estos identificadores en `AutomationProperties.AutomationId` (DEC-060).
 
 ### Módulos 1 a 8 — componentes vigentes
 
@@ -361,7 +377,7 @@ Los componentes ya definidos en las especificaciones se mantienen. El inventario
 | **INV** | INV-PNL-CATALOGO, INV-CRD-PRODUCTO, INV-TBL-PRODUCTOS, INV-LBL-ID-PRODUCTO, INV-SRH-PRODUCTO, INV-TXT-NOMBRE-PRODUCTO, INV-TXT-ACCION-TERAPEUTICA, INV-NUM-PRECIO-PRODUCTO, INV-CMB-PROVEEDOR, INV-NUM-STOCK-MINIMO, INV-CMB-FILTRO-PROVEEDOR, INV-CMB-FILTRO-ACCION-TERAPEUTICA, INV-BTN-CREAR-PRODUCTO, INV-BTN-LEER-PRODUCTO, INV-BTN-SELECCIONAR-PRODUCTO, INV-BTN-ACTUALIZAR-PRODUCTO, INV-BTN-CONFIRMAR-ACTUALIZACION, INV-BTN-ELIMINAR-PRODUCTO, INV-MDL-CONFIRMAR-ELIMINACION, INV-TXT-MSJ, INV-BTN-CONFIRMAR-SI, INV-BTN-CONFIRMAR-NO |
 | **DOC** | DOC-TBL-COMPROBANTES, DOC-TXT-NUMERO-COMPROBANTE, DOC-CMB-TIPO-COMPROBANTE, DOC-CMB-CODIGO-VENTA, DOC-LBL-MONTO-TOTAL, DOC-FEC-FECHA-EMISION, DOC-BTN-CREAR-COMPROBANTE, DOC-BTN-LEER-COMPROBANTE, DOC-BTN-ACTUALIZAR-COMPROBANTE, DOC-BTN-CONFIRMAR-ACTUALIZACION, DOC-BTN-ELIMINAR-COMPROBANTE, DOC-MDL-CONFIRMAR-ELIMINACION, DOC-TXT-MSJ, DOC-BTN-CONFIRMAR-SI, DOC-BTN-CONFIRMAR-NO |
 | **ALV** | ALV-CMB-FILTRO-LOTE, ALV-CMB-FILTRO-ESTADO-VENCIMIENTO, ALV-PNL-LOTES-RIESGO, ALV-CRD-LOTE, ALV-TBL-ALERTAS-VENCIMIENTO, ALV-CMB-LOTE-ALERTA, ALV-LBL-FECHA-VENCIMIENTO, ALV-CHK-LOTE-DEFECTUOSO, ALV-TXT-ALERTA-DIGEMID, ALV-BTN-CREAR-ALERTA, ALV-BTN-LEER-ALERTA, ALV-BTN-ACTUALIZAR-ALERTA, ALV-BTN-CONFIRMAR-ACTUALIZACION, ALV-BTN-ELIMINAR-ALERTA, ALV-MDL-CONFIRMAR-ELIMINACION, ALV-TXT-MSJ, ALV-BTN-CONFIRMAR-SI, ALV-BTN-CONFIRMAR-NO |
-| **PAG** | PAG-TBL-METODOS-PAGO, PAG-TXT-METODO-PAGO, PAG-CMB-ESTADO-METODO, PAG-BTN-CREAR-METODO, PAG-BTN-LEER-METODO, PAG-BTN-ACTUALIZAR-METODO, PAG-BTN-CONFIRMAR-ACTUALIZACION, PAG-BTN-ELIMINAR-METODO, PAG-MDL-CONFIRMAR-ELIMINACION, PAG-TXT-MSJ, PAG-BTN-CONFIRMAR-SI, PAG-BTN-CONFIRMAR-NO |
+| **PAG** | PAG-PNL-METODOS-PAGO, PAG-CRD-METODO-PAGO, PAG-SRH-METODO, PAG-CMB-FILTRO-ESTADO, PAG-TBL-METODOS-PAGO, PAG-TXT-METODO-PAGO, PAG-CMB-ESTADO-METODO, PAG-BTN-CREAR-METODO, PAG-BTN-LEER-METODO, PAG-BTN-ACTUALIZAR-METODO, PAG-BTN-CONFIRMAR-ACTUALIZACION, PAG-BTN-ELIMINAR-METODO, PAG-MDL-CONFIRMAR-ELIMINACION, PAG-TXT-MSJ, PAG-BTN-CONFIRMAR-SI, PAG-BTN-CONFIRMAR-NO |
 | **REP** | REP-TBL-REPORTES, REP-CMB-TIPO-REPORTE, REP-CMB-FORMATO-REPORTE, REP-FEC-FECHA-INICIO, REP-FEC-FECHA-FIN, REP-BTN-GENERAR-REPORTE, REP-BTN-LEER-REPORTE, REP-BTN-ACTUALIZAR-REPORTE, REP-BTN-CONFIRMAR-ACTUALIZACION, REP-BTN-ELIMINAR-REPORTE, REP-MDL-CONFIRMAR-ELIMINACION, REP-TXT-MSJ, REP-BTN-CONFIRMAR-SI, REP-BTN-CONFIRMAR-NO |
 | **DEV** | DEV-TBL-ORDENES-DEVOLUCION, DEV-TBL-DETALLE-DEVOLUCION, DEV-CMB-PROVEEDOR, DEV-CMB-LOTE-DEVOLUCION, DEV-CMB-MOTIVO-DEVOLUCION, DEV-NUM-CANTIDAD-DEVOLVER, DEV-TXA-COMENTARIO, DEV-FEC-FECHA-DEVOLUCION, DEV-BTN-CREAR-DEVOLUCION, DEV-BTN-LEER-DEVOLUCION, DEV-BTN-ACTUALIZAR-DEVOLUCION, DEV-BTN-CONFIRMAR-ACTUALIZACION, DEV-BTN-ELIMINAR-DEVOLUCION, DEV-MDL-CONFIRMAR-ELIMINACION, DEV-TXT-MSJ, DEV-BTN-CONFIRMAR-SI, DEV-BTN-CONFIRMAR-NO |
 | **LOT** | LOT-PNL-REMESAS, LOT-CRD-REMESA, LOT-TBL-LOTES, LOT-CMB-PRODUCTO, LOT-CMB-PROVEEDOR-LOTE, LOT-TXT-NUMERO-LOTE, LOT-FEC-FECHA-VENCIMIENTO, LOT-NUM-STOCK-LOTE, LOT-FEC-FECHA-INGRESO, LOT-CMB-ESTADO-LOTE, LOT-CMB-FILTRO-PRODUCTO, LOT-SRH-NUMERO-LOTE, LOT-CMB-FILTRO-ESTADO-LOTE, LOT-BTN-CREAR-LOTE, LOT-BTN-LEER-LOTE, LOT-BTN-ACTUALIZAR-LOTE, LOT-BTN-CONFIRMAR-ACTUALIZACION, LOT-BTN-ELIMINAR-LOTE, LOT-MDL-CONFIRMAR-ELIMINACION, LOT-TXT-MSJ, LOT-BTN-CONFIRMAR-SI, LOT-BTN-CONFIRMAR-NO |

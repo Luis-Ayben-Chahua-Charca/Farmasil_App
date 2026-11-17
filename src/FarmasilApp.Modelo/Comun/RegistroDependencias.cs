@@ -6,6 +6,7 @@ using FarmasilApp.Modelo.PRV;
 using FarmasilApp.Modelo.REA;
 using FarmasilApp.Modelo.RES;
 using FarmasilApp.Modelo.Seguridad;
+using FarmasilApp.Modelo.USR;
 using FarmasilApp.Modelo.VEN;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -24,6 +25,12 @@ public static class RegistroDependencias
     public static IServiceCollection AgregarModelo(this IServiceCollection servicios)
     {
         servicios.AddTransient<InventarioServicio>();
+        servicios.AddTransient<MetodosPagoServicio>();
+        servicios.AddTransient<ProveedoresServicio>();
+        servicios.AddTransient<UsuariosServicio>();
+
+        // El hash no tiene estado: una sola instancia sirve a Usuarios y al inicio de sesión (#88).
+        servicios.AddSingleton<IHashContrasenas, HashContrasenasPbkdf2>();
 
         // Contratos entre módulos (DEC-069): una línea por interfaz. Cuando el módulo dueño esté listo,
         // se cambia solo la implementación de su línea por la real; las simuladas no tienen estado.

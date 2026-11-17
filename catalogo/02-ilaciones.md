@@ -283,7 +283,7 @@
 | --- | --- |
 | Nombre | Modificación de alerta de producto vencido |
 | Versión | 09.00 |
-| Fecha |14/11/2026 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0007 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0005 |
@@ -323,8 +323,8 @@
 | Código ilación | ILA-0017 |
 | --- | --- |
 | Nombre | Registro de métodos de pago |
-| Versión | 06.00 |
-| Fecha | 05/09/2026 |
+| Versión | 07.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
@@ -332,18 +332,18 @@
 | Código educción | EDU-0009 |
 | Código especificación | ESP-0017 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. Se carga el mockup **ART-MKP-PAG-0001**. |
-| Procedimiento | 1. El usuario accede al módulo de métodos de pago.<br>2. El usuario ingresa el nombre del método de pago en **PAG-TXT-METODO-PAGO**.<br>3. El usuario selecciona el estado inicial del método en **PAG-CMB-ESTADO-METODO**.<br>4. El usuario presiona **PAG-BTN-CREAR-METODO**.<br>5. El sistema valida que el nombre no esté vacío y que no exista ya un método con el mismo nombre, dado que `nombre_metodo` es único.<br>6. El sistema registra el método en **DB_FARMASIL.TBL_METODOS_PAGO**.<br>7. El sistema actualiza **PAG-TBL-METODOS-PAGO**. |
-| Postcondición | 1. El método de pago queda registrado en **DB_FARMASIL.TBL_METODOS_PAGO**.<br>2. El método aparece en **PAG-TBL-METODOS-PAGO**.<br>3. Si su estado es 'Activo', el método queda disponible para ser seleccionado en **VEN-CMB-METODO-PAGO** durante el registro de una venta. |
+| Procedimiento | 1. El usuario accede al módulo de métodos de pago.<br>2. El usuario ingresa el nombre del método de pago en **PAG-TXT-METODO-PAGO**.<br>3. El usuario selecciona el estado inicial del método en **PAG-CMB-ESTADO-METODO**.<br>4. El usuario presiona **PAG-BTN-CREAR-METODO**.<br>5. El sistema valida que el nombre no esté vacío y que no exista ya un método con el mismo nombre, dado que `nombre_metodo` es único.<br>6. El sistema registra el método en **DB_FARMASIL.TBL_METODOS_PAGO**.<br>7. El sistema actualiza la lista de tarjetas **PAG-PNL-METODOS-PAGO** y la tabla **PAG-TBL-METODOS-PAGO**. |
+| Postcondición | 1. El método de pago queda registrado en **DB_FARMASIL.TBL_METODOS_PAGO**.<br>2. El método aparece en **PAG-PNL-METODOS-PAGO** y en **PAG-TBL-METODOS-PAGO**.<br>3. Si su estado es 'Activo', el método queda disponible para ser seleccionado en **VEN-CMB-METODO-PAGO** durante el registro de una venta. |
 | Código de artefactos asociados | ART-MKP-PAG-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Se corrigió la referencia a la tabla inexistente **PAG_TBL_METODOS_PAGO** y se invirtió el orden de la postcondición, que declaraba primero la actualización de la interfaz y después la persistencia en base de datos.<br>Se agregó la validación de unicidad exigida por la restricción UNIQUE del diccionario y el efecto sobre el módulo de ventas. |
+| Comentario | Se corrigió la referencia a la tabla inexistente **PAG_TBL_METODOS_PAGO** y se invirtió el orden de la postcondición, que declaraba primero la actualización de la interfaz y después la persistencia en base de datos.<br>Se agregó la validación de unicidad exigida por la restricción UNIQUE del diccionario y el efecto sobre el módulo de ventas.<br>**Versión 07.00:** la adecuación a **ART-MKP-PAG-0001** separa la lista de tarjetas **PAG-PNL-METODOS-PAGO** de la tabla **PAG-TBL-METODOS-PAGO**. |
 
 | Código ilación | ILA-0018 |
 | --- | --- |
 | Nombre | Consulta de métodos de pago |
-| Versión | 05.00 |
-| Fecha | 05/09/2026 |
+| Versión | 06.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | FUE-0002 |
@@ -351,18 +351,18 @@
 | Código educción | EDU-0009 |
 | Código especificación | ESP-0018 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador' o 'Tecnico'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_METODOS_PAGO** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-PAG-0001**. |
-| Procedimiento | 1. El usuario accede al módulo de métodos de pago.<br>2. El sistema carga el mockup **ART-MKP-PAG-0002**.<br>3. El sistema consulta **DB_FARMASIL.TBL_METODOS_PAGO**.<br>4. El usuario puede filtrar el listado por estado en **PAG-CMB-ESTADO-METODO**.<br>5. El sistema muestra los métodos registrados con su estado en **PAG-TBL-METODOS-PAGO**. |
-| Postcondición | 1. El sistema muestra los métodos de pago registrados y su estado en **PAG-TBL-METODOS-PAGO**.<br>2. Los datos permanecen sin modificación en **DB_FARMASIL.TBL_METODOS_PAGO**. |
-| Código de artefactos asociados | ART-MKP-PAG-0001, ART-MKP-PAG-0002 |
+| Procedimiento | 1. El usuario accede al módulo de métodos de pago.<br>2. El usuario puede ingresar un nombre en **PAG-SRH-METODO** y seleccionar un estado en **PAG-CMB-FILTRO-ESTADO**; ambos filtros son opcionales y se mantienen separados de los campos de captura.<br>3. El usuario presiona **PAG-BTN-LEER-METODO**.<br>4. El sistema consulta **DB_FARMASIL.TBL_METODOS_PAGO** y filtra por `nombre_metodo` CONTIENE `nombreMetodo` y por `estado` si se seleccionó un estado.<br>5. El sistema muestra cada método como tarjeta en **PAG-PNL-METODOS-PAGO** mediante **PAG-CRD-METODO-PAGO**, y muestra los resultados tabulares en **PAG-TBL-METODOS-PAGO**.<br>6. Al seleccionar una tarjeta o una fila, el sistema carga el método correspondiente en la ficha. |
+| Postcondición | 1. El sistema muestra los métodos de pago y su estado en las tarjetas de **PAG-PNL-METODOS-PAGO** y en la tabla **PAG-TBL-METODOS-PAGO**.<br>2. Los datos permanecen sin modificación en **DB_FARMASIL.TBL_METODOS_PAGO**. |
+| Código de artefactos asociados | ART-MKP-PAG-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Se corrigió la fecha, que estaba registrada como "2106//26", y el componente **PAG-TLB-METODOS-PAGO**, que invertía las letras del prefijo de tabla.<br>El procedimiento anterior tenía solo dos pasos y no explicaba de dónde salía la información mostrada; se completó el flujo de consulta.<br>Facilita la verificación de los métodos habilitados, permitiendo al personal conocer cuáles pueden utilizarse en las ventas. |
+| Comentario | Se corrigió la fecha, que estaba registrada como "2106//26", y el componente **PAG-TLB-METODOS-PAGO**, que invertía las letras del prefijo de tabla.<br>El procedimiento anterior tenía solo dos pasos y no explicaba de dónde salía la información mostrada; se completó el flujo de consulta.<br>Facilita la verificación de los métodos habilitados, permitiendo al personal conocer cuáles pueden utilizarse en las ventas.<br>**Versión 06.00:** se unifica la consulta en **ART-MKP-PAG-0001**, se separan los identificadores del buscador y el filtro de estado de los campos de captura, y se especifica la carga conjunta de tarjetas y tabla. La búsqueda es parcial (`nombre_metodo` CONTIENE `nombreMetodo`) y `id_metodo_pago` se conserva como clave de selección no visible. |
 
 | Código ilación | ILA-0019 |
 | --- | --- |
 | Nombre | Actualización de métodos de pago |
-| Versión | 05.00 |
-| Fecha | 05/09/2026 |
+| Versión | 06.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
@@ -370,18 +370,18 @@
 | Código educción | EDU-0009 |
 | Código especificación | ESP-0019 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_METODOS_PAGO** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-PAG-0001**. |
-| Procedimiento | 1. El usuario selecciona un método de pago en **PAG-TBL-METODOS-PAGO**.<br>2. El usuario presiona **PAG-BTN-ACTUALIZAR-METODO**.<br>3. El sistema carga el mockup **ART-MKP-PAG-0003** con la información vigente del método.<br>4. El usuario modifica el nombre en **PAG-TXT-METODO-PAGO** o el estado en **PAG-CMB-ESTADO-METODO**.<br>5. El usuario presiona **PAG-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo nombre no colisione con otro método existente.<br>7. El sistema actualiza el registro en **DB_FARMASIL.TBL_METODOS_PAGO**.<br>8. El sistema actualiza **PAG-TBL-METODOS-PAGO**. |
-| Postcondición | 1. El método de pago queda actualizado en **DB_FARMASIL.TBL_METODOS_PAGO**.<br>2. Los cambios se reflejan en **PAG-TBL-METODOS-PAGO**.<br>3. Si el método pasó a estado 'Inactivo', deja de ofrecerse en **VEN-CMB-METODO-PAGO**, pero las ventas ya registradas con ese método conservan su referencia. |
-| Código de artefactos asociados | ART-MKP-PAG-0001, ART-MKP-PAG-0003 |
+| Procedimiento | 1. El usuario selecciona un método de pago en **PAG-TBL-METODOS-PAGO** o en una tarjeta de **PAG-PNL-METODOS-PAGO**.<br>2. El usuario presiona **PAG-BTN-ACTUALIZAR-METODO** y el sistema carga **ART-MKP-PAG-0001** en modo de actualización con la información vigente del método.<br>3. El usuario modifica el nombre en **PAG-TXT-METODO-PAGO** o el estado en **PAG-CMB-ESTADO-METODO**.<br>4. El usuario confirma los cambios mediante **PAG-BTN-CONFIRMAR-ACTUALIZACION**.<br>5. El sistema valida que el nuevo nombre no colisione con otro método existente.<br>6. El sistema actualiza el registro en **DB_FARMASIL.TBL_METODOS_PAGO**.<br>7. El sistema actualiza la lista de tarjetas **PAG-PNL-METODOS-PAGO** y la tabla **PAG-TBL-METODOS-PAGO**. |
+| Postcondición | 1. El método de pago queda actualizado en **DB_FARMASIL.TBL_METODOS_PAGO**.<br>2. Los cambios se reflejan en **PAG-PNL-METODOS-PAGO** y **PAG-TBL-METODOS-PAGO**.<br>3. Si el método pasó a estado 'Inactivo', deja de ofrecerse en **VEN-CMB-METODO-PAGO**, pero las ventas ya registradas con ese método conservan su referencia. |
+| Código de artefactos asociados | ART-MKP-PAG-0001 |
 | Importancia | Media |
 | Estado | Concluido |
-| Comentario | La precondición y el procedimiento habían perdido por completo la numeración de sus pasos; se restauró.<br>Se explicitó que la desactivación no afecta el histórico de ventas, punto que enlaza esta ilación con ILA-0020. |
+| Comentario | La precondición y el procedimiento habían perdido por completo la numeración de sus pasos; se restauró.<br>Se explicitó que la desactivación no afecta el histórico de ventas, punto que enlaza esta ilación con ILA-0020.<br>**Versión 06.00:** la actualización se describe como un modo de **ART-MKP-PAG-0001** y conserva el paso de confirmación solicitado por la especificación; las tarjetas y la tabla se actualizan por separado. |
 
 | Código ilación | ILA-0020 |
 | --- | --- |
 | Nombre | Desactivación de métodos de pago |
-| Versión | 07.00 |
-| Fecha | 08/11/2026 |
+| Versión | 08.00 |
+| Fecha | 14/11/2026 |
 | Autor de la plantilla | AUT-0002 |
 | Actor | ACT-0001 |
 | Fuente | FUE-0002 |
@@ -389,12 +389,12 @@
 | Código educción | EDU-0009 |
 | Código especificación | ESP-0020 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_METODOS_PAGO** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-PAG-0001**. |
-| Procedimiento | 1. El usuario selecciona un método de pago registrado en **PAG-TBL-METODOS-PAGO**.<br>2. El usuario presiona **PAG-BTN-ELIMINAR-METODO**.<br>3. El sistema carga el mockup **ART-MKP-PAG-0004** y muestra el modal **PAG-MDL-CONFIRMAR-ELIMINACION** con el mensaje **PAG-TXT-MSJ**: "¿Está seguro de dar de baja este método de pago? Las ventas ya registradas con él no se verán afectadas."<br>4. Al confirmar, el sistema intenta eliminar físicamente el registro; si la base de datos lo rechaza porque otro registro lo referencia, aplica en su lugar la baja lógica.<br>5. Si el usuario presiona **PAG-BTN-CONFIRMAR-SI** y el método no tiene ventas asociadas, el sistema elimina el registro de **DB_FARMASIL.TBL_METODOS_PAGO**.<br>6. Si el usuario presiona **PAG-BTN-CONFIRMAR-SI** y el método sí tiene ventas asociadas, el sistema actualiza su `estado` a 'Inactivo', conservando el registro.<br>7. Si el usuario presiona **PAG-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>8. El sistema actualiza **PAG-TBL-METODOS-PAGO**. |
-| Postcondición | 1. El método sin ventas asociadas queda eliminado de **DB_FARMASIL.TBL_METODOS_PAGO**.<br>2. El método con ventas asociadas queda en estado 'Inactivo' y conserva la referencia desde el histórico de ventas.<br>3. En ambos casos el método deja de ofrecerse en **VEN-CMB-METODO-PAGO**.<br>4. No se produce ninguna violación de integridad referencial. |
-| Código de artefactos asociados | ART-MKP-PAG-0001, ART-MKP-PAG-0004 |
+| Procedimiento | 1. El usuario selecciona un método de pago en **PAG-TBL-METODOS-PAGO** o en una tarjeta de **PAG-PNL-METODOS-PAGO**.<br>2. El usuario presiona **PAG-BTN-ELIMINAR-METODO**.<br>3. El sistema muestra el modal **PAG-MDL-CONFIRMAR-ELIMINACION** con el mensaje **PAG-TXT-MSJ**: "¿Está seguro de dar de baja este método de pago? Las ventas ya registradas con él no se verán afectadas."<br>4. Al confirmar, el sistema intenta eliminar físicamente el registro; si la base de datos lo rechaza porque otro registro lo referencia, aplica en su lugar la baja lógica.<br>5. Si el usuario presiona **PAG-BTN-CONFIRMAR-SI** y el método no tiene ventas asociadas, el sistema elimina el registro de **DB_FARMASIL.TBL_METODOS_PAGO**.<br>6. Si el usuario presiona **PAG-BTN-CONFIRMAR-SI** y el método sí tiene ventas asociadas, el sistema actualiza su `estado` a 'Inactivo', conservando el registro.<br>7. Si el usuario presiona **PAG-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>8. El sistema actualiza **PAG-PNL-METODOS-PAGO** y **PAG-TBL-METODOS-PAGO**. |
+| Postcondición | 1. El método sin ventas asociadas queda eliminado de **DB_FARMASIL.TBL_METODOS_PAGO**.<br>2. El método con ventas asociadas queda en estado 'Inactivo' y conserva la referencia desde el histórico de ventas.<br>3. En ambos casos el método deja de ofrecerse en **VEN-CMB-METODO-PAGO**.<br>4. Los cambios se reflejan en **PAG-PNL-METODOS-PAGO** y **PAG-TBL-METODOS-PAGO**.<br>5. No se produce ninguna violación de integridad referencial. |
+| Código de artefactos asociados | ART-MKP-PAG-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La postcondición anterior era contradictoria: para una operación de eliminación afirmaba que "el método de pago queda registrado correctamente".<br>La eliminación física era además inviable, porque `id_metodo_pago` es clave foránea en **TBL_REGISTRO_VENTAS**: borrar un método usado habría roto el histórico de ventas. Se resolvió con eliminación física solo cuando no hay referencias y baja lógica en caso contrario, usando el campo `estado` que el diccionario ya define.<br>Evita el uso de métodos de pago no autorizados o en desuso sin sacrificar la trazabilidad contable.<br>**Versión 06.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011).<br>**Versión 07.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022. |
+| Comentario | La postcondición anterior era contradictoria: para una operación de eliminación afirmaba que "el método de pago queda registrado correctamente".<br>La eliminación física era además inviable, porque `id_metodo_pago` es clave foránea en **TBL_REGISTRO_VENTAS**: borrar un método usado habría roto el histórico de ventas. Se resolvió con eliminación física solo cuando no hay referencias y baja lógica en caso contrario, usando el campo `estado` que el diccionario ya define.<br>Evita el uso de métodos de pago no autorizados o en desuso sin sacrificar la trazabilidad contable.<br>**Versión 06.00:** Baja condicional según DEC-009 y DEC-029 (VP-B), sin consultar tablas de otros módulos (RG-011).<br>**Versión 07.00:** la baja condicional se refiere a DEC-009 y DEC-029 (VP-B) en lugar de describir el mecanismo; DEC-029 corrige el fundamento de DEC-022.<br>**Versión 08.00:** se unifican los modos de consulta y baja en **ART-MKP-PAG-0001**, y se especifica la actualización de la lista de tarjetas y la tabla sin alterar la baja condicional ni el mensaje aprobado. |
 
 ---
 
@@ -680,8 +680,8 @@
 | Código ilación | ILA-0035 |
 | --- | --- |
 | Nombre | Actualización de usuario |
-| Versión | 03.00 |
-| Fecha | 13/11/2026 |
+| Versión | 04.00 |
+| Fecha | 16/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Consulta posterior al cliente |
@@ -689,12 +689,12 @@
 | Código educción | EDU-0013 |
 | Código especificación | ESP-0035 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_USUARIOS** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-USR-0001**. |
-| Procedimiento | 1. La dueña selecciona una cuenta con un clic en su tarjeta **USR-CRD-USUARIO** o en una fila de **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ACTUALIZAR-USUARIO**.<br>3. El sistema carga en la ficha de **ART-MKP-USR-0001** la información vigente de la cuenta, dejando **USR-PWD-CONTRASENA** en blanco.<br>4. La dueña modifica el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**, el rol en **USR-CMB-ROL** o el estado en **USR-CMB-ESTADO-USUARIO**. Si desea restablecer la contraseña, ingresa una nueva en **USR-PWD-CONTRASENA**; si deja el campo en blanco, la contraseña vigente se conserva.<br>5. La dueña presiona **USR-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo nombre de usuario no colisione con otra cuenta.<br>7. El sistema verifica que la operación no deje al sistema sin ninguna cuenta activa con rol 'Administrador'.<br>8. El sistema actualiza el registro en **DB_FARMASIL.TBL_USUARIOS**, guardando el hash con sal de la contraseña si fue modificada.<br>9. El sistema actualiza **USR-PNL-CUENTAS** y **USR-TBL-USUARIOS**. |
-| Postcondición | 1. La cuenta queda actualizada en **DB_FARMASIL.TBL_USUARIOS**.<br>2. El identificador de la cuenta permanece inalterado, preservando las referencias desde **TBL_ORDENES_DEVOLUCION** y desde el histórico de ventas.<br>3. Siempre existe al menos una cuenta activa con rol de administrador.<br>4. Los cambios se reflejan en **USR-PNL-CUENTAS** y en **USR-TBL-USUARIOS**. |
+| Procedimiento | 1. La dueña selecciona una cuenta con un clic en su tarjeta **USR-CRD-USUARIO** o en una fila de **USR-TBL-USUARIOS**.<br>2. La dueña presiona **USR-BTN-ACTUALIZAR-USUARIO**.<br>3. El sistema carga en la ficha de **ART-MKP-USR-0001** la información vigente de la cuenta, dejando **USR-PWD-CONTRASENA** en blanco.<br>4. La dueña modifica el nombre de usuario en **USR-TXT-NOMBRE-USUARIO**, el rol en **USR-CMB-ROL** o el estado en **USR-CMB-ESTADO-USUARIO**. Si desea restablecer la contraseña, ingresa una nueva en **USR-PWD-CONTRASENA**; si deja el campo en blanco, la contraseña vigente se conserva.<br>5. La dueña presiona **USR-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema valida que el nuevo nombre de usuario no esté vacío, no supere los 50 caracteres y no colisione con otra cuenta.<br>7. Si la cuenta es la de la sesión activa, el sistema verifica que no se cambie su rol ni su estado; su nombre de usuario y su contraseña sí pueden cambiarse.<br>8. El sistema verifica que la operación no deje al sistema sin ninguna cuenta activa con rol 'Administrador'.<br>9. El sistema actualiza el registro en **DB_FARMASIL.TBL_USUARIOS**, guardando el hash con sal de la contraseña si fue modificada.<br>10. El sistema actualiza **USR-PNL-CUENTAS** y **USR-TBL-USUARIOS**. |
+| Postcondición | 1. La cuenta queda actualizada en **DB_FARMASIL.TBL_USUARIOS**.<br>2. El identificador de la cuenta permanece inalterado, preservando las referencias desde **TBL_ORDENES_DEVOLUCION** y desde el histórico de ventas.<br>3. Siempre existe al menos una cuenta activa con rol de administrador.<br>4. Los cambios se reflejan en **USR-PNL-CUENTAS** y en **USR-TBL-USUARIOS**.<br>5. La cuenta de la sesión activa conserva su rol y su estado. |
 | Código de artefactos asociados | ART-MKP-USR-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La validación del paso 7 evita el bloqueo total del sistema: si la única cuenta administradora se degrada a técnico o se desactiva, nadie podría volver a administrar usuarios.<br>**Versión 02.00:** la contraseña nueva se guarda como hash con sal (RNF-0006 v05.00).<br>**Versión 03.00:** (issue #66; DEC-042, DEC-068) adecuación a la pantalla única **ART-MKP-USR-0001**. C1: se cita ART-MKP-USR-0001 en lugar de 0003 (AUD-MKP-claude-110). La cuenta se selecciona con un clic en su tarjeta o en una fila (DEC-062). En la ficha de una cuenta existente la contraseña se muestra vacía (AUD-MKP-claude-106). C4: **USR-BTN-CONFIRMAR-ACTUALIZACION**, con el rótulo «Guardar cambios», no aparece en el mockup y la pantalla WPF lo incluye (DEC-046; AUD-MKP-claude-109). |
+| Comentario | La validación del paso 8 evita el bloqueo total del sistema: si la única cuenta administradora se degrada a técnico o se desactiva, nadie podría volver a administrar usuarios.<br>**Versión 02.00:** la contraseña nueva se guarda como hash con sal (RNF-0006 v05.00).<br>**Versión 03.00:** (issue #66; DEC-042, DEC-068) adecuación a la pantalla única **ART-MKP-USR-0001**. C1: se cita ART-MKP-USR-0001 en lugar de 0003 (AUD-MKP-claude-110). La cuenta se selecciona con un clic en su tarjeta o en una fila (DEC-062). En la ficha de una cuenta existente la contraseña se muestra vacía (AUD-MKP-claude-106). C4: **USR-BTN-CONFIRMAR-ACTUALIZACION**, con el rótulo «Guardar cambios», no aparece en el mockup y la pantalla WPF lo incluye (DEC-046; AUD-MKP-claude-109).<br>**Versión 04.00:** (issue #68; DEC-073, DEC-074) el administrador de la sesión no puede cambiar el rol ni el estado de su propia cuenta, con el mismo criterio de ILA-0036: sobre la cuenta propia decide otro administrador. Se valida además la longitud máxima del nombre (`NVARCHAR(50)`); el nombre se recorta y su repetición no distingue mayúsculas. |
 
 | Código ilación | ILA-0036 |
 | --- | --- |
