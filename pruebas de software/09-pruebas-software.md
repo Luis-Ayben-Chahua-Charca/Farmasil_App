@@ -2,10 +2,12 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 12.00 |
+| Versión | 13.00 |
 | Fecha | 14/11/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 13.00.** Alinea ESP-0013 con los filtros opcionales de la consulta de alertas (issue #86; DEC-076): el camino básico elige remesa y estado, y la partición cubre remesa (una o todas) por estado (Todos, Por vencer, Retirados). No cambia el número de pruebas: 275.
+>
 > **Versión 12.00.** Alinea ESP-0018 con la búsqueda opcional por nombre: el camino básico consulta nombre y estado, y la partición cubre nombre exacto, nombre parcial, estado, combinación y ausencia de criterios (issue #76). No cambia el número de pruebas: 275.
 >
 > **Versión 11.00.** Alinea las pruebas de Ventas y Usuarios con la adecuación de los mockups del issue #66 (DEC-042, DEC-066, DEC-067 y DEC-068). La prueba de ESP-0001 selecciona el medicamento en el catálogo **VEN-PNL-CATALOGO** (búsqueda **VEN-SRH-PRODUCTO** y filtro **VEN-CMB-FILTRO-ACCION-TERAPEUTICA**) y verifica la remesa FEFO con cantidad 1 y la validación al presionar **VEN-BTN-AGREGAR-PRODUCTO**; la de ESP-0034 verifica la lista de tarjetas **USR-PNL-CUENTAS** y la tabla, sin mostrar el identificador. No cambia el número de pruebas: 275.
@@ -162,9 +164,9 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 
 | Clave | Requisito (Nombre / Operación) | Descripción de la prueba | Tipo |
 | --- | --- | --- | --- |
-| ESP-0013 | Consulta de alertas de productos vencidos (Leer) | Camino básico: leer el umbral, comparar los vencimientos de las remesas y consolidar con las ya retiradas. | T-002 |
+| ESP-0013 | Consulta de alertas de productos vencidos (Leer) | Camino básico: elegir opcionalmente remesa y estado, leer el umbral, comparar los vencimientos de las remesas y consolidar con las ya retiradas. | T-002 |
 |  |  | Valores límite sobre el umbral: remesa que vence justo en el límite, un día antes y un día después. | T-001 |
-|  |  | Verificar que el resultado identifique cada entrada por medicamento y número de lote. | T-006 |
+|  |  | Verificar que el resultado identifique cada entrada por medicamento y número de lote, y que los filtros de remesa (una o todas) y de estado (Todos, Por vencer, Retirados) devuelvan solo lo elegido sin modificar datos. | T-006 |
 |  |  | Modificar el umbral en la base y verificar que la consulta refleje el nuevo criterio sin cambios en el código. | T-018 |
 |  |  | Verificar que una remesa 'Bloqueado por devolucion' o 'Agotado' no se cuente entre las próximas a vencer y que el conteo coincida con el aviso del proceso 1 de RNF-0010. | T-006 |
 | ESP-0014 | Registro manual de alerta de producto vencido (Crear) | Camino básico: seleccionar remesa, marcar lote defectuoso, registrar código DIGEMID y confirmar. | T-002 |

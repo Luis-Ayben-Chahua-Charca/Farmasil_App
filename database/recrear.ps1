@@ -5,6 +5,9 @@
 
 $ErrorActionPreference = "Stop"
 
+# -I fija QUOTED_IDENTIFIER ON en la sesion de sqlcmd. El sqlcmd antiguo (ODBC) la abre en
+# OFF y 002_datos_prueba.sql falla con el error 1934; el de winget ya la abre en ON.
+
 $DirectorioScript = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ScriptEsquema = Join-Path $DirectorioScript "001_esquema.sql"
 $ScriptDatos = Join-Path $DirectorioScript "002_datos_prueba.sql"
@@ -33,6 +36,7 @@ COLLATE Modern_Spanish_CI_AS;
 sqlcmd `
     -S $Servidor `
     -E `
+    -I `
     -b `
     -Q $SqlRecrear
 
@@ -48,6 +52,7 @@ Write-Host "Ejecutando 001_esquema.sql..."
 sqlcmd `
     -S $Servidor `
     -E `
+    -I `
     -b `
     -d $Base `
     -i $ScriptEsquema
@@ -62,6 +67,7 @@ Write-Host "Ejecutando 002_datos_prueba.sql..."
 sqlcmd `
     -S $Servidor `
     -E `
+    -I `
     -b `
     -d $Base `
     -i $ScriptDatos
@@ -87,6 +93,7 @@ SELECT
 sqlcmd `
     -S $Servidor `
     -E `
+    -I `
     -b `
     -d $Base `
     -Q $SqlVerificacion
