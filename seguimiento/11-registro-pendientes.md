@@ -2,8 +2,8 @@
 
 | Artefacto | Registro de pendientes y decisiones |
 | --- | --- |
-| Versión | 17.00 |
-| Fecha | 16/11/2026 |
+| Versión | 18.00 |
+| Fecha | 17/11/2026 |
 | Responsable | AUT-0001 |
 
 ## Historial de versiones
@@ -20,6 +20,7 @@
 | 15.00 | 14/11/2026 | Issue #76: se incorpora DEC-071 sobre la adecuación de los mockups de Métodos de Pago y PEN-036 para consultar a la dueña sobre la descripción, el icono y la previsualización. |
 | 16.00 | 16/11/2026 | Issue #68: se incorporan DEC-072 sobre el error de regla de negocio, DEC-073 sobre la cuenta propia en la actualización de usuarios y DEC-074 sobre la normalización y la longitud del nombre de usuario. |
 | 17.00 | 16/11/2026 | Issue #74: se incorporan DEC-075 sobre los módulos del menú que el rol no puede usar y PEN-037 sobre los identificadores de la ventana principal. |
+| 18.00 | 17/11/2026 | Issue #86: se incorpora DEC-076 sobre la adecuación de los mockups de Alertas de Vencimiento. |
 
 ## 1. Para qué existe y por qué tiene esta forma
 
@@ -180,6 +181,7 @@ Preguntas en el orden en que conviene hacerlas, para salir de la reunión con to
 | DEC-073 | 16/11/2026 | El administrador de la sesión no puede cambiar el rol ni el estado de su propia cuenta en ESP-0035; sí su nombre de usuario y su contraseña. Mensaje: «No es posible cambiar el rol ni el estado de la cuenta con la que se encuentra abierta la sesión». La guarda del último administrador activo se mantiene para las demás cuentas. | Pasar la cuenta propia a 'Inactivo' equivale a la baja que ESP-0036 ya prohíbe, y pasarla a 'Tecnico' dejaría la sesión abierta con un rol que la cuenta ya no tiene; el catálogo ya aplica en la baja el criterio de que sobre la cuenta propia decide otro administrador. | Leyni / Instancia maestra | ESP-0035 v04.00, ILA-0035 v04.00, #68 |
 | DEC-074 | 16/11/2026 | Nombre de usuario en ESP-0033 y ESP-0035: se recorta antes de validarlo, un nombre formado solo por espacios cuenta como vacío, la comparación de repetidos no distingue mayúsculas y se valida `LONGITUD(nombreUsuario) <= 50`. La contraseña no se recorta y solo está vacía si no tiene caracteres. | Coherencia con la restricción UNIQUE de `nombre_usuario`, la intercalación `Modern_Spanish_CI_AS` y `NVARCHAR(50)` del diccionario; la longitud no es una regla nueva y la especificación la declara porque manda (C4 de DEC-042). | Leyni / Instancia maestra | ESP-0033 v04.00, ESP-0035 v04.00, ILA-0035 v04.00, #68 |
 | DEC-075 | 16/11/2026 | El menú de la ventana principal muestra todos los módulos implementados a los dos roles. Los que la matriz de permisos no le concede al rol de la sesión se ven deshabilitados e indican el motivo al pasar el cursor («Solo disponible para el Administrador.»). Cada módulo declara sus roles al registrarse con `AgregarModuloNavegable`. Se aplica la condición 4 de RNF-0006 («No se ocultan») por sobre la redacción del issue #74 («muestra solo los módulos permitidos»); DEC-050 admitía ambas formas. | RNF-0006 es el requisito y la prueba T-016 del plan 09 la comprueba; mostrar el módulo deshabilitado le dice al personal qué ofrece el sistema sin dejarle una opción que después se rechace. | Leyni | RNF-0006 (condición 4), DEC-050, matriz de permisos, `VistaModelo/Principal/ModuloMenuViewModel.cs`, `Vista/Principal/MainWindow.xaml`, #74 |
+| DEC-076 | 17/11/2026 | Adecuación ALV según los criterios C1–C4 de DEC-042 y las filas del módulo 4 de `seguimiento/12-revision-mockups.md` y de la auditoría 14: (1) (c) `ALV-CMB-LOTE-ALERTA` y `ALV-LBL-FECHA-VENCIMIENTO` quedan solo en la ficha sanitaria; el filtro superior es **ALV-CMB-FILTRO-LOTE**, el de estado es **ALV-CMB-FILTRO-ESTADO-VENCIMIENTO** y la lista de tarjetas es **ALV-PNL-LOTES-RIESGO** con **ALV-CRD-LOTE** (DEC-061, DEC-062); (2) (b) ESP-0013 incorpora los dos filtros opcionales (Todos, Por vencer, Retirados) sin tocar el umbral ni `estado_lote`, y distingue cada entrada como «Por vencer» o «Retirado»; (3) (c) **ALV-CHK-LOTE-DEFECTUOSO** representa solo `es_lote_defectuoso`: el bloqueo lo causa el registro de la alerta, aunque la casilla no esté marcada; (4) (e) ESP-0015 y ESP-0016 citan `ART-MKP-ALV-0001`, porque `0002` y `0003` no existen; modificar y eliminar se hacen en la misma pantalla; (5) (g) modificar y eliminar solo para el Administrador y sobre alertas registradas; para la Técnica quedan visibles y deshabilitados con el motivo (RNF-0006, DEC-075); (6) los rótulos del HTML se alinean con la ESP: «Eliminar alerta» y «Sí, eliminar». | Las filas ALV del informe 12 y de las auditorías (claude-063, 064 y 069; gpt-043 a 049) pedían resolver identificadores repetidos, mockups inexistentes y filtros sin respaldo; ninguna exige una decisión nueva de la dueña. | R7 (Jhoer), con revisión de Leyni | ILA-0013 a ILA-0016, ESP-0013 a ESP-0016, `diseno/06-guia-nomenclatura-mockups.md`, `diseno/Mockups/fuente/ART-MKP-ALV-0001.html`, `pruebas de software/09-pruebas-software.md`, #86 |
 
 ## 6. Cuestiones cerradas
 
