@@ -59,7 +59,7 @@ public class RegistroDependenciasPruebas
 
         var modulos = proveedor.GetServices<ModuloMenu>().Select(modulo => modulo.Nombre).ToArray();
 
-        Assert.Equal(new[] { "Alertas de vencimiento", "Inventario", "Métodos de pago", "Usuarios", "Proveedores" }, modulos);
+        Assert.Equal(new[] { "Inventario", "Alertas de vencimiento", "Métodos de pago", "Usuarios", "Proveedores" }, modulos);
     }
 
     [Fact]

@@ -14,7 +14,7 @@ namespace FarmasilApp.Pruebas.VistaModelo;
 
 public class MainViewModelPruebas
 {
-    private static readonly string[] ModulosDelMenu = { "Alertas de vencimiento", "Inventario", "Métodos de pago", "Usuarios", "Proveedores" };
+    private static readonly string[] ModulosDelMenu = { "Inventario", "Alertas de vencimiento", "Métodos de pago", "Usuarios", "Proveedores" };
 
     [Fact]
     [Trait("Especificacion", "RNF-0006")]
@@ -42,7 +42,7 @@ public class MainViewModelPruebas
 
         Assert.Equal(ModulosDelMenu, principal.Modulos.Select(modulo => modulo.Nombre));
         Assert.Equal(
-            new[] { "Alertas de vencimiento", "Inventario", "Métodos de pago" },
+            new[] { "Inventario", "Alertas de vencimiento", "Métodos de pago" },
             principal.Modulos.Where(modulo => modulo.Habilitado).Select(modulo => modulo.Nombre));
     }
 

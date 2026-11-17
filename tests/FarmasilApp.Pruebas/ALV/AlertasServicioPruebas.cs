@@ -124,14 +124,6 @@ public sealed class AlertasServicioPruebas
         public override TimeZoneInfo LocalTimeZone => TimeZoneInfo.Utc;
     }
 
-    private sealed class AlertasRepositorioFalso : IAlertasRepositorio
-    {
-        public int Umbral { get; set; } = 2;
-        public List<AlertaConsulta> Retiros { get; } = new();
-        public int ObtenerUmbralMesesActivo() => Umbral;
-        public IReadOnlyList<AlertaConsulta> ConsultarRetiros() => Retiros;
-    }
-
     private sealed class LotesFalsos : ILotes
     {
         public List<DatosRemesaDto> Items { get; } = new();
