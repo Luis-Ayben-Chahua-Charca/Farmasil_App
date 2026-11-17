@@ -10,6 +10,7 @@ using FarmasilApp.Modelo.Seguridad;
 using FarmasilApp.Modelo.VEN;
 using FarmasilApp.Persistencia;
 using FarmasilApp.Pruebas.INV;
+using FarmasilApp.Pruebas.PRV;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,6 +38,7 @@ public class RegistroDependenciasPruebas
         servicios.AgregarModelo();
         // La Persistencia aporta el repositorio real; aquí basta uno de prueba para poder resolver InventarioServicio.
         servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
+        servicios.AddSingleton<IProveedoresRepositorio, RepositorioDeProveedoresFalso>();
         return servicios.BuildServiceProvider();
     }
 
@@ -60,6 +62,20 @@ public class RegistroDependenciasPruebas
         var registro = Assert.Single(
             servicios,
             servicio => servicio.ServiceType == typeof(InventarioServicio));
+
+        Assert.Equal(ServiceLifetime.Transient, registro.Lifetime);
+    }
+
+    [Fact]
+    public void AgregarModeloRegistraProveedoresServicio()
+    {
+        var servicios = new ServiceCollection();
+
+        servicios.AgregarModelo();
+
+        var registro = Assert.Single(
+            servicios,
+            servicio => servicio.ServiceType == typeof(ProveedoresServicio));
 
         Assert.Equal(ServiceLifetime.Transient, registro.Lifetime);
     }
@@ -144,6 +160,7 @@ public class RegistroDependenciasPruebas
         {
             using var proveedor = servicios.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
             proveedor.GetRequiredService<InventarioServicio>();
+            proveedor.GetRequiredService<ProveedoresServicio>();
         });
 
         Assert.Null(excepcion);
