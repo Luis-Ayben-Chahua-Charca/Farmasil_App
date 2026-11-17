@@ -431,6 +431,7 @@
           <article
             class="sale-card"
             data-component="DOC-CRD-VENTA"
+            data-id-venta="91"
             data-code="VEN-2026-091"
             data-date="2026-09-27"
             data-total="45.50"
@@ -445,7 +446,7 @@
                 class="btn-primary"
                 type="button"
                 data-component="DOC-BTN-SELECCIONAR-VENTA"
-                data-select-sale="VEN-2026-091"
+                data-select-sale="91"
               >
                 Seleccionar
               </button>
@@ -458,6 +459,7 @@
           <article
             class="sale-card"
             data-component="DOC-CRD-VENTA"
+            data-id-venta="92"
             data-code="VEN-2026-092"
             data-date="2026-09-28"
             data-total="120.00"
@@ -472,7 +474,7 @@
                 class="btn-primary"
                 type="button"
                 data-component="DOC-BTN-SELECCIONAR-VENTA"
-                data-select-sale="VEN-2026-092"
+                data-select-sale="92"
               >
                 Seleccionar
               </button>
@@ -485,6 +487,7 @@
           <article
             class="sale-card"
             data-component="DOC-CRD-VENTA"
+            data-id-venta="93"
             data-code="VEN-2026-093"
             data-date="2026-09-29"
             data-total="88.00"
@@ -499,7 +502,7 @@
                 class="btn-primary"
                 type="button"
                 data-component="DOC-BTN-SELECCIONAR-VENTA"
-                data-select-sale="VEN-2026-093"
+                data-select-sale="93"
               >
                 Seleccionar
               </button>
@@ -516,11 +519,11 @@
           <label for="DOC-CMB-CODIGO-VENTA">Venta seleccionada</label>
           <select id="DOC-CMB-CODIGO-VENTA">
             <option value="">Selecciona una venta</option>
-            <option value="VEN-2026-091" selected>
+            <option value="91" selected>
               VEN-2026-091 (S/ 45.50)
             </option>
-            <option value="VEN-2026-092">VEN-2026-092 (S/ 120.00)</option>
-            <option value="VEN-2026-093">VEN-2026-093 (S/ 88.00)</option>
+            <option value="92">VEN-2026-092 (S/ 120.00)</option>
+            <option value="93">VEN-2026-093 (S/ 88.00)</option>
           </select>
           <span class="tag">DOC-CMB-CODIGO-VENTA</span>
         </div>
@@ -595,15 +598,6 @@
               >DOC-BTN-ELIMINAR-COMPROBANTE</span
             >
           </div>
-          <div id="GRP-CANCELAR-EDICION" hidden>
-            <button
-              id="DOC-BTN-CANCELAR-ACTUALIZACION"
-              class="btn-secondary"
-              type="button"
-            >
-              Cancelar edición
-            </button>
-          </div>
         </div>
         <div class="notice">
           Prototipo de interfaz: las acciones se simulan localmente en esta
@@ -626,7 +620,7 @@
               </tr>
             </thead>
             <tbody id="DOC-TBL-COMPROBANTES">
-              <tr data-sale="VEN-2026-091">
+              <tr data-sale="91">
                 <td>B001-001284</td>
                 <td>Boleta</td>
                 <td>27/09/2026</td>
@@ -678,6 +672,29 @@
               </div>
             </div>
 
+            <h4>Detalle de la venta</h4>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Lote</th>
+                    <th>Cantidad</th>
+                    <th>Precio unitario</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody data-preview-detail>
+                  <tr>
+                    <td>Paracetamol 500 mg</td>
+                    <td>PAR-001</td>
+                    <td>2</td>
+                    <td>S/ 22.75</td>
+                    <td>S/ 45.50</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <div class="preview-total">
               TOTAL:
               <span data-preview="total">S/ 45.50</span>
@@ -740,10 +757,32 @@
     <script>
       "use strict";
 
+      // Datos ilustrativos del prototipo. En la aplicación, el detalle proviene de la venta seleccionada.
       const ventas = [
-        { codigo: "VEN-2026-091", fecha: "2026-09-27", monto: 45.5 },
-        { codigo: "VEN-2026-092", fecha: "2026-09-28", monto: 120.0 },
-        { codigo: "VEN-2026-093", fecha: "2026-09-29", monto: 88.0 },
+        {
+          idVenta: 91,
+          fecha: "2026-09-27",
+          monto: 45.5,
+          detalle: [
+            { producto: "Paracetamol 500 mg", lote: "PAR-001", cantidad: 2, precioUnitario: 22.75 },
+          ],
+        },
+        {
+          idVenta: 92,
+          fecha: "2026-09-28",
+          monto: 120.0,
+          detalle: [
+            { producto: "Ibuprofeno 400 mg", lote: "IBU-001", cantidad: 3, precioUnitario: 40.0 },
+          ],
+        },
+        {
+          idVenta: 93,
+          fecha: "2026-09-29",
+          monto: 88.0,
+          detalle: [
+            { producto: "Paracetamol 500 mg", lote: "PAR-002", cantidad: 4, precioUnitario: 22.0 },
+          ],
+        },
       ];
       let comprobanteEnEdicion = null;
       let comprobanteSeleccionado = null;
@@ -758,8 +797,38 @@
       const mostrarModal = (id) => $(id).classList.add("show");
       const cerrarModal = (id) => $(id).classList.remove("show");
 
-      function obtenerVenta(codigo) {
-        return ventas.find((venta) => venta.codigo === codigo);
+      function obtenerVenta(idVenta) {
+        const id = Number(idVenta);
+        return ventas.find((venta) => venta.idVenta === id);
+      }
+
+      function codigoVisibleVenta(venta) {
+        const anio = venta.fecha.slice(0, 4);
+        return `VEN-${anio}-${String(venta.idVenta).padStart(3, "0")}`;
+      }
+
+      function mostrarDetalleVenta(venta) {
+        const tbody = document.querySelector("[data-preview-detail]");
+        tbody.replaceChildren();
+
+        venta.detalle.forEach((linea) => {
+          const fila = document.createElement("tr");
+          const valores = [
+            linea.producto,
+            linea.lote,
+            String(linea.cantidad),
+            formatoSoles(linea.precioUnitario),
+            formatoSoles(linea.cantidad * linea.precioUnitario),
+          ];
+
+          valores.forEach((valor) => {
+            const celda = document.createElement("td");
+            celda.textContent = valor;
+            fila.appendChild(celda);
+          });
+
+          tbody.appendChild(fila);
+        });
       }
 
       function actualizarMonto() {
@@ -769,13 +838,14 @@
           : "S/ 0.00";
       }
 
-      function seleccionarVenta(codigo) {
-        $("DOC-CMB-CODIGO-VENTA").value = codigo;
+      function seleccionarVenta(idVenta) {
+        const id = String(idVenta);
+        $("DOC-CMB-CODIGO-VENTA").value = id;
         actualizarMonto();
         document
           .querySelectorAll('[data-component="DOC-CRD-VENTA"]')
           .forEach((card) => {
-            card.classList.toggle("selected", card.dataset.code === codigo);
+            card.classList.toggle("selected", card.dataset.idVenta === id);
           });
       }
 
@@ -835,7 +905,7 @@
         if (comprobanteEnEdicion === null) {
           const yaExisteParaVenta = [...$("DOC-TBL-COMPROBANTES").rows].some(
             (fila) =>
-              fila.dataset.sale === venta.codigo &&
+              fila.dataset.sale === String(venta.idVenta) &&
               fila.cells[4].textContent.trim() !== "Anulado",
           );
           if (yaExisteParaVenta) {
@@ -859,9 +929,10 @@
         document.querySelector('[data-preview="fecha"]').textContent =
           fechaDMY(fecha);
         document.querySelector('[data-preview="venta"]').textContent =
-          venta.codigo;
+          codigoVisibleVenta(venta);
         document.querySelector('[data-preview="total"]').textContent =
           formatoSoles(venta.monto);
+        mostrarDetalleVenta(venta);
         mostrarModal("DOC-MDL-PREVISUALIZAR-COMPROBANTE");
       }
 
@@ -873,7 +944,7 @@
         if (!venta || !numero || !fecha) return;
 
         const fila = document.createElement("tr");
-        fila.dataset.sale = venta.codigo;
+        fila.dataset.sale = String(venta.idVenta);
         fila.innerHTML = `
         <td></td><td></td><td></td><td></td>
         <td><span class="status status-issued">Emitido</span></td>`;
@@ -917,7 +988,6 @@
         $("DOC-BTN-CREAR-COMPROBANTE").hidden = true;
         $("DOC-BTN-ACTUALIZAR-COMPROBANTE").hidden = true;
         $("GRP-GUARDAR").hidden = false;
-        $("GRP-CANCELAR-EDICION").hidden = false;
       }
 
       function finalizarEdicion() {
@@ -926,7 +996,6 @@
         $("DOC-BTN-CREAR-COMPROBANTE").hidden = false;
         $("DOC-BTN-ACTUALIZAR-COMPROBANTE").hidden = false;
         $("GRP-GUARDAR").hidden = true;
-        $("GRP-CANCELAR-EDICION").hidden = true;
       }
 
       function solicitarAnulacion() {
@@ -973,10 +1042,6 @@
         "click",
         abrirPrevisualizacion,
       );
-      $("DOC-BTN-CANCELAR-ACTUALIZACION").addEventListener(
-        "click",
-        finalizarEdicion,
-      );
       $("DOC-BTN-ELIMINAR-COMPROBANTE").addEventListener(
         "click",
         solicitarAnulacion,
@@ -995,7 +1060,7 @@
         );
       });
 
-      seleccionarVenta("VEN-2026-091");
+      seleccionarVenta("91");
       consultarComprobantes();
     </script>
   </body>
