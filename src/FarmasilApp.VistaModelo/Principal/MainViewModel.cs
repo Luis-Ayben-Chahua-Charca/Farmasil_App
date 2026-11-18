@@ -1,5 +1,5 @@
 using FarmasilApp.VistaModelo.Comun;
-
+using FarmasilApp.Modelo.Comun;
 namespace FarmasilApp.VistaModelo.Principal;
 
 /// <summary>VistaModelo de la ventana principal: contiene la pantalla activa y arranca en la de inicio.</summary>
