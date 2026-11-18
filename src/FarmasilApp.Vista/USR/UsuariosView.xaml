@@ -1,0 +1,171 @@
+<!--
+    Pantalla única de Usuarios, ART-MKP-USR-0001 (ESP-0033 a ESP-0036).
+    Cada componente lleva en AutomationProperties.AutomationId el identificador de la guía de nomenclatura (DEC-060).
+    La pantalla no tiene lógica: todo se enlaza con UsuariosViewModel y el code-behind solo tiene el constructor.
+-->
+<UserControl x:Class="FarmasilApp.Vista.USR.UsuariosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:comun="clr-namespace:FarmasilApp.Vista.Comun"
+             MinWidth="1000"
+             MinHeight="560"
+             comun:ComandoAlCargar.Command="{Binding InicializarCommand}">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Gestión de Usuarios" FontSize="28" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Mensaje}" Margin="0,4,0,0" FontSize="14" Foreground="Gray"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="380"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Consulta (ESP-0034): búsqueda, filtro y lista de tarjetas. -->
+            <DockPanel Grid.Column="0" Margin="0,0,20,0">
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="Nombre de usuario"/>
+                    <comun:BusquedaComun AutomationProperties.AutomationId="USR-SRH-USUARIO"
+                                         Style="{StaticResource EstiloBusquedaComun}"
+                                         MaxLength="50"
+                                         Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Rol" Margin="0,10,0,0"/>
+                    <comun:FiltroComun AutomationProperties.AutomationId="USR-CMB-FILTRO-ROL"
+                                       Style="{StaticResource EstiloFiltroComun}"
+                                       ItemsSource="{Binding FiltrosRol}"
+                                       SelectedItem="{Binding FiltroRolSeleccionado}"/>
+
+                    <Button AutomationProperties.AutomationId="USR-BTN-LEER-USUARIO"
+                            Content="Buscar"
+                            Command="{Binding BuscarCommand}"
+                            Margin="0,10,0,0"
+                            Padding="12,6"
+                            HorizontalAlignment="Left"/>
+
+                    <TextBlock Text="Cuentas de Usuario" FontSize="16" FontWeight="Bold" Margin="0,16,0,8"/>
+                </StackPanel>
+
+                <!-- Las tarjetas no tienen botón: un clic selecciona la cuenta y carga la ficha (DEC-062, DEC-068).
+                     ListaComun es un ListBox, así que cada tarjeta es un ListBoxItem visible en UI Automation. -->
+                <comun:ListaComun AutomationProperties.AutomationId="USR-PNL-CUENTAS"
+                                  Style="{StaticResource EstiloListaComun}"
+                                  ItemsSource="{Binding Cuentas}"
+                                  SelectedItem="{Binding CuentaSeleccionada}"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <comun:ListaComun.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="AutomationProperties.AutomationId" Value="USR-CRD-USUARIO"/>
+                            <Setter Property="Margin" Value="0,0,0,10"/>
+                        </Style>
+                    </comun:ListaComun.ItemContainerStyle>
+                    <comun:ListaComun.ItemTemplate>
+                        <DataTemplate>
+                            <Border Width="270"
+                                    Padding="10"
+                                    BorderBrush="#DDDDDD"
+                                    BorderThickness="4,1,1,1"
+                                    CornerRadius="4"
+                                    Background="#FAFAFA">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding NombreUsuario}" FontWeight="Bold"/>
+                                    <TextBlock>
+                                        <Run Text="{Binding Rol, Mode=OneWay}"/>
+                                        <Run Text=" · "/>
+                                        <Run Text="{Binding Estado, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </comun:ListaComun.ItemTemplate>
+                </comun:ListaComun>
+            </DockPanel>
+
+            <!-- Ficha (ESP-0033 y ESP-0035) y botones de las cuatro operaciones. -->
+            <StackPanel Grid.Column="1" Margin="0,0,20,0">
+                <TextBlock Text="Ficha de Usuario" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
+
+                <TextBlock Text="Nombre de usuario"/>
+                <TextBox AutomationProperties.AutomationId="USR-TXT-NOMBRE-USUARIO"
+                         Text="{Binding NombreUsuario, UpdateSourceTrigger=PropertyChanged}"
+                         MaxLength="50"
+                         Height="32"
+                         Margin="0,5,0,10"
+                         VerticalContentAlignment="Center"/>
+
+                <TextBlock Text="Contraseña"/>
+                <PasswordBox AutomationProperties.AutomationId="USR-PWD-CONTRASENA"
+                             comun:ContrasenaEnlazada.Contrasena="{Binding Contrasena, Mode=TwoWay}"
+                             Height="32"
+                             Margin="0,5,0,10"
+                             VerticalContentAlignment="Center"/>
+
+                <TextBlock Text="Rol"/>
+                <ComboBox AutomationProperties.AutomationId="USR-CMB-ROL"
+                          ItemsSource="{Binding Roles}"
+                          SelectedItem="{Binding RolFicha}"
+                          Height="32"
+                          Margin="0,5,0,10"/>
+
+                <TextBlock Text="Estado"/>
+                <ComboBox AutomationProperties.AutomationId="USR-CMB-ESTADO-USUARIO"
+                          ItemsSource="{Binding Estados}"
+                          SelectedItem="{Binding EstadoFicha}"
+                          Height="32"
+                          Margin="0,5,0,10"/>
+
+                <WrapPanel Margin="0,10,0,0">
+                    <Button AutomationProperties.AutomationId="USR-BTN-CREAR-USUARIO"
+                            Content="Crear"
+                            Command="{Binding CrearCommand}"
+                            Padding="12,6"
+                            Margin="0,0,10,10"/>
+                    <Button AutomationProperties.AutomationId="USR-BTN-ACTUALIZAR-USUARIO"
+                            Content="Actualizar"
+                            Command="{Binding ActualizarCommand}"
+                            Padding="12,6"
+                            Margin="0,0,10,10"/>
+                    <!-- Segundo paso de la actualización, con el rótulo «Guardar cambios» (DEC-046). -->
+                    <Button AutomationProperties.AutomationId="USR-BTN-CONFIRMAR-ACTUALIZACION"
+                            Style="{StaticResource EstiloBotonConfirmarActualizacion}"
+                            Command="{Binding ConfirmarActualizacionCommand}"
+                            Margin="0,0,10,10"/>
+                    <!-- Abre USR-MDL-CONFIRMAR-ELIMINACION, el modal común (IMensajeServicio.Confirmar). -->
+                    <Button AutomationProperties.AutomationId="USR-BTN-ELIMINAR-USUARIO"
+                            Content="Eliminar"
+                            Command="{Binding EliminarCommand}"
+                            Padding="12,6"
+                            Margin="0,0,10,10"/>
+                </WrapPanel>
+            </StackPanel>
+
+            <!-- Tabla de cuentas: nombre, rol y estado. Sin identificador ni contraseña (ESP-0034, DEC-068). -->
+            <DockPanel Grid.Column="2">
+                <TextBlock DockPanel.Dock="Top" Text="Tabla de Usuarios" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
+                <DataGrid AutomationProperties.AutomationId="USR-TBL-USUARIOS"
+                          ItemsSource="{Binding Cuentas}"
+                          SelectedItem="{Binding CuentaSeleccionada}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          SelectionMode="Single"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Usuario" Binding="{Binding NombreUsuario}" Width="*"/>
+                        <DataGridTextColumn Header="Rol" Binding="{Binding Rol}" Width="110"/>
+                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="90"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

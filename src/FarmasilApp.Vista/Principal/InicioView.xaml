@@ -1,8 +1,28 @@
 <UserControl x:Class="FarmasilApp.Vista.Principal.InicioView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid>
-        <TextBlock Text="{Binding Mensaje}" FontSize="24"
-                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <Grid Margin="32">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="520">
+            <TextBlock Text="{Binding Mensaje}"
+                       FontSize="24"
+                       FontWeight="SemiBold"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,20" />
+            <TextBlock Text="La prueba genera un PDF con datos ficticios y lo guarda en Documentos/FarmasilApp/PDF."
+                       FontSize="14"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,20" />
+            <Button Content="Generar PDF de ejemplo"
+                    Command="{Binding GenerarPdfCommand}"
+                    HorizontalAlignment="Center"
+                    Padding="24,10"
+                    MinWidth="220" />
+            <TextBlock Text="{Binding EstadoPdf}"
+                       Margin="0,18,0,0"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap" />
+        </StackPanel>
     </Grid>
 </UserControl>

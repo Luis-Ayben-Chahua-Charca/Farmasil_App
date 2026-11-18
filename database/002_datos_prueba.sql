@@ -10,6 +10,12 @@
    descuenta de las ventas historicas.
    ========================================================= */
 
+-- El INSERT de TBL_ALERTAS_VENCIMIENTO (seccion 6) escribe en una tabla con un indice
+-- filtrado, y SQL Server lo exige con QUOTED_IDENTIFIER ON. El sqlcmd antiguo (ODBC)
+-- abre la sesion con OFF y el INSERT falla con el error 1934: el script fija sus propias
+-- opciones, como 001_esquema.sql, y no depende del cliente que lo ejecute.
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 

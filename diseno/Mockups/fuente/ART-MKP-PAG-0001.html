@@ -41,15 +41,15 @@ table th { background: #f8f9fa; }
 <body>
 <header>
   <div class="element-wrapper" style="flex:1;">
-    <select><option>-- Filtrar por Estado --</option><option>Activo</option><option>Inactivo</option></select>
-    <span class="ui-tag">Filtro: PAG-CMB-ESTADO-METODO</span>
+    <select id="PAG-CMB-FILTRO-ESTADO"><option>-- Filtrar por Estado --</option><option>Activo</option><option>Inactivo</option></select>
+    <span class="ui-tag">Filtro: PAG-CMB-FILTRO-ESTADO</span>
   </div>
   <div class="element-wrapper" style="flex:2;">
-    <input type="text" placeholder="Buscar método de pago...">
-    <span class="ui-tag">Campo Texto: PAG-TXT-METODO-PAGO</span>
+    <input type="text" id="PAG-SRH-METODO" placeholder="Buscar método de pago...">
+    <span class="ui-tag">Búsqueda: PAG-SRH-METODO</span>
   </div>
   <div class="element-wrapper" style="width:auto;">
-    <button style="background:#198754;color:white;">Buscar</button>
+    <button id="PAG-BTN-LEER-METODO" style="background:#198754;color:white;">Buscar</button>
     <span class="ui-tag-btn">Botón: PAG-BTN-LEER-METODO</span>
   </div>
 </header>
@@ -57,45 +57,46 @@ table th { background: #f8f9fa; }
   <div class="panel">
     <h3 style="margin-bottom:4px;">Selecciona el Método de Pago</h3>
     <p style="font-size:12px;color:#6c757d;margin-bottom:14px;">Haz clic en una tarjeta para seleccionarla</p>
-    <div class="metodo-grid" id="metodo-grid">
-      <div class="metodo-card selected" onclick="selectMetodo(this)">
+    <div class="metodo-grid" id="PAG-PNL-METODOS-PAGO">
+      <div class="metodo-card selected" data-component="PAG-CRD-METODO-PAGO" onclick="selectMetodo(this)">
         <div class="metodo-icon verde">$</div>
         <div class="metodo-name">Efectivo</div>
         <div class="metodo-meta">Pago en mostrador</div>
         <span class="badge badge-activo">Activo</span>
       </div>
-      <div class="metodo-card" onclick="selectMetodo(this)">
+      <div class="metodo-card" data-component="PAG-CRD-METODO-PAGO" onclick="selectMetodo(this)">
         <div class="metodo-icon morado">Y</div>
         <div class="metodo-name">Yape / Plin</div>
         <div class="metodo-meta">Billetera digital</div>
         <span class="badge badge-activo">Activo</span>
       </div>
-      <div class="metodo-card" onclick="selectMetodo(this)">
+      <div class="metodo-card" data-component="PAG-CRD-METODO-PAGO" onclick="selectMetodo(this)">
         <div class="metodo-icon">T</div>
         <div class="metodo-name">Tarjeta Débito</div>
         <div class="metodo-meta">POS / Visa</div>
         <span class="badge badge-activo">Activo</span>
       </div>
-      <div class="metodo-card disabled" onclick="return false;">
+      <div class="metodo-card disabled" data-component="PAG-CRD-METODO-PAGO" onclick="return false;">
         <div class="metodo-icon rojo">TC</div>
         <div class="metodo-name">Tarjeta Crédito</div>
         <div class="metodo-meta">No habilitado</div>
         <span class="badge badge-inactivo">Inactivo</span>
       </div>
     </div>
-    <span class="ui-tag" style="margin-top:12px;">Lista: PAG-TBL-METODOS-PAGO</span>
+    <span class="ui-tag" style="margin-top:12px;">Panel: PAG-PNL-METODOS-PAGO</span>
+    <span class="ui-tag">Tarjeta: PAG-CRD-METODO-PAGO</span>
   </div>
   <div class="panel">
     <h3>Ficha del Método de Pago</h3>
     <hr style="margin-bottom:14px;">
     <div class="element-wrapper">
       <label><b>Nombre del Método:</b></label>
-      <input type="text" id="metodo-input" value="Efectivo">
+      <input type="text" id="PAG-TXT-METODO-PAGO" value="Efectivo">
       <span class="ui-tag">Campo Texto: PAG-TXT-METODO-PAGO</span>
     </div>
     <div class="element-wrapper">
       <label><b>Estado:</b></label>
-      <select id="estado-select">
+      <select id="PAG-CMB-ESTADO-METODO">
         <option>Activo</option>
         <option>Inactivo</option>
       </select>
@@ -116,7 +117,7 @@ table th { background: #f8f9fa; }
     <h3>Gestión CRUD</h3>
     <hr style="margin-bottom:14px;">
     <div class="element-wrapper">
-      <table>
+      <table id="PAG-TBL-METODOS-PAGO">
         <thead><tr><th>Método</th><th>Estado</th></tr></thead>
         <tbody>
           <tr><td>Efectivo</td><td>Activo</td></tr>
@@ -128,16 +129,17 @@ table th { background: #f8f9fa; }
       <span class="ui-tag">Tabla: PAG-TBL-METODOS-PAGO</span>
     </div>
     <div class="btn-actions">
-      <div class="element-wrapper"><button style="background:#198754;color:white;">Crear</button><span class="ui-tag-btn">PAG-BTN-CREAR-METODO</span></div>
-      <div class="element-wrapper"><button style="background:#ffc107;color:#333;">Guardar</button><span class="ui-tag-btn">PAG-BTN-ACTUALIZAR-METODO</span></div>
-      <div class="element-wrapper"><button style="background:#dc3545;color:white;" onclick="document.getElementById('PAG-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Eliminar</button><span class="ui-tag-btn">PAG-BTN-ELIMINAR-METODO</span></div>
+      <div class="element-wrapper"><button id="PAG-BTN-CREAR-METODO" style="background:#198754;color:white;">Crear</button><span class="ui-tag-btn">PAG-BTN-CREAR-METODO</span></div>
+      <div class="element-wrapper"><button id="PAG-BTN-ACTUALIZAR-METODO" style="background:#ffc107;color:#333;">Modificar</button><span class="ui-tag-btn">PAG-BTN-ACTUALIZAR-METODO</span></div>
+      <div class="element-wrapper"><button id="PAG-BTN-CONFIRMAR-ACTUALIZACION" style="background:#0d6efd;color:white;">Guardar cambios</button><span class="ui-tag-btn">PAG-BTN-CONFIRMAR-ACTUALIZACION</span></div>
+      <div class="element-wrapper"><button id="PAG-BTN-ELIMINAR-METODO" style="background:#dc3545;color:white;" onclick="document.getElementById('PAG-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Eliminar</button><span class="ui-tag-btn">PAG-BTN-ELIMINAR-METODO</span></div>
     </div>
   </div>
 </div>
 <div class="modal" id="PAG-MDL-CONFIRMAR-ELIMINACION">
   <div class="modal-content">
     <div class="element-wrapper" style="align-items:center;"><h4>Confirmación de Baja</h4><span class="ui-tag">Modal: PAG-MDL-CONFIRMAR-ELIMINACION</span></div>
-    <div class="element-wrapper" style="align-items:center;margin:15px 0;"><p>¿Está seguro de eliminar este método de pago?</p><span class="ui-tag">Mensaje: PAG-TXT-MSJ</span></div>
+    <div class="element-wrapper" style="align-items:center;margin:15px 0;"><p>¿Está seguro de dar de baja este método de pago? Las ventas ya registradas con él no se verán afectadas.</p><span class="ui-tag">Mensaje: PAG-TXT-MSJ</span></div>
     <div style="display:flex;gap:15px;justify-content:center;">
       <div class="element-wrapper" style="width:auto;"><button style="background:#dc3545;color:white;">Sí, Eliminar</button><span class="ui-tag-btn">PAG-BTN-CONFIRMAR-SI</span></div>
       <div class="element-wrapper" style="width:auto;"><button style="background:#6c757d;color:white;" onclick="document.getElementById('PAG-MDL-CONFIRMAR-ELIMINACION').style.display='none'">Cancelar</button><span class="ui-tag-btn">PAG-BTN-CONFIRMAR-NO</span></div>
@@ -151,7 +153,7 @@ table th { background: #f8f9fa; }
     const name = card.querySelector('.metodo-name').innerText;
     const meta = card.querySelector('.metodo-meta').innerText;
     const icon = card.querySelector('.metodo-icon');
-    document.getElementById('metodo-input').value = name;
+    document.getElementById('PAG-TXT-METODO-PAGO').value = name;
     document.getElementById('preview-name').innerText = name;
     document.getElementById('preview-meta').innerText = meta;
     const preview = document.getElementById('preview-icon');
