@@ -1,5 +1,21 @@
+using FarmasilApp.Modelo.ALV;
+using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Pruebas.ALV;
+using FarmasilApp.Modelo.INV;
+using FarmasilApp.Modelo.PAG;
+using FarmasilApp.Modelo.PRV;
+using FarmasilApp.Modelo.USR;
+using FarmasilApp.Pruebas.INV;
+using FarmasilApp.Pruebas.PAG;
+using FarmasilApp.Pruebas.PRV;
+using FarmasilApp.Pruebas.USR;
+using FarmasilApp.VistaModelo.ALV;
 using FarmasilApp.VistaModelo.Comun;
+using FarmasilApp.VistaModelo.INV;
 using FarmasilApp.VistaModelo.Principal;
+using FarmasilApp.VistaModelo.PAG;
+using FarmasilApp.VistaModelo.PRV;
+using FarmasilApp.VistaModelo.USR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FarmasilApp.Pruebas.VistaModelo;
@@ -9,6 +25,16 @@ public class RegistroDependenciasPruebas
     private static ServiceProvider CrearProveedor()
     {
         var servicios = new ServiceCollection();
+        servicios.AgregarModelo();
+        servicios.AddSingleton<IAlertasRepositorio, AlertasRepositorioFalso>();
+        servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
+        servicios.AddSingleton<IMetodosPagoRepositorio, RepositorioDeMetodosPagoFalso>();
+        servicios.AddSingleton<IProveedoresRepositorio, RepositorioDeProveedoresFalso>();
+        servicios.AddSingleton<IUsuariosRepositorio, RepositorioDeUsuariosFalso>();
+        // La Vista registra el servicio real de mensajes al arrancar (App.xaml.cs); aquí basta uno de prueba.
+        servicios.AddSingleton<IMensajeServicio, MensajeServicioFalso>();
+        // La Vista registra el servicio real de PDF al arrancar (App.xaml.cs); aquí basta uno de prueba.
+        servicios.AddSingleton<IPdfServicio, PdfServicioFalso>();
         servicios.AgregarVistaModelo();
         return servicios.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
     }
@@ -21,6 +47,21 @@ public class RegistroDependenciasPruebas
         Assert.NotNull(proveedor.GetRequiredService<MainViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<INavegacionServicio>());
         Assert.NotNull(proveedor.GetRequiredService<InicioViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<AlertasViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<InventarioViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<MetodosPagoViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<ProveedoresViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<UsuariosViewModel>());
+    }
+
+    [Fact]
+    public void CadaModuloNavegableSeRegistraUnaSolaVez()
+    {
+        using var proveedor = CrearProveedor();
+
+        var modulos = proveedor.GetServices<ModuloMenu>().Select(modulo => modulo.Nombre).ToArray();
+
+        Assert.Equal(new[] { "Inventario", "Alertas de vencimiento", "Métodos de pago", "Usuarios", "Proveedores" }, modulos);
     }
 
     [Fact]

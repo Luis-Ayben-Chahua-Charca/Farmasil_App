@@ -29,7 +29,7 @@
   <header>
     <div class="element-wrapper" style="flex: 3;">
       <select><option>-- Seleccionar Remesa / Lote --</option></select>
-      <span class="ui-tag">ComboBox: ALV-CMB-LOTE-ALERTA</span>
+      <span class="ui-tag">ComboBox: ALV-CMB-FILTRO-LOTE</span>
     </div>
     <div class="element-wrapper" style="flex: 1;">
       <button style="background: #198754; color: white;">Filtrar Alertas</button>
@@ -39,22 +39,27 @@
   <div class="layout">
     <div class="panel">
       <h3>Lotes en Riesgo</h3>
+      <span class="ui-tag">Panel: ALV-PNL-LOTES-RIESGO</span>
       <div class="element-wrapper" style="margin-top: 5px;">
-        <select><option>Filtrar por Estado de Vencimiento</option></select>
-        <span class="ui-tag">Filtro: ALV-CMB-LOTE-ALERTA</span>
+        <select aria-label="Estado de visualización">
+          <option>Todos</option>
+          <option>Por vencer</option>
+          <option>Retirados</option>
+        </select>
+        <span class="ui-tag">Filtro: ALV-CMB-FILTRO-ESTADO-VENCIMIENTO</span>
       </div>
       <hr style="margin-bottom: 10px;">
-      <div class="lote-list">
+      <div class="lote-list" data-ui-id="ALV-PNL-LOTES-RIESGO">
         <div class="card-lote">
           <div class="lote-img">[ LOTE IMG ]</div>
           <div style="flex: 1;">
             <div class="element-wrapper">
               <h4 style="color: #dc3545;">Lote LT-2026-A</h4>
-              <span class="ui-tag">ALV-CMB-LOTE-ALERTA</span>
+              <span class="ui-tag">Tarjeta: ALV-CRD-LOTE</span>
             </div>
             <div class="element-wrapper">
               <p style="font-size: 11px;">Vence: <b>2026-10-15</b></p>
-              <span class="ui-tag">ALV-LBL-FECHA-VENCIMIENTO</span>
+              <span class="ui-tag">Dato de ALV-CRD-LOTE</span>
             </div>
           </div>
         </div>
@@ -63,11 +68,11 @@
           <div style="flex: 1;">
             <div class="element-wrapper">
               <h4 style="color: #856404;">Lote LT-2026-B</h4>
-              <span class="ui-tag">ALV-CMB-LOTE-ALERTA</span>
+              <span class="ui-tag">Tarjeta: ALV-CRD-LOTE</span>
             </div>
             <div class="element-wrapper">
-              <p style="font-size: 11px;">Vence: <b>2026-11-02</b></p>
-              <span class="ui-tag">ALV-LBL-FECHA-VENCIMIENTO</span>
+              <p style="font-size: 11px;">Vence: <b>2026-12-02</b></p>
+              <span class="ui-tag">Dato de ALV-CRD-LOTE</span>
             </div>
           </div>
         </div>
@@ -76,11 +81,11 @@
           <div style="flex: 1;">
             <div class="element-wrapper">
               <h4 style="color: #dc3545;">Lote LT-2026-C</h4>
-              <span class="ui-tag">ALV-CMB-LOTE-ALERTA</span>
+              <span class="ui-tag">Tarjeta: ALV-CRD-LOTE</span>
             </div>
             <div class="element-wrapper">
               <p style="font-size: 11px;">Vence: <b>2026-10-01</b></p>
-              <span class="ui-tag">ALV-LBL-FECHA-VENCIMIENTO</span>
+              <span class="ui-tag">Dato de ALV-CRD-LOTE</span>
             </div>
           </div>
         </div>
@@ -102,7 +107,7 @@
       <div class="element-wrapper">
         <div style="display: flex; align-items: center; gap: 8px;">
           <input type="checkbox" checked style="width: auto;">
-          <label style="color: #dc3545; font-weight: bold;">Lote Defectuoso / Bloqueado</label>
+          <label style="color: #dc3545; font-weight: bold;">Lote defectuoso</label>
         </div>
         <span class="ui-tag">Checkbox (BIT): ALV-CHK-LOTE-DEFECTUOSO</span>
       </div>
@@ -118,14 +123,33 @@
       <div class="element-wrapper">
         <table>
           <thead>
-            <tr><th>Lote</th><th>Venc.</th><th>Defect.</th></tr>
+            <tr>
+              <th>Medicamento</th>
+              <th>Lote</th>
+              <th>Venc.</th>
+              <th>Defect.</th>
+              <th>Origen</th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td>LT-2026-A</td><td>15/10/26</td><td>Sí</td></tr>
-            <tr><td>LT-2026-B</td><td>02/11/26</td><td>No</td></tr>
+            <tr>
+              <td>Paracetamol 500mg</td>
+              <td>LT-2026-A</td>
+              <td>15/10/26</td>
+              <td>Sí</td>
+              <td>Retirado</td>
+            </tr>
+            <tr>
+              <td>Medicamento (ejemplo)</td>
+              <td>LT-2026-B</td>
+              <td>02/12/26</td>
+              <td>No</td>
+              <td>Por vencer</td>
+            </tr>
           </tbody>
         </table>
         <span class="ui-tag">Tabla: ALV-TBL-ALERTAS-VENCIMIENTO</span>
+        <small>Datos ilustrativos del mockup; los resultados se calculan en la consulta.</small>
       </div>
       <div class="btn-grid">
         <div class="element-wrapper">
@@ -141,7 +165,7 @@
           <span class="ui-tag-btn">ALV-BTN-CONFIRMAR-ACTUALIZACION</span>
         </div>
         <div class="element-wrapper" style="grid-column: span 2;">
-          <button style="background: #6c757d; color: white;" onclick="document.getElementById('ALV-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Liberar Lote / Eliminar Alerta</button>
+          <button style="background: #6c757d; color: white;" onclick="document.getElementById('ALV-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Eliminar alerta</button>
           <span class="ui-tag-btn">ALV-BTN-ELIMINAR-ALERTA</span>
         </div>
       </div>
@@ -150,16 +174,16 @@
   <div class="modal" id="ALV-MDL-CONFIRMAR-ELIMINACION">
     <div class="modal-content">
       <div class="element-wrapper" style="align-items: center;">
-        <h4>Liberación de Lote</h4>
+        <h4>Confirmación de eliminación de alerta</h4>
         <span class="ui-tag">Modal: ALV-MDL-CONFIRMAR-ELIMINACION</span>
       </div>
       <div class="element-wrapper" style="align-items: center; margin: 15px 0;">
-        <p>¿Está seguro de retirar la alerta del Lote seleccionado?</p>
+        <p>¿Está seguro de eliminar esta alerta? La remesa solo volverá a estar disponible si no quedan otros retiros, no está vencida y tiene existencias.</p>
         <span class="ui-tag">Mensaje: ALV-TXT-MSJ</span>
       </div>
       <div style="display: flex; gap: 15px; justify-content: center;">
         <div class="element-wrapper" style="width: auto;">
-          <button style="background: #198754; color: white;">Sí, Liberar</button>
+          <button style="background: #198754; color: white;">Sí, eliminar</button>
           <span class="ui-tag-btn">ALV-BTN-CONFIRMAR-SI</span>
         </div>
         <div class="element-wrapper" style="width: auto;">

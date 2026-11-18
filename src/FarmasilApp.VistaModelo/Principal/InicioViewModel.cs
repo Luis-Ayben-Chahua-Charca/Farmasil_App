@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using FarmasilApp.VistaModelo.Comun;
 
@@ -11,6 +12,8 @@ namespace FarmasilApp.VistaModelo.Principal;
 public sealed class InicioViewModel : ViewModelBase
 {
     private readonly IPdfServicio _pdfServicio;
+    public const string MensajeError = "No se pudo generar el PDF. Inténtalo de nuevo o avisa al responsable del sistema.";
+
     private string _estadoPdf = "Pulsa el botón para generar un PDF demostrativo.";
 
     public InicioViewModel(IPdfServicio pdfServicio)
@@ -38,7 +41,9 @@ public sealed class InicioViewModel : ViewModelBase
         }
         catch (Exception excepcion)
         {
-            EstadoPdf = $"No se pudo generar el PDF: {excepcion.Message}";
+            // DEC-072: el detalle técnico va al registro y a la usuaria se le muestra un mensaje genérico.
+            Trace.TraceError("[PDF] GenerarEjemplo: {0}", excepcion);
+            EstadoPdf = MensajeError;
         }
     }
 }

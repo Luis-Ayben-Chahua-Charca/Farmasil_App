@@ -40,7 +40,7 @@ Adjuntar la salida real del build y de la auditoría de vulnerabilidades al PR. 
 
 ## 4. Resultado esperado del ejemplo
 
-Al pulsar «Generar PDF de ejemplo», el servicio crea un archivo con nombre `Ejemplo-PDF-FarmasilApp-AAAAmmdd-HHmmss.pdf` en `Documentos/FarmasilApp/PDF`. El ViewModel informa el resultado a través de `IMensajeServicio`.
+Al pulsar «Generar PDF de ejemplo», el servicio crea un archivo con nombre `Ejemplo-PDF-FarmasilApp-AAAAmmdd-HHmmss.pdf` en `Documentos/FarmasilApp/PDF`. `InicioViewModel` muestra en pantalla el nombre del archivo generado. Si la generación falla, muestra un mensaje genérico y el detalle va al registro (DEC-072).
 
 ## 5. Alcance y limitaciones
 

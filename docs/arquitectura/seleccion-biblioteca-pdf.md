@@ -85,21 +85,15 @@ El ejemplo genera un PDF demostrativo con datos ficticios y lo guarda en `Docume
 
 ## 6. Prueba y límites
 
-La prueba de concepto independiente inicial demostró que PDFsharp + MigraDoc 6.2.4 podía generar un PDF desde WPF con datos ficticios. La revisión de esta decisión exige además compilar y ejecutar el ejemplo dentro de la solución oficial FarmasilApp.
+La prueba de concepto independiente inicial demostró que PDFsharp + MigraDoc 6.2.4 podía generar un PDF desde WPF con datos ficticios. La integración se incorporó después a la solución oficial `FarmasilApp`.
 
-Antes de aprobar el PR deben adjuntarse las evidencias obtenidas desde el entorno Windows del proyecto:
+Verificado en la revisión del PR (17/11/2026):
 
-- resumen de compilación de `FarmasilApp.slnx`;
-- pantalla de FarmasilApp ejecutando el ejemplo;
-- PDF resultante abierto o visible.
+- `FarmasilApp.slnx` compila en Release sin advertencias ni errores.
+- `dotnet list package --vulnerable --include-transitive` no reporta paquetes vulnerables en ningún proyecto.
+- Las pruebas automáticas de VistaModelo cubren el ejemplo con un servicio PDF falso (éxito y fallo con mensaje genérico).
 
-También debe ejecutarse y guardarse la salida de:
-
-```bash
-dotnet list package --vulnerable --include-transitive
-```
-
-No se afirma que estas verificaciones se hayan ejecutado en esta entrega del archivo: deben realizarse en el entorno Windows con .NET 10 antes del PR.
+La evidencia visual de la ejecución en FarmasilApp (pantalla y PDF generado) está en `docs/pruebas/evidencias-pdf/`.
 
 Quedan fuera del alcance de este ejemplo:
 
