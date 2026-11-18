@@ -4,6 +4,10 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- Primero los colores y estilos, después los controles comunes que los usan y al final
+                     las plantillas de las pantallas. -->
+                <ResourceDictionary Source="Comun/Estilos.xaml" />
+                <ResourceDictionary Source="Comun/ControlesComunes.xaml" />
                 <ResourceDictionary Source="Comun/Plantillas.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

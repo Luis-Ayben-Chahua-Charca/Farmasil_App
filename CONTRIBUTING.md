@@ -125,13 +125,27 @@ La compilación no debe dejar advertencias nuevas. Si tu issue cambia el esquema
 Tu primer issue de código es la consulta de tu módulo. Sigue estos pasos, que son los que usa el esqueleto y la consulta de Usuarios (#68). `<Modulo>` es el prefijo de tu módulo (`INV`, `PRV`, …) y `Xxx`, el nombre de la pantalla.
 
 1. **VistaModelo.** Crea `src/FarmasilApp.VistaModelo/<Modulo>/XxxViewModel.cs`, que hereda de `ViewModelBase`. Cada botón es una propiedad `RelayCommand`; cada dato que muestra la pantalla, una propiedad que avisa sus cambios.
-2. **Regístrala** en `AgregarVistaModelo` (`src/FarmasilApp.VistaModelo/Comun/RegistroDependencias.cs`).
+2. **Regístrala.** Para una pantalla de módulo que debe aparecer en el menú, usa `AgregarModuloNavegable<XxxViewModel>("Nombre", roles...)` en `AgregarVistaModelo` (`src/FarmasilApp.VistaModelo/Comun/RegistroDependencias.cs`). El helper registra el VistaModelo como transitorio y agrega el módulo al menú; los roles indicados son los que pueden abrirlo, y los demás lo ven deshabilitado, con el motivo (DEC-075). Usa exclusivamente los permisos de `diseno/07-matriz-permisos.md`. No registres ese VistaModelo otra vez con `AddTransient`. Las pantallas comunes, como Inicio, se registran normalmente.
 3. **Vista.** Crea `src/FarmasilApp.Vista/<Modulo>/XxxView.xaml`, un `UserControl`. Cada componente lleva en `AutomationProperties.AutomationId` el identificador de la guía de nomenclatura (`diseno/06-guia-nomenclatura-mockups.md`). `x:Name` solo cuando el XAML lo necesita, con guion bajo en lugar de guion (DEC-060). El code-behind solo tiene el constructor.
 4. **Asocia** la VistaModelo con su Vista con un `DataTemplate` en `src/FarmasilApp.Vista/Comun/Plantillas.xaml`.
 5. **Navega** a la pantalla con `INavegacionServicio.NavegarA<XxxViewModel>()`.
 6. **Modelo.** Pon el servicio y las entidades en `src/FarmasilApp.Modelo/<Modulo>/`, y regístralos en `AgregarModelo` (`src/FarmasilApp.Modelo/Comun/RegistroDependencias.cs`). Si necesitas otro módulo, usa su interfaz (`ILotes`, `IPagos`, …), nunca sus clases ni sus tablas (DEC-055).
 7. **Persistencia.** Pon el repositorio en `src/FarmasilApp.Persistencia/<Modulo>/` y regístralo en `AgregarPersistencia`. Toda consulta SQL usa parámetros.
 8. **Pruebas.** Agrégalas en `tests/FarmasilApp.Pruebas/<Modulo>/`, según `pruebas de software/09-pruebas-software.md`. Los nombres y los atributos de trazabilidad están en la sección [Pruebas](#pruebas).
+
+### Controles y mensajes comunes
+
+`src/FarmasilApp.Vista/Comun/ControlesComunes.xaml` se carga desde `Plantillas.xaml` y define:
+
+- `ListaComun` (`ListBox`) y `EstiloListaComun` para listas seleccionables de tarjetas. La vista enlaza `ItemsSource`, `SelectedItem`, aporta su `ItemTemplate` y asigna los IDs del panel y la tarjeta según la guía.
+- `BusquedaComun` (`TextBox`) y `EstiloBusquedaComun` para la entrada de búsqueda. Enlaza `Text` a la VistaModelo con `UpdateSourceTrigger=PropertyChanged` si la consulta debe actualizarse al escribir.
+- `FiltroComun` (`ComboBox`) y `EstiloFiltroComun` para la selección del filtro. Enlaza `ItemsSource` y `SelectedItem` a la VistaModelo.
+- `EstiloBotonConfirmarActualizacion` para el segundo paso de actualización con el rótulo «Guardar cambios» (DEC-046).
+- `EstiloBotonConfirmarSi` y `EstiloBotonConfirmarNo` para los botones del modal de confirmación.
+
+Los controles comunes conservan los bindings nativos de WPF; la VistaModelo de cada módulo aplica los criterios de búsqueda y filtro de su especificación. Los recursos compartidos no asignan identificadores de módulo: cada vista los establece en el control correspondiente.
+
+La capa VistaModelo consume `IMensajeServicio`: `Confirmar(modulo, titulo, mensaje)` presenta el modal común y devuelve si se confirmó; `MostrarExito` y `MostrarError` presentan el título y el mensaje recibidos. El mensaje del modal es el que fija la especificación de cada baja. Como las especificaciones no fijan un título, `titulo` puede ser `null` y el modal usa entonces el del mockup `ART-MKP-CONFIRM-0001`, «Confirmación de Acción Crítica». Los rótulos de los botones también son los del mockup y Enter no confirma la baja: hay que presionar el botón; Escape cancela.
 
 Dentro de cada proyecto, el código va en la carpeta de su módulo (plan, sección 2). Si la carpeta no existe, créala: el esqueleto solo trae `Comun`, `Principal` y `Seguridad`, porque git no guarda carpetas vacías.
 

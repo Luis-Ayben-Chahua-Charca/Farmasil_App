@@ -1,6 +1,8 @@
 using System.Windows;
+using FarmasilApp.Vista.Comun;
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Persistencia;
+using FarmasilApp.Persistencia.ALV;
 using FarmasilApp.Vista.Principal;
 using FarmasilApp.VistaModelo.Comun;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +32,12 @@ public partial class App : Application
         var servicios = new ServiceCollection();
         servicios.AgregarPersistencia(configuracion);
         servicios.AgregarModelo();
+        // Issue #87: ALV usa lotes reales de SQL sin alterar ILotes para otros módulos.
+        servicios.AgregarConsultaAlertasSql();
         servicios.AgregarVistaModelo();
+        servicios.AddSingleton<IMensajeServicio, MensajeServicio>();
+        // Issue #84: la interfaz pertenece a VistaModelo; la implementación WPF usa MigraDoc.
+        servicios.AddSingleton<IPdfServicio, PdfServicio>();
         servicios.AddSingleton<MainWindow>();
         _proveedor = servicios.BuildServiceProvider();
 

@@ -18,6 +18,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.15" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.15" />
+    <!-- DEC-078: versión fijada por su licencia MIT. No actualizar sin una nueva decisión. -->
+    <PackageReference Include="PDFsharp-MigraDoc-WPF" Version="6.2.4" />
   </ItemGroup>
 
   <ItemGroup>

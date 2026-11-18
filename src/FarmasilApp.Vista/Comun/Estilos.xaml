@@ -1,0 +1,70 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Colores compartidos de la aplicación, tomados de los mockups. App.xaml carga este diccionario primero,
+         así que los demás (ControlesComunes.xaml, las vistas) pueden usar estos pinceles. -->
+    <SolidColorBrush x:Key="PincelFondoAplicacion" Color="#F0F2F5" />
+    <SolidColorBrush x:Key="PincelMarca" Color="#0D6EFD" />
+    <SolidColorBrush x:Key="PincelSuperficie" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="PincelTextoPrincipal" Color="#333333" />
+    <SolidColorBrush x:Key="PincelBorde" Color="#DDDDDD" />
+    <SolidColorBrush x:Key="PincelPeligro" Color="#DC2626" />
+    <SolidColorBrush x:Key="PincelSecundario" Color="#64748B" />
+    <SolidColorBrush x:Key="PincelMenuSobre" Color="#20FFFFFF" />
+    <SolidColorBrush x:Key="PincelMenuPresionado" Color="#40FFFFFF" />
+
+    <Style x:Key="EstiloVentanaPrincipal" TargetType="{x:Type Window}">
+        <Setter Property="Background" Value="{StaticResource PincelFondoAplicacion}" />
+        <Setter Property="Foreground" Value="{StaticResource PincelTextoPrincipal}" />
+        <Setter Property="FontFamily" Value="Arial" />
+    </Style>
+
+    <Style x:Key="EstiloBarraMenu" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{StaticResource PincelMarca}" />
+        <Setter Property="Padding" Value="16" />
+    </Style>
+
+    <Style x:Key="EstiloTituloMenu" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{StaticResource PincelSuperficie}" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Margin" Value="8,8,8,24" />
+    </Style>
+
+    <Style x:Key="EstiloSeccionMenu" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{StaticResource PincelSuperficie}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Margin" Value="8,0,8,8" />
+    </Style>
+
+    <Style x:Key="EstiloBotonMenu" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource PincelSuperficie}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="BorderThickness" Value="0" />
+        <!-- Un módulo que el rol no puede usar se ve deshabilitado y explica el motivo al pasar el cursor
+             (RNF-0006, condición 4; DEC-075). -->
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource PincelMenuSobre}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource PincelMenuPresionado}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.55" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="EstiloContenidoPrincipal" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{StaticResource PincelSuperficie}" />
+        <Setter Property="BorderBrush" Value="{StaticResource PincelBorde}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+    </Style>
+</ResourceDictionary>
