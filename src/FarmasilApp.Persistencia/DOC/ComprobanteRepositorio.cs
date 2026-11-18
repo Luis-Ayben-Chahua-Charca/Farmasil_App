@@ -5,7 +5,7 @@ using System.Data;
 namespace FarmasilApp.Persistencia.DOC;
 
 /// <summary>
-/// Repositorio de consulta de comprobantes (ESP-0010 v03.00).
+/// Repositorio de consulta de comprobantes (ESP-0010).
 /// Solo lectura; todos los filtros SQL se envían mediante parámetros.
 /// </summary>
 public sealed class ComprobanteRepositorio : IComprobanteRepositorio
@@ -30,11 +30,8 @@ public sealed class ComprobanteRepositorio : IComprobanteRepositorio
                 c.tipo_comprobante,
                 c.fecha_emision,
                 c.id_venta,
-                v.monto_total,
                 c.estado_documento
             FROM dbo.TBL_COMPROBANTES_TRIBUTARIOS AS c
-            INNER JOIN dbo.TBL_REGISTRO_VENTAS AS v
-                ON v.id_venta = c.id_venta
             WHERE
                 (@tipoComprobante IS NULL
                     OR c.tipo_comprobante = @tipoComprobante)
@@ -92,8 +89,7 @@ public sealed class ComprobanteRepositorio : IComprobanteRepositorio
                     lector.GetOrdinal("fecha_emision")),
                 IdVenta = lector.GetInt32(
                     lector.GetOrdinal("id_venta")),
-                MontoTotal = lector.GetDecimal(
-                    lector.GetOrdinal("monto_total")),
+                MontoTotal = 0m,
                 EstadoDocumento = lector.GetString(
                     lector.GetOrdinal("estado_documento"))
             });

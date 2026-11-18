@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              MinWidth="760"
              MinHeight="420">
-    <Grid Background="#F4F6FA" Margin="16">
+    <Grid Background="{StaticResource PincelFondoAplicacion}" Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -14,11 +14,11 @@
                    Text="Consulta de comprobantes tributarios"
                    FontSize="24"
                    FontWeight="Bold"
-                   Foreground="#1E3557"
+                   Foreground="{StaticResource PincelTextoPrincipal}"
                    Margin="0,0,0,16" />
 
         <Border Grid.Row="1"
-                Background="#126CF5"
+                Background="{StaticResource PincelMarca}"
                 CornerRadius="8"
                 Padding="14"
                 Margin="0,0,0,14">
@@ -35,7 +35,7 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,10,0">
-                    <TextBlock Text="Tipo de comprobante" Foreground="White" FontWeight="SemiBold" Margin="0,0,0,5" />
+                    <TextBlock Text="Tipo de comprobante" Foreground="{StaticResource PincelSuperficie}" FontWeight="SemiBold" Margin="0,0,0,5" />
                     <ComboBox ItemsSource="{Binding TiposComprobante}"
                               SelectedItem="{Binding TipoComprobanteSeleccionado, UpdateSourceTrigger=PropertyChanged}"
                               Height="36"
@@ -43,7 +43,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,10,0">
-                    <TextBlock Text="Número de comprobante" Foreground="White" FontWeight="SemiBold" Margin="0,0,0,5" />
+                    <TextBlock Text="Número de comprobante" Foreground="{StaticResource PincelSuperficie}" FontWeight="SemiBold" Margin="0,0,0,5" />
                     <TextBox Text="{Binding NumeroComprobante, UpdateSourceTrigger=PropertyChanged}"
                              MaxLength="20"
                              Height="36"
@@ -53,7 +53,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,10,0">
-                    <TextBlock Text="Fecha de emisión" Foreground="White" FontWeight="SemiBold" Margin="0,0,0,5" />
+                    <TextBlock Text="Fecha de emisión" Foreground="{StaticResource PincelSuperficie}" FontWeight="SemiBold" Margin="0,0,0,5" />
                     <DatePicker SelectedDate="{Binding FechaEmision, UpdateSourceTrigger=PropertyChanged}"
                                 Height="36"
                                 AutomationProperties.AutomationId="DOC-FEC-FILTRO-EMISION" />
@@ -66,20 +66,20 @@
                         Height="36"
                         Margin="0,24,0,0"
                         Padding="16,0"
-                        Background="#148653"
-                        Foreground="White"
+                        Background="{StaticResource PincelMarca}"
+                        Foreground="{StaticResource PincelSuperficie}"
                         FontWeight="Bold"
                         AutomationProperties.AutomationId="DOC-BTN-LEER-COMPROBANTE" />
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
                            Text="Todos los filtros son opcionales. El número se busca por coincidencia parcial."
-                           Foreground="#EAF2FF"
+                           Foreground="{StaticResource PincelSuperficie}"
                            FontSize="12"
                            Margin="0,9,0,0" />
             </Grid>
         </Border>
 
-        <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="12">
+        <Border Grid.Row="2" Background="{StaticResource PincelSuperficie}" CornerRadius="8" Padding="12">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -91,7 +91,7 @@
                            Text="Resultados de consulta"
                            FontSize="18"
                            FontWeight="SemiBold"
-                           Foreground="#23364D"
+                           Foreground="{StaticResource PincelTextoPrincipal}"
                            Margin="0,0,0,10" />
 
                 <DataGrid Grid.Row="1"
@@ -103,7 +103,7 @@
                           SelectionMode="Single"
                           HeadersVisibility="Column"
                           GridLinesVisibility="Horizontal"
-                          AlternatingRowBackground="#F5F7FB"
+                          AlternatingRowBackground="{StaticResource PincelFondoAplicacion}"
                           AutomationProperties.AutomationId="DOC-TBL-COMPROBANTES">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="N° Comprobante" Binding="{Binding NumeroComprobante}" Width="2*" />
@@ -116,7 +116,7 @@
 
                 <TextBlock Grid.Row="2"
                            Text="{Binding Mensaje}"
-                           Foreground="#53657A"
+                           Foreground="{StaticResource PincelSecundario}"
                            Margin="0,10,0,0"
                            TextWrapping="Wrap" />
             </Grid>

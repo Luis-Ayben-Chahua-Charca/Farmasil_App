@@ -2,7 +2,7 @@ namespace FarmasilApp.Modelo.DOC;
 
 /// <summary>
 /// Comprobante obtenido mediante la consulta ESP-0010.
-/// El importe total pertenece a TBL_REGISTRO_VENTAS, no a la tabla de comprobantes.
+/// El importe total se obtiene mediante IVentas.ObtenerVenta(idVenta), no mediante una lectura directa de la tabla de ventas.
 /// </summary>
 public sealed class ComprobanteTributario
 {

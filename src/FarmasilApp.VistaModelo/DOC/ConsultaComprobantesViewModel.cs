@@ -1,15 +1,13 @@
-using FarmasilApp.Modelo.DOC;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using System.Diagnostics;
+using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Modelo.DOC;
+using FarmasilApp.VistaModelo.Comun;
 
 namespace FarmasilApp.VistaModelo.DOC;
 
-/// <summary>
-/// VistaModelo de la consulta de comprobantes tributarios (ESP-0010).
-/// </summary>
-public sealed class ConsultaComprobantesViewModel : INotifyPropertyChanged
+/// <summary>VistaModelo de la consulta de comprobantes tributarios (ESP-0010).</summary>
+public sealed class ComprobantesViewModel : ViewModelBase
 {
     private readonly ComprobanteServicio _servicio;
     private string _tipoComprobanteSeleccionado = "Todos";
@@ -18,65 +16,57 @@ public sealed class ConsultaComprobantesViewModel : INotifyPropertyChanged
     private string _mensaje = "Seleccione los filtros y presione Consultar. También puede consultar sin filtros.";
     private bool _consultando;
 
-    public ConsultaComprobantesViewModel(ComprobanteServicio servicio)
+    public ComprobantesViewModel(ComprobanteServicio servicio)
     {
         _servicio = servicio ?? throw new ArgumentNullException(nameof(servicio));
-
-        TiposComprobante = new ObservableCollection<string>
-        {
-            "Todos",
-            "Boleta",
-            "Factura"
-        };
-
+        TiposComprobante = new ObservableCollection<string> { "Todos", "Boleta", "Factura" };
         Comprobantes = new ObservableCollection<ComprobanteTributario>();
-        ConsultarCommand = new RelayCommand(Consultar);
+        ConsultarCommand = new RelayCommand(Consultar, () => !Consultando);
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
     public ObservableCollection<string> TiposComprobante { get; }
-
     public ObservableCollection<ComprobanteTributario> Comprobantes { get; }
-
-    public ICommand ConsultarCommand { get; }
+    public RelayCommand ConsultarCommand { get; }
 
     public string TipoComprobanteSeleccionado
     {
         get => _tipoComprobanteSeleccionado;
-        set => SetProperty(ref _tipoComprobanteSeleccionado, value);
+        set => Establecer(ref _tipoComprobanteSeleccionado, value);
     }
 
     public string NumeroComprobante
     {
         get => _numeroComprobante;
-        set => SetProperty(ref _numeroComprobante, value);
+        set => Establecer(ref _numeroComprobante, value);
     }
 
     public DateTime? FechaEmision
     {
         get => _fechaEmision;
-        set => SetProperty(ref _fechaEmision, value);
+        set => Establecer(ref _fechaEmision, value);
     }
 
     public string Mensaje
     {
         get => _mensaje;
-        private set => SetProperty(ref _mensaje, value);
+        private set => Establecer(ref _mensaje, value);
     }
 
     public bool Consultando
     {
         get => _consultando;
-        private set => SetProperty(ref _consultando, value);
+        private set
+        {
+            if (Establecer(ref _consultando, value))
+            {
+                ConsultarCommand.NotificarPuedeEjecutar();
+            }
+        }
     }
 
     private void Consultar()
     {
-        if (Consultando)
-        {
-            return;
-        }
+        if (Consultando) return;
 
         try
         {
@@ -96,8 +86,14 @@ public sealed class ConsultaComprobantesViewModel : INotifyPropertyChanged
                 ? "No se encontraron comprobantes con los filtros indicados."
                 : $"Se encontraron {resultados.Count} comprobante(s).";
         }
-        catch (Exception)
+        catch (ReglaDeNegocioException ex)
         {
+            Mensaje = ex.Message;
+            Comprobantes.Clear();
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("[DOC] Consulta de comprobantes: {0}", ex);
             Mensaje = "No se pudo realizar la consulta. Verifique la conexión con DB_FARMASIL.";
             Comprobantes.Clear();
         }
@@ -105,33 +101,5 @@ public sealed class ConsultaComprobantesViewModel : INotifyPropertyChanged
         {
             Consultando = false;
         }
-    }
-
-    private bool SetProperty<T>(ref T campo, T valor, [CallerMemberName] string? nombre = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(campo, valor))
-        {
-            return false;
-        }
-
-        campo = valor;
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nombre));
-        return true;
-    }
-
-    private sealed class RelayCommand : ICommand
-    {
-        private readonly Action _ejecutar;
-
-        public RelayCommand(Action ejecutar)
-        {
-            _ejecutar = ejecutar ?? throw new ArgumentNullException(nameof(ejecutar));
-        }
-
-        public event EventHandler? CanExecuteChanged;
-
-        public bool CanExecute(object? parameter) => true;
-
-        public void Execute(object? parameter) => _ejecutar();
     }
 }
