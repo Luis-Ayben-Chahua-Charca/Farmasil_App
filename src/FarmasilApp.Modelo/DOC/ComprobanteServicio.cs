@@ -1,4 +1,6 @@
+using System.Globalization;
 using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Modelo.Seguridad;
 using FarmasilApp.Modelo.VEN;
 
 namespace FarmasilApp.Modelo.DOC;
@@ -8,15 +10,19 @@ public sealed class ComprobanteServicio
 {
     private readonly IComprobanteRepositorio _repositorio;
     private readonly IVentas _ventas;
+    private readonly ISesion _sesion;
 
     public ComprobanteServicio(
         IComprobanteRepositorio repositorio,
-        IVentas ventas)
+        IVentas ventas,
+        ISesion sesion)
     {
         _repositorio = repositorio
             ?? throw new ArgumentNullException(nameof(repositorio));
         _ventas = ventas
             ?? throw new ArgumentNullException(nameof(ventas));
+        _sesion = sesion
+            ?? throw new ArgumentNullException(nameof(sesion));
     }
 
     public IReadOnlyList<ComprobanteTributario> Consultar(
@@ -24,18 +30,50 @@ public sealed class ComprobanteServicio
         string? numeroComprobante,
         DateTime? fechaEmision)
     {
+        ExigirAcceso();
+        return ConsultarValidado(tipoComprobante, numeroComprobante, fechaEmision, null);
+    }
+
+    /// <summary>Conserva la entrada de fecha para rechazar texto inválido antes de consultar (DEC-079).</summary>
+    public IReadOnlyList<ComprobanteTributario> ConsultarConFechaTexto(
+        string? tipoComprobante,
+        string? numeroComprobante,
+        string? fechaEmision)
+    {
+        ExigirAcceso();
+        return ConsultarValidado(tipoComprobante, numeroComprobante, null, fechaEmision);
+    }
+
+    private IReadOnlyList<ComprobanteTributario> ConsultarValidado(
+        string? tipoComprobante,
+        string? numeroComprobante,
+        DateTime? fechaEmision,
+        string? fechaTexto)
+    {
         var tipo = Normalizar(tipoComprobante);
+        if (string.Equals(tipo, "Todos", StringComparison.OrdinalIgnoreCase)) tipo = null;
         if (tipo is not null && tipo is not ("Boleta" or "Factura"))
         {
             throw new ReglaDeNegocioException(
-                "El tipo de comprobante debe ser Boleta o Factura.");
+                MensajesComprobantes.TipoInvalido);
         }
 
         var numero = Normalizar(numeroComprobante);
         if (numero is { Length: > 20 })
         {
             throw new ReglaDeNegocioException(
-                "El número de comprobante no puede superar 20 caracteres.");
+                MensajesComprobantes.NumeroDemasiadoLargo);
+        }
+
+        if (!string.IsNullOrWhiteSpace(fechaTexto))
+        {
+            if (!DateTime.TryParse(fechaTexto, CultureInfo.GetCultureInfo("es-PE"),
+                    DateTimeStyles.AllowWhiteSpaces, out var fecha))
+            {
+                throw new ReglaDeNegocioException(MensajesComprobantes.FechaInvalida);
+            }
+
+            fechaEmision = fecha;
         }
 
         var filtro = new FiltroConsultaComprobantes
@@ -66,6 +104,17 @@ public sealed class ComprobanteServicio
         return resultado;
     }
 
+    private void ExigirAcceso()
+    {
+        var rol = _sesion.UsuarioActual.Rol;
+        if (rol is not (Rol.Administrador or Rol.Tecnico))
+        {
+            throw new AccesoDenegadoException(MensajesComprobantes.AccesoDenegado);
+        }
+
+        _sesion.ExigirRol(rol);
+    }
+
     private static string? Normalizar(string? valor)
     {
         if (string.IsNullOrWhiteSpace(valor))
@@ -73,9 +122,6 @@ public sealed class ComprobanteServicio
             return null;
         }
 
-        var normalizado = valor.Trim();
-        return string.Equals(normalizado, "Todos", StringComparison.OrdinalIgnoreCase)
-            ? null
-            : normalizado;
+        return valor.Trim();
     }
 }

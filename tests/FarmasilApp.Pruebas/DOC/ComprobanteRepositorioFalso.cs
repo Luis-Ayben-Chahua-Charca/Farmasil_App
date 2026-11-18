@@ -9,10 +9,13 @@ internal sealed class ComprobanteRepositorioFalso : IComprobanteRepositorio
 
     public FiltroConsultaComprobantes? UltimoFiltro { get; private set; }
 
+    public int Consultas { get; private set; }
+
     public bool FallarAlConsultar { get; set; }
 
     public IReadOnlyList<ComprobanteTributario> Consultar(FiltroConsultaComprobantes filtro)
     {
+        Consultas++;
         UltimoFiltro = filtro;
 
         if (FallarAlConsultar)

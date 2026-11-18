@@ -176,8 +176,8 @@
 | Código especificación | ESP-0010 |
 | --- | --- |
 | Nombre | Consulta de comprobantes tributarios |
-| Versión | 04.00 |
-| Fecha | 17/11/2026 |
+| Versión | 05.00 |
+| Fecha | 18/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | FUE-0002, FUE-0003 |
@@ -189,7 +189,7 @@
 | Código de artefactos asociados | ART-MKP-DOC-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | El importe no se obtiene mediante una unión con **TBL_REGISTRO_VENTAS**. La consulta de comprobantes lee exclusivamente **TBL_COMPROBANTES_TRIBUTARIOS** y obtiene el importe de cada venta mediante **IVentas.ObtenerVenta(id_venta)**, respetando la separación entre los repositorios de DOC y VEN.<br>Los comprobantes anulados permanecen visibles con su estado, requisito de auditoría tributaria.<br>**Versión 03.00:** se alinean los filtros con **ART-MKP-DOC-0001**: tipo **DOC-CMB-FILTRO-TIPO**, número **DOC-SRH-NUMERO-COMPROBANTE** y fecha **DOC-FEC-FILTRO-EMISION**. La búsqueda de ventas por código y fecha corresponde a ESP-0009, durante la selección de la venta que se documentará. Se permite ejecutar la consulta sin filtros y obtener una tabla vacía.<br>**Versión 04.00:** (DEC-079; precedente DEC-057) se elimina la unión con **TBL_REGISTRO_VENTAS**. El repositorio de comprobantes consulta únicamente **TBL_COMPROBANTES_TRIBUTARIOS** y solicita el importe mediante **IVentas.ObtenerVenta(id_venta)**. Los filtros se validan antes de ejecutar la consulta; el tipo admite **Todos**, **Boleta** o **Factura**, el número no supera 20 caracteres y la fecha debe ser válida. La búsqueda por número utiliza SQL parametrizado y escapa los caracteres especiales de `LIKE`. Si un filtro es inválido, se informa el error y se cancela la consulta sin acceder a la base de datos. |
+| Comentario | El importe no se obtiene mediante una unión con **TBL_REGISTRO_VENTAS**. La consulta de comprobantes lee exclusivamente **TBL_COMPROBANTES_TRIBUTARIOS** y obtiene el importe de cada venta mediante **IVentas.ObtenerVenta(id_venta)**, respetando la separación entre los repositorios de DOC y VEN.<br>Los comprobantes anulados permanecen visibles con su estado, requisito de auditoría tributaria.<br>**Versión 03.00:** se alinean los filtros con **ART-MKP-DOC-0001**: tipo **DOC-CMB-FILTRO-TIPO**, número **DOC-SRH-NUMERO-COMPROBANTE** y fecha **DOC-FEC-FILTRO-EMISION**. La búsqueda de ventas por código y fecha corresponde a ESP-0009, durante la selección de la venta que se documentará. Se permite ejecutar la consulta sin filtros y obtener una tabla vacía.<br>**Versión 04.00:** (DEC-055; precedente DEC-057) se elimina la unión con **TBL_REGISTRO_VENTAS**. El repositorio de comprobantes consulta únicamente **TBL_COMPROBANTES_TRIBUTARIOS** y solicita el importe mediante **IVentas.ObtenerVenta(id_venta)**. Los filtros se validan antes de ejecutar la consulta; el tipo admite **Todos**, **Boleta** o **Factura**, el número no supera 20 caracteres y la fecha debe ser válida. La búsqueda por número utiliza SQL parametrizado y escapa los caracteres especiales de `LIKE`. Si un filtro es inválido, se informa el error y se cancela la consulta sin acceder a la base de datos.<br>**Versión 05.00:** se precisa que el valor especial **Todos** corresponde solo al tipo; el número conserva el texto ingresado. La fecha escrita se valida antes de consultar y no se sustituye por una fecha anterior. Los mensajes se centralizan según DEC-072/DEC-079: «El tipo de comprobante debe ser Boleta o Factura.», «El número de comprobante no puede superar 20 caracteres.» e «Ingrese una fecha de emisión válida.». La consulta exige sesión con rol Administrador o Tecnico. El importe por `IVentas` aplica DEC-055 y el precedente DEC-057; DEC-079 documenta el tratamiento de errores. |
 | Código especificación | ESP-0011 |
 | --- | --- |
 | Nombre | Actualización de comprobante tributario |

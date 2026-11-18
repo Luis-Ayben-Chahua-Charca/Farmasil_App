@@ -183,7 +183,7 @@
 | Código ilación | ILA-0010 |
 | --- | --- |
 | Nombre | Consultar comprobantes tributarios |
-| Versión | 07.00 |
+| Versión | 08.00 |
 | Fecha | 18/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001, ACT-0002 |
@@ -197,7 +197,7 @@
 | Código de artefactos asociados | ART-MKP-DOC-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Se corrigió el componente **DOC-TLB-COMPROBANTES**, que invertía las letras del prefijo de tabla, y la referencia a la tabla inexistente **DOC_TBL_COMPROBANTES_TRIBUTARIOS**.<br>Facilita la revisión de información tributaria para auditorías y declaraciones.<br>**Versión 06.00:** se alinean los filtros con **ART-MKP-DOC-0001**: tipo **DOC-CMB-FILTRO-TIPO**, número **DOC-SRH-NUMERO-COMPROBANTE** y fecha **DOC-FEC-FILTRO-EMISION**. La búsqueda de ventas por código y fecha pertenece a ILA-0009/ESP-0009, durante la selección de la venta que se documentará. Se elimina la exigencia de que la tabla tenga registros como precondición, permitiendo consultas con resultado vacío.<br>**Versión 07.00:** se alinea con ESP-0010 v04.00 (DEC-057, DEC-079): la consulta se realiza sobre **TBL_COMPROBANTES_TRIBUTARIOS** sin unión directa con **TBL_REGISTRO_VENTAS**; el monto de la venta se recupera mediante `IVentas.ObtenerVenta(id_venta)`. Se incorporan la validación de los filtros, el límite de 20 caracteres para el número y la consulta parametrizada con escape de caracteres especiales para la coincidencia parcial. |
+| Comentario | Se corrigió el componente **DOC-TLB-COMPROBANTES**, que invertía las letras del prefijo de tabla, y la referencia a la tabla inexistente **DOC_TBL_COMPROBANTES_TRIBUTARIOS**.<br>Facilita la revisión de información tributaria para auditorías y declaraciones.<br>**Versión 06.00:** se alinean los filtros con **ART-MKP-DOC-0001**: tipo **DOC-CMB-FILTRO-TIPO**, número **DOC-SRH-NUMERO-COMPROBANTE** y fecha **DOC-FEC-FILTRO-EMISION**. La búsqueda de ventas por código y fecha pertenece a ILA-0009/ESP-0009, durante la selección de la venta que se documentará. Se elimina la exigencia de que la tabla tenga registros como precondición, permitiendo consultas con resultado vacío.<br>**Versión 07.00:** se alinea con ESP-0010 v04.00 (DEC-055, DEC-057; validación según DEC-079): la consulta se realiza sobre **TBL_COMPROBANTES_TRIBUTARIOS** sin unión directa con **TBL_REGISTRO_VENTAS**; el monto de la venta se recupera mediante `IVentas.ObtenerVenta(id_venta)`. Se incorporan la validación de los filtros, el límite de 20 caracteres para el número y la consulta parametrizada con escape de caracteres especiales para la coincidencia parcial.<br>**Versión 08.00:** se precisa que el valor especial **Todos** corresponde solo al tipo; el número conserva el texto ingresado. La fecha escrita se valida antes de consultar y no se sustituye por una fecha anterior. Los mensajes se centralizan según DEC-072/DEC-079: «El tipo de comprobante debe ser Boleta o Factura.», «El número de comprobante no puede superar 20 caracteres.» e «Ingrese una fecha de emisión válida.». La consulta exige sesión con rol Administrador o Tecnico. El importe por `IVentas` aplica DEC-055 y el precedente DEC-057; DEC-079 documenta el tratamiento de errores. |
 
 | Código ilación | ILA-0011 |
 | --- | --- |

@@ -1,5 +1,6 @@
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Modelo.DOC;
+using FarmasilApp.Modelo.Seguridad;
 using FarmasilApp.Modelo.VEN;
 using FarmasilApp.Pruebas.DOC;
 using FarmasilApp.VistaModelo.DOC;
@@ -10,7 +11,7 @@ public class ComprobantesViewModelPruebas
 {
     [Fact]
     [Trait("Especificacion", "ESP-0010")]
-    [Trait("Tecnica", "T-012")]
+    [Trait("Tecnica", "T-002")]
     public void InicializaFiltrosYComandoDeConsulta()
     {
         var vistaModelo = Crear(new ComprobanteRepositorioFalso(), new VentasFalsas());
@@ -24,7 +25,7 @@ public class ComprobantesViewModelPruebas
 
     [Fact]
     [Trait("Especificacion", "ESP-0010")]
-    [Trait("Tecnica", "T-012")]
+    [Trait("Tecnica", "T-002")]
     public void ConsultarCargaResultadosYMuestraCantidad()
     {
         var repositorio = new ComprobanteRepositorioFalso
@@ -57,7 +58,7 @@ public class ComprobantesViewModelPruebas
 
     [Fact]
     [Trait("Especificacion", "ESP-0010")]
-    [Trait("Tecnica", "T-012")]
+    [Trait("Tecnica", "T-002")]
     public void ConsultaSinResultadosMuestraMensajeYListaVacia()
     {
         var vistaModelo = Crear(new ComprobanteRepositorioFalso(), new VentasFalsas());
@@ -65,12 +66,12 @@ public class ComprobantesViewModelPruebas
         vistaModelo.ConsultarCommand.Execute(null);
 
         Assert.Empty(vistaModelo.Comprobantes);
-        Assert.Equal("No se encontraron comprobantes con los filtros indicados.", vistaModelo.Mensaje);
+        Assert.Equal(MensajesComprobantes.SinResultados, vistaModelo.Mensaje);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0010")]
-    [Trait("Tecnica", "T-012")]
+    [Trait("Tecnica", "T-001")]
     public void ReglaDeNegocioMuestraSuMensajeYLimpiaResultados()
     {
         var repositorio = new ComprobanteRepositorioFalso
@@ -87,12 +88,12 @@ public class ComprobantesViewModelPruebas
         vistaModelo.ConsultarCommand.Execute(null);
 
         Assert.Empty(vistaModelo.Comprobantes);
-        Assert.Equal("El tipo de comprobante debe ser Boleta o Factura.", vistaModelo.Mensaje);
+        Assert.Equal(MensajesComprobantes.TipoInvalido, vistaModelo.Mensaje);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0010")]
-    [Trait("Tecnica", "T-012")]
+    [Trait("Tecnica", "T-002")]
     public void ErrorTecnicoMuestraMensajeGenericoYLimpiaResultados()
     {
         var repositorio = new ComprobanteRepositorioFalso
@@ -110,14 +111,79 @@ public class ComprobantesViewModelPruebas
 
         Assert.Empty(vistaModelo.Comprobantes);
         Assert.Equal(
-            "No se pudo realizar la consulta. Verifique la conexión con DB_FARMASIL.",
+            MensajesComprobantes.ErrorConsulta,
             vistaModelo.Mensaje);
         Assert.False(vistaModelo.Consultando);
         Assert.True(vistaModelo.ConsultarCommand.CanExecute(null));
     }
 
+    [Theory]
+    [Trait("Especificacion", "ESP-0010")]
+    [Trait("Tecnica", "T-001")]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void FechaInvalidaCancelaInclusoDespuesDeUnaConsultaConFechaValida(bool consultaPrevia)
+    {
+        var repositorio = new ComprobanteRepositorioFalso
+        {
+            Resultados = new[] { new ComprobanteTributario { IdVenta = 1 } }
+        };
+        var vistaModelo = Crear(repositorio, new VentasFalsas());
+        if (consultaPrevia)
+        {
+            vistaModelo.FechaEmision = new DateTime(2026, 11, 17);
+            vistaModelo.ConsultarCommand.Execute(null);
+            Assert.Single(vistaModelo.Comprobantes);
+        }
+
+        var llamadasPrevias = repositorio.Consultas;
+        vistaModelo.FechaEmisionTexto = "31/02/2026";
+        vistaModelo.ConsultarCommand.Execute(null);
+
+        Assert.Equal(llamadasPrevias, repositorio.Consultas);
+        Assert.Empty(vistaModelo.Comprobantes);
+        Assert.Equal("31/02/2026", vistaModelo.FechaEmisionTexto);
+        Assert.Equal(MensajesComprobantes.FechaInvalida, vistaModelo.Mensaje);
+        Assert.True(vistaModelo.ConsultarCommand.CanExecute(null));
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0010")]
+    [Trait("Tecnica", "T-002")]
+    public void FechaDelCalendarioAlimentaElFiltroYElTextoVacioLoQuita()
+    {
+        var repositorio = new ComprobanteRepositorioFalso();
+        var vistaModelo = Crear(repositorio, new VentasFalsas());
+        vistaModelo.FechaEmision = new DateTime(2026, 11, 17);
+        Assert.Equal("17/11/2026", vistaModelo.FechaEmisionTexto);
+        vistaModelo.ConsultarCommand.Execute(null);
+        Assert.Equal(new DateTime(2026, 11, 17), repositorio.UltimoFiltro!.FechaEmision);
+
+        vistaModelo.FechaEmisionTexto = string.Empty;
+        vistaModelo.ConsultarCommand.Execute(null);
+        Assert.Null(repositorio.UltimoFiltro!.FechaEmision);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0010")]
+    [Trait("Tecnica", "T-001")]
+    public void ElCalendarioPermiteVolverALaMismaFechaTrasUnaEntradaInvalida()
+    {
+        var repositorio = new ComprobanteRepositorioFalso();
+        var vistaModelo = Crear(repositorio, new VentasFalsas());
+        var fecha = new DateTime(2026, 11, 17);
+        vistaModelo.FechaEmision = fecha;
+        vistaModelo.FechaEmisionTexto = "31/02/2026";
+        Assert.Null(vistaModelo.FechaEmision);
+
+        vistaModelo.FechaEmision = fecha;
+        vistaModelo.ConsultarCommand.Execute(null);
+        Assert.Equal("17/11/2026", vistaModelo.FechaEmisionTexto);
+        Assert.Equal(fecha, repositorio.UltimoFiltro!.FechaEmision);
+    }
+
     private static ComprobantesViewModel Crear(
         ComprobanteRepositorioFalso repositorio,
         VentasFalsas ventas) =>
-        new(new ComprobanteServicio(repositorio, ventas));
+        new(new ComprobanteServicio(repositorio, ventas, new SesionSimulada()));
 }

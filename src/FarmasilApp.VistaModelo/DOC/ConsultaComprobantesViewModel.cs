@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Modelo.DOC;
 using FarmasilApp.VistaModelo.Comun;
@@ -13,7 +14,8 @@ public sealed class ComprobantesViewModel : ViewModelBase
     private string _tipoComprobanteSeleccionado = "Todos";
     private string _numeroComprobante = string.Empty;
     private DateTime? _fechaEmision;
-    private string _mensaje = "Seleccione los filtros y presione Consultar. También puede consultar sin filtros.";
+    private string _fechaEmisionTexto = string.Empty;
+    private string _mensaje = MensajesComprobantes.IndicacionInicial;
     private bool _consultando;
 
     public ComprobantesViewModel(ComprobanteServicio servicio)
@@ -43,7 +45,30 @@ public sealed class ComprobantesViewModel : ViewModelBase
     public DateTime? FechaEmision
     {
         get => _fechaEmision;
-        set => Establecer(ref _fechaEmision, value);
+        set
+        {
+            if (Establecer(ref _fechaEmision, value))
+            {
+                FechaEmisionTexto = value?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) ?? string.Empty;
+            }
+        }
+    }
+
+    /// <summary>Entrada sin convertir: una fecha inválida no se confunde con el filtro vacío.</summary>
+    public string FechaEmisionTexto
+    {
+        get => _fechaEmisionTexto;
+        set
+        {
+            if (Establecer(ref _fechaEmisionTexto, value)
+                && _fechaEmision is not null
+                && value != _fechaEmision.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))
+            {
+                // Permite volver a elegir la misma fecha después de editar o borrar el texto.
+                _fechaEmision = null;
+                Notificar(nameof(FechaEmision));
+            }
+        }
     }
 
     public string Mensaje
@@ -71,10 +96,10 @@ public sealed class ComprobantesViewModel : ViewModelBase
         try
         {
             Consultando = true;
-            var resultados = _servicio.Consultar(
+            var resultados = _servicio.ConsultarConFechaTexto(
                 TipoComprobanteSeleccionado,
                 NumeroComprobante,
-                FechaEmision);
+                FechaEmisionTexto);
 
             Comprobantes.Clear();
             foreach (var comprobante in resultados)
@@ -83,8 +108,8 @@ public sealed class ComprobantesViewModel : ViewModelBase
             }
 
             Mensaje = resultados.Count == 0
-                ? "No se encontraron comprobantes con los filtros indicados."
-                : $"Se encontraron {resultados.Count} comprobante(s).";
+                ? MensajesComprobantes.SinResultados
+                : string.Format(CultureInfo.CurrentCulture, MensajesComprobantes.CantidadEncontrada, resultados.Count);
         }
         catch (ReglaDeNegocioException ex)
         {
@@ -94,7 +119,7 @@ public sealed class ComprobantesViewModel : ViewModelBase
         catch (Exception ex)
         {
             Trace.TraceError("[DOC] Consulta de comprobantes: {0}", ex);
-            Mensaje = "No se pudo realizar la consulta. Verifique la conexión con DB_FARMASIL.";
+            Mensaje = MensajesComprobantes.ErrorConsulta;
             Comprobantes.Clear();
         }
         finally
