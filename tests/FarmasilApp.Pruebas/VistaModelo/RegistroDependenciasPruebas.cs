@@ -17,6 +17,9 @@ using FarmasilApp.VistaModelo.PAG;
 using FarmasilApp.VistaModelo.PRV;
 using FarmasilApp.VistaModelo.USR;
 using Microsoft.Extensions.DependencyInjection;
+using FarmasilApp.Modelo.DOC;
+using FarmasilApp.Pruebas.DOC;
+using FarmasilApp.VistaModelo.DOC;
 
 namespace FarmasilApp.Pruebas.VistaModelo;
 
@@ -26,11 +29,15 @@ public class RegistroDependenciasPruebas
     {
         var servicios = new ServiceCollection();
         servicios.AgregarModelo();
-        servicios.AddSingleton<IAlertasRepositorio, AlertasRepositorioFalso>();
-        servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
-        servicios.AddSingleton<IMetodosPagoRepositorio, RepositorioDeMetodosPagoFalso>();
         servicios.AddSingleton<IProveedoresRepositorio, RepositorioDeProveedoresFalso>();
         servicios.AddSingleton<IUsuariosRepositorio, RepositorioDeUsuariosFalso>();
+        servicios.AddSingleton<IAlertasRepositorio, AlertasRepositorioFalso>();
+        servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
+
+        // Repositorio falso del módulo DOC.
+        servicios.AddSingleton<IComprobanteRepositorio, ComprobanteRepositorioFalso>();
+
+        servicios.AddSingleton<IMetodosPagoRepositorio, RepositorioDeMetodosPagoFalso>();
         // La Vista registra el servicio real de mensajes al arrancar (App.xaml.cs); aquí basta uno de prueba.
         servicios.AddSingleton<IMensajeServicio, MensajeServicioFalso>();
         // La Vista registra el servicio real de PDF al arrancar (App.xaml.cs); aquí basta uno de prueba.
@@ -45,6 +52,7 @@ public class RegistroDependenciasPruebas
         using var proveedor = CrearProveedor();
 
         Assert.NotNull(proveedor.GetRequiredService<MainViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<ComprobantesViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<INavegacionServicio>());
         Assert.NotNull(proveedor.GetRequiredService<InicioViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<AlertasViewModel>());
@@ -61,7 +69,17 @@ public class RegistroDependenciasPruebas
 
         var modulos = proveedor.GetServices<ModuloMenu>().Select(modulo => modulo.Nombre).ToArray();
 
-        Assert.Equal(new[] { "Inventario", "Alertas de vencimiento", "Métodos de pago", "Usuarios", "Proveedores" }, modulos);
+        Assert.Equal(
+    new[]
+    {
+      "Comprobantes tributarios",
+    "Inventario",
+    "Alertas de vencimiento",
+    "Métodos de pago",
+    "Usuarios",
+    "Proveedores"
+    },
+    modulos);
     }
 
     [Fact]
