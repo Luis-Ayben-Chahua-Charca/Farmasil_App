@@ -33,6 +33,8 @@ public class RegistroDependenciasPruebas
         servicios.AddSingleton<IUsuariosRepositorio, RepositorioDeUsuariosFalso>();
         // La Vista registra el servicio real de mensajes al arrancar (App.xaml.cs); aquí basta uno de prueba.
         servicios.AddSingleton<IMensajeServicio, MensajeServicioFalso>();
+        // La Vista registra el servicio real de PDF al arrancar (App.xaml.cs); aquí basta uno de prueba.
+        servicios.AddSingleton<IPdfServicio, PdfServicioFalso>();
         servicios.AgregarVistaModelo();
         return servicios.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
     }
