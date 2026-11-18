@@ -4,6 +4,8 @@
                     xmlns:vmAlv="clr-namespace:FarmasilApp.VistaModelo.ALV;assembly=FarmasilApp.VistaModelo"
                     xmlns:vistaAlv="clr-namespace:FarmasilApp.Vista.ALV"
                     xmlns:vmInv="clr-namespace:FarmasilApp.VistaModelo.INV;assembly=FarmasilApp.VistaModelo"
+                    xmlns:vmDoc="clr-namespace:FarmasilApp.VistaModelo.DOC;assembly=FarmasilApp.VistaModelo"
+                    xmlns:vistaDoc="clr-namespace:FarmasilApp.Vista.DOC"
                     xmlns:vmPag="clr-namespace:FarmasilApp.VistaModelo.PAG;assembly=FarmasilApp.VistaModelo"
                     xmlns:vista="clr-namespace:FarmasilApp.Vista.Principal"
                     xmlns:vistaInv="clr-namespace:FarmasilApp.Vista.INV"
@@ -20,6 +22,11 @@
     <!-- Consulta de alertas de vencimiento (ESP-0013, Issue #87). -->
     <DataTemplate DataType="{x:Type vmAlv:AlertasViewModel}">
         <vistaAlv:AlertasView />
+    </DataTemplate>
+
+    <!-- Consulta de comprobantes tributarios (ESP-0010). -->
+    <DataTemplate DataType="{x:Type vmDoc:ComprobantesViewModel}">
+        <vistaDoc:ConsultaComprobantesView />
     </DataTemplate>
 
     <!-- Consulta de Inventario (ESP-0006). -->
