@@ -2,10 +2,14 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 13.00 |
-| Fecha | 14/11/2026 |
+| Versión | 15.00 |
+| Fecha | 18/11/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 15.00.** Subsanación del PR #176 / issue #80: se precisan la independencia de las guardas de ESP-0035, el contrato sin credenciales de ESP-0034 y la confirmación negativa de ESP-0036 en VistaModelo. Se corrige el resumen a 276 casos definidos; no se añaden filas al plan ni se confunde ese total con las ejecuciones unitarias.
+>
+> **Versión 14.00.** Agregar caso de prueba unitario para la regla DEC-073 en el Módulo 9 (USR). Cambia el número de pruebas a 276.
+>
 > **Versión 13.00.** Alinea ESP-0013 con los filtros opcionales de la consulta de alertas (issue #86; DEC-076): el camino básico elige remesa y estado, y la partición cubre remesa (una o todas) por estado (Todos, Por vencer, Retirados). No cambia el número de pruebas: 275.
 >
 > **Versión 12.00.** Alinea ESP-0018 con la búsqueda opcional por nombre: el camino básico consulta nombre y estado, y la partición cubre nombre exacto, nombre parcial, estado, combinación y ausencia de criterios (issue #76). No cambia el número de pruebas: 275.
@@ -294,6 +298,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 |  |  | Ingresar una contraseña nueva y verificar que se guarde un hash nuevo y que la anterior deje de ser válida. | T-012 |
 |  |  | Degradar a 'Tecnico' la única cuenta administradora activa y verificar que el sistema cancele la operación. | T-012 |
 |  |  | Desactivar la única cuenta administradora activa y verificar que el sistema cancele la operación. | T-012 |
+|  |  | Verificar que la cuenta propia en sesión activa no permita modificar su propio rol ni su estado. | T-012 |
 | ESP-0036 | Desactivación de usuario (Eliminar) | Camino básico: seleccionar cuenta ajena, confirmar y verificar la baja aplicada. | T-002 |
 |  |  | Complejidad ciclomática: ramas de cuenta propia, con operaciones, sin operaciones y confirmación negativa. | T-003 |
 |  |  | Intentar dar de baja la cuenta con la que está abierta la sesión y verificar que el sistema lo impida. | T-012 |
@@ -425,7 +430,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 
 | Verificación | Resultado |
 | --- | --- |
-| Pruebas definidas | 275 |
+| Pruebas definidas | 276 |
 | Especificaciones con al menos una prueba | 52 de 52 |
 | Especificaciones con prueba de camino básico (T-002) | 52 de 52 |
 | Módulos con verificación de rol | 13 de 13 |
