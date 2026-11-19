@@ -4,14 +4,7 @@ using FarmasilApp.Modelo.USR;
 
 namespace FarmasilApp.Pruebas.USR;
 
-/// <summary>
-/// Pruebas de ejemplo de <see cref="UsuariosServicio"/>: muestran cómo probar una regla con el repositorio falso.
-/// </summary>
-/// <remarks>
-/// Son solo cinco, a propósito. La suite completa del módulo 9 del plan 09 la escribe R8 en el #80, como verificación
-/// independiente de este módulo; la descripción del PR del #68 relaciona cada fila del plan con el método que la cubre.
-/// Las sesiones son las simuladas de <c>main</c>: <c>admin_prueba</c> (id 1) y <c>tecnico_prueba</c> (id 2).
-/// </remarks>
+/// <summary>Pruebas unitarias de ESP-0033 a ESP-0036 y RNF-0006 con los contratos reales de Usuarios.</summary>
 public class UsuariosServicioPruebas
 {
     private static UsuariosServicio Servicio(RepositorioDeUsuariosFalso repositorio, Rol rolDeLaSesion = Rol.Administrador) =>
@@ -99,18 +92,18 @@ public class UsuariosServicioPruebas
         Assert.Equal("tecnico_renombrado", repositorio.Buscar(tecnico)?.NombreUsuario);
     }
 
-    [Fact]
+    [Theory]
     [Trait("Especificacion", "ESP-0033")]
     [Trait("Tecnica", "T-001")]
-    public void CrearRechazaNombreVacioOSoloEspacios()
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void CrearRechazaNombreVacioOSoloEspacios(string? nombre)
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_prueba", Rol.Administrador);
-
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear("   ", "Clave-123", Rol.Tecnico, EstadoRegistro.Activo));
-
-        Assert.Equal(MensajesUsuarios.NombreVacio, excepcion.Message);
+        var error = Assert.Throws<ReglaDeNegocioException>(
+            () => Servicio(repositorio).Crear(nombre, "Clave-123", Rol.Tecnico, EstadoRegistro.Activo));
+        Assert.Equal(MensajesUsuarios.NombreVacio, error.Message);
         Assert.Null(repositorio.UltimoCrear);
     }
 
@@ -120,14 +113,21 @@ public class UsuariosServicioPruebas
     public void CrearRechazaNombreDemasiadoLargo()
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_prueba", Rol.Administrador);
-        string nombreLargo = new('a', 51);
-
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear(nombreLargo, "Clave-123", Rol.Tecnico, EstadoRegistro.Activo));
-
-        Assert.Equal(MensajesUsuarios.NombreDemasiadoLargo, excepcion.Message);
+        var error = Assert.Throws<ReglaDeNegocioException>(
+            () => Servicio(repositorio).Crear(new string('a', 51), "Clave-123", Rol.Tecnico, EstadoRegistro.Activo));
+        Assert.Equal(MensajesUsuarios.NombreDemasiadoLargo, error.Message);
         Assert.Null(repositorio.UltimoCrear);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0033")]
+    [Trait("Tecnica", "T-001")]
+    public void CrearAceptaElNombreEnElLimiteDeCincuentaCaracteres()
+    {
+        var repositorio = new RepositorioDeUsuariosFalso();
+        var nombre = new string('a', 50);
+        var id = Servicio(repositorio).Crear(nombre, "Clave-123", Rol.Tecnico, EstadoRegistro.Activo);
+        Assert.Equal(nombre, repositorio.Buscar(id)!.NombreUsuario);
     }
 
     [Fact]
@@ -136,338 +136,311 @@ public class UsuariosServicioPruebas
     public void CrearRechazaNombreRepetidoSinDistinguirMayusculas()
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_prueba", Rol.Administrador);
         repositorio.Agregar("usuario_existente", Rol.Tecnico);
-
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
+        var error = Assert.Throws<ReglaDeNegocioException>(
             () => Servicio(repositorio).Crear("USUARIO_EXISTENTE", "Clave-123", Rol.Tecnico, EstadoRegistro.Activo));
-
-        Assert.Equal(MensajesUsuarios.NombreRepetido, excepcion.Message);
+        Assert.Equal(MensajesUsuarios.NombreRepetido, error.Message);
         Assert.Null(repositorio.UltimoCrear);
     }
 
-    [Fact]
+    [Theory]
     [Trait("Especificacion", "ESP-0033")]
     [Trait("Tecnica", "T-001")]
-    public void CrearRechazaContrasenaVacia()
+    [InlineData(null)]
+    [InlineData("")]
+    public void CrearRechazaContrasenaVacia(string? contrasena)
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_prueba", Rol.Administrador);
-
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear("nuevo_usuario", "", Rol.Tecnico, EstadoRegistro.Activo));
-
-        Assert.Equal(MensajesUsuarios.ContrasenaVacia, excepcion.Message);
+        var error = Assert.Throws<ReglaDeNegocioException>(
+            () => Servicio(repositorio).Crear("nuevo", contrasena, Rol.Tecnico, EstadoRegistro.Activo));
+        Assert.Equal(MensajesUsuarios.ContrasenaVacia, error.Message);
         Assert.Null(repositorio.UltimoCrear);
     }
 
-    [Fact]
+    [Theory]
     [Trait("Especificacion", "ESP-0033")]
     [Trait("Tecnica", "T-001")]
-    public void CrearRechazaRolOEstadoFueraDeDominio()
+    [InlineData(null, EstadoRegistro.Activo, MensajesUsuarios.RolInvalido)]
+    [InlineData((Rol)99, EstadoRegistro.Activo, MensajesUsuarios.RolInvalido)]
+    [InlineData(Rol.Tecnico, null, MensajesUsuarios.EstadoInvalido)]
+    [InlineData(Rol.Tecnico, (EstadoRegistro)99, MensajesUsuarios.EstadoInvalido)]
+    public void CrearRechazaRolOEstadoFueraDeDominio(Rol? rol, EstadoRegistro? estado, string mensaje)
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_prueba", Rol.Administrador);
-
-        // Rol inválido
-        var exRol = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear("nuevo", "Clave-123", (Rol)99, EstadoRegistro.Activo));
-        Assert.Equal(MensajesUsuarios.RolInvalido, exRol.Message);
-
-        // Estado inválido
-        var exEstado = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear("nuevo", "Clave-123", Rol.Tecnico, (EstadoRegistro)99));
-        Assert.Equal(MensajesUsuarios.EstadoInvalido, exEstado.Message);
-
+        var error = Assert.Throws<ReglaDeNegocioException>(
+            () => Servicio(repositorio).Crear("nuevo", "Clave-123", rol, estado));
+        Assert.Equal(mensaje, error.Message);
         Assert.Null(repositorio.UltimoCrear);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0033")]
-    [Trait("Tecnica", "T-002")]
-    public void CrearRegistraLaCuentaWithHashYNuncaConLaContrasena()
-    {
-        var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_prueba", Rol.Administrador);
-
-        Servicio(repositorio).Crear("tecnico_nuevo", "Clave-123", Rol.Tecnico, EstadoRegistro.Activo);
-
-        var creado = repositorio.UltimoCrear;
-        Assert.NotNull(creado);
-        Assert.Equal("tecnico_nuevo", creado.Value.NombreUsuario);
-        Assert.Equal(HashDeContrasenasFalso.HashDe("Clave-123"), creado.Value.Hash);
-        Assert.DoesNotContain(repositorio.Cuentas, cuenta => cuenta.Hash == "Clave-123");
-        Assert.Equal(Rol.Tecnico, creado.Value.Rol);
-        Assert.Equal(EstadoRegistro.Activo, creado.Value.Estado);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0034")]
     [Trait("Tecnica", "T-002")]
-    public void ConsultarFiltraYNormalizaResultadosPorNombreYRol()
+    public void ConsultarNormalizaElNombreYConservaElFiltroDeRol()
     {
         var repositorio = new RepositorioDeUsuariosFalso();
         repositorio.Agregar("admin_prueba", Rol.Administrador);
-        repositorio.Agregar("carlos_admin", Rol.Administrador, EstadoRegistro.Activo);
+        repositorio.Agregar("carlos_admin", Rol.Administrador);
         repositorio.Agregar("ana_tecnico", Rol.Tecnico, EstadoRegistro.Inactivo);
 
-        // Usamos el nombre completo "carlos_admin" para que el filtro exacto lo encuentre
-        var resultados = Servicio(repositorio).Consultar("carlos_admin", Rol.Administrador);
+        var cuenta = Assert.Single(Servicio(repositorio).Consultar("  carlos_admin  ", Rol.Administrador));
 
-        Assert.Single(resultados);
-        Assert.Equal("carlos_admin", resultados[0].NombreUsuario);
-        Assert.Equal(EstadoRegistro.Activo, resultados[0].Estado);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0034")]
-    [Trait("Tecnica", "T-002")]
-    public void ConsultarNoIncluyeContrasenaNiHashEnElResultado()
-    {
-        var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_prueba", Rol.Administrador);
-        repositorio.Agregar("carlos_admin", Rol.Administrador, EstadoRegistro.Activo, hash: "HASH_SECRETO_123");
-
-        var resultados = Servicio(repositorio).Consultar("carlos_admin", Rol.Administrador);
-
-        Assert.Single(resultados);
-        var cuenta = resultados[0];
-
-        // Verificamos que el DTO o modelo devuelto no contenga propiedades de hash o contraseña expuestas
-        // (dependiendo de tu contrato, validamos que no posea el campo hash o que este sea nulo/vacío)
         Assert.Equal("carlos_admin", cuenta.NombreUsuario);
-        // Si CuentaUsuario no tiene propiedad Hash, esto valida la estructura por diseño. 
-        // Si tuviera una propiedad Hash/Contrasena en el DTO de lectura, validamos que no venga poblada:
-        // Assert.True(string.IsNullOrEmpty(cuenta.Hash));
+        Assert.Equal(EstadoRegistro.Activo, cuenta.Estado);
+        Assert.Equal("carlos_admin", repositorio.UltimaConsulta!.Value.NombreUsuario);
+        Assert.Equal(Rol.Administrador, repositorio.UltimaConsulta.Value.Rol);
+    }
+
+    [Theory]
+    [Trait("Especificacion", "ESP-0034")]
+    [Trait("Tecnica", "T-001")]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void ConsultarSinNombreDevuelveTodasLasCuentas(string? nombre)
+    {
+        var repositorio = new RepositorioDeUsuariosFalso();
+        repositorio.Agregar("admin_prueba", Rol.Administrador);
+        repositorio.Agregar("tecnico_prueba", Rol.Tecnico, EstadoRegistro.Inactivo);
+        var cuentas = Servicio(repositorio).Consultar(nombre, null);
+        Assert.Equal(2, cuentas.Count);
+        Assert.Null(repositorio.UltimaConsulta!.Value.NombreUsuario);
+        Assert.Null(repositorio.UltimaConsulta.Value.Rol);
+    }
+
+    [Theory]
+    [Trait("Especificacion", "ESP-0034")]
+    [Trait("Tecnica", "T-001")]
+    [InlineData(Rol.Administrador)]
+    [InlineData(Rol.Tecnico)]
+    public void ConsultarPorRolExcluyeLasCuentasDelOtroRol(Rol rol)
+    {
+        var repositorio = new RepositorioDeUsuariosFalso();
+        repositorio.Agregar("admin_prueba", Rol.Administrador);
+        repositorio.Agregar("tecnico_prueba", Rol.Tecnico);
+        var cuenta = Assert.Single(Servicio(repositorio).Consultar(null, rol));
+        Assert.Equal(rol, cuenta.Rol);
+        Assert.Equal(rol, repositorio.UltimaConsulta!.Value.Rol);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0034")]
-    [Trait("Tecnica", "T-002")]
-    public void ConsultarReflejaAdecuadamenteElEstadoActivoEInactivo()
+    [Trait("Tecnica", "T-001")]
+    public void ConsultarSinCoincidenciasDevuelveUnaListaVacia()
     {
         var repositorio = new RepositorioDeUsuariosFalso();
         repositorio.Agregar("admin_prueba", Rol.Administrador);
-        repositorio.Agregar("usuario_activo", Rol.Tecnico, EstadoRegistro.Activo);
-        repositorio.Agregar("usuario_inactivo", Rol.Tecnico, EstadoRegistro.Inactivo);
+        Assert.Empty(Servicio(repositorio).Consultar("inexistente", null));
+    }
 
-        // Consultamos para traer las cuentas registradas
-        var resultados = Servicio(repositorio).Consultar(null, null);
+    [Fact]
+    [Trait("Especificacion", "ESP-0034")]
+    [Trait("Tecnica", "T-012")]
+    public void ConsultarNoExponeMiembrosPublicosDeContrasenaNiHash()
+    {
+        var repositorio = new RepositorioDeUsuariosFalso();
+        repositorio.Agregar("carlos_admin", Rol.Administrador, hash: "HASH_SECRETO_123");
+        var cuenta = Assert.Single(Servicio(repositorio).Consultar("carlos_admin", Rol.Administrador));
+        var tipo = cuenta.GetType();
+        var nombres = tipo.GetProperties().Select(propiedad => propiedad.Name)
+            .Concat(tipo.GetFields().Select(campo => campo.Name));
 
-        var activo = resultados.First(c => c.NombreUsuario == "usuario_activo");
-        var inactivo = resultados.First(c => c.NombreUsuario == "usuario_inactivo");
+        Assert.DoesNotContain(nombres, nombre =>
+            nombre.Contains("contras", StringComparison.OrdinalIgnoreCase)
+            || nombre.Contains("hash", StringComparison.OrdinalIgnoreCase)
+            || nombre.Contains("password", StringComparison.OrdinalIgnoreCase));
+        Assert.Equal("carlos_admin", cuenta.NombreUsuario);
+    }
 
-        Assert.Equal(EstadoRegistro.Activo, activo.Estado);
-        Assert.Equal(EstadoRegistro.Inactivo, inactivo.Estado);
+    [Fact]
+    [Trait("Especificacion", "ESP-0034")]
+    [Trait("Tecnica", "T-004")]
+    public void ConsultarDistingueElEstadoActivoEInactivo()
+    {
+        var repositorio = new RepositorioDeUsuariosFalso();
+        repositorio.Agregar("activo", Rol.Tecnico);
+        repositorio.Agregar("inactivo", Rol.Tecnico, EstadoRegistro.Inactivo);
+        var cuentas = Servicio(repositorio).Consultar(null, null);
+        Assert.Equal(EstadoRegistro.Activo, cuentas.Single(c => c.NombreUsuario == "activo").Estado);
+        Assert.Equal(EstadoRegistro.Inactivo, cuentas.Single(c => c.NombreUsuario == "inactivo").Estado);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0035")]
     [Trait("Tecnica", "T-002")]
-    public void ActualizarModificaLosCamposDeLaCuentaCorrectamente()
+    public void ActualizarModificaLosCamposDeUnaCuentaAjena()
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_prueba", Rol.Administrador); // ID 1
-        repositorio.Agregar("usuario_original", Rol.Tecnico, EstadoRegistro.Activo); // ID 2
-
-        // Actualizamos el usuario con ID 2, cambiando su nombre, rol y estado (dejando contraseña en null o sin cambios)
-        Servicio(repositorio).Actualizar(2, "usuario_modificado", null, Rol.Administrador, EstadoRegistro.Inactivo);
-
-        var actualizado = repositorio.UltimoActualizar;
-        Assert.NotNull(actualizado);
-        Assert.Equal("usuario_modificado", actualizado.Value.NombreUsuario);
-        Assert.Equal(Rol.Administrador, actualizado.Value.Rol);
-        Assert.Equal(EstadoRegistro.Inactivo, actualizado.Value.Estado);
+        repositorio.Agregar("admin_prueba", Rol.Administrador);
+        var id = repositorio.Agregar("usuario_original", Rol.Tecnico);
+        Servicio(repositorio).Actualizar(id, "usuario_modificado", null, Rol.Administrador, EstadoRegistro.Inactivo);
+        var cuenta = repositorio.Buscar(id)!;
+        Assert.Equal(id, repositorio.UltimoActualizar!.Value.IdUsuario);
+        Assert.Equal("usuario_modificado", cuenta.NombreUsuario);
+        Assert.Equal(Rol.Administrador, cuenta.Rol);
+        Assert.Equal(EstadoRegistro.Inactivo, cuenta.Estado);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0035")]
     [Trait("Tecnica", "T-004")]
-    public void ActualizarConContrasenaVaciaONulaConservaHashAnterior()
+    public void ActualizarConContrasenaNulaConservaElHashAnterior()
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_prueba", Rol.Administrador); // ID 1
-        repositorio.Agregar("usuario_test", Rol.Tecnico, EstadoRegistro.Activo); // ID 2
-
-        // Obtenemos el hash original de la cuenta
-        var cuentaOriginal = repositorio.Cuentas.First(c => c.NombreUsuario == "usuario_test");
-        var hashOriginal = cuentaOriginal.Hash;
-
-        // Actualizamos enviando la contraseña vacía ("")
-        Servicio(repositorio).Actualizar(2, "usuario_test", "", Rol.Tecnico, EstadoRegistro.Activo);
-
-        // Verificamos directamente en el repositorio que el hash de la cuenta se haya conservado
-        var cuentaActualizada = repositorio.Cuentas.First(c => c.IdUsuario == 2);
-        Assert.Equal(hashOriginal, cuentaActualizada.Hash);
+        repositorio.Agregar("admin_prueba", Rol.Administrador);
+        var id = repositorio.Agregar("tecnico", Rol.Tecnico, hash: "HASH-VIGENTE");
+        Servicio(repositorio).Actualizar(id, "tecnico", null, Rol.Tecnico, EstadoRegistro.Activo);
+        Assert.False(repositorio.SePidioCambiarHash);
+        Assert.Equal("HASH-VIGENTE", repositorio.Buscar(id)!.Hash);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0035")]
-    [Trait("Tecnica", "T-002")]
-    public void ActualizarConContrasenaNuevaGeneraNuevoHashYReemplazaElAnterior()
+    [Trait("Tecnica", "T-012")]
+    public void ActualizarConContrasenaNuevaReemplazaElHashAnterior()
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_prueba", Rol.Administrador); // ID 1
-        repositorio.Agregar("usuario_test", Rol.Tecnico, EstadoRegistro.Activo); // ID 2
+        repositorio.Agregar("admin_prueba", Rol.Administrador);
+        var id = repositorio.Agregar("tecnico", Rol.Tecnico, hash: HashDeContrasenasFalso.HashDe("Anterior-123"));
+        Servicio(repositorio).Actualizar(id, "tecnico", "Nueva-456", Rol.Tecnico, EstadoRegistro.Activo);
+        var hash = repositorio.Buscar(id)!.Hash;
+        Assert.True(repositorio.SePidioCambiarHash);
+        Assert.Equal(HashDeContrasenasFalso.HashDe("Nueva-456"), hash);
+        var verificador = new HashDeContrasenasFalso();
+        Assert.True(verificador.Verificar("Nueva-456", hash));
+        Assert.False(verificador.Verificar("Anterior-123", hash));
+    }
 
-        // Obtenemos el hash original de la cuenta
-        var cuentaOriginal = repositorio.Cuentas.First(c => c.NombreUsuario == "usuario_test");
-        var hashAnterior = cuentaOriginal.Hash;
+    [Fact]
+    [Trait("Especificacion", "ESP-0035")]
+    [Trait("Tecnica", "T-012")]
+    public void ActualizarRechazaDesactivarALaUltimaAdministradoraAjenaALaSesion()
+    {
+        var repositorio = new RepositorioDeUsuariosFalso();
+        repositorio.Agregar("admin_prueba", Rol.Administrador, EstadoRegistro.Inactivo);
+        var id = repositorio.Agregar("unica_admin", Rol.Administrador);
+        var error = Assert.Throws<ReglaDeNegocioException>(
+            () => Servicio(repositorio).Actualizar(id, "unica_admin", null, Rol.Administrador, EstadoRegistro.Inactivo));
+        Assert.Equal(MensajesUsuarios.UltimoAdministrador, error.Message);
+        Assert.Equal(id, repositorio.UltimoContarAdministradoresActivos);
+        Assert.Null(repositorio.UltimoActualizar);
+        Assert.Equal(EstadoRegistro.Activo, repositorio.Buscar(id)!.Estado);
+    }
 
-        // Actualizamos enviando una contraseña nueva distinta
-        string nuevaContrasena = "NuevaClave-456";
-        Servicio(repositorio).Actualizar(2, "usuario_test", nuevaContrasena, Rol.Tecnico, EstadoRegistro.Activo);
+    [Fact]
+    [Trait("Especificacion", "ESP-0035")]
+    [Trait("Tecnica", "T-003")]
+    public void ActualizarPermiteDegradarUnaCuentaSiQuedaOtraAdministradoraActiva()
+    {
+        var repositorio = new RepositorioDeUsuariosFalso();
+        repositorio.Agregar("admin_prueba", Rol.Administrador);
+        var id = repositorio.Agregar("otra_admin", Rol.Administrador);
+        Servicio(repositorio).Actualizar(id, "otra_admin", null, Rol.Tecnico, EstadoRegistro.Activo);
+        Assert.Equal(Rol.Tecnico, repositorio.Buscar(id)!.Rol);
+    }
 
-        // Verificamos que el hash en el repositorio haya cambiado y sea el correspondiente a la nueva contraseña
-        var cuentaActualizada = repositorio.Cuentas.First(c => c.IdUsuario == 2);
-        var hashEsperado = HashDeContrasenasFalso.HashDe(nuevaContrasena);
+    [Theory]
+    [Trait("Especificacion", "ESP-0035")]
+    [Trait("Tecnica", "T-012")]
+    [InlineData(Rol.Tecnico, EstadoRegistro.Activo)]
+    [InlineData(Rol.Administrador, EstadoRegistro.Inactivo)]
+    public void ActualizarRechazaCambiarRolOEstadoDeLaCuentaPropiaAunqueExistaOtraAdministradora(Rol rol, EstadoRegistro estado)
+    {
+        var repositorio = new RepositorioDeUsuariosFalso();
+        var id = repositorio.Agregar("admin_prueba", Rol.Administrador);
+        repositorio.Agregar("otra_admin", Rol.Administrador);
+        var original = repositorio.Buscar(id);
+        var error = Assert.Throws<ReglaDeNegocioException>(
+            () => Servicio(repositorio).Actualizar(id, "admin_prueba", null, rol, estado));
+        Assert.Equal(MensajesUsuarios.CuentaPropiaRolEstado, error.Message);
+        Assert.Null(repositorio.UltimoActualizar);
+        Assert.Equal(original, repositorio.Buscar(id));
+    }
 
-        Assert.NotEqual(hashAnterior, cuentaActualizada.Hash);
-        Assert.Equal(hashEsperado, cuentaActualizada.Hash);
+    [Fact]
+    [Trait("Especificacion", "ESP-0035")]
+    [Trait("Tecnica", "T-003")]
+    public void ActualizarLaCuentaPropiaPermiteCambiarNombreYContrasena()
+    {
+        var repositorio = new RepositorioDeUsuariosFalso();
+        var id = repositorio.Agregar("admin_prueba", Rol.Administrador);
+        Servicio(repositorio).Actualizar(id, "admin_renombrado", "Nueva-456", Rol.Administrador, EstadoRegistro.Activo);
+        Assert.Equal("admin_renombrado", repositorio.Buscar(id)!.NombreUsuario);
+        Assert.Equal(HashDeContrasenasFalso.HashDe("Nueva-456"), repositorio.Buscar(id)!.Hash);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0036")]
     [Trait("Tecnica", "T-002")]
-    public void ActualizarRechazaDegradarAlUnicoAdministradorActivo()
+    public void DarDeBajaEliminaUnaCuentaAjenaSinReferencias()
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        // Agregamos una única cuenta administradora activa (ID 1)
-        repositorio.Agregar("unico_admin", Rol.Administrador, EstadoRegistro.Activo);
-
-        // Intentamos cambiar su rol a Tecnico (degradarlo) y verificamos que el sistema lance una excepción de regla de negocio
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(() =>
-            Servicio(repositorio).Actualizar(1, "unico_admin", null, Rol.Tecnico, EstadoRegistro.Activo)
-        );
-
-        Assert.NotNull(excepcion);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0036")]
-    [Trait("Tecnica", "T-002")]
-    public void ActualizarRechazaDesactivarAlUnicoAdministradorActivo()
-    {
-        var repositorio = new RepositorioDeUsuariosFalso();
-        // Agregamos una única cuenta administradora activa (ID 1)
-        repositorio.Agregar("unico_admin", Rol.Administrador, EstadoRegistro.Activo);
-
-        // Intentamos cambiar su estado a Inactivo (desactivarlo) y verificamos que el sistema lance una excepción de regla de negocio
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(() =>
-            Servicio(repositorio).Actualizar(1, "unico_admin", null, Rol.Administrador, EstadoRegistro.Inactivo)
-        );
-
-        Assert.NotNull(excepcion);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "DEC-073")]
-    [Trait("Tecnica", "T-002")]
-    public void ActualizarSuPropiaCuentaCambiandoRolOEstadoLanzaExcepcion()
-    {
-        var repositorio = new RepositorioDeUsuariosFalso();
-        // Agregamos la cuenta que representará al usuario actual de la sesión (ID 1)
-        repositorio.Agregar("admin_sesion", Rol.Administrador, EstadoRegistro.Activo);
-
-        // Intentamos actualizar su propio rol o estado (por ejemplo, cambiar su rol a Tecnico o desactivarla)
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(() =>
-            Servicio(repositorio).Actualizar(1, "admin_sesion", null, Rol.Tecnico, EstadoRegistro.Activo)
-        );
-
-        Assert.NotNull(excepcion);
-        // Opcional: validar que el mensaje corresponda a la restricción de cuenta propia si tu arquitectura lo evalúa
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0036")]
-    [Trait("Tecnica", "T-002")]
-    public void DarDeBajaCuentaAjenaValidaExitosamente()
-    {
-        var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_sesion", Rol.Administrador, EstadoRegistro.Activo); // ID 1
-        repositorio.Agregar("usuario_a_baja", Rol.Tecnico, EstadoRegistro.Activo); // ID 2
-
-        // Obtenemos la cuenta creada para extraer su ID
-        var cuentaCreada = repositorio.Cuentas.First(c => c.NombreUsuario == "usuario_a_baja");
-
-        // Ejecutamos la baja de la cuenta ajena
-        Servicio(repositorio).DarDeBaja(cuentaCreada.IdUsuario);
-
-        // Verificamos que la cuenta haya sido removida exitosamente del repositorio
-        Assert.DoesNotContain(repositorio.Cuentas, c => c.NombreUsuario == "usuario_a_baja");
+        repositorio.Agregar("admin_prueba", Rol.Administrador);
+        var id = repositorio.Agregar("tecnico", Rol.Tecnico);
+        Assert.Equal(ResultadoBaja.Eliminada, Servicio(repositorio).DarDeBaja(id));
+        Assert.Equal(id, repositorio.UltimaBaja);
+        Assert.Null(repositorio.Buscar(id));
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0036")]
     [Trait("Tecnica", "T-012")]
-    public void DarDeBajaCuentaEnSesionActivaLanzaExcepcion()
+    public void VerificarBajaRechazaLaCuentaPropiaAntesDePersistir()
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        // Agregamos la cuenta que representa la sesión activa (ID 1)
-        repositorio.Agregar("admin_sesion", Rol.Administrador, EstadoRegistro.Activo);
-
-        var cuentaSesion = repositorio.Cuentas.First(c => c.NombreUsuario == "admin_sesion");
-
-        // Intentamos dar de baja el ID de la misma sesión activa y verificamos que el sistema lance una ReglaDeNegocioException
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(() =>
-            Servicio(repositorio).DarDeBaja(cuentaSesion.IdUsuario)
-        );
-
-        Assert.NotNull(excepcion);
+        var id = repositorio.Agregar("admin_prueba", Rol.Administrador);
+        var error = Assert.Throws<ReglaDeNegocioException>(() => Servicio(repositorio).VerificarBaja(id));
+        Assert.Equal(MensajesUsuarios.CuentaPropiaBaja, error.Message);
+        Assert.Null(repositorio.UltimaBaja);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0036")]
-    [Trait("Tecnica", "T-002")]
-    public void DarDeBajaCuentaConReferenciasRealizaDesactivacionLogica()
+    [Trait("Tecnica", "T-003")]
+    public void DarDeBajaConReferenciasDevuelveDesactivadaYConservaLaCuenta()
     {
         var repositorio = new RepositorioDeUsuariosFalso();
-        repositorio.Agregar("admin_sesion", Rol.Administrador, EstadoRegistro.Activo); // ID 1
-        repositorio.Agregar("usuario_con_ventas", Rol.Tecnico, EstadoRegistro.Activo); // ID 2
-
-        var cuenta = repositorio.Cuentas.First(c => c.NombreUsuario == "usuario_con_ventas");
-
-        // Simulamos que la cuenta tiene referencias (ventas) utilizando MarcarConReferencias
-        repositorio.MarcarConReferencias(cuenta.IdUsuario);
-
-        // Ejecutamos la baja de la cuenta
-        Servicio(repositorio).DarDeBaja(cuenta.IdUsuario);
-
-        // Verificamos que, debido a las restricciones de integridad, la cuenta se mantenga en el repositorio pero con estado Inactivo (desactivación lógica)
-        var cuentaActualizada = repositorio.Cuentas.First(c => c.IdUsuario == cuenta.IdUsuario);
-        Assert.Equal(EstadoRegistro.Inactivo, cuentaActualizada.Estado);
+        repositorio.Agregar("admin_prueba", Rol.Administrador);
+        var id = repositorio.Agregar("tecnico", Rol.Tecnico, hash: "HASH-VIGENTE");
+        repositorio.MarcarConReferencias(id);
+        Assert.Equal(ResultadoBaja.Desactivada, Servicio(repositorio).DarDeBaja(id));
+        var cuenta = repositorio.Buscar(id)!;
+        Assert.Equal(EstadoRegistro.Inactivo, cuenta.Estado);
+        Assert.Equal("tecnico", cuenta.NombreUsuario);
+        Assert.Equal("HASH-VIGENTE", cuenta.Hash);
     }
 
-    [Fact]
+    [Theory]
     [Trait("Especificacion", "RNF-0006")]
-    [Trait("Tecnica", "T-002")]
-    public void RolTecnicoRechazaTodasLasOperacionesDeGestion()
+    [Trait("Tecnica", "T-012")]
+    [InlineData("Crear")]
+    [InlineData("Consultar")]
+    [InlineData("Actualizar")]
+    [InlineData("VerificarBaja")]
+    [InlineData("DarDeBaja")]
+    public void RolTecnicoRechazaCadaEntradaDeGestionAntesDeAccederAlRepositorio(string operacion)
     {
         var repositorio = new RepositorioDeUsuariosFalso();
+        repositorio.Agregar("admin_prueba", Rol.Administrador);
+        repositorio.Agregar("tecnico_sesion", Rol.Tecnico);
+        var id = repositorio.Agregar("cuenta_ajena", Rol.Tecnico);
+        var originales = repositorio.Cuentas.ToArray();
         var servicio = Servicio(repositorio, Rol.Tecnico);
-
-        // 1. Verificar Crear
-        var exCrear = Assert.Throws<AccesoDenegadoException>(() =>
-            servicio.Crear("usuario_nuevo", "Clave123!", Rol.Tecnico, EstadoRegistro.Activo)
-        );
-        Assert.StartsWith("La operación exige el rol Administrador", exCrear.Message);
-
-        // 2. Verificar Consultar
-        var exConsultar = Assert.Throws<AccesoDenegadoException>(() =>
-            servicio.Consultar(null, null)
-        );
-        Assert.StartsWith("La operación exige el rol Administrador", exConsultar.Message);
-
-        // 3. Verificar Actualizar
-        var exActualizar = Assert.Throws<AccesoDenegadoException>(() =>
-            servicio.Actualizar(1, "usuario_modificado", null, Rol.Tecnico, EstadoRegistro.Activo)
-        );
-        Assert.StartsWith("La operación exige el rol Administrador", exActualizar.Message);
-
-        // 4. Verificar DarDeBaja
-        var exBaja = Assert.Throws<AccesoDenegadoException>(() =>
-            servicio.DarDeBaja(1)
-        );
-        Assert.StartsWith("La operación exige el rol Administrador", exBaja.Message);
+        Action ejecutar = operacion switch
+        {
+            "Crear" => () => servicio.Crear("nueva", "Clave-123", Rol.Tecnico, EstadoRegistro.Activo),
+            "Consultar" => () => servicio.Consultar(null, null),
+            "Actualizar" => () => servicio.Actualizar(id, "cuenta_ajena", null, Rol.Tecnico, EstadoRegistro.Activo),
+            "VerificarBaja" => () => servicio.VerificarBaja(id),
+            "DarDeBaja" => () => servicio.DarDeBaja(id),
+            _ => throw new ArgumentOutOfRangeException(nameof(operacion)),
+        };
+        Assert.Throws<AccesoDenegadoException>(ejecutar);
+        Assert.Null(repositorio.UltimaConsulta);
+        Assert.Null(repositorio.UltimoExisteNombre);
+        Assert.Null(repositorio.UltimoCrear);
+        Assert.Null(repositorio.UltimoActualizar);
+        Assert.Null(repositorio.UltimaBaja);
+        Assert.Equal(originales, repositorio.Cuentas);
     }
 }

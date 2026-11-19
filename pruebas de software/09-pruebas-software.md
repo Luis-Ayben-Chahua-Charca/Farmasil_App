@@ -2,10 +2,12 @@
 
 | Artefacto | Pruebas de software |
 | --- | --- |
-| Versión | 14.00 |
+| Versión | 15.00 |
 | Fecha | 18/11/2026 |
 | Responsable | AUT-0001 |
 
+> **Versión 15.00.** Subsanación del PR #176 / issue #80: se precisan la independencia de las guardas de ESP-0035, el contrato sin credenciales de ESP-0034 y la confirmación negativa de ESP-0036 en VistaModelo. Se corrige el resumen a 276 casos definidos; no se añaden filas al plan ni se confunde ese total con las ejecuciones unitarias.
+>
 > **Versión 14.00.** Agregar caso de prueba unitario para la regla DEC-073 en el Módulo 9 (USR). Cambia el número de pruebas a 276.
 >
 > **Versión 13.00.** Alinea ESP-0013 con los filtros opcionales de la consulta de alertas (issue #86; DEC-076): el camino básico elige remesa y estado, y la partición cubre remesa (una o todas) por estado (Todos, Por vencer, Retirados). No cambia el número de pruebas: 275.
@@ -428,7 +430,7 @@ T-019 se emplea para la restauración desde respaldo por ser el tipo más cercan
 
 | Verificación | Resultado |
 | --- | --- |
-| Pruebas definidas | 275 |
+| Pruebas definidas | 276 |
 | Especificaciones con al menos una prueba | 52 de 52 |
 | Especificaciones con prueba de camino básico (T-002) | 52 de 52 |
 | Módulos con verificación de rol | 13 de 13 |
