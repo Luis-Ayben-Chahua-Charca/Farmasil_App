@@ -382,6 +382,7 @@
 
                         <Button AutomationProperties.AutomationId="INV-BTN-CREAR-PRODUCTO"
                                 ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
                                 Content="Crear producto"
                                 Command="{Binding CrearCommand}"
                                 MinWidth="120"
@@ -391,6 +392,7 @@
 
                         <Button AutomationProperties.AutomationId="INV-BTN-ACTUALIZAR-PRODUCTO"
                                 ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
                                 Content="Actualizar producto"
                                 Command="{Binding ActualizarCommand}"
                                 MinWidth="135"
@@ -400,6 +402,7 @@
 
                         <Button AutomationProperties.AutomationId="INV-BTN-CONFIRMAR-ACTUALIZACION"
                                 ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
                                 Content="Guardar cambios"
                                 Command="{Binding ConfirmarActualizacionCommand}"
                                 MinWidth="125"
@@ -409,6 +412,7 @@
 
                         <Button AutomationProperties.AutomationId="INV-BTN-ELIMINAR-PRODUCTO"
                                 ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
                                 Content="Dar de baja"
                                 Command="{Binding EliminarCommand}"
                                 MinWidth="105"
