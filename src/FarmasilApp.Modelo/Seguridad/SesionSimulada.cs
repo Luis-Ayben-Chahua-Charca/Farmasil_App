@@ -3,7 +3,8 @@ using FarmasilApp.Modelo.Comun;
 namespace FarmasilApp.Modelo.Seguridad;
 
 /// <summary>
-/// Implementación simulada de <see cref="ISesion"/> mientras USR no esté listo (plan, sección 10).
+/// Implementación simulada de <see cref="ISesion"/> para las pruebas. Desde el #88 la aplicación usa
+/// <see cref="SesionActual"/> y esta clase ya no se registra en <c>AgregarModelo</c>.
 /// La sesión es siempre la misma cuenta de los datos de prueba, <c>admin_prueba</c> (id 1, Administrador)
 /// o <c>tecnico_prueba</c> (id 2, Tecnico), según el rol con que se construya: database/002_datos_prueba.sql.
 /// No tiene estado: no hay inicio ni cierre de sesión.

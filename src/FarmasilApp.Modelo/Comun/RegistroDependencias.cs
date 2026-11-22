@@ -39,7 +39,11 @@ public static class RegistroDependencias
         // Contratos entre módulos (DEC-069): una línea por interfaz. Cuando el módulo dueño esté listo,
         // se cambia solo la implementación de su línea por la real; las simuladas no tienen estado.
         servicios.TryAddSingleton(TimeProvider.System);
-        servicios.AddSingleton<ISesion, SesionSimulada>();
+        // Sesión real (#88): una sola instancia para ISesion (los módulos) e IAutenticacion (inicio de sesión y ventana
+        // principal). SesionSimulada ya no se registra: queda solo en las pruebas.
+        servicios.AddSingleton<SesionActual>();
+        servicios.AddSingleton<ISesion>(proveedor => proveedor.GetRequiredService<SesionActual>());
+        servicios.AddSingleton<IAutenticacion>(proveedor => proveedor.GetRequiredService<SesionActual>());
         servicios.AddSingleton<IPagos, PagosSimulado>();
         servicios.AddSingleton<IRestricciones, RestriccionesSimulado>();
         servicios.AddSingleton<IProveedores, ProveedoresSimulado>();

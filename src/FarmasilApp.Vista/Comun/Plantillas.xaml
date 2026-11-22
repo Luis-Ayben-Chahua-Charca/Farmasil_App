@@ -44,6 +44,11 @@
         <vistaPrv:ProveedoresView />
     </DataTemplate>
 
+    <!-- Inicio de sesión: pantalla mínima sin mockup (RNF-0006, condición 1; DEC-080). -->
+    <DataTemplate DataType="{x:Type vmUsr:InicioSesionViewModel}">
+        <vistaUsr:InicioSesionView />
+    </DataTemplate>
+
     <!-- Usuarios, pantalla única de las cuatro operaciones (ESP-0033 a ESP-0036). -->
     <DataTemplate DataType="{x:Type vmUsr:UsuariosViewModel}">
         <vistaUsr:UsuariosView />

@@ -124,6 +124,35 @@ public sealed class UsuariosRepositorio : IUsuariosRepositorio
         return comando.ExecuteScalar() as string;
     }
 
+    public CredencialesUsuario? ObtenerCredenciales(string nombreUsuario)
+    {
+        // La intercalación Modern_Spanish_CI_AS no distingue mayúsculas (DEC-074). El hash se lee solo aquí.
+        const string sql = """
+            SELECT u.id_usuario, u.nombre_usuario, u.contrasena, u.rol, u.estado
+            FROM dbo.TBL_USUARIOS AS u
+            WHERE u.nombre_usuario = @nombre;
+            """;
+
+        using var conexion = Abrir();
+        using var comando = new SqlCommand(sql, conexion);
+        comando.Parameters.Add(ParametroNombre("@nombre", nombreUsuario));
+
+        using var lector = comando.ExecuteReader();
+        if (!lector.Read())
+        {
+            return null;
+        }
+
+        return new CredencialesUsuario
+        {
+            IdUsuario = lector.GetInt32(lector.GetOrdinal("id_usuario")),
+            NombreUsuario = lector.GetString(lector.GetOrdinal("nombre_usuario")),
+            Hash = lector.GetString(lector.GetOrdinal("contrasena")),
+            Rol = Enum.Parse<Rol>(lector.GetString(lector.GetOrdinal("rol"))),
+            Estado = Enum.Parse<EstadoRegistro>(lector.GetString(lector.GetOrdinal("estado"))),
+        };
+    }
+
     public int Crear(string nombreUsuario, string hash, Rol rol, EstadoRegistro estado)
     {
         const string sql = """

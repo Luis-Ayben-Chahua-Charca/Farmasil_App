@@ -5,13 +5,19 @@
         MinHeight="600" MinWidth="1080"
         WindowStartupLocation="CenterScreen"
         Style="{StaticResource EstiloVentanaPrincipal}">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanAVisibilidad" />
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
+        <!-- Sin sesión no hay menú: solo se ve el inicio de sesión (VP-00). -->
         <Border Grid.Column="0"
+                Width="220"
+                Visibility="{Binding HaySesion, Converter={StaticResource BooleanAVisibilidad}}"
                 Style="{StaticResource EstiloBarraMenu}">
             <StackPanel>
                 <TextBlock Text="FARMASIL"
@@ -31,6 +37,14 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+
+                <TextBlock Text="{Binding UsuarioSesion}"
+                           Style="{StaticResource EstiloSeccionMenu}"
+                           Margin="8,24,8,8" />
+                <Button AutomationProperties.AutomationId="USR-BTN-CERRAR-SESION"
+                        Content="Cerrar sesión"
+                        Command="{Binding CerrarSesionCommand}"
+                        Style="{StaticResource EstiloBotonMenu}" />
             </StackPanel>
         </Border>
 

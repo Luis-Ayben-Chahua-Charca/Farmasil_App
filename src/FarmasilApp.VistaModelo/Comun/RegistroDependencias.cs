@@ -22,6 +22,7 @@ public static class RegistroDependencias
 
         servicios.AddSingleton<MainViewModel>();
         servicios.AddTransient<InicioViewModel>();
+        servicios.AddTransient<InicioSesionViewModel>();
 
         // Menú por rol: un módulo por línea, en el orden del catálogo, con los roles que la matriz de permisos
         // le concede para abrirlo. Los demás roles lo ven deshabilitado, con el motivo (DEC-075).
