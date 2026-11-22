@@ -25,6 +25,8 @@ public sealed class InicioSesionViewModel : ViewModelBase
     private string _nombreUsuario = string.Empty;
     private string _contrasena = string.Empty;
     private string _mensaje = string.Empty;
+    private bool _estaVerificando;
+    private bool _contrasenaVisible;
 
     public InicioSesionViewModel(IAutenticacion autenticacion)
     {
@@ -59,6 +61,35 @@ public sealed class InicioSesionViewModel : ViewModelBase
         private set => Establecer(ref _mensaje, value);
     }
 
+    /// <summary>
+    /// Verdadero mientras se verifica el intento. La Vista inhabilita el usuario, la contraseña y el botón: lo que se
+    /// escriba durante la verificación no puede cambiar el intento en curso.
+    /// </summary>
+    public bool EstaVerificando
+    {
+        get => _estaVerificando;
+        private set
+        {
+            if (Establecer(ref _estaVerificando, value))
+            {
+                Notificar(nameof(PuedeEditar));
+            }
+        }
+    }
+
+    /// <summary>Lo contrario de <see cref="EstaVerificando"/>: habilita los campos de la pantalla.</summary>
+    public bool PuedeEditar => !_estaVerificando;
+
+    /// <summary>
+    /// USR-BTN-VER-CONTRASENA-SESION: si es verdadero, la contraseña se muestra en claro; por defecto está enmascarada
+    /// (RNF-0006, condición 5). Es solo de la pantalla: no se guarda ni sale de ella.
+    /// </summary>
+    public bool ContrasenaVisible
+    {
+        get => _contrasenaVisible;
+        set => Establecer(ref _contrasenaVisible, value);
+    }
+
     /// <summary>USR-BTN-INICIAR-SESION.</summary>
     public AsyncRelayCommand IniciarSesionCommand { get; }
 
@@ -67,6 +98,7 @@ public sealed class InicioSesionViewModel : ViewModelBase
         // Se copian los datos antes de salir del hilo de la interfaz: el intento no depende de lo que se escriba después.
         var (nombre, contrasena) = (NombreUsuario, Contrasena);
         Mensaje = string.Empty;
+        EstaVerificando = true;
 
         try
         {
@@ -76,6 +108,7 @@ public sealed class InicioSesionViewModel : ViewModelBase
         {
             Mensaje = ex.Message;
             Contrasena = string.Empty;
+            ContrasenaVisible = false;
             return;
         }
         catch (Exception ex)
@@ -83,10 +116,16 @@ public sealed class InicioSesionViewModel : ViewModelBase
             Trace.TraceError("[Sesión] Inicio de sesión: {0}", ex);
             Mensaje = MensajesSesion.ErrorInicio;
             Contrasena = string.Empty;
+            ContrasenaVisible = false;
             return;
+        }
+        finally
+        {
+            EstaVerificando = false;
         }
 
         Contrasena = string.Empty;
+        ContrasenaVisible = false;
         SesionIniciada?.Invoke(this, EventArgs.Empty);
     }
 }
