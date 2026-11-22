@@ -1,5 +1,6 @@
 using FarmasilApp.Modelo.INV;
 using FarmasilApp.Modelo.PRV;
+using FarmasilApp.Modelo.Seguridad;
 using FarmasilApp.Pruebas.INV;
 using FarmasilApp.VistaModelo.INV;
 
@@ -8,7 +9,7 @@ namespace FarmasilApp.Pruebas.VistaModelo;
 public class InventarioViewModelPruebas
 {
     private static InventarioViewModel Crear(RepositorioDeInventarioFalso repositorio) =>
-        new(new InventarioServicio(repositorio, new ProveedoresSimulado()));
+        new(new InventarioServicio(repositorio, new ProveedoresSimulado(), new SesionSimulada()), new MensajeServicioFalso());
 
     [Fact]
     public async Task InicializarCargaElFiltroDeProveedorPorRazonSocial()
@@ -54,7 +55,7 @@ public class InventarioViewModelPruebas
     [Fact]
     public async Task SiLaListaDeProveedoresSePierdeLaConsultaNoFiltra()
     {
-        // Al vaciarse la lista, el ComboBox deja la selección en nulo.
+        // Al vaciarse la lista, el ComboBox deja la selecciÃƒÂ³n en nulo.
         var repositorio = new RepositorioDeInventarioFalso();
         var vistaModelo = Crear(repositorio);
         await vistaModelo.InicializarCommand.ExecuteAsync();

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:comun="clr-namespace:FarmasilApp.Vista.Comun"
              MinWidth="800"
-             MinHeight="500"
+             MinHeight="600"
              comun:ComandoAlCargar.Command="{Binding InicializarCommand}">
 
     <Grid Margin="24">
@@ -17,6 +17,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Título -->
         <StackPanel Grid.Row="0"
                     Margin="0,0,0,20">
 
@@ -24,13 +25,14 @@
                        FontSize="28"
                        FontWeight="Bold"/>
 
-            <TextBlock Text="Consulta de productos"
+            <TextBlock Text="Gestión de productos"
                        Margin="0,4,0,0"
                        FontSize="15"
                        Foreground="Gray"/>
 
         </StackPanel>
 
+        <!-- Filtros -->
         <Grid Grid.Row="1"
               Margin="0,0,0,16">
 
@@ -92,15 +94,17 @@
 
         </Grid>
 
+        <!-- Mensaje -->
         <TextBlock Grid.Row="2"
                    Text="{Binding Mensaje}"
                    Margin="0,0,0,10"
                    Foreground="Gray"/>
 
+        <!-- Tarjetas -->
         <ScrollViewer Grid.Row="3"
                       HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto"
-                      MaxHeight="190"
+                      MaxHeight="175"
                       Margin="0,0,0,14">
 
             <ItemsControl AutomationProperties.AutomationId="INV-PNL-CATALOGO"
@@ -140,7 +144,7 @@
                                     <Run Text="{Binding PrecioVenta, StringFormat=N2}"/>
                                 </TextBlock>
 
-                                <TextBlock Margin="0,5,0,0">
+                                <TextBlock>
                                     <Run Text="ID: "/>
                                     <Run Text="{Binding IdProducto}"/>
                                 </TextBlock>
@@ -174,6 +178,7 @@
 
         </ScrollViewer>
 
+        <!-- Tabla -->
         <DataGrid Grid.Row="4"
                   AutomationProperties.AutomationId="INV-TBL-PRODUCTOS"
                   ItemsSource="{Binding Productos}"
@@ -183,13 +188,14 @@
                   CanUserAddRows="False"
                   SelectionMode="Single"
                   HeadersVisibility="Column"
-                  GridLinesVisibility="Horizontal">
+                  GridLinesVisibility="Horizontal"
+                  MinHeight="150">
 
             <DataGrid.Columns>
 
                 <DataGridTextColumn Header="ID"
                                     Binding="{Binding IdProducto}"
-                                    Width="70"/>
+                                    Width="65"/>
 
                 <DataGridTextColumn Header="Producto"
                                     Binding="{Binding Nombre}"
@@ -201,7 +207,7 @@
 
                 <DataGridTextColumn Header="Precio (S/)"
                                     Binding="{Binding PrecioVenta, StringFormat=N2}"
-                                    Width="110"/>
+                                    Width="105"/>
 
                 <DataGridTextColumn Header="Estado"
                                     Binding="{Binding EstadoProducto}"
@@ -209,63 +215,210 @@
 
                 <DataGridTextColumn Header="Stock físico"
                                     Binding="{Binding StockFisico}"
-                                    Width="110"/>
+                                    Width="105"/>
 
             </DataGrid.Columns>
 
         </DataGrid>
 
+        <!-- Ficha de alta / actualización / baja -->
         <Border Grid.Row="5"
                 BorderBrush="#D0D0D0"
                 BorderThickness="1"
-                CornerRadius="6"
-                Padding="12"
+                CornerRadius="7"
+                Padding="16"
                 Margin="0,14,0,0">
 
-            <StackPanel>
+            <Grid>
 
-                <TextBlock Text="Ficha del producto"
-                           FontSize="16"
-                           FontWeight="Bold"
-                           Margin="0,0,0,8"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <TextBlock Text="{Binding ProductoSeleccionado.Nombre,
-                                         TargetNullValue=Seleccione un producto}"
-                           FontWeight="SemiBold"/>
+                <!-- Encabezado -->
+                <Grid Grid.Row="0"
+                      Margin="0,0,0,12">
 
-                <WrapPanel Margin="0,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock Margin="0,0,20,0">
-                        <Run Text="ID: "/>
-                        <Run Text="{Binding ProductoSeleccionado.IdProducto}"/>
+                    <StackPanel>
+
+                        <TextBlock Text="Ficha del producto"
+                                   FontSize="17"
+                                   FontWeight="Bold"/>
+
+                        <TextBlock Margin="0,3,0,0"
+                                   Foreground="Gray"
+                                   FontSize="12"
+                                   Text="Complete los campos para crear un producto o seleccione uno para actualizarlo."/>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
+
+                        <TextBlock Text="ID: "
+                                   Foreground="Gray"
+                                   VerticalAlignment="Center"/>
+
+                        <TextBlock AutomationProperties.AutomationId="INV-LBL-ID-PRODUCTO"
+                                   Text="{Binding IdProductoFicha, TargetNullValue=Nuevo}"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+                <!-- Campos -->
+                <Grid Grid.Row="1">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0"
+                                Margin="0,0,10,0">
+
+                        <TextBlock Text="Nombre"/>
+
+                        <TextBox AutomationProperties.AutomationId="INV-TXT-NOMBRE-PRODUCTO"
+                                 Text="{Binding NombreProducto,
+                                                UpdateSourceTrigger=PropertyChanged}"
+                                 Height="32"
+                                 Margin="0,5,0,0"
+                                 MaxLength="100"/>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Margin="0,0,10,0">
+
+                        <TextBlock Text="Acción terapéutica"/>
+
+                        <TextBox AutomationProperties.AutomationId="INV-TXT-ACCION-TERAPEUTICA"
+                                 Text="{Binding AccionTerapeuticaFicha,
+                                                UpdateSourceTrigger=PropertyChanged}"
+                                 Height="32"
+                                 Margin="0,5,0,0"
+                                 MaxLength="150"/>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2"
+                                Margin="0,0,10,0">
+
+                        <TextBlock Text="Precio (S/)"/>
+
+                        <TextBox AutomationProperties.AutomationId="INV-NUM-PRECIO-PRODUCTO"
+                                 Text="{Binding PrecioVentaTexto,
+                                                UpdateSourceTrigger=PropertyChanged}"
+                                 Height="32"
+                                 Margin="0,5,0,0"/>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3"
+                                Margin="0,0,10,0">
+
+                        <TextBlock Text="Proveedor"/>
+
+                        <ComboBox AutomationProperties.AutomationId="INV-CMB-PROVEEDOR"
+                                  ItemsSource="{Binding ProveedoresActivos}"
+                                  SelectedItem="{Binding ProveedorFicha}"
+                                  DisplayMemberPath="RazonSocial"
+                                  Height="32"
+                                  Margin="0,5,0,0"/>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="4">
+
+                        <TextBlock Text="Stock mínimo"/>
+
+                        <TextBox AutomationProperties.AutomationId="INV-NUM-STOCK-MINIMO"
+                                 Text="{Binding StockMinimoTexto,
+                                                UpdateSourceTrigger=PropertyChanged}"
+                                 Height="32"
+                                 Margin="0,5,0,0"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+                <!-- Acciones -->
+                <Grid Grid.Row="2"
+                      Margin="0,14,0,0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock VerticalAlignment="Center"
+                               Foreground="Gray"
+                               FontSize="12">
+
+                        <Run Text="Estado actual: "/>
+
+                        <Run Text="{Binding ProductoSeleccionado.EstadoProducto,
+                                           TargetNullValue=Disponible}"
+                             FontWeight="SemiBold"/>
+
                     </TextBlock>
 
-                    <TextBlock Margin="0,0,20,0">
-                        <Run Text="Acción terapéutica: "/>
-                        <Run Text="{Binding ProductoSeleccionado.AccionTerapeutica}"/>
-                    </TextBlock>
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal">
 
-                    <TextBlock Margin="0,0,20,0">
-                        <Run Text="Precio: S/ "/>
-                        <Run Text="{Binding ProductoSeleccionado.PrecioVenta,
-                                           StringFormat=N2}"/>
-                    </TextBlock>
+                        <Button AutomationProperties.AutomationId="INV-BTN-CREAR-PRODUCTO"
+                                Content="Crear producto"
+                                Command="{Binding CrearCommand}"
+                                MinWidth="120"
+                                Height="34"
+                                Margin="0,0,8,0"
+                                Padding="12,0"/>
 
-                    <TextBlock Margin="0,0,20,0">
-                        <Run Text="Estado: "/>
-                        <Run Text="{Binding ProductoSeleccionado.EstadoProducto}"/>
-                    </TextBlock>
+                        <Button AutomationProperties.AutomationId="INV-BTN-ACTUALIZAR-PRODUCTO"
+                                Content="Actualizar producto"
+                                Command="{Binding ActualizarCommand}"
+                                MinWidth="135"
+                                Height="34"
+                                Margin="0,0,8,0"
+                                Padding="12,0"/>
 
-                    <TextBlock>
-                        <Run Text="Stock físico: "/>
-                        <Run Text="{Binding ProductoSeleccionado.StockFisico}"/>
-                    </TextBlock>
+                        <Button AutomationProperties.AutomationId="INV-BTN-CONFIRMAR-ACTUALIZACION"
+                                Content="Guardar cambios"
+                                Command="{Binding ConfirmarActualizacionCommand}"
+                                MinWidth="125"
+                                Height="34"
+                                Margin="0,0,8,0"
+                                Padding="12,0"/>
 
-                </WrapPanel>
+                        <Button AutomationProperties.AutomationId="INV-BTN-ELIMINAR-PRODUCTO"
+                                Content="Dar de baja"
+                                Command="{Binding EliminarCommand}"
+                                MinWidth="105"
+                                Height="34"
+                                Padding="12,0"/>
 
-            </StackPanel>
+                    </StackPanel>
+
+                </Grid>
+
+            </Grid>
 
         </Border>
 
     </Grid>
+
 </UserControl>
