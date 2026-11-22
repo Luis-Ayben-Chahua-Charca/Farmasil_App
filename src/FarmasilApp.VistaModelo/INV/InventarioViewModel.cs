@@ -11,8 +11,8 @@ namespace FarmasilApp.VistaModelo.INV;
 
 /// <summary>
 /// VistaModelo de Inventario:
-/// ESP-0005 creaciÃƒÂ³n, ESP-0006 consulta,
-/// ESP-0007 actualizaciÃƒÂ³n y ESP-0008 baja.
+/// ESP-0005 creación, ESP-0006 consulta,
+/// ESP-0007 actualización y ESP-0008 baja.
 /// </summary>
 public sealed class InventarioViewModel : ViewModelBase
 {
@@ -20,6 +20,7 @@ public sealed class InventarioViewModel : ViewModelBase
 
     private readonly InventarioServicio _servicio;
     private readonly IMensajeServicio _mensajes;
+    private readonly ISesion _sesion;
 
     private string? _busqueda;
     private ProveedorFiltro? _proveedorSeleccionado = ProveedorFiltro.Todos;
@@ -37,13 +38,17 @@ public sealed class InventarioViewModel : ViewModelBase
 
     public InventarioViewModel(
         InventarioServicio servicio,
-        IMensajeServicio mensajes)
+        IMensajeServicio mensajes,
+        ISesion sesion)
     {
         _servicio = servicio
             ?? throw new ArgumentNullException(nameof(servicio));
 
         _mensajes = mensajes
             ?? throw new ArgumentNullException(nameof(mensajes));
+
+        _sesion = sesion
+            ?? throw new ArgumentNullException(nameof(sesion));
 
         InicializarCommand =
             new AsyncRelayCommand(InicializarAsync);
@@ -52,28 +57,46 @@ public sealed class InventarioViewModel : ViewModelBase
             new AsyncRelayCommand(ConsultarAsync);
 
         CrearCommand =
-            new AsyncRelayCommand(CrearAsync);
+            new AsyncRelayCommand(
+                CrearAsync,
+                () => EsAdministrador);
 
         ActualizarCommand =
             new RelayCommand(
                 IniciarEdicion,
-                () => ProductoSeleccionado is not null);
+                () => EsAdministrador
+                    && ProductoSeleccionado is not null);
 
         ConfirmarActualizacionCommand =
             new AsyncRelayCommand(
                 ConfirmarActualizacionAsync,
-                () => EnEdicion && ProductoSeleccionado is not null);
+                () => EsAdministrador
+                    && EnEdicion
+                    && ProductoSeleccionado is not null);
 
         EliminarCommand =
             new AsyncRelayCommand(
                 DarDeBajaAsync,
-                () => ProductoSeleccionado is not null);
+                () => EsAdministrador
+                    && ProductoSeleccionado is not null);
 
         SeleccionarProductoCommand =
             new RelayCommand<ProductoInventario>(
                 SeleccionarProducto,
                 producto => producto is not null);
     }
+
+    private bool EsAdministrador =>
+        _sesion.UsuarioActual.Rol == Rol.Administrador;
+
+    /// <summary>
+    /// RNF-0006, condición 4: explica por qué las operaciones
+    /// de escritura están deshabilitadas para la Técnica.
+    /// </summary>
+    public string? MotivoAccionesAdministrador =>
+        EsAdministrador
+            ? null
+            : "Solo disponible para el Administrador.";
 
     public ObservableCollection<ProductoInventario> Productos { get; } = new();
 
@@ -298,13 +321,13 @@ public sealed class InventarioViewModel : ViewModelBase
             ProductoSeleccionado = null;
 
             Mensaje =
-                "No se pudo consultar el inventario. IntÃƒÂ©ntelo nuevamente.";
+                "No se pudo consultar el inventario. Inténtelo nuevamente.";
         }
     }
 
     private Task CrearAsync() =>
         EjecutarAsync(
-            "CreaciÃƒÂ³n",
+            "Creación",
             "No se pudo registrar el producto.",
             async () =>
             {
@@ -347,7 +370,7 @@ public sealed class InventarioViewModel : ViewModelBase
 
     private Task ConfirmarActualizacionAsync() =>
         EjecutarAsync(
-            "ActualizaciÃƒÂ³n",
+            "Actualización",
             "No se pudo actualizar el producto.",
             async () =>
             {
@@ -471,7 +494,7 @@ public sealed class InventarioViewModel : ViewModelBase
                 out var precio))
         {
             throw new ReglaDeNegocioException(
-                "El precio de venta debe ser un nÃƒÂºmero vÃƒÂ¡lido.");
+                "El precio de venta debe ser un número válido.");
         }
 
         return precio;
@@ -486,7 +509,7 @@ public sealed class InventarioViewModel : ViewModelBase
                 out var stockMinimo))
         {
             throw new ReglaDeNegocioException(
-                "El stock mÃƒÂ­nimo debe ser un nÃƒÂºmero entero vÃƒÂ¡lido.");
+                "El stock mínimo debe ser un número entero válido.");
         }
 
         return stockMinimo;
@@ -513,7 +536,7 @@ public sealed class InventarioViewModel : ViewModelBase
 
             _mensajes.MostrarError(
                 "Inventario",
-                "No tiene permisos para realizar esta operaciÃƒÂ³n.");
+                "No tiene permisos para realizar esta operación.");
         }
         catch (Exception ex)
         {
