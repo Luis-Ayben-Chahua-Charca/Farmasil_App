@@ -7,10 +7,12 @@ using FarmasilApp.Modelo.PRV;
 using FarmasilApp.Modelo.REA;
 using FarmasilApp.Modelo.RES;
 using FarmasilApp.Modelo.Seguridad;
+using FarmasilApp.Modelo.USR;
 using FarmasilApp.Modelo.VEN;
 using FarmasilApp.Persistencia;
 using FarmasilApp.Pruebas.INV;
 using FarmasilApp.Pruebas.PRV;
+using FarmasilApp.Pruebas.USR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,10 +20,9 @@ namespace FarmasilApp.Pruebas.Modelo;
 
 public class RegistroDependenciasPruebas
 {
-    /// <summary>Las nueve interfaces entre módulos de DEC-069 y la clase simulada que las implementa mientras el módulo no esté listo.</summary>
+    /// <summary>Las ocho interfaces simuladas entre módulos de DEC-069 y la clase que las implementa mientras el módulo no esté listo.</summary>
     public static TheoryData<Type, Type> Contratos => new()
     {
-        { typeof(ISesion), typeof(SesionSimulada) },
         { typeof(IPagos), typeof(PagosSimulado) },
         { typeof(IRestricciones), typeof(RestriccionesSimulado) },
         { typeof(IProveedores), typeof(ProveedoresSimulado) },
@@ -39,6 +40,7 @@ public class RegistroDependenciasPruebas
         // La Persistencia aporta el repositorio real; aquí basta uno de prueba para poder resolver InventarioServicio.
         servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
         servicios.AddSingleton<IProveedoresRepositorio, RepositorioDeProveedoresFalso>();
+        servicios.AddSingleton<IUsuariosRepositorio, RepositorioDeUsuariosFalso>();
         return servicios.BuildServiceProvider();
     }
 
@@ -132,13 +134,14 @@ public class RegistroDependenciasPruebas
     }
 
     [Fact]
-    public void LaSesionSimuladaRegistradaEsLaAdministradora()
+    public void LaSesionRealEsUnaSolaInstanciaParaISesionEIAutenticacion()
     {
         using var proveedor = CrearProveedor();
 
         var sesion = proveedor.GetRequiredService<ISesion>();
 
-        Assert.Equal(Rol.Administrador, sesion.UsuarioActual.Rol);
+        Assert.Same(sesion, proveedor.GetRequiredService<IAutenticacion>());
+        Assert.False(((IAutenticacion)sesion).HaySesion);
     }
 
     [Fact]

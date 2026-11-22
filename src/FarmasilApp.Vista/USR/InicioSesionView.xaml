@@ -1,0 +1,107 @@
+<!--
+    Pantalla mínima de inicio de sesión (RNF-0006, condición 1; DEC-012; DEC-080). No tiene mockup aprobado.
+    Cada componente lleva en AutomationProperties.AutomationId el identificador de la guía de nomenclatura (DEC-060).
+    La pantalla no tiene lógica: todo se enlaza con InicioSesionViewModel y el code-behind solo tiene el constructor.
+-->
+<UserControl x:Class="FarmasilApp.Vista.USR.InicioSesionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:comun="clr-namespace:FarmasilApp.Vista.Comun">
+    <Grid>
+        <!-- Durante la verificación todo el formulario queda inhabilitado: lo escrito no puede cambiar el intento en curso. -->
+        <StackPanel AutomationProperties.AutomationId="USR-FRM-INICIO-SESION"
+                    IsEnabled="{Binding PuedeEditar}"
+                    Width="340"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+            <TextBlock Text="{Binding Titulo}" FontSize="28" FontWeight="Bold" Margin="0,0,0,20"/>
+
+            <TextBlock Text="Nombre de usuario"/>
+            <TextBox AutomationProperties.AutomationId="USR-TXT-USUARIO-SESION"
+                     Text="{Binding NombreUsuario, UpdateSourceTrigger=PropertyChanged}"
+                     MaxLength="50"
+                     Height="32"
+                     Margin="0,5,0,10"
+                     VerticalContentAlignment="Center"/>
+
+            <TextBlock Text="Contraseña"/>
+            <!-- La contraseña está enmascarada; el botón del ojo alterna a un TextBox con el mismo contenido
+                 (RNF-0006, condición 5: el campo que la captura enmascara su contenido por defecto). -->
+            <Grid Margin="0,5,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <PasswordBox Grid.Column="0"
+                             AutomationProperties.AutomationId="USR-PWD-CONTRASENA-SESION"
+                             comun:ContrasenaEnlazada.Contrasena="{Binding Contrasena, Mode=TwoWay}"
+                             Height="32"
+                             VerticalContentAlignment="Center">
+                    <PasswordBox.Style>
+                        <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource {x:Type PasswordBox}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ContrasenaVisible}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </PasswordBox.Style>
+                </PasswordBox>
+
+                <TextBox Grid.Column="0"
+                         Text="{Binding Contrasena, UpdateSourceTrigger=PropertyChanged}"
+                         Height="32"
+                         VerticalContentAlignment="Center">
+                    <TextBox.Style>
+                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ContrasenaVisible}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <ToggleButton Grid.Column="1"
+                              AutomationProperties.AutomationId="USR-BTN-VER-CONTRASENA-SESION"
+                              AutomationProperties.Name="Mostrar u ocultar la contraseña"
+                              IsChecked="{Binding ContrasenaVisible, Mode=TwoWay}"
+                              ToolTip="Mostrar u ocultar la contraseña"
+                              Width="36"
+                              Height="32"
+                              Margin="4,0,0,0"
+                              Focusable="False">
+                    <!-- Ojo abierto (E7B3) cuando está oculta; ojo tachado (ED1A) cuando se ve. -->
+                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="16">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Text" Value="&#xE7B3;"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ContrasenaVisible}" Value="True">
+                                        <Setter Property="Text" Value="&#xED1A;"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </ToggleButton>
+            </Grid>
+
+            <TextBlock AutomationProperties.AutomationId="USR-LBL-ERROR-SESION"
+                       Text="{Binding Mensaje}"
+                       Foreground="#B00020"
+                       TextWrapping="Wrap"
+                       MinHeight="20"
+                       Margin="0,0,0,10"/>
+
+            <Button AutomationProperties.AutomationId="USR-BTN-INICIAR-SESION"
+                    Content="Iniciar sesión"
+                    Command="{Binding IniciarSesionCommand}"
+                    IsDefault="True"
+                    Padding="12,8"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

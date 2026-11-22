@@ -55,6 +55,7 @@ public class RegistroDependenciasPruebas
         Assert.NotNull(proveedor.GetRequiredService<ComprobantesViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<INavegacionServicio>());
         Assert.NotNull(proveedor.GetRequiredService<InicioViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<InicioSesionViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<AlertasViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<InventarioViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<MetodosPagoViewModel>());
@@ -83,13 +84,14 @@ public class RegistroDependenciasPruebas
     }
 
     [Fact]
-    public void LaVentanaPrincipalArrancaEnLaPantallaDeInicio()
+    public void LaVentanaPrincipalArrancaEnElInicioDeSesion()
     {
         using var proveedor = CrearProveedor();
 
         var principal = proveedor.GetRequiredService<MainViewModel>();
 
-        Assert.IsType<InicioViewModel>(principal.Navegacion.Actual);
+        Assert.IsType<InicioSesionViewModel>(principal.Navegacion.Actual);
+        Assert.False(principal.HaySesion);
     }
 
     [Fact]

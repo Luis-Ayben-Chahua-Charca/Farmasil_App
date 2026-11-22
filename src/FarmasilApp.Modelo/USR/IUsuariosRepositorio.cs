@@ -26,10 +26,16 @@ public interface IUsuariosRepositorio
     int ContarAdministradoresActivos(int excluirIdUsuario);
 
     /// <summary>
-    /// Cadena del hash de la cuenta, o <c>null</c> si no existe. No la usa ninguna operación de Usuarios: la consumirá el
-    /// inicio de sesión (#88) y nunca sale hacia la interfaz.
+    /// Cadena del hash de la cuenta, o <c>null</c> si no existe. No la usa ninguna operación de Usuarios y nunca sale
+    /// hacia la interfaz. El inicio de sesión usa <see cref="ObtenerCredenciales"/>, que busca por nombre.
     /// </summary>
     string? ObtenerHash(int idUsuario);
+
+    /// <summary>
+    /// Cuenta con ese nombre de usuario, con su hash y su estado, o <c>null</c> si no existe. Solo la consume el inicio de
+    /// sesión (#88), dentro del Modelo: el hash nunca sale hacia la interfaz (RNF-0006, condición 5).
+    /// </summary>
+    CredencialesUsuario? ObtenerCredenciales(string nombreUsuario);
 
     /// <summary>Registra la cuenta y devuelve su identificador. Un nombre repetido lanza <see cref="ReglaDeNegocioException"/>.</summary>
     int Crear(string nombreUsuario, string hash, Rol rol, EstadoRegistro estado);

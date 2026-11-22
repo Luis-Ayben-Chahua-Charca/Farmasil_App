@@ -88,6 +88,33 @@ internal sealed class RepositorioDeUsuariosFalso : IUsuariosRepositorio
 
     public string? ObtenerHash(int idUsuario) => Buscar(idUsuario)?.Hash;
 
+    /// <summary>Si es <c>true</c>, <see cref="ObtenerCredenciales"/> falla como lo haría una base no disponible.</summary>
+    public bool FallaAlObtenerCredenciales { get; set; }
+
+    /// <summary>Cuántas veces se consultaron las credenciales: una entrada vacía no debe llegar a la base.</summary>
+    public int ConsultasDeCredenciales { get; private set; }
+
+    public CredencialesUsuario? ObtenerCredenciales(string nombreUsuario)
+    {
+        ConsultasDeCredenciales++;
+        if (FallaAlObtenerCredenciales)
+        {
+            throw new InvalidOperationException("Falla simulada de la base de datos.");
+        }
+
+        var cuenta = _cuentas.Find(c => MismoNombre(c.NombreUsuario, nombreUsuario));
+        return cuenta is null
+            ? null
+            : new CredencialesUsuario
+            {
+                IdUsuario = cuenta.IdUsuario,
+                NombreUsuario = cuenta.NombreUsuario,
+                Hash = cuenta.Hash,
+                Rol = cuenta.Rol,
+                Estado = cuenta.Estado,
+            };
+    }
+
     public int Crear(string nombreUsuario, string hash, Rol rol, EstadoRegistro estado)
     {
         UltimoCrear = (nombreUsuario, hash, rol, estado);

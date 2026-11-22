@@ -19,6 +19,7 @@
 | 14/11/2026 | 13.00 | Adecuación documental y visual de Métodos de Pago (#76): se separan los IDs de búsqueda, filtro, lista de tarjetas y tabla según DEC-061/062; las especificaciones y el mockup se alinean con **ART-MKP-PAG-0001**. Se registran DEC-071 y PEN-036 para las discrepancias restantes. | AUT-0001 |
 | 14/11/2026 | 14.00 | Adecuación de Alertas de Vencimiento al mockup aprobado (issue #86, DEC-042 y DEC-076; nomenclatura según DEC-061 y DEC-062): se incorporan **ALV-CMB-FILTRO-LOTE** (filtro opcional de remesa), **ALV-CMB-FILTRO-ESTADO-VENCIMIENTO** (Todos, Por vencer o Retirados), **ALV-PNL-LOTES-RIESGO** y **ALV-CRD-LOTE** (lista de tarjetas, separada de **ALV-TBL-ALERTAS-VENCIMIENTO**); **ALV-CMB-LOTE-ALERTA** y **ALV-LBL-FECHA-VENCIMIENTO** quedan reservados a la ficha sanitaria, y **ALV-CHK-LOTE-DEFECTUOSO** indica solo el defecto físico. Una sola pantalla, **ART-MKP-ALV-0001**. | AUT-0001 |
 | 17/11/2026 | 15.00 | Adecuación del módulo DOC a ART-MKP-DOC-0001 (issue #83): incorporación de buscadores, filtros, tarjetas y botones de selección conforme a DEC-061 y DEC-062; actualización de los identificadores de previsualización, cancelación y anulación conforme a las especificaciones DOC. | AUT-0001 |
+| 22/11/2026 | 16.00 | Inicio de sesión (issue #88, DEC-080): se incorporan en el módulo 9 los identificadores de la pantalla mínima de inicio de sesión, que no tiene mockup aprobado: **USR-FRM-INICIO-SESION**, **USR-TXT-USUARIO-SESION**, **USR-PWD-CONTRASENA-SESION**, **USR-BTN-INICIAR-SESION**, **USR-LBL-ERROR-SESION**, **USR-BTN-VER-CONTRASENA-SESION** y **USR-BTN-CERRAR-SESION**. | AUT-0001 |
 
 ---
 
@@ -210,6 +211,13 @@ Para que los nombres sean predecibles, la función de los componentes que implem
 | USR-TXT-MSJ | Campo de texto | Mensaje del modal. | ART-MKP-USR-0001 |
 | USR-BTN-CONFIRMAR-SI | Botón | Confirma la baja. | ART-MKP-USR-0001 |
 | USR-BTN-CONFIRMAR-NO | Botón | Cancela la baja. | ART-MKP-USR-0001 |
+| USR-FRM-INICIO-SESION | Formulario | Pantalla de inicio de sesión (RNF-0006, condición 1; DEC-012). Contiene el usuario, la contraseña, el motivo del rechazo y el botón de ingreso. | Sin mockup (pantalla mínima, DEC-080) |
+| USR-TXT-USUARIO-SESION | Campo de texto | Nombre de usuario con el que se inicia sesión. Es distinto de **USR-TXT-NOMBRE-USUARIO**, que es el campo de la ficha de cuentas. | Sin mockup (pantalla mínima, DEC-080) |
+| USR-PWD-CONTRASENA-SESION | Campo de contraseña | Contraseña con la que se inicia sesión, con el contenido enmascarado. Es distinta de **USR-PWD-CONTRASENA**, que es la de la ficha. Se borra después de cada intento. | Sin mockup (pantalla mínima, DEC-080) |
+| USR-BTN-INICIAR-SESION | Botón | Verifica el usuario y la contraseña contra el hash con sal y el estado de la cuenta, y abre la sesión con el rol de la cuenta. | Sin mockup (pantalla mínima, DEC-080) |
+| USR-LBL-ERROR-SESION | Etiqueta | Motivo del rechazo del inicio de sesión («Usuario o contraseña incorrectos.» o «La cuenta está inactiva. Consulte con un administrador.»); vacía si no hay rechazo. | Sin mockup (pantalla mínima, DEC-080) |
+| USR-BTN-VER-CONTRASENA-SESION | Botón | Botón del ojo junto a **USR-PWD-CONTRASENA-SESION**: alterna entre la contraseña enmascarada y en claro. Por defecto está enmascarada y vuelve a enmascararse después de cada intento. | Sin mockup (pantalla mínima, DEC-080) |
+| USR-BTN-CERRAR-SESION | Botón | Borra la sesión, vacía el menú y vuelve a la pantalla de inicio de sesión. Está en la barra de menú de la ventana principal y solo se ve con sesión. | Sin mockup (pantalla mínima, DEC-080) |
 
 ### Módulo 10 — Proveedores (PRV) · nuevo
 

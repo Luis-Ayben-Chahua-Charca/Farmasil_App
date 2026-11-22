@@ -25,7 +25,8 @@ FARMASIL_APP es un sistema de gestión de inventarios y ventas para una farmacia
 2. Este archivo.
 3. `docs/arquitectura/Contexto_Arquitectura_FARMASIL_ParaAgentesIA.md`: módulos, grafo de dependencias y decisiones de diseño cerradas.
 4. `seguimiento/11-registro-pendientes.md`: `PEN-NNN` abiertos y `DEC-NNN` tomados. Revísalo antes de proponer cualquier cambio.
-5. El artefacto concreto de la tarea (sección 3).
+5. `seguimiento/15-hallazgos-de-uso.md`: `HAL-NNN`, lo que solo se descubre usando la aplicación. Revisa los abiertos del módulo antes de tocar una pantalla.
+6. El artefacto concreto de la tarea (sección 3).
 
 ---
 
@@ -45,6 +46,7 @@ FARMASIL_APP es un sistema de gestión de inventarios y ventas para una farmacia
 | Riesgos | `riesgos/10-gestion-riesgos.md` |
 | Pendientes y decisiones | `seguimiento/11-registro-pendientes.md` |
 | Auditorías y revisiones | `seguimiento/12-*`, `13-*`, `14-*` |
+| Hallazgos de uso (`HAL-NNN`): defectos, confusiones y redundancias que se ven probando a mano | `seguimiento/15-hallazgos-de-uso.md` |
 | Plan de implementación (roles, sprints, definición de terminado) | `docs/plan/plan-implementacion.md` |
 
 ### 3.2 Vistas de arquitectura
@@ -103,6 +105,7 @@ No las des por resueltas al implementar; si necesitas una, regístrala como `PEN
 4. Respeta el grafo de dependencias entre módulos. Usuarios es transversal (autenticación y auditoría), no una dependencia de negocio.
 5. Literales de dominio sin tilde en `CHECK` y `enum` (DEC-031).
 6. Solo Leyni hace el squash & merge.
+7. Lo que se descubre usando la aplicación a mano se registra como `HAL-NNN` en `seguimiento/15-hallazgos-de-uso.md` (DEC-081). Cada hallazgo se corrige con su propio issue; si contradice una `DEC`, primero va la `DEC` nueva. No lo arregles en silencio dentro de otra tarea.
 
 ---
 
@@ -136,7 +139,7 @@ ProyectoFarmasil/
 │   └── diagramas/             PNG de todas las vistas + plaintext-*/ con los .puml
 ├── pruebas de software/       09 pruebas
 ├── riesgos/                   10 gestión de riesgos
-└── seguimiento/               11 pendientes y decisiones, 12–14 auditorías
+└── seguimiento/               11 pendientes y decisiones, 12–14 auditorías, 15 hallazgos de uso
 ```
 
 ---
