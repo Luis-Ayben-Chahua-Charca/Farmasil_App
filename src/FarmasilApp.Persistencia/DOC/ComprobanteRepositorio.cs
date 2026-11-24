@@ -1,12 +1,12 @@
 using FarmasilApp.Modelo.DOC;
 using Microsoft.Data.SqlClient;
 using System.Data;
-
+using FarmasilApp.Modelo.Comun;
 namespace FarmasilApp.Persistencia.DOC;
 
 /// <summary>
-/// Repositorio de consulta de comprobantes (ESP-0010).
-/// Solo lectura; todos los filtros SQL se envían mediante parámetros.
+/// Repositorio de consulta y registro de comprobantes tributarios.
+/// Los filtros y datos de escritura SQL se envían mediante parámetros.
 /// </summary>
 public sealed class ComprobanteRepositorio : IComprobanteRepositorio
 {
@@ -97,7 +97,120 @@ public sealed class ComprobanteRepositorio : IComprobanteRepositorio
 
         return comprobantes;
     }
+public IReadOnlyList<int> ConsultarIdsVentasConComprobanteEmitido()
+{
+    const string sql = """
+        SELECT DISTINCT c.id_venta
+        FROM dbo.TBL_COMPROBANTES_TRIBUTARIOS AS c
+        WHERE c.estado_documento = N'Emitido'
+        ORDER BY c.id_venta;
+        """;
 
+    var idsVentas = new List<int>();
+
+    using var conexion = new SqlConnection(_opciones.CadenaConexion);
+    using var comando = new SqlCommand(sql, conexion);
+
+    conexion.Open();
+
+    using var lector = comando.ExecuteReader();
+
+    while (lector.Read())
+    {
+        idsVentas.Add(lector.GetInt32(0));
+    }
+
+    return idsVentas;
+}
+public void Registrar(
+    string numeroComprobante,
+    string tipoComprobante,
+    DateTime fechaEmision,
+    int idVenta)
+{
+    const string sql = """
+        INSERT INTO dbo.TBL_COMPROBANTES_TRIBUTARIOS
+        (
+            numero_comprobante,
+            tipo_comprobante,
+            fecha_emision,
+            id_venta
+        )
+        VALUES
+        (
+            @numeroComprobante,
+            @tipoComprobante,
+            @fechaEmision,
+            @idVenta
+        );
+        """;
+
+    using var conexion = new SqlConnection(_opciones.CadenaConexion);
+
+    conexion.Open();
+
+    using var transaccion = conexion.BeginTransaction();
+
+    try
+    {
+        using var comando = new SqlCommand(sql, conexion, transaccion);
+
+        comando.Parameters.Add(
+            new SqlParameter("@numeroComprobante", SqlDbType.NVarChar, 20)
+            {
+                Value = numeroComprobante
+            });
+
+        comando.Parameters.Add(
+            new SqlParameter("@tipoComprobante", SqlDbType.NVarChar, 20)
+            {
+                Value = tipoComprobante
+            });
+
+        comando.Parameters.Add(
+            new SqlParameter("@fechaEmision", SqlDbType.Date)
+            {
+                Value = fechaEmision.Date
+            });
+
+        comando.Parameters.Add(
+            new SqlParameter("@idVenta", SqlDbType.Int)
+            {
+                Value = idVenta
+            });
+
+        comando.ExecuteNonQuery();
+
+        transaccion.Commit();
+    }
+    catch (SqlException ex) when (ex.Number is 2601 or 2627)
+{
+    transaccion.Rollback();
+
+    if (ex.Message.Contains(
+        "UQ_TBL_COMPROBANTES_TRIBUTARIOS_numero_comprobante",
+        StringComparison.OrdinalIgnoreCase))
+    {
+        throw new ReglaDeNegocioException(
+            MensajesComprobantes.NumeroDuplicado);
+    }
+
+    if (ex.Message.Contains(
+        "UX_TBL_COMPROBANTES_TRIBUTARIOS_VentaEmitido",
+        StringComparison.OrdinalIgnoreCase))
+    {
+        throw new ReglaDeNegocioException(
+            MensajesComprobantes.VentaYaEmitida);
+    }
+
+    throw;
+}
+catch
+{
+    transaccion.Rollback();
+    throw;
+}
+}
     private static string EscaparLike(string valor)
     {
         return valor

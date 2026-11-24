@@ -36,6 +36,7 @@ COLLATE Modern_Spanish_CI_AS;
 sqlcmd `
     -S $Servidor `
     -E `
+    -C `
     -I `
     -b `
     -Q $SqlRecrear
@@ -52,6 +53,7 @@ Write-Host "Ejecutando 001_esquema.sql..."
 sqlcmd `
     -S $Servidor `
     -E `
+    -C `
     -I `
     -b `
     -d $Base `
@@ -67,6 +69,7 @@ Write-Host "Ejecutando 002_datos_prueba.sql..."
 sqlcmd `
     -S $Servidor `
     -E `
+    -C `
     -I `
     -b `
     -d $Base `
@@ -93,6 +96,7 @@ SELECT
 sqlcmd `
     -S $Servidor `
     -E `
+    -C `
     -I `
     -b `
     -d $Base `
