@@ -1,4 +1,5 @@
 using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Modelo.DEV;
 using FarmasilApp.Modelo.LOT;
 using FarmasilApp.Modelo.Seguridad;
 
@@ -15,6 +16,7 @@ public sealed class AlertasServicio
     private readonly ILotes _lotes;
     private readonly ISesion _sesion;
     private readonly TimeProvider _reloj;
+    private readonly IDevoluciones? _devoluciones;
 
     public AlertasServicio(IAlertasRepositorio repositorio, ILotes lotes, ISesion sesion, TimeProvider reloj)
     {
@@ -22,6 +24,124 @@ public sealed class AlertasServicio
         _lotes = lotes ?? throw new ArgumentNullException(nameof(lotes));
         _sesion = sesion ?? throw new ArgumentNullException(nameof(sesion));
         _reloj = reloj ?? throw new ArgumentNullException(nameof(reloj));
+    }
+
+    /// <summary>Compatibilidad con las pruebas y consumidores de consulta de la tarea #87.</summary>
+    public AlertasServicio(IAlertasRepositorio repositorio, ILotes lotes, ISesion sesion,
+        TimeProvider reloj, IDevoluciones devoluciones)
+        : this(repositorio, lotes, sesion, reloj)
+    {
+        _devoluciones = devoluciones ?? throw new ArgumentNullException(nameof(devoluciones));
+    }
+
+    /// <summary>Remesas ofrecidas por el contrato de LOT para ESP-0014, sin acceder a su tabla.</summary>
+    public IReadOnlyList<DatosRemesaDto> RemesasParaRegistrar()
+    {
+        ExigirRolPermitidoParaRegistrar();
+        return _lotes.RemesasDisponibles();
+    }
+
+    /// <summary>ESP-0014. Retiro persistido en ALV y orden de bloqueo cursada a ILotes.</summary>
+    public int Registrar(int idLote, bool defectuoso, string? codigoDigemid)
+    {
+        ExigirRolPermitidoParaRegistrar();
+        if (idLote <= 0) throw new ReglaDeNegocioException(MensajesAlertas.RemesaObligatoria);
+        var codigo = NormalizarCodigo(codigoDigemid);
+        var remesa = _lotes.RemesasDisponibles().SingleOrDefault(x => x.IdLote == idLote)
+            ?? throw new ReglaDeNegocioException(MensajesAlertas.RemesaObligatoria);
+        var retiro = new NuevaAlertaRetiro
+        {
+            IdLote = remesa.IdLote,
+            NombreProducto = remesa.NombreMedicamento,
+            NumeroLote = remesa.NumeroLote,
+            FechaVencimiento = remesa.FechaVencimiento,
+            EsLoteDefectuoso = defectuoso,
+            AlertaDigemid = codigo,
+            FechaRegistro = Hoy
+        };
+        return _repositorio.EjecutarTransaccion(u =>
+        {
+            var id = u.Insertar(retiro);
+            _lotes.Bloquear(idLote); // PEN-039: hoy el contrato LOT aún no comparte esta transacción SQL.
+            return id;
+        });
+    }
+
+    /// <summary>ESP-0015. No toca remesa, copias históricas ni estado de lote.</summary>
+    public void Modificar(int idRetiro, bool defectuoso, string? codigoDigemid)
+    {
+        _sesion.ExigirRol(Rol.Administrador);
+        if (idRetiro <= 0) throw new ReglaDeNegocioException(MensajesAlertas.RetiroObligatorio);
+        var codigo = NormalizarCodigo(codigoDigemid);
+        _repositorio.EjecutarTransaccion(u =>
+        {
+            if (u.ObtenerRetiro(idRetiro) is null || !u.Actualizar(idRetiro, defectuoso, codigo))
+                throw new ReglaDeNegocioException(MensajesAlertas.RetiroObligatorio);
+            return true;
+        });
+    }
+
+    /// <summary>Comprobación previa al diálogo; Eliminar repite las verificaciones bajo transacción.</summary>
+    public void VerificarEliminacion(int idRetiro)
+    {
+        _sesion.ExigirRol(Rol.Administrador);
+        if (idRetiro <= 0) throw new ReglaDeNegocioException(MensajesAlertas.RetiroObligatorio);
+        _repositorio.EjecutarTransaccion(u =>
+        {
+            var retiro = u.ObtenerRetiro(idRetiro)
+                ?? throw new ReglaDeNegocioException(MensajesAlertas.RetiroObligatorio);
+            VerificarRestriccionesEliminacion(retiro);
+            return true;
+        });
+    }
+
+    /// <summary>ESP-0016. Retira una fila; solo llama Liberar si no quedan retiros para la remesa.</summary>
+    public string Eliminar(int idRetiro)
+    {
+        _sesion.ExigirRol(Rol.Administrador);
+        if (idRetiro <= 0) throw new ReglaDeNegocioException(MensajesAlertas.RetiroObligatorio);
+        return _repositorio.EjecutarTransaccion(u =>
+        {
+            var retiro = u.ObtenerRetiro(idRetiro)
+                ?? throw new ReglaDeNegocioException(MensajesAlertas.RetiroObligatorio);
+            VerificarRestriccionesEliminacion(retiro);
+            if (!u.Eliminar(idRetiro)) throw new ReglaDeNegocioException(MensajesAlertas.RetiroObligatorio);
+            if (!retiro.IdLote.HasValue) return MensajesAlertas.Eliminada;
+            if (u.ContarRetiros(retiro.IdLote.Value) > 0) return MensajesAlertas.EliminadaConOtrosRetiros;
+            _lotes.Liberar(retiro.IdLote.Value); // PEN-039: coordinación transaccional de #99 y #101.
+            return MensajesAlertas.Eliminada;
+        });
+    }
+
+    private void VerificarRestriccionesEliminacion(AlertaRetiro retiro)
+    {
+        if (!retiro.IdLote.HasValue) return; // Retiro histórico, FK ya anulada.
+        var idLote = retiro.IdLote.Value;
+        if (_devoluciones is null) throw new InvalidOperationException("No está registrado IDevoluciones.");
+        if (_devoluciones.OrdenesPendientesDeRemesa(idLote).Count != 0)
+            throw new ReglaDeNegocioException(MensajesAlertas.DevolucionPendiente);
+        var remesa = _lotes.DatosRemesas(new[] { idLote }).SingleOrDefault();
+        if (remesa is null) throw new InvalidOperationException("La remesa referenciada no está disponible en ILotes.");
+        if (remesa.FechaVencimiento <= Hoy)
+            throw new ReglaDeNegocioException(MensajesAlertas.RemesaVencida);
+    }
+
+    private void ExigirRolPermitidoParaRegistrar()
+    {
+        var rol = _sesion.UsuarioActual.Rol;
+        _sesion.ExigirRol(rol);
+        if (rol is not (Rol.Administrador or Rol.Tecnico))
+            throw new AccesoDenegadoException("Su rol no permite registrar alertas.");
+    }
+
+    private DateOnly Hoy => DateOnly.FromDateTime(_reloj.GetLocalNow().DateTime);
+
+    private static string? NormalizarCodigo(string? codigo)
+    {
+        if (string.IsNullOrWhiteSpace(codigo)) return null;
+        var valor = codigo.Trim();
+        if (valor.Length > 100) throw new ReglaDeNegocioException(MensajesAlertas.CodigoDigemidLargo);
+        return valor;
     }
 
     public ResultadoAlertas Consultar(int? filtroLote = null, string? filtroEstado = null)
