@@ -523,8 +523,6 @@ public sealed class ComprobantesViewModel : ViewModelBase
                 FechaEmisionRegistroTexto,
                 VentaPrevisualizada.Venta.IdVenta);
 
-            Mensaje = "Comprobante registrado correctamente";
-
             var ventaRegistrada = VentaPrevisualizada;
 
             PrevisualizacionVisible = false;
@@ -537,6 +535,12 @@ public sealed class ComprobantesViewModel : ViewModelBase
             NumeroComprobanteRegistro = string.Empty;
 
             AplicarFiltrosVentas();
+
+            // ESP-0009: tras registrar se actualiza también DOC-TBL-COMPROBANTES con los filtros vigentes.
+            Registrando = false;
+            Consultar();
+
+            Mensaje = MensajesComprobantes.RegistroCorrecto;
         }
         catch (ReglaDeNegocioException ex)
         {

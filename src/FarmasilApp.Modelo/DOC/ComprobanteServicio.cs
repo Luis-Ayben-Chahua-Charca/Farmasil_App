@@ -5,7 +5,7 @@ using FarmasilApp.Modelo.VEN;
 
 namespace FarmasilApp.Modelo.DOC;
 
-/// <summary>Servicio de consulta de comprobantes tributarios (ESP-0010).</summary>
+/// <summary>Servicio de consulta y registro de comprobantes tributarios (ESP-0010 y ESP-0009).</summary>
 public sealed class ComprobanteServicio
 {
     private readonly IComprobanteRepositorio _repositorio;
@@ -26,109 +26,109 @@ public sealed class ComprobanteServicio
     }
 
 
-/// <summary>
-/// Obtiene las ventas que todavía no tienen un comprobante emitido.
-/// </summary>
-public IReadOnlyList<VentaDto> ConsultarVentasPendientes()
-{
-    ExigirAcceso();
-
-    var idsConComprobanteEmitido = _repositorio
-        .ConsultarIdsVentasConComprobanteEmitido()
-        .ToHashSet();
-
-    return _ventas
-        .ConsultarVentas(new FiltroVentas())
-        .Where(venta => !idsConComprobanteEmitido.Contains(venta.IdVenta))
-        .OrderBy(venta => venta.IdVenta)
-        .ToArray();
-}
-/// <summary>
-/// Registra un comprobante para una venta existente.
-/// </summary>
-public void Registrar(
-    string? tipoComprobante,
-    string? numeroComprobante,
-    string? fechaEmisionTexto,
-    int idVenta)
-{
-    ExigirAcceso();
-
-    // 1. Validar tipo de comprobante.
-    var tipo = Normalizar(tipoComprobante);
-
-    if (tipo is not ("Boleta" or "Factura"))
+    /// <summary>
+    /// Obtiene las ventas que todavía no tienen un comprobante emitido.
+    /// </summary>
+    public IReadOnlyList<VentaDto> ConsultarVentasPendientes()
     {
-        throw new ReglaDeNegocioException(
-            MensajesComprobantes.TipoInvalido);
+        ExigirAcceso();
+
+        var idsConComprobanteEmitido = _repositorio
+            .ConsultarIdsVentasConComprobanteEmitido()
+            .ToHashSet();
+
+        return _ventas
+            .ConsultarVentas(new FiltroVentas())
+            .Where(venta => !idsConComprobanteEmitido.Contains(venta.IdVenta))
+            .OrderBy(venta => venta.IdVenta)
+            .ToArray();
     }
-
-    // 2. Validar número.
-    var numero = Normalizar(numeroComprobante);
-
-    if (numero is null)
+    /// <summary>
+    /// Registra un comprobante para una venta existente.
+    /// </summary>
+    public void Registrar(
+        string? tipoComprobante,
+        string? numeroComprobante,
+        string? fechaEmisionTexto,
+        int idVenta)
     {
-        throw new ReglaDeNegocioException(
-            MensajesComprobantes.NumeroObligatorio);
-    }
+        ExigirAcceso();
 
-    if (numero.Length > 20)
-    {
-        throw new ReglaDeNegocioException(
-            MensajesComprobantes.NumeroDemasiadoLargo);
-    }
+        // 1. Validar tipo de comprobante.
+        var tipo = Normalizar(tipoComprobante);
 
-    // 3. Validar fecha con formato peruano.
-    if (!DateTime.TryParse(
-        fechaEmisionTexto,
-        CultureInfo.GetCultureInfo("es-PE"),
-        DateTimeStyles.AllowWhiteSpaces,
-        out var fecha))
-    {
-        throw new ReglaDeNegocioException(
-            MensajesComprobantes.FechaInvalida);
-    }
-
-    // 4. Comprobar que la venta exista.
-    if (idVenta <= 0 || _ventas.ObtenerVenta(idVenta) is null)
-    {
-        throw new ReglaDeNegocioException(
-            MensajesComprobantes.VentaNoEncontrada);
-    }
-
-    // 5. Comprobar que el número no esté registrado.
-    var comprobantesExistentes = _repositorio.Consultar(
-        new FiltroConsultaComprobantes
+        if (tipo is not ("Boleta" or "Factura"))
         {
-            NumeroComprobante = numero
-        });
+            throw new ReglaDeNegocioException(
+                MensajesComprobantes.TipoInvalido);
+        }
 
-    if (comprobantesExistentes.Any(comprobante =>
-        string.Equals(
-            comprobante.NumeroComprobante,
+        // 2. Validar número.
+        var numero = Normalizar(numeroComprobante);
+
+        if (numero is null)
+        {
+            throw new ReglaDeNegocioException(
+                MensajesComprobantes.NumeroObligatorio);
+        }
+
+        if (numero.Length > 20)
+        {
+            throw new ReglaDeNegocioException(
+                MensajesComprobantes.NumeroDemasiadoLargo);
+        }
+
+        // 3. Validar fecha con formato peruano.
+        if (!DateTime.TryParse(
+            fechaEmisionTexto,
+            CultureInfo.GetCultureInfo("es-PE"),
+            DateTimeStyles.AllowWhiteSpaces,
+            out var fecha))
+        {
+            throw new ReglaDeNegocioException(
+                MensajesComprobantes.FechaInvalida);
+        }
+
+        // 4. Comprobar que la venta exista.
+        if (idVenta <= 0 || _ventas.ObtenerVenta(idVenta) is null)
+        {
+            throw new ReglaDeNegocioException(
+                MensajesComprobantes.VentaNoEncontrada);
+        }
+
+        // 5. Comprobar que el número no esté registrado.
+        var comprobantesExistentes = _repositorio.Consultar(
+            new FiltroConsultaComprobantes
+            {
+                NumeroComprobante = numero
+            });
+
+        if (comprobantesExistentes.Any(comprobante =>
+            string.Equals(
+                comprobante.NumeroComprobante,
+                numero,
+                StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new ReglaDeNegocioException(
+                MensajesComprobantes.NumeroDuplicado);
+        }
+
+        // 6. Comprobar que la venta no tenga otro comprobante emitido.
+        if (_repositorio
+            .ConsultarIdsVentasConComprobanteEmitido()
+            .Contains(idVenta))
+        {
+            throw new ReglaDeNegocioException(
+                MensajesComprobantes.VentaYaEmitida);
+        }
+
+        // 7. Registrar en SQL Server.
+        _repositorio.Registrar(
             numero,
-            StringComparison.OrdinalIgnoreCase)))
-    {
-        throw new ReglaDeNegocioException(
-            MensajesComprobantes.NumeroDuplicado);
+            tipo,
+            fecha.Date,
+            idVenta);
     }
-
-    // 6. Comprobar que la venta no tenga otro comprobante emitido.
-    if (_repositorio
-        .ConsultarIdsVentasConComprobanteEmitido()
-        .Contains(idVenta))
-    {
-        throw new ReglaDeNegocioException(
-            MensajesComprobantes.VentaYaEmitida);
-    }
-
-    // 7. Registrar en SQL Server.
-    _repositorio.Registrar(
-        numero,
-        tipo,
-        fecha.Date,
-        idVenta);
-}
     public IReadOnlyList<ComprobanteTributario> Consultar(
         string? tipoComprobante,
         string? numeroComprobante,

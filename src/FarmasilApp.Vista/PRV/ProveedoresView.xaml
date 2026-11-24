@@ -24,7 +24,7 @@
                        FontSize="28"
                        FontWeight="Bold"/>
 
-            <TextBlock Text="Consulta de proveedores"
+            <TextBlock Text="Gestión de proveedores"
                        Margin="0,4,0,0"
                        FontSize="15"
                        Foreground="Gray"/>
@@ -177,6 +177,7 @@
 
         </DataGrid>
 
+        <!-- Ficha del proveedor -->
         <Border Grid.Row="5"
                 BorderBrush="#D0D0D0"
                 BorderThickness="1"
@@ -184,37 +185,185 @@
                 Padding="12"
                 Margin="0,14,0,0">
 
-            <StackPanel>
+            <Grid>
 
-                <TextBlock Text="Ficha del proveedor"
-                           FontSize="16"
-                           FontWeight="Bold"
-                           Margin="0,0,0,8"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <TextBlock Text="{Binding ProveedorSeleccionado.RazonSocial,
-                                         TargetNullValue=Seleccione un proveedor}"
-                           FontWeight="SemiBold"/>
+                <!-- Encabezado -->
+                <Grid Grid.Row="0"
+                      Margin="0,0,0,10">
 
-                <WrapPanel Margin="0,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock Margin="0,0,20,0">
-                        <Run Text="RUC: "/>
-                        <Run Text="{Binding ProveedorSeleccionado.Ruc}"/>
+                    <StackPanel>
+
+                        <TextBlock Text="Ficha del proveedor"
+                                   FontSize="17"
+                                   FontWeight="Bold"/>
+
+                        <TextBlock Margin="0,3,0,0"
+                                   Foreground="Gray"
+                                   FontSize="12"
+                                   Text="Complete los campos para crear un proveedor o seleccione uno para actualizarlo."/>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
+
+                        <TextBlock Text="ID: "
+                                   Foreground="Gray"
+                                   VerticalAlignment="Center"/>
+
+                        <TextBlock Text="{Binding IdProveedorFicha, TargetNullValue=Nuevo}"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+                <!-- Campos -->
+                <Grid Grid.Row="1">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0"
+                                Margin="0,0,10,0">
+
+                        <TextBlock Text="RUC"/>
+
+                        <TextBox AutomationProperties.AutomationId="PRV-TXT-RUC"
+                                 Text="{Binding Ruc,
+                                                UpdateSourceTrigger=PropertyChanged}"
+                                 Height="32"
+                                 Margin="0,5,0,0"
+                                 MaxLength="11"/>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Margin="0,0,10,0">
+
+                        <TextBlock Text="Razón social"/>
+
+                        <TextBox AutomationProperties.AutomationId="PRV-TXT-RAZON-SOCIAL"
+                                 Text="{Binding RazonSocial,
+                                                UpdateSourceTrigger=PropertyChanged}"
+                                 Height="32"
+                                 Margin="0,5,0,0"
+                                 MaxLength="150"/>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2"
+                                Margin="0,0,10,0">
+
+                        <TextBlock Text="Teléfono"/>
+
+                        <TextBox AutomationProperties.AutomationId="PRV-TXT-TELEFONO"
+                                 Text="{Binding Telefono,
+                                                UpdateSourceTrigger=PropertyChanged}"
+                                 Height="32"
+                                 Margin="0,5,0,0"
+                                 MaxLength="15"/>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3">
+
+                        <TextBlock Text="Estado"/>
+
+                        <ComboBox AutomationProperties.AutomationId="PRV-CMB-ESTADO-PROVEEDOR"
+                                  ItemsSource="{Binding EstadosFicha}"
+                                  SelectedItem="{Binding EstadoFicha}"
+                                  Height="32"
+                                  Margin="0,5,0,0"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+                <!-- Acciones -->
+                <Grid Grid.Row="2"
+                      Margin="0,14,0,0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock VerticalAlignment="Center"
+                               Foreground="Gray"
+                               FontSize="12">
+
+                        <Run Text="Estado actual: "/>
+
+                        <Run Text="{Binding EstadoFicha, Mode=OneWay}"
+                             FontWeight="SemiBold"/>
+
                     </TextBlock>
 
-                    <TextBlock Margin="0,0,20,0">
-                        <Run Text="Teléfono: "/>
-                        <Run Text="{Binding ProveedorSeleccionado.Telefono}"/>
-                    </TextBlock>
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal">
 
-                    <TextBlock>
-                        <Run Text="Estado: "/>
-                        <Run Text="{Binding ProveedorSeleccionado.Estado}"/>
-                    </TextBlock>
+                        <Button AutomationProperties.AutomationId="PRV-BTN-CREAR-PROVEEDOR"
+                                ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
+                                Content="Crear proveedor"
+                                Command="{Binding CrearCommand}"
+                                MinWidth="120"
+                                Height="34"
+                                Margin="0,0,8,0"
+                                Padding="12,0"/>
 
-                </WrapPanel>
+                        <Button AutomationProperties.AutomationId="PRV-BTN-ACTUALIZAR-PROVEEDOR"
+                                ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
+                                Content="Actualizar proveedor"
+                                Command="{Binding ActualizarCommand}"
+                                MinWidth="135"
+                                Height="34"
+                                Margin="0,0,8,0"
+                                Padding="12,0"/>
 
-            </StackPanel>
+                        <Button AutomationProperties.AutomationId="PRV-BTN-CONFIRMAR-ACTUALIZACION"
+                                ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
+                                Content="Guardar cambios"
+                                Command="{Binding ConfirmarActualizacionCommand}"
+                                MinWidth="125"
+                                Height="34"
+                                Margin="0,0,8,0"
+                                Padding="12,0"/>
+
+                        <Button AutomationProperties.AutomationId="PRV-BTN-ELIMINAR-PROVEEDOR"
+                                ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
+                                Content="Dar de baja"
+                                Command="{Binding EliminarCommand}"
+                                MinWidth="105"
+                                Height="34"
+                                Padding="12,0"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+            </Grid>
 
         </Border>
 

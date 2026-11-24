@@ -60,8 +60,7 @@
                                 Content="Limpiar filtros"
                                 Command="{Binding LimpiarFiltrosVentasCommand}"
                                 Height="36"
-                                Padding="12,0"
-                                AutomationProperties.AutomationId="DOC-BTN-LIMPIAR-FILTROS-VENTA" />
+                                Padding="12,0" />
                         </Grid>
 
                         <Grid Height="36">
@@ -117,8 +116,7 @@
                                             Foreground="{StaticResource PincelSecundario}" />
                                         <TextBlock Text="{Binding CodigoVentaSeleccionada}"
                                             FontWeight="SemiBold"
-                                            Foreground="{StaticResource PincelTextoPrincipal}"
-                                            AutomationProperties.AutomationId="DOC-LBL-CODIGO-VENTA" />
+                                            Foreground="{StaticResource PincelTextoPrincipal}" />
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1" Margin="0,0,8,0">
@@ -437,8 +435,7 @@
                             HeadersVisibility="Column"
                             GridLinesVisibility="Horizontal"
                             Height="170"
-                            Margin="0,0,0,14"
-                            AutomationProperties.AutomationId="DOC-TBL-DETALLE-PREVISUALIZACION">
+                            Margin="0,0,0,14">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Producto"
                                     Binding="{Binding NombreProducto}"

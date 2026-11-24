@@ -56,12 +56,12 @@ public sealed class VentasSimulado : IVentas
     }
 
     private static VentaDto[] Ventas(DateTime ahora)
-{
-    var lotes = DatosDePrueba.Lotes(
-        DateOnly.FromDateTime(ahora));
-
-    return new[]
     {
+        var lotes = DatosDePrueba.Lotes(
+            DateOnly.FromDateTime(ahora));
+
+        return new[]
+        {
         new VentaDto
         {
             IdVenta = 1,
@@ -99,26 +99,26 @@ public sealed class VentasSimulado : IVentas
             },
         },
     };
-}
+    }
 
-private static DetalleVentaDto CrearDetalleVenta(
-    int idLote,
-    int cantidad,
-    decimal precioUnitario,
-    IReadOnlyList<LoteDePrueba> lotes)
-{
-    var lote = lotes.Single(x => x.IdLote == idLote);
-
-    var producto = DatosDePrueba.Productos.Single(
-        x => x.IdProducto == lote.IdProducto);
-
-    return new DetalleVentaDto
+    private static DetalleVentaDto CrearDetalleVenta(
+        int idLote,
+        int cantidad,
+        decimal precioUnitario,
+        IReadOnlyList<LoteDePrueba> lotes)
     {
-        IdLote = idLote,
-        NombreProducto = producto.Nombre,
-        NumeroLote = lote.NumeroLote,
-        Cantidad = cantidad,
-        PrecioUnitario = precioUnitario
-    };
-}
+        var lote = lotes.Single(x => x.IdLote == idLote);
+
+        var producto = DatosDePrueba.Productos.Single(
+            x => x.IdProducto == lote.IdProducto);
+
+        return new DetalleVentaDto
+        {
+            IdLote = idLote,
+            NombreProducto = producto.Nombre,
+            NumeroLote = lote.NumeroLote,
+            Cantidad = cantidad,
+            PrecioUnitario = precioUnitario
+        };
+    }
 }

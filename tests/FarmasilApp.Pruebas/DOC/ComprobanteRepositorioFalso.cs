@@ -42,6 +42,19 @@ internal sealed class ComprobanteRepositorioFalso : IComprobanteRepositorio
         UltimoTipoComprobanteRegistrado = tipoComprobante;
         UltimaFechaEmisionRegistrada = fechaEmision;
         UltimaVentaRegistrada = idVenta;
+
+        // Como la base real: el comprobante queda Emitido y aparece en las consultas siguientes.
+        Resultados = Resultados
+            .Append(new ComprobanteTributario
+            {
+                NumeroComprobante = numeroComprobante,
+                TipoComprobante = tipoComprobante,
+                FechaEmision = fechaEmision,
+                IdVenta = idVenta,
+                EstadoDocumento = "Emitido"
+            })
+            .ToArray();
+        IdsVentasConComprobanteEmitido = IdsVentasConComprobanteEmitido.Append(idVenta).ToArray();
     }
 
     public IReadOnlyList<ComprobanteTributario> Consultar(

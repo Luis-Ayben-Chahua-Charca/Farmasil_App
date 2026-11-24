@@ -97,38 +97,38 @@ public sealed class ComprobanteRepositorio : IComprobanteRepositorio
 
         return comprobantes;
     }
-public IReadOnlyList<int> ConsultarIdsVentasConComprobanteEmitido()
-{
-    const string sql = """
+    public IReadOnlyList<int> ConsultarIdsVentasConComprobanteEmitido()
+    {
+        const string sql = """
         SELECT DISTINCT c.id_venta
         FROM dbo.TBL_COMPROBANTES_TRIBUTARIOS AS c
         WHERE c.estado_documento = N'Emitido'
         ORDER BY c.id_venta;
         """;
 
-    var idsVentas = new List<int>();
+        var idsVentas = new List<int>();
 
-    using var conexion = new SqlConnection(_opciones.CadenaConexion);
-    using var comando = new SqlCommand(sql, conexion);
+        using var conexion = new SqlConnection(_opciones.CadenaConexion);
+        using var comando = new SqlCommand(sql, conexion);
 
-    conexion.Open();
+        conexion.Open();
 
-    using var lector = comando.ExecuteReader();
+        using var lector = comando.ExecuteReader();
 
-    while (lector.Read())
-    {
-        idsVentas.Add(lector.GetInt32(0));
+        while (lector.Read())
+        {
+            idsVentas.Add(lector.GetInt32(0));
+        }
+
+        return idsVentas;
     }
-
-    return idsVentas;
-}
-public void Registrar(
-    string numeroComprobante,
-    string tipoComprobante,
-    DateTime fechaEmision,
-    int idVenta)
-{
-    const string sql = """
+    public void Registrar(
+        string numeroComprobante,
+        string tipoComprobante,
+        DateTime fechaEmision,
+        int idVenta)
+    {
+        const string sql = """
         INSERT INTO dbo.TBL_COMPROBANTES_TRIBUTARIOS
         (
             numero_comprobante,
@@ -145,72 +145,72 @@ public void Registrar(
         );
         """;
 
-    using var conexion = new SqlConnection(_opciones.CadenaConexion);
+        using var conexion = new SqlConnection(_opciones.CadenaConexion);
 
-    conexion.Open();
+        conexion.Open();
 
-    using var transaccion = conexion.BeginTransaction();
+        using var transaccion = conexion.BeginTransaction();
 
-    try
-    {
-        using var comando = new SqlCommand(sql, conexion, transaccion);
+        try
+        {
+            using var comando = new SqlCommand(sql, conexion, transaccion);
 
-        comando.Parameters.Add(
-            new SqlParameter("@numeroComprobante", SqlDbType.NVarChar, 20)
+            comando.Parameters.Add(
+                new SqlParameter("@numeroComprobante", SqlDbType.NVarChar, 20)
+                {
+                    Value = numeroComprobante
+                });
+
+            comando.Parameters.Add(
+                new SqlParameter("@tipoComprobante", SqlDbType.NVarChar, 20)
+                {
+                    Value = tipoComprobante
+                });
+
+            comando.Parameters.Add(
+                new SqlParameter("@fechaEmision", SqlDbType.Date)
+                {
+                    Value = fechaEmision.Date
+                });
+
+            comando.Parameters.Add(
+                new SqlParameter("@idVenta", SqlDbType.Int)
+                {
+                    Value = idVenta
+                });
+
+            comando.ExecuteNonQuery();
+
+            transaccion.Commit();
+        }
+        catch (SqlException ex) when (ex.Number is 2601 or 2627)
+        {
+            transaccion.Rollback();
+
+            if (ex.Message.Contains(
+                "UQ_TBL_COMPROBANTES_TRIBUTARIOS_numero_comprobante",
+                StringComparison.OrdinalIgnoreCase))
             {
-                Value = numeroComprobante
-            });
+                throw new ReglaDeNegocioException(
+                    MensajesComprobantes.NumeroDuplicado);
+            }
 
-        comando.Parameters.Add(
-            new SqlParameter("@tipoComprobante", SqlDbType.NVarChar, 20)
+            if (ex.Message.Contains(
+                "UX_TBL_COMPROBANTES_TRIBUTARIOS_VentaEmitido",
+                StringComparison.OrdinalIgnoreCase))
             {
-                Value = tipoComprobante
-            });
+                throw new ReglaDeNegocioException(
+                    MensajesComprobantes.VentaYaEmitida);
+            }
 
-        comando.Parameters.Add(
-            new SqlParameter("@fechaEmision", SqlDbType.Date)
-            {
-                Value = fechaEmision.Date
-            });
-
-        comando.Parameters.Add(
-            new SqlParameter("@idVenta", SqlDbType.Int)
-            {
-                Value = idVenta
-            });
-
-        comando.ExecuteNonQuery();
-
-        transaccion.Commit();
+            throw;
+        }
+        catch
+        {
+            transaccion.Rollback();
+            throw;
+        }
     }
-    catch (SqlException ex) when (ex.Number is 2601 or 2627)
-{
-    transaccion.Rollback();
-
-    if (ex.Message.Contains(
-        "UQ_TBL_COMPROBANTES_TRIBUTARIOS_numero_comprobante",
-        StringComparison.OrdinalIgnoreCase))
-    {
-        throw new ReglaDeNegocioException(
-            MensajesComprobantes.NumeroDuplicado);
-    }
-
-    if (ex.Message.Contains(
-        "UX_TBL_COMPROBANTES_TRIBUTARIOS_VentaEmitido",
-        StringComparison.OrdinalIgnoreCase))
-    {
-        throw new ReglaDeNegocioException(
-            MensajesComprobantes.VentaYaEmitida);
-    }
-
-    throw;
-}
-catch
-{
-    transaccion.Rollback();
-    throw;
-}
-}
     private static string EscaparLike(string valor)
     {
         return valor
