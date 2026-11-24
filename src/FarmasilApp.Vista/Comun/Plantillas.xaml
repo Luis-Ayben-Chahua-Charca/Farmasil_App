@@ -13,7 +13,9 @@
                     xmlns:vmPrv="clr-namespace:FarmasilApp.VistaModelo.PRV;assembly=FarmasilApp.VistaModelo"
                     xmlns:vistaPrv="clr-namespace:FarmasilApp.Vista.PRV"
                     xmlns:vmUsr="clr-namespace:FarmasilApp.VistaModelo.USR;assembly=FarmasilApp.VistaModelo"
-                    xmlns:vistaUsr="clr-namespace:FarmasilApp.Vista.USR">
+                    xmlns:vistaUsr="clr-namespace:FarmasilApp.Vista.USR"
+                    xmlns:vmVen="clr-namespace:FarmasilApp.VistaModelo.VEN;assembly=FarmasilApp.VistaModelo"
+                    xmlns:vistaVen="clr-namespace:FarmasilApp.Vista.VEN">
     <!-- Cada VistaModelo se asocia con su pantalla aquí. La navegación solo cambia la VistaModelo activa. -->
     <DataTemplate DataType="{x:Type vm:InicioViewModel}">
         <vista:InicioView />
@@ -42,6 +44,11 @@
     <!-- Consulta de Proveedores (ESP-0038). -->
     <DataTemplate DataType="{x:Type vmPrv:ProveedoresViewModel}">
         <vistaPrv:ProveedoresView />
+    </DataTemplate>
+
+    <!-- Venta: carrito con contratos simulados (ESP-0001, Issue #89). -->
+    <DataTemplate DataType="{x:Type vmVen:VentaViewModel}">
+        <vistaVen:VentaView />
     </DataTemplate>
 
     <!-- Inicio de sesión: pantalla mínima sin mockup (RNF-0006, condición 1; DEC-080). -->
