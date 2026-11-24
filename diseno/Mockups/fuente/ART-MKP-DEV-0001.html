@@ -5,20 +5,20 @@
 <title>ART-MKP-DEV-0001 - Devoluciones a Proveedores</title>
 <style>
 * { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
-body { background-color: #f0f2f5; color: #333; padding: 20px; }
-.element-wrapper { display: flex; flex-direction: column; margin-bottom: 10px; width: 100%; }
+body { background-color: #f0f2f5; color: #333; padding: 16px; }
+.element-wrapper { display: flex; flex-direction: column; margin-bottom: 8px; width: 100%; }
 .ui-tag { font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: bold; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 2px 5px; border-radius: 3px; margin-top: 3px; display: inline-block; width: fit-content; }
 .ui-tag-btn { font-family: 'Courier New', Courier, monospace; font-size: 10px; font-weight: bold; background: #cce5ff; color: #004085; border: 1px solid #b8daff; padding: 2px 5px; border-radius: 3px; margin-top: 3px; text-align: center; }
-header { display: flex; gap: 15px; background-color: #0d6efd; padding: 15px; border-radius: 6px; color: white; align-items: flex-start; margin-bottom: 20px; }
-.layout { display: grid; grid-template-columns: 320px 1fr 380px; gap: 20px; }
-.panel { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
-textarea { resize: vertical; min-height: 60px; }
-button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+header { display: flex; gap: 15px; background-color: #0d6efd; padding: 12px 15px; border-radius: 6px; color: white; align-items: flex-start; margin-bottom: 16px; }
+.layout { display: grid; grid-template-columns: 320px 1fr 380px; gap: 16px; }
+.panel { background: white; padding: 14px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+input, select, textarea { padding: 7px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+textarea { resize: vertical; min-height: 52px; }
+button { padding: 7px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
 table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
 table th, table td { border: 1px solid #ddd; padding: 6px; text-align: left; }
 table th { background: #f8f9fa; }
-.btn-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.btn-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
 .modal-content { background: white; padding: 20px; border-radius: 6px; width: 380px; text-align: center; }
 .order-card { border: 1px solid #ddd; border-left: 4px solid #fd7e14; padding: 10px; border-radius: 4px; background: #fff8f0; margin-bottom: 10px; font-size: 12px; }
@@ -28,37 +28,38 @@ table th { background: #f8f9fa; }
 <header>
   <div class="element-wrapper" style="flex:1;">
     <select><option>-- Filtrar por Proveedor --</option><option>Bayer S.A.</option><option>Genfar</option><option>Portugal</option></select>
-    <span class="ui-tag">ComboBox: DEV-CMB-PROVEEDOR</span>
+    <span class="ui-tag">Filtro: DEV-CMB-FILTRO-PROVEEDOR</span>
   </div>
   <div class="element-wrapper" style="flex:2;">
     <input type="text" placeholder="Buscar por N° de orden o lote...">
-    <span class="ui-tag">Campo Texto*: DEV-TXT-BUSCAR-ORDEN</span>
+    <span class="ui-tag">Barra de búsqueda: DEV-SRH-ORDEN</span>
   </div>
   <div class="element-wrapper" style="width:auto;">
-    <button style="background:#198754;color:white;">Buscar</button>
+    <button style="background:#198754;color:white;" title="Solo disponible para el Administrador.">Buscar</button>
     <span class="ui-tag-btn">DEV-BTN-LEER-DEVOLUCION</span>
+    <span class="ui-tag-btn">Solo disponible para el Administrador.</span>
   </div>
 </header>
 <div class="layout">
   <div class="panel">
     <h3>Órdenes de Devolución</h3>
-    <div style="max-height:500px;overflow-y:auto;">
-      <div class="order-card"><b>ORD-2026-014</b><br>Bayer S.A. · 3 líneas<br><span style="color:#6c757d;">Pendiente · 28/09/2026</span></div>
-      <div class="order-card" style="border-left-color:#198754;background:#f0fff4;"><b>ORD-2026-013</b><br>Genfar · 1 línea<br><span style="color:#6c757d;">Completada · 25/09/2026</span></div>
-      <div class="order-card"><b>ORD-2026-012</b><br>Portugal · 2 líneas<br><span style="color:#6c757d;">Pendiente · 22/09/2026</span></div>
+    <div style="max-height:500px;overflow-y:auto;" id="DEV-PNL-ORDENES">
+      <div class="order-card"><b>ORD-2026-014</b><br>Bayer S.A. · 3 líneas · Por Vencimiento<br><span style="color:#6c757d;">Pendiente · 28/09/2026</span><br><span class="ui-tag">Tarjeta: DEV-CRD-ORDEN</span></div>
+      <div class="order-card" style="border-left-color:#198754;background:#f0fff4;"><b>ORD-2026-013</b><br>Genfar · 1 línea · Por Depuración de Error<br><span style="color:#6c757d;">Completada · 25/09/2026</span></div>
+      <div class="order-card"><b>ORD-2026-012</b><br>Portugal · 2 líneas · Por Vencimiento<br><span style="color:#6c757d;">Pendiente · 22/09/2026</span></div>
     </div>
-    <span class="ui-tag" style="margin-top:5px;">Lista: DEV-TBL-ORDENES-DEVOLUCION</span>
+    <span class="ui-tag" style="margin-top:5px;">Panel: DEV-PNL-ORDENES</span>
   </div>
   <div class="panel">
-    <h3>Nueva Orden de Devolución</h3>
-    <hr style="margin-bottom:10px;">
+    <h3>Ficha de Orden de Devolución</h3>
+    <hr style="margin-bottom:8px;">
     <div class="element-wrapper">
       <label><b>Proveedor:</b></label>
       <select><option>Bayer S.A.</option><option>Genfar</option></select>
       <span class="ui-tag">ComboBox: DEV-CMB-PROVEEDOR</span>
     </div>
     <div class="element-wrapper">
-      <label><b>Fecha de Devolución:</b></label>
+      <label><b>Fecha de la orden:</b></label>
       <input type="date" value="2026-09-28">
       <span class="ui-tag">Fecha: DEV-FEC-FECHA-DEVOLUCION</span>
     </div>
@@ -74,8 +75,19 @@ table th { background: #f8f9fa; }
     </div>
     <div class="element-wrapper">
       <label><b>Cantidad a Devolver:</b></label>
-      <input type="number" value="10">
-      <span class="ui-tag">Campo Numérico: DEV-NUM-CANTIDAD-DEVOLVER</span>
+      <div style="display:flex;gap:10px;">
+        <input type="number" value="10" style="flex:1;">
+        <button style="background:#0d6efd;color:white;width:auto;" title="Solo disponible para el Administrador.">Agregar línea</button>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:3px;">
+        <span class="ui-tag">Campo Numérico: DEV-NUM-CANTIDAD-DEVOLVER</span>
+        <span class="ui-tag-btn">DEV-BTN-AGREGAR-LINEA</span>
+      </div>
+    </div>
+    <div class="element-wrapper">
+      <label><b>Estado:</b></label>
+      <select><option>Pendiente</option><option>Completada</option></select>
+      <span class="ui-tag">ComboBox: DEV-CMB-ESTADO-ORDEN</span>
     </div>
     <div class="element-wrapper">
       <label><b>Comentario (obligatorio si es error):</b></label>
@@ -85,7 +97,7 @@ table th { background: #f8f9fa; }
   </div>
   <div class="panel">
     <h3>Detalle de la Orden</h3>
-    <hr style="margin-bottom:10px;">
+    <hr style="margin-bottom:8px;">
     <div class="element-wrapper">
       <table>
         <thead><tr><th>Producto</th><th>Lote</th><th>Cant.</th></tr></thead>
@@ -95,19 +107,24 @@ table th { background: #f8f9fa; }
       </table>
       <span class="ui-tag">Tabla: DEV-TBL-DETALLE-DEVOLUCION</span>
     </div>
+    <div class="element-wrapper" style="width:auto;">
+      <button style="background:#6c757d;color:white;" title="Solo disponible para el Administrador.">Quitar línea</button>
+      <span class="ui-tag-btn">DEV-BTN-QUITAR-LINEA</span>
+    </div>
     <div class="btn-actions">
-      <div class="element-wrapper"><button style="background:#198754;color:white;">Crear Orden</button><span class="ui-tag-btn">DEV-BTN-CREAR-DEVOLUCION</span></div>
-      <div class="element-wrapper"><button style="background:#ffc107;color:#333;">Actualizar</button><span class="ui-tag-btn">DEV-BTN-ACTUALIZAR-DEVOLUCION</span></div>
-      <div class="element-wrapper"><button style="background:#dc3545;color:white;" onclick="document.getElementById('DEV-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Eliminar</button><span class="ui-tag-btn">DEV-BTN-ELIMINAR-DEVOLUCION</span></div>
+      <div class="element-wrapper"><button style="background:#198754;color:white;" title="Solo disponible para el Administrador.">Crear Orden</button><span class="ui-tag-btn">DEV-BTN-CREAR-DEVOLUCION</span><span class="ui-tag-btn">Solo disponible para el Administrador.</span></div>
+      <div class="element-wrapper"><button style="background:#ffc107;color:#333;" title="Solo disponible para el Administrador.">Actualizar</button><span class="ui-tag-btn">DEV-BTN-ACTUALIZAR-DEVOLUCION</span><span class="ui-tag-btn">Solo disponible para el Administrador.</span></div>
+      <div class="element-wrapper"><button style="background:#0d6efd;color:white;" title="Solo disponible para el Administrador.">Guardar cambios</button><span class="ui-tag-btn">DEV-BTN-CONFIRMAR-ACTUALIZACION</span><span class="ui-tag-btn">Solo disponible para el Administrador.</span></div>
+      <div class="element-wrapper"><button style="background:#dc3545;color:white;" title="Solo disponible para el Administrador." onclick="document.getElementById('DEV-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Eliminar</button><span class="ui-tag-btn">DEV-BTN-ELIMINAR-DEVOLUCION</span><span class="ui-tag-btn">Solo disponible para el Administrador.</span></div>
     </div>
   </div>
 </div>
 <div class="modal" id="DEV-MDL-CONFIRMAR-ELIMINACION">
   <div class="modal-content">
     <div class="element-wrapper" style="align-items:center;"><h4>Eliminar Orden</h4><span class="ui-tag">Modal: DEV-MDL-CONFIRMAR-ELIMINACION</span></div>
-    <div class="element-wrapper" style="align-items:center;margin:15px 0;"><p>¿Está seguro de eliminar la orden de devolución seleccionada?</p><span class="ui-tag">Mensaje: DEV-TXT-MSJ</span></div>
+    <div class="element-wrapper" style="align-items:center;margin:15px 0;"><p>¿Está seguro de que desea eliminar la orden?</p><span class="ui-tag">Mensaje: DEV-TXT-MSJ</span></div>
     <div style="display:flex;gap:15px;justify-content:center;">
-      <div class="element-wrapper" style="width:auto;"><button style="background:#dc3545;color:white;">Sí, Eliminar</button><span class="ui-tag-btn">DEV-BTN-CONFIRMAR-SI</span></div>
+      <div class="element-wrapper" style="width:auto;"><button style="background:#dc3545;color:white;" title="Solo disponible para el Administrador.">Sí, Eliminar</button><span class="ui-tag-btn">DEV-BTN-CONFIRMAR-SI</span></div>
       <div class="element-wrapper" style="width:auto;"><button style="background:#6c757d;color:white;" onclick="document.getElementById('DEV-MDL-CONFIRMAR-ELIMINACION').style.display='none'">Cancelar</button><span class="ui-tag-btn">DEV-BTN-CONFIRMAR-NO</span></div>
     </div>
   </div>
