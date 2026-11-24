@@ -25,7 +25,7 @@ public class RegistroDependenciasPruebas
     {
         { typeof(IPagos), typeof(PagosSimulado) },
         { typeof(IRestricciones), typeof(RestriccionesSimulado) },
-        { typeof(IProveedores), typeof(ProveedoresSimulado) },
+        { typeof(IProveedores), typeof(ProveedoresContrato) },
         { typeof(IInventario), typeof(InventarioSimulado) },
         { typeof(ILotes), typeof(LotesSimulado) },
         { typeof(IVentas), typeof(VentasSimulado) },
