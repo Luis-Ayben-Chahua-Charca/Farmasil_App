@@ -19,7 +19,7 @@
             <TextBlock Text="Métodos de pago"
                        FontSize="28"
                        FontWeight="Bold"/>
-            <TextBlock Text="Consulta de métodos de pago"
+            <TextBlock Text="Gestión de métodos de pago"
                        Margin="0,4,0,0"
                        FontSize="15"
                        Foreground="Gray"/>
