@@ -2,7 +2,7 @@
 
 | Artefacto | Observaciones de revisión |
 | --- | --- |
-| Versión | 01.00 |
+| Versión | 02.00 |
 | Fecha | 24/11/2026 |
 | Responsable | AUT-0001 |
 
@@ -11,6 +11,7 @@
 | Versión | Fecha | Cambio |
 | --- | --- | --- |
 | 01.00 | 24/11/2026 | Se crea el documento y se registra su convención (DEC-085). Primeras observaciones, OBS-001 a OBS-012, tomadas de la revisión de los PR #182, #184, #185, #186 y #187 (sprint S2). El registro es parcial: queda pendiente una auditoría de los PR anteriores (sección 7). |
+| 02.00 | 24/11/2026 | Se agregan OBS-013 a OBS-016, de la revisión del PR #189 (DOC, sprint S2). El registro sigue siendo parcial: la auditoría de los PR anteriores es el issue #190. |
 
 > **Registro parcial.** Este documento no recoge todas las observaciones desde el sprint S1; falta la auditoría descrita en la sección 7.
 
@@ -68,6 +69,10 @@ No sustituye a otros documentos:
 | OBS-010 | `ExigirRolDeConsulta` hace `ExigirRol(Administrador)` o `ExigirRol(Tecnico)` según el rol de la sesión, lo que equivale a «cualquiera de los dos roles». Un método de dos roles lo diría más claro. | PAG | Calidad | Baja | Nuevo | #186 | DEC-069 | |
 | OBS-011 | `AlertasServicio` tiene dos constructores públicos con `IDevoluciones?` opcional «por compatibilidad»: si falta la dependencia, `Eliminar` falla en ejecución. Un solo constructor con la dependencia obligatoria fallaría al construirse. | ALV | Calidad | Media | Nuevo | #187 | #109 | |
 | OBS-012 | `AlertasServicio.Consultar` lanza `ArgumentException` para un estado de filtro inválido, aunque DEC-072 y DEC-079 la reservan para errores de programación. El combo es cerrado, así que hoy no es alcanzable. Viene del #87. | ALV | Calidad | Baja | Nuevo | #187 | DEC-072, DEC-079, #87 | |
+| OBS-013 | La VistaModelo de DOC ejecuta SQL de forma síncrona en el hilo de la interfaz (`ConfirmarEmision`, `CargarVentasPendientes`, `Consultar`), a diferencia de los demás módulos, que usan `Task.Run`. | DOC | Calidad | Media | Nuevo | #189 | #109, #107 | |
+| OBS-014 | DOC muestra el éxito y los errores en una etiqueta (`Mensaje`) en lugar de `IMensajeServicio`, como hacen los demás módulos. Viene de la consulta (#169). | DOC | Calidad | Baja | Nuevo | #189, #169 | DEC-072 | |
+| OBS-015 | `MensajesComprobantes.AccesoDenegado` dice «no permite consultar comprobantes» y también se usa al registrar. | DOC | Calidad | Baja | Nuevo | #189 | ESP-0009 | |
+| OBS-016 | La guía de nomenclatura no define identificador para tres controles de la pantalla de DOC: «Limpiar filtros» de las ventas, el código de venta de la ficha y la tabla de detalle de la previsualización. En el #189 se quitaron los identificadores inventados; si esos controles deben tener ID, hay que registrarlos en la guía (DEC-060). | DOC | Documento | Baja | Nuevo | #189 | DEC-060, DEC-077 | |
 
 ## 5. Observaciones cerradas
 
@@ -77,7 +82,7 @@ No sustituye a otros documentos:
 
 ## 6. Origen de las observaciones de esta versión
 
-OBS-001 a OBS-012 salen de la revisión que R1 (Leyni) pidió, con ayuda de un agente de IA, de los PR #182 (INV), #184 (PRV), #185 (RES), #186 (PAG) y #187 (ALV) del sprint S2, entre el 23 y el 24/11/2026. La atomicidad entre ALV y LOT, que también salió de la revisión del #187, ya está registrada como `PEN-039` y no se repite aquí.
+OBS-001 a OBS-012 salen de la revisión que R1 (Leyni) pidió, con ayuda de un agente de IA, de los PR #182 (INV), #184 (PRV), #185 (RES), #186 (PAG) y #187 (ALV) del sprint S2, entre el 23 y el 24/11/2026. OBS-013 a OBS-016 salen de la revisión del PR #189 (DOC), el 24/11/2026. La atomicidad entre ALV y LOT, que también salió de la revisión del #187, ya está registrada como `PEN-039` y no se repite aquí.
 
 ## 7. Cobertura de este documento y auditoría pendiente
 
