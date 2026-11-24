@@ -16,6 +16,7 @@ using FarmasilApp.VistaModelo.Principal;
 using FarmasilApp.VistaModelo.PAG;
 using FarmasilApp.VistaModelo.PRV;
 using FarmasilApp.VistaModelo.USR;
+using FarmasilApp.VistaModelo.VEN;
 using Microsoft.Extensions.DependencyInjection;
 using FarmasilApp.Modelo.DOC;
 using FarmasilApp.Pruebas.DOC;
@@ -61,6 +62,7 @@ public class RegistroDependenciasPruebas
         Assert.NotNull(proveedor.GetRequiredService<MetodosPagoViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<ProveedoresViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<UsuariosViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<VentaViewModel>());
     }
 
     [Fact]
@@ -73,6 +75,7 @@ public class RegistroDependenciasPruebas
         Assert.Equal(
     new[]
     {
+      "Ventas",
       "Comprobantes tributarios",
     "Inventario",
     "Alertas de vencimiento",

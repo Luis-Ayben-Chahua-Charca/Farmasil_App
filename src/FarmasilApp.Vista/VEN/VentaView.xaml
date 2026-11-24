@@ -1,0 +1,209 @@
+<!--
+    Pantalla de venta, ART-MKP-VEN-0001 (ESP-0001; DEC-066, DEC-067): catálogo, detalle del medicamento y detalle de la venta.
+    Cada componente lleva en AutomationProperties.AutomationId el identificador de la guía de nomenclatura (DEC-060).
+    La pantalla no tiene lógica: todo se enlaza con VentaViewModel y el code-behind solo tiene el constructor.
+    Fuera de alcance (C3 de DEC-067): Cancelar, los botones - y + de la tabla, Total Items, visor 3D, sugerencias y ubicación.
+-->
+<UserControl x:Class="FarmasilApp.Vista.VEN.VentaView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:comun="clr-namespace:FarmasilApp.Vista.Comun"
+             MinWidth="1000"
+             MinHeight="560"
+             comun:ComandoAlCargar.Command="{Binding InicializarCommand}">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Venta" FontSize="28" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Vista del inventario: catálogo de medicamentos vendibles (ILotes, DEC-044). -->
+            <DockPanel Grid.Column="0" Margin="0,0,20,0">
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="Catálogo" FontSize="18" FontWeight="Bold" Margin="0,0,0,8"/>
+
+                    <TextBlock Text="Medicamento"/>
+                    <comun:BusquedaComun AutomationProperties.AutomationId="VEN-SRH-PRODUCTO"
+                                         Style="{StaticResource EstiloBusquedaComun}"
+                                         ToolTip="Buscar por nombre"
+                                         Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Acción terapéutica" Margin="0,10,0,0"/>
+                    <comun:FiltroComun AutomationProperties.AutomationId="VEN-CMB-FILTRO-ACCION-TERAPEUTICA"
+                                       Style="{StaticResource EstiloFiltroComun}"
+                                       ItemsSource="{Binding AccionesTerapeuticas}"
+                                       SelectedItem="{Binding AccionSeleccionada}"/>
+                </StackPanel>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,12,0,0">
+                    <ItemsControl AutomationProperties.AutomationId="VEN-PNL-CATALOGO"
+                                  ItemsSource="{Binding Medicamentos}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border AutomationProperties.AutomationId="VEN-CRD-PRODUCTO"
+                                        BorderBrush="#D0D0D0"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="12"
+                                        Margin="0,0,10,10"
+                                        Width="190">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Nombre}" FontWeight="Bold" TextWrapping="Wrap"/>
+                                        <TextBlock Margin="0,5,0,0">
+                                            <Run Text="S/ "/>
+                                            <Run Text="{Binding PrecioVenta, StringFormat=N2, Mode=OneWay}"/>
+                                        </TextBlock>
+                                        <Button AutomationProperties.AutomationId="VEN-BTN-SELECCIONAR-PRODUCTO"
+                                                Content="Añadir"
+                                                Margin="0,10,0,0"
+                                                Padding="10,4"
+                                                Command="{Binding DataContext.SeleccionarProductoCommand,
+                                                          RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                CommandParameter="{Binding}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+
+            <!-- Detalle del medicamento elegido, con la remesa FEFO propuesta. -->
+            <StackPanel Grid.Column="1"
+                        AutomationProperties.AutomationId="VEN-PNL-DETALLE-MEDICAMENTO"
+                        Margin="0,0,20,0">
+                <TextBlock Text="Opciones de selección" FontSize="18" FontWeight="Bold" Margin="0,0,0,8"/>
+
+                <TextBlock Text="{Binding MedicamentoSeleccionado.Nombre}" FontWeight="Bold" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding MedicamentoSeleccionado.AccionTerapeutica}" Foreground="Gray" TextWrapping="Wrap"/>
+                <TextBlock Margin="0,4,0,0">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HayMedicamentoSeleccionado}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                    <Run Text="Precio: S/ "/><Run Text="{Binding MedicamentoSeleccionado.PrecioVenta, StringFormat=N2, Mode=OneWay}"/>
+                    <Run Text="  ·  Stock vendible: "/><Run Text="{Binding MedicamentoSeleccionado.StockVendible, Mode=OneWay}"/>
+                </TextBlock>
+
+                <TextBlock Text="Lote" Margin="0,12,0,0"/>
+                <ComboBox AutomationProperties.AutomationId="VEN-CMB-LOTE-VENTA"
+                          ItemsSource="{Binding Remesas}"
+                          SelectedItem="{Binding RemesaSeleccionada}"
+                          DisplayMemberPath="NumeroLote"
+                          Height="32"
+                          Margin="0,5,0,0"/>
+
+                <TextBlock Text="Vencimiento" Margin="0,10,0,0"/>
+                <TextBlock AutomationProperties.AutomationId="VEN-LBL-FECHA-VENCIMIENTO"
+                           Text="{Binding FechaVencimientoRemesa}"
+                           MinHeight="20"
+                           Margin="0,5,0,0"/>
+
+                <TextBlock Text="Cantidad" Margin="0,10,0,0"/>
+                <TextBox AutomationProperties.AutomationId="VEN-NUM-CANTIDAD-VENTA"
+                         Text="{Binding Cantidad, UpdateSourceTrigger=PropertyChanged}"
+                         MaxLength="9"
+                         Height="32"
+                         Margin="0,5,0,0"
+                         VerticalContentAlignment="Center"/>
+
+                <Button AutomationProperties.AutomationId="VEN-BTN-AGREGAR-PRODUCTO"
+                        Content="Agregar producto"
+                        Command="{Binding AgregarProductoCommand}"
+                        Padding="12,8"
+                        Margin="0,14,0,0"/>
+
+                <TextBlock AutomationProperties.AutomationId="VEN-LBL-ADVERTENCIAS"
+                           Text="{Binding Advertencias}"
+                           Foreground="#B00020"
+                           TextWrapping="Wrap"
+                           MinHeight="20"
+                           Margin="0,12,0,0"/>
+            </StackPanel>
+
+            <!-- Detalle de la venta: líneas, total, método de pago y registro (DEC-066). -->
+            <DockPanel Grid.Column="2" AutomationProperties.AutomationId="VEN-PNL-DETALLE-VENTA">
+                <TextBlock DockPanel.Dock="Top" Text="Detalle de la venta" FontSize="18" FontWeight="Bold" Margin="0,0,0,8"/>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
+                    <TextBlock FontSize="16" FontWeight="Bold">
+                        <Run Text="Total: S/ "/>
+                        <Run AutomationProperties.AutomationId="VEN-LBL-MONTO-TOTAL"
+                             Text="{Binding MontoTotal, StringFormat=N2, Mode=OneWay}"/>
+                    </TextBlock>
+
+                    <TextBlock Text="Método de pago" Margin="0,10,0,0"/>
+                    <ComboBox AutomationProperties.AutomationId="VEN-CMB-METODO-PAGO"
+                              ItemsSource="{Binding MetodosPago}"
+                              SelectedItem="{Binding MetodoPagoSeleccionado}"
+                              DisplayMemberPath="Nombre"
+                              Height="32"
+                              Margin="0,5,0,0"/>
+
+                    <!-- Deshabilitado con su motivo (RNF-0006, condición 4; DEC-075): el registro todavía no está conectado. -->
+                    <Button AutomationProperties.AutomationId="VEN-BTN-CREAR-VENTA"
+                            Content="Registrar venta"
+                            Command="{Binding CrearVentaCommand}"
+                            ToolTip="{Binding MotivoRegistro}"
+                            ToolTipService.ShowOnDisabled="True"
+                            Padding="12,8"
+                            Margin="0,12,0,0"/>
+
+                    <TextBlock Margin="0,10,0,0">
+                        <Run Text="Fecha: "/>
+                        <Run AutomationProperties.AutomationId="VEN-LBL-FECHA-VENTA"
+                             Text="{Binding FechaVenta, StringFormat='dd/MM/yyyy HH:mm', Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+
+                <Button DockPanel.Dock="Bottom"
+                        AutomationProperties.AutomationId="VEN-BTN-QUITAR-PRODUCTO"
+                        Content="Quitar producto"
+                        Command="{Binding QuitarProductoCommand}"
+                        HorizontalAlignment="Left"
+                        Padding="12,6"
+                        Margin="0,8,0,0"/>
+
+                <DataGrid AutomationProperties.AutomationId="VEN-TBL-DETALLE-VENTA"
+                          ItemsSource="{Binding Lineas}"
+                          SelectedItem="{Binding LineaSeleccionada}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          SelectionMode="Single"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
+                          MinHeight="150">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Medicamento" Binding="{Binding NombreMedicamento}" Width="2*"/>
+                        <DataGridTextColumn Header="Lote" Binding="{Binding NumeroLote}" Width="*"/>
+                        <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}" Width="80"/>
+                        <DataGridTextColumn Header="Precio unitario" Binding="{Binding PrecioUnitario, StringFormat=N2}" Width="100"/>
+                        <DataGridTextColumn Header="Subtotal" Binding="{Binding Subtotal, StringFormat=N2}" Width="90"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

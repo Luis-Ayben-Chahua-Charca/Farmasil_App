@@ -11,6 +11,7 @@ using FarmasilApp.VistaModelo.PAG;
 using FarmasilApp.VistaModelo.Principal;
 using FarmasilApp.VistaModelo.PRV;
 using FarmasilApp.VistaModelo.USR;
+using FarmasilApp.VistaModelo.VEN;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FarmasilApp.Pruebas.VistaModelo;
@@ -25,6 +26,7 @@ public class MainViewModelPruebas
 
     private static readonly string[] ModulosDelMenu =
     {
+        "Ventas",
         "Comprobantes tributarios",
         "Inventario",
         "Alertas de vencimiento",
@@ -86,6 +88,7 @@ public class MainViewModelPruebas
         Assert.Equal(
             new[]
             {
+                "Ventas",
                 "Comprobantes tributarios",
                 "Inventario",
                 "Alertas de vencimiento",
@@ -196,6 +199,7 @@ public class MainViewModelPruebas
     [Theory]
     [Trait("Especificacion", "RNF-0006")]
     [Trait("Tecnica", "T-012")]
+    [InlineData("Ventas", typeof(VentaViewModel))]
     [InlineData("Comprobantes tributarios", typeof(ComprobantesViewModel))]
     [InlineData("Alertas de vencimiento", typeof(AlertasViewModel))]
     [InlineData("Inventario", typeof(InventarioViewModel))]

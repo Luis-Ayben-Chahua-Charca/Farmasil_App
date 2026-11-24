@@ -41,17 +41,31 @@ public sealed class VentaServicio
     public DateTime FechaHoraSistema() => _reloj.GetLocalNow().DateTime;
 
     /// <summary>
-    /// Medicamentos vendibles del catálogo. <paramref name="busqueda"/> filtra por nombre (contiene, sin distinguir
-    /// mayúsculas) y <paramref name="accionTerapeutica"/> por categoría exacta; un criterio vacío no filtra (ESP-0001).
+    /// Medicamentos vendibles del catálogo, filtrados con <see cref="Filtrar"/> (ESP-0001).
     /// </summary>
     public IReadOnlyList<MedicamentoVendibleDto> MedicamentosVendibles(string? busqueda = null, string? accionTerapeutica = null)
     {
         ExigirAcceso();
 
+        return Filtrar(_lotes.MedicamentosVendibles(), busqueda, accionTerapeutica);
+    }
+
+    /// <summary>
+    /// Aplica el filtro de ESP-0001 a un catálogo ya cargado: <paramref name="busqueda"/> filtra por nombre (contiene, sin
+    /// distinguir mayúsculas) y <paramref name="accionTerapeutica"/> por categoría exacta; un criterio vacío no filtra.
+    /// La pantalla lo usa para filtrar mientras se escribe sin volver a consultar a Lotes.
+    /// </summary>
+    public static IReadOnlyList<MedicamentoVendibleDto> Filtrar(
+        IEnumerable<MedicamentoVendibleDto> catalogo,
+        string? busqueda,
+        string? accionTerapeutica)
+    {
+        ArgumentNullException.ThrowIfNull(catalogo);
+
         var texto = string.IsNullOrWhiteSpace(busqueda) ? null : busqueda.Trim();
         var accion = string.IsNullOrWhiteSpace(accionTerapeutica) ? null : accionTerapeutica.Trim();
 
-        return _lotes.MedicamentosVendibles()
+        return catalogo
             .Where(m => texto is null || m.Nombre.Contains(texto, StringComparison.CurrentCultureIgnoreCase))
             .Where(m => accion is null || string.Equals(m.AccionTerapeutica, accion, StringComparison.CurrentCultureIgnoreCase))
             .ToArray();
