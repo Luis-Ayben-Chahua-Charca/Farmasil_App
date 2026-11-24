@@ -12,6 +12,7 @@ public static class MensajesAlertas
     public const string EliminadaConOtrosRetiros = "Alerta eliminada. La remesa sigue bloqueada porque tiene otra alerta vigente";
     public const string Eliminada = "Alerta eliminada correctamente";
     public const string SoloAdministrador = "Solo disponible para el Administrador.";
+    public const string RolNoPermiteRegistrar = "Su rol no permite registrar alertas.";
     public const string RemesaObligatoria = "Seleccione una remesa válida.";
     public const string RetiroObligatorio = "Seleccione una alerta registrada.";
     public const string CodigoDigemidLargo = "El código de alerta DIGEMID no puede superar los 100 caracteres.";

@@ -131,7 +131,7 @@ public sealed class AlertasServicio
         var rol = _sesion.UsuarioActual.Rol;
         _sesion.ExigirRol(rol);
         if (rol is not (Rol.Administrador or Rol.Tecnico))
-            throw new AccesoDenegadoException("Su rol no permite registrar alertas.");
+            throw new AccesoDenegadoException(MensajesAlertas.RolNoPermiteRegistrar);
     }
 
     private DateOnly Hoy => DateOnly.FromDateTime(_reloj.GetLocalNow().DateTime);

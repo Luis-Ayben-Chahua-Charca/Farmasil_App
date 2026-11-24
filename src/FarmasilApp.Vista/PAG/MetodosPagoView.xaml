@@ -19,7 +19,7 @@
             <TextBlock Text="Métodos de pago"
                        FontSize="28"
                        FontWeight="Bold"/>
-            <TextBlock Text="Consulta de métodos de pago"
+            <TextBlock Text="Gestión de métodos de pago"
                        Margin="0,4,0,0"
                        FontSize="15"
                        Foreground="Gray"/>
@@ -142,38 +142,76 @@
 
                     <TextBlock Text="Nombre del Método"/>
                     <TextBox AutomationProperties.AutomationId="PAG-TXT-METODO-PAGO"
-                             Text="{Binding MetodoSeleccionado.NombreMetodo, Mode=OneWay}"
-                             IsReadOnly="True"
+                             Text="{Binding NombreMetodo, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding EsAdministrador}"
                              Margin="0,5,0,12"/>
 
                     <TextBlock Text="Estado"/>
                     <ComboBox AutomationProperties.AutomationId="PAG-CMB-ESTADO-METODO"
-                              ItemsSource="{Binding EstadosMetodo}"
-                              SelectedItem="{Binding MetodoSeleccionado.Estado, Mode=OneWay}"
-                              IsEnabled="False"
+                              ItemsSource="{Binding EstadosFicha}"
+                              SelectedItem="{Binding EstadoFicha}"
+                              IsEnabled="{Binding EsAdministrador}"
                               Margin="0,5,0,0"/>
                 </StackPanel>
             </Border>
 
-            <DataGrid Grid.Column="2"
-                      AutomationProperties.AutomationId="PAG-TBL-METODOS-PAGO"
-                      ItemsSource="{Binding Metodos}"
-                      SelectedItem="{Binding MetodoSeleccionado, Mode=TwoWay}"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      CanUserAddRows="False"
-                      SelectionMode="Single"
-                      HeadersVisibility="Column"
-                      GridLinesVisibility="Horizontal">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Método"
-                                        Binding="{Binding NombreMetodo}"
-                                        Width="*"/>
-                    <DataGridTextColumn Header="Estado"
-                                        Binding="{Binding Estado}"
-                                        Width="110"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <DataGrid Grid.Row="0"
+                          AutomationProperties.AutomationId="PAG-TBL-METODOS-PAGO"
+                          ItemsSource="{Binding Metodos}"
+                          SelectedItem="{Binding MetodoSeleccionado, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          SelectionMode="Single"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Método"
+                                            Binding="{Binding NombreMetodo}"
+                                            Width="*"/>
+                        <DataGridTextColumn Header="Estado"
+                                            Binding="{Binding Estado}"
+                                            Width="110"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <StackPanel Grid.Row="1"
+                            Margin="0,12,0,0">
+                    <Button AutomationProperties.AutomationId="PAG-BTN-CREAR-METODO"
+                            Content="Crear"
+                            Command="{Binding CrearCommand}"
+                            ToolTip="{Binding MotivoAccionesAdministrador}"
+                            ToolTipService.ShowOnDisabled="True"
+                            Height="36"
+                            Margin="0,0,0,8"/>
+                    <Button AutomationProperties.AutomationId="PAG-BTN-ACTUALIZAR-METODO"
+                            Content="Modificar"
+                            Command="{Binding ActualizarCommand}"
+                            ToolTip="{Binding MotivoAccionesAdministrador}"
+                            ToolTipService.ShowOnDisabled="True"
+                            Height="36"
+                            Margin="0,0,0,8"/>
+                    <Button AutomationProperties.AutomationId="PAG-BTN-CONFIRMAR-ACTUALIZACION"
+                            Content="Guardar cambios"
+                            Command="{Binding ConfirmarActualizacionCommand}"
+                            ToolTip="{Binding MotivoAccionesAdministrador}"
+                            ToolTipService.ShowOnDisabled="True"
+                            Height="36"
+                            Margin="0,0,0,8"/>
+                    <Button AutomationProperties.AutomationId="PAG-BTN-ELIMINAR-METODO"
+                            Content="Eliminar"
+                            Command="{Binding EliminarCommand}"
+                            ToolTip="{Binding MotivoAccionesAdministrador}"
+                            ToolTipService.ShowOnDisabled="True"
+                            Height="36"/>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

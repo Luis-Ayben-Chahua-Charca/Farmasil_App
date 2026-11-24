@@ -27,6 +27,7 @@ public sealed class AlertasViewModel : ViewModelBase
     private int _umbralMeses;
     private int _totalProximasAVencer;
     private DateOnly _fechaLimite;
+    private AlertaFiltroLote? _loteDelRetiro;
 
     public AlertasViewModel(AlertasServicio servicio, IMensajeServicio mensajes, ISesion sesion)
     {
@@ -93,12 +94,13 @@ public sealed class AlertasViewModel : ViewModelBase
         set
         {
             if (!Establecer(ref _alertaSeleccionada, value)) return;
+            QuitarLoteDelRetiro();
             EnEdicion = false;
             Defectuoso = value?.EsLoteDefectuoso ?? false;
             CodigoDigemid = value?.AlertaDigemid ?? string.Empty;
             if (value != null)
             {
-                LoteFichaSeleccionado = LotesFicha.FirstOrDefault(l => l.IdLote == value.IdLote);
+                LoteFichaSeleccionado = BuscarOAgregarLoteDelRetiro(value);
                 FechaFicha = value.FechaVencimiento.ToString("dd/MM/yyyy");
             }
             ActualizarBotones();
@@ -229,6 +231,32 @@ public sealed class AlertasViewModel : ViewModelBase
         _mensajes.MostrarExito(MensajesAlertas.Titulo, mensaje);
         await ConsultarAsync();
     });
+
+    /// <summary>
+    /// Una remesa con alerta ya no está entre las disponibles que ofrece LOT (queda bloqueada), pero ESP-0015 pide
+    /// mostrarla en solo lectura: se agrega al combo mientras su retiro está seleccionado.
+    /// </summary>
+    private AlertaFiltroLote? BuscarOAgregarLoteDelRetiro(AlertaConsulta alerta)
+    {
+        if (alerta.IdLote is not int idLote) return null;
+        var existente = LotesFicha.FirstOrDefault(l => l.IdLote == idLote);
+        if (existente is not null) return existente;
+        _loteDelRetiro = new AlertaFiltroLote
+        {
+            IdLote = idLote,
+            Descripcion = $"{alerta.NumeroLote} — {alerta.Medicamento}"
+        };
+        LotesFicha.Add(_loteDelRetiro);
+        return _loteDelRetiro;
+    }
+
+    private void QuitarLoteDelRetiro()
+    {
+        if (_loteDelRetiro is null) return;
+        var lote = _loteDelRetiro;
+        _loteDelRetiro = null;
+        LotesFicha.Remove(lote);
+    }
 
     private void ActualizarBotones()
     {
