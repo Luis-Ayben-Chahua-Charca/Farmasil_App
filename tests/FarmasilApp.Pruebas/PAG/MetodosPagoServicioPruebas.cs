@@ -674,7 +674,7 @@ public class MetodosPagoServicioPruebas
     }
 
     [Fact]
-    [Trait("Modulo", "5")]
+    [Trait("Especificacion", "RNF-0006")]
     [Trait("Tecnica", "T-012")]
     public void SesionTecnicoPermiteConsultarYRechazaCrearActualizarYDarDeBaja()
     {

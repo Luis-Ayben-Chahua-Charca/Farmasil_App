@@ -691,7 +691,7 @@ public class InventarioServicioPruebas
     }
 
     [Fact]
-    [Trait("Modulo", "Modulo 2")]
+    [Trait("Especificacion", "RNF-0006")]
     [Trait("Tecnica", "T-012")]
     public void SesionTecnicoPermiteConsultarYRechazaOperacionesDeEscritura()
     {
