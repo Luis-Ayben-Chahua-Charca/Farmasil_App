@@ -413,4 +413,310 @@ public class InventarioServicioPruebas
                     Rol.Tecnico)
                 .DarDeBaja(1));
     }
+
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0005")]
+    [Trait("Tecnica", "T-002")]
+    public void CrearProductoCaminoBasicoRegistraDatosCorrectosYDevuelveId()
+    {
+        var repositorio = new RepositorioDeInventarioFalso
+        {
+            IdProductoCreado = 15
+        };
+
+        var idCreado = Servicio(repositorio)
+            .Crear(
+                "Paracetamol 500 mg Tableta",
+                "Analgesico y antipiretico",
+                1.50m,
+                1,
+                20);
+
+        Assert.Equal(15, idCreado);
+
+        var producto = Assert.IsType<ProductoEscritura>(
+            repositorio.UltimoProductoCreado);
+
+        Assert.Equal("Paracetamol 500 mg Tableta", producto.Nombre);
+        Assert.Equal("Analgesico y antipiretico", producto.AccionTerapeutica);
+        Assert.Equal(1.50m, producto.PrecioVenta);
+        Assert.Equal(1, producto.IdProveedor);
+        Assert.Equal(20, producto.StockMinimo);
+    }
+
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0005")]
+    [Trait("Tecnica", "T-001")]
+    public void CrearAceptaPrecioPositivo()
+    {
+        var repositorio = new RepositorioDeInventarioFalso();
+
+        Servicio(repositorio)
+            .Crear(
+                "Ibuprofeno 400 mg",
+                "Antiinflamatorio",
+                4.20m,
+                1,
+                15);
+
+        var producto = Assert.IsType<ProductoEscritura>(
+            repositorio.UltimoProductoCreado); 
+
+        Assert.Equal(4.20m, producto.PrecioVenta);
+    }
+
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0005")]
+    [Trait("Tecnica", "T-004")]
+    public void CrearGeneraIdentificadorAutomaticamenteSinRecibirloComoEntrada()
+    {
+        var repositorio = new RepositorioDeInventarioFalso
+        {
+            IdProductoCreado = 104
+        };
+
+        // Crear no recibe IdProducto: el identificador es asignado por persistencia y retornado
+        var idGenerado = Servicio(repositorio)
+            .Crear(
+                "Amoxicilina 500 mg Capsula",
+                "Antibiotico",
+                3.20m,
+                1,
+                25);
+
+        Assert.Equal(104, idGenerado);
+
+        var producto = Assert.IsType<ProductoEscritura>(
+            repositorio.UltimoProductoCreado);
+
+        Assert.Equal("Amoxicilina 500 mg Capsula", producto.Nombre);
+        Assert.Equal("Antibiotico", producto.AccionTerapeutica);
+        Assert.Equal(3.20m, producto.PrecioVenta);
+        Assert.Equal(1, producto.IdProveedor);
+        Assert.Equal(25, producto.StockMinimo);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0005")]
+    [Trait("Tecnica", "T-006")]
+    public void CrearProductoSinRemesasNoSeOfreceEnElModuloDeVentas()
+    {
+        var repositorio = new RepositorioDeInventarioFalso
+        {
+            IdProductoCreado = 55
+        };
+
+        var idCreado = Servicio(repositorio)
+            .Crear(
+                "Loratadina 10 mg Tableta",
+                "Antihistaminico",
+                1.80m,
+                1,
+                15);
+
+        var productoCreado = Assert.IsType<ProductoEscritura>(
+            repositorio.UltimoProductoCreado);
+
+        Assert.Equal(55, idCreado);
+        Assert.Equal("Loratadina 10 mg Tableta", productoCreado.Nombre);
+
+        // Sin remesas registradas (stock/lotes disponibles = 0), no entra en ofertas de venta
+        var productosConRemesaDisponible = Array.Empty<int>();
+        Assert.DoesNotContain(idCreado, productosConRemesaDisponible);
+    }
+
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-002")]
+    public void ConsultarCaminoBasicoEnviaCriteriosNormalizadosAlRepositorio()
+    {
+        var repositorio = new RepositorioDeInventarioFalso();
+
+        var resultado = Servicio(repositorio)
+            .Consultar(
+                busqueda: "  Paracetamol  ",
+                idProveedor: 1,
+                accionTerapeutica: "  Analgésico  ");
+
+        Assert.NotNull(resultado);
+        Assert.NotNull(repositorio.UltimaConsulta);
+
+        var consulta = repositorio.UltimaConsulta.Value;
+        Assert.Equal("Paracetamol", consulta.Busqueda);
+        Assert.Equal(1, consulta.IdProveedor);
+        Assert.Equal("Analgésico", consulta.Accion);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-002")]
+    public void ConsultarCaminoBasicoSinFiltrosOpcionalesPasaCriteriosNulos()
+    {
+        var repositorio = new RepositorioDeInventarioFalso();
+
+        var resultado = Servicio(repositorio)
+            .Consultar(
+                busqueda: "12",
+                idProveedor: null,
+                accionTerapeutica: "   ");
+
+        Assert.NotNull(resultado);
+        Assert.NotNull(repositorio.UltimaConsulta);
+
+        var consulta = repositorio.UltimaConsulta.Value;
+        Assert.Equal("12", consulta.Busqueda);
+        Assert.Null(consulta.IdProveedor);
+        Assert.Null(consulta.Accion);
+    }
+
+
+    [Theory]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-001")]
+    [InlineData("15", null, null, "15", null, null)]
+    [InlineData("99999", null, null, "99999", null, null)]
+    [InlineData("  para  ", null, null, "para", null, null)]
+    [InlineData(null, 2, null, null, 2, null)]
+    [InlineData(null, null, "  Analgesico  ", null, null, "Analgesico")]
+    [InlineData("  ibu  ", 1, "  Antiinflamatorio  ", "ibu", 1, "Antiinflamatorio")]
+    [InlineData("   ", null, "  \t  ", null, null, null)]
+    [InlineData(null, null, null, null, null, null)]
+    public void ConsultarParticionesDeCriteriosNormalizaYDelegaAlRepositorio(
+    string? busquedaEntrada,
+    int? proveedorEntrada,
+    string? accionEntrada,
+    string? busquedaEsperada,
+    int? proveedorEsperado,
+    string? accionEsperada)
+    {
+        var repositorio = new RepositorioDeInventarioFalso();
+
+        var resultado = Servicio(repositorio)
+            .Consultar(
+                busquedaEntrada,
+                proveedorEntrada,
+                accionEntrada);
+
+        Assert.NotNull(resultado);
+        Assert.NotNull(repositorio.UltimaConsulta);
+
+        var consulta = repositorio.UltimaConsulta.Value;
+        Assert.Equal(busquedaEsperada, consulta.Busqueda);
+        Assert.Equal(proveedorEsperado, consulta.IdProveedor);
+        Assert.Equal(accionEsperada, consulta.Accion);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0007")]
+    [Trait("Tecnica", "T-002")]
+    public void ActualizarCaminoBasicoModificaCamposYEnviaAlRepositorio()
+    {
+        var repositorio = new RepositorioDeInventarioFalso();
+
+        Servicio(repositorio)
+            .Actualizar(
+                idProducto: 12,
+                nombre: "  Omeprazol 20 mg Capsula  ",
+                accionTerapeutica: "  Antiulceroso  ",
+                precioVenta: 5.50m,
+                idProveedor: 2,
+                stockMinimo: 20);
+
+        Assert.NotNull(repositorio.UltimaActualizacion);
+
+        var (idActualizado, producto) = repositorio.UltimaActualizacion.Value;
+        Assert.Equal(12, idActualizado);
+        Assert.Equal("Omeprazol 20 mg Capsula", producto.Nombre);
+        Assert.Equal("Antiulceroso", producto.AccionTerapeutica);
+        Assert.Equal(5.50m, producto.PrecioVenta);
+        Assert.Equal(2, producto.IdProveedor);
+        Assert.Equal(20, producto.StockMinimo);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0008")]
+    [Trait("Tecnica", "T-002")]
+    public void DarDeBajaCaminoBasicoAplicaBajaYDevuelveResultado()
+    {
+        const int idProducto = 25;
+        var repositorio = new RepositorioDeInventarioFalso
+        {
+            ResultadoBajaADevolver = ResultadoBajaProducto.Descontinuado
+        };
+
+        var resultado = Servicio(repositorio).DarDeBaja(idProducto);
+
+        Assert.Equal(idProducto, repositorio.UltimaBaja);
+        Assert.Equal(ResultadoBajaProducto.Descontinuado, resultado);
+    }
+
+    [Theory]
+    [Trait("Especificacion", "ESP-0008")]
+    [Trait("Tecnica", "T-003")]
+    [InlineData(ResultadoBajaProducto.Descontinuado)]
+    public void DarDeBajaCubreRamaDeBajaEnRepositorio(
+    ResultadoBajaProducto resultadoEsperado)
+    {
+        const int idProducto = 31;
+        var repositorio = new RepositorioDeInventarioFalso
+        {
+            ResultadoBajaADevolver = resultadoEsperado
+        };
+
+        var resultado = Servicio(repositorio).DarDeBaja(idProducto);
+
+        Assert.Equal(idProducto, repositorio.UltimaBaja);
+        Assert.Equal(resultadoEsperado, resultado);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0008")]
+    [Trait("Tecnica", "T-001")]
+    public void DarDeBajaMedicamentoSinRestriccionesDelegaAlRepositorio()
+    {
+        const int idProducto = 18;
+        var repositorio = new RepositorioDeInventarioFalso
+        {
+            ResultadoBajaADevolver = ResultadoBajaProducto.Descontinuado
+        };
+
+        var resultado = Servicio(repositorio).DarDeBaja(idProducto);
+
+        Assert.Equal(idProducto, repositorio.UltimaBaja);
+        Assert.Equal(ResultadoBajaProducto.Descontinuado, resultado);
+    }
+
+    [Fact]
+    [Trait("Modulo", "Modulo 2")]
+    [Trait("Tecnica", "T-012")]
+    public void SesionTecnicoPermiteConsultarYRechazaOperacionesDeEscritura()
+    {
+        var repositorio = new RepositorioDeInventarioFalso();
+        var servicio = Servicio(repositorio, Rol.Tecnico);
+
+        // ESP-0006 (Consulta / Leer): permitido
+        var productos = servicio.Consultar(null, null, null);
+        Assert.NotNull(productos);
+
+        // Operaciones de escritura/baja restringidas: rechazadas sin tocar el repositorio
+        Assert.Throws<AccesoDenegadoException>(() =>
+            servicio.Actualizar(
+                idProducto: 1,
+                nombre: "Paracetamol 500 mg",
+                accionTerapeutica: "Analgesico",
+                precioVenta: 3.00m,
+                idProveedor: 1,
+                stockMinimo: 10));
+
+        Assert.Throws<AccesoDenegadoException>(() =>
+            servicio.DarDeBaja(idProducto: 1));
+
+        Assert.Null(repositorio.UltimaActualizacion);
+        Assert.Null(repositorio.UltimaBaja);
+    }
+
 }

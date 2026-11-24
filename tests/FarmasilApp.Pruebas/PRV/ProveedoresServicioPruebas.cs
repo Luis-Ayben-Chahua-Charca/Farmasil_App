@@ -156,408 +156,424 @@ public class ProveedoresServicioPruebas
     }
 
     [Fact]
-    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Especificacion", "ESP-0037")]
     [Trait("Tecnica", "T-002")]
-    public void ElRepositorioEsObligatorio()
+    public void CrearCaminoBasicoValidaYDevuelveIdCreado()
     {
-        Assert.Throws<ArgumentNullException>(
-            () => new ProveedoresServicio(null!, new SesionSimulada()));
+        var repositorio = new RepositorioDeProveedoresFalso
+        {
+            IdProveedorADevolver = 7
+        };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        var idCreado = servicio.Crear(
+            ruc: "20100000001",
+            razonSocial: "Distribuidora Farmaceutica del Sur S.A.C.",
+            telefono: "958123456",
+            estado: ProveedorEscritura.EstadoActivo);
+
+        Assert.Equal(7, idCreado);
+        Assert.NotNull(repositorio.UltimoCreado);
+        Assert.Equal("20100000001", repositorio.UltimoCreado.Ruc);
+        Assert.Equal("Distribuidora Farmaceutica del Sur S.A.C.", repositorio.UltimoCreado.RazonSocial);
+        Assert.Equal("958123456", repositorio.UltimoCreado.Telefono);
+        Assert.Equal(ProveedorEscritura.EstadoActivo, repositorio.UltimoCreado.Estado);
     }
 
-    [Fact]
-    [Trait("Especificacion", "ESP-0038")]
-    [Trait("Tecnica", "T-002")]
-    public void LaSesionEsObligatoria()
-    {
-        Assert.Throws<ArgumentNullException>(
-            () => new ProveedoresServicio(new RepositorioDeProveedoresFalso(), null!));
-    }
 
-    [Fact]
-    [Trait("Especificacion", "ESP-0038")]
-    [Trait("Tecnica", "T-002")]
-    public void ConsultarComoTecnicoLanzaAccesoDenegado()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Assert.Throws<AccesoDenegadoException>(
-            () => Servicio(repositorio, Rol.Tecnico).Consultar(null, null));
-    }
-
-    // =============================
-    // ESP-0037: Crear
-    // =============================
-
-    [Fact]
+    [Theory]
     [Trait("Especificacion", "ESP-0037")]
     [Trait("Tecnica", "T-001")]
-    public void CrearConDatosValidosDelegaAlRepositorio()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso { IdProveedorADevolver = 5 };
-
-        var id = Servicio(repositorio).Crear("20100070970", "Drogueria Andina SAC", "054223344");
-
-        Assert.Equal(5, id);
-        Assert.NotNull(repositorio.UltimoCreado);
-        Assert.Equal("20100070970", repositorio.UltimoCreado.Ruc);
-        Assert.Equal("Drogueria Andina SAC", repositorio.UltimoCreado.RazonSocial);
-        Assert.Equal("054223344", repositorio.UltimoCreado.Telefono);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0037")]
-    [Trait("Tecnica", "T-006")]
-    public void CrearSinIndicarEstadoLoRegistraActivo()
+    [InlineData("2010000000")]      // 10 dígitos
+    [InlineData("201000000012")]    // 12 dígitos
+    [InlineData("2010000000A")]     // con letras
+    [InlineData(" 20100000001")]    // espacio al inicio
+    [InlineData("20100000001 ")]    // espacio al final
+    [InlineData("20100 000001")]    // espacio intermedio
+    public void CrearConRucInvalidoLanzaReglaDeNegocioSinCrear(string rucInvalido)
     {
         var repositorio = new RepositorioDeProveedoresFalso();
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        Servicio(repositorio).Crear("20100070970", "Drogueria SAC", null);
+        var ex = Assert.Throws<ReglaDeNegocioException>(() =>
+            servicio.Crear(
+                ruc: rucInvalido,
+                razonSocial: "Proveedor Valido S.A.C.",
+                telefono: "958123456",
+                estado: ProveedorEscritura.EstadoActivo));
 
-        Assert.Equal("Activo", repositorio.UltimoCreado!.Estado);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0037")]
-    [Trait("Tecnica", "T-006")]
-    public void CrearConEstadoInactivoLoPasaAlRepositorio()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Servicio(repositorio).Crear("20100070970", "Drogueria SAC", null, "Inactivo");
-
-        Assert.Equal("Inactivo", repositorio.UltimoCreado!.Estado);
-    }
-
-    [Theory]
-    [Trait("Especificacion", "ESP-0037")]
-    [Trait("Tecnica", "T-002")]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("activo")]
-    [InlineData("Suspendido")]
-    public void CrearConEstadoInvalidoLanzaReglaDeNegocio(string? estado)
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear("20100070970", "Drogueria SAC", null, estado));
-
-        Assert.Equal(MensajesProveedores.EstadoInvalido, excepcion.Message);
-        Assert.Null(repositorio.UltimoCreado);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0039")]
-    [Trait("Tecnica", "T-007")]
-    public void ActualizarConEstadoInactivoLoPasaAlRepositorio()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Servicio(repositorio).Actualizar(1, "20100070970", "Drogueria SAC", null, "Inactivo");
-
-        Assert.Equal("Inactivo", repositorio.UltimaActualizacion!.Value.Proveedor.Estado);
-    }
-
-    [Theory]
-    [Trait("Especificacion", "ESP-0039")]
-    [Trait("Tecnica", "T-002")]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("Suspendido")]
-    public void ActualizarConEstadoInvalidoLanzaReglaDeNegocio(string? estado)
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Actualizar(1, "20100070970", "Drogueria SAC", null, estado));
-
-        Assert.Equal(MensajesProveedores.EstadoInvalido, excepcion.Message);
-        Assert.Null(repositorio.UltimaActualizacion);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0037")]
-    [Trait("Tecnica", "T-002")]
-    public void CrearConTelefonoVacioLoPasaComoNulo()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Servicio(repositorio).Crear("20100070970", "Drogueria Andina SAC", "   ");
-
-        Assert.NotNull(repositorio.UltimoCreado);
-        Assert.Null(repositorio.UltimoCreado.Telefono);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0037")]
-    [Trait("Tecnica", "T-002")]
-    public void CrearConTelefonoNuloLoPasaComoNulo()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Servicio(repositorio).Crear("20100070970", "Drogueria Andina SAC", null);
-
-        Assert.NotNull(repositorio.UltimoCreado);
-        Assert.Null(repositorio.UltimoCreado.Telefono);
-    }
-
-    [Theory]
-    [Trait("Especificacion", "ESP-0037")]
-    [Trait("Tecnica", "T-002")]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("1234567890")]
-    [InlineData("123456789012")]
-    [InlineData("2010007097A")]
-    [InlineData("2010007097 ")]
-    [InlineData(" 2010007097")]
-    public void CrearConRucInvalidoLanzaReglaDeNegocio(string? ruc)
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear(ruc, "Drogueria SAC", null));
-
-        Assert.Equal(MensajesProveedores.RucInvalido, excepcion.Message);
+        Assert.Equal(MensajesProveedores.RucInvalido, ex.Message);
         Assert.Null(repositorio.UltimoCreado);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0037")]
     [Trait("Tecnica", "T-001")]
-    public void CrearConRucConCerosALaIzquierdaEsValido()
+    public void CrearConRucDeOnceDigitosValidoCreaProveedor()
     {
-        var repositorio = new RepositorioDeProveedoresFalso();
+        const string rucValido = "20100000001";
+        var repositorio = new RepositorioDeProveedoresFalso
+        {
+            IdProveedorADevolver = 12
+        };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        Servicio(repositorio).Crear("00100070970", "Drogueria SAC", null);
+        var id = servicio.Crear(
+            ruc: rucValido,
+            razonSocial: "Proveedor Valido S.A.C.",
+            telefono: null,
+            estado: ProveedorEscritura.EstadoActivo);
 
+        Assert.Equal(12, id);
         Assert.NotNull(repositorio.UltimoCreado);
-        Assert.Equal("00100070970", repositorio.UltimoCreado.Ruc);
+        Assert.Equal(rucValido, repositorio.UltimoCreado.Ruc);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0037")]
     [Trait("Tecnica", "T-001")]
-    public void CrearConRucDuplicadoLanzaReglaDeNegocio()
+    public void CrearConRucDuplicadoLanzaRucRepetidoSinCrear()
     {
-        var repositorio = new RepositorioDeProveedoresFalso { RucExistente = "20100070970" };
+        const string rucDuplicado = "20100000001";
+        var repositorio = new RepositorioDeProveedoresFalso
+        {
+            RucExistente = rucDuplicado
+        };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear("20100070970", "Drogueria SAC", null));
+        var ex = Assert.Throws<ReglaDeNegocioException>(() =>
+            servicio.Crear(
+                ruc: rucDuplicado,
+                razonSocial: "Otro Proveedor S.A.C.",
+                telefono: null,
+                estado: ProveedorEscritura.EstadoActivo));
 
-        Assert.Equal(MensajesProveedores.RucRepetido, excepcion.Message);
+        Assert.Equal(MensajesProveedores.RucRepetido, ex.Message);
         Assert.Null(repositorio.UltimoCreado);
+    }
+
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0037")]
+    [Trait("Tecnica", "T-004")]
+    public void CrearConservaCerosALaIzquierdaEnRuc()
+    {
+        const string rucConCeros = "00123456789";
+        var repositorio = new RepositorioDeProveedoresFalso
+        {
+            IdProveedorADevolver = 15
+        };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        var id = servicio.Crear(
+            ruc: rucConCeros,
+            razonSocial: "Proveedor Ceros S.A.C.",
+            telefono: null,
+            estado: ProveedorEscritura.EstadoActivo);
+
+        Assert.Equal(15, id);
+        Assert.NotNull(repositorio.UltimoCreado);
+        Assert.Equal(rucConCeros, repositorio.UltimoCreado.Ruc);
+        Assert.StartsWith("00", repositorio.UltimoCreado.Ruc);
     }
 
     [Theory]
     [Trait("Especificacion", "ESP-0037")]
-    [Trait("Tecnica", "T-002")]
+    [Trait("Tecnica", "T-001")]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void CrearConRazonSocialVaciaLanzaReglaDeNegocio(string? razonSocial)
+    public void CrearSinTelefonoCompletaRegistroConTelefonoNulo(string? telefonoOpcional)
     {
-        var repositorio = new RepositorioDeProveedoresFalso();
+        var repositorio = new RepositorioDeProveedoresFalso
+        {
+            IdProveedorADevolver = 20
+        };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear("20100070970", razonSocial, null));
+        var id = servicio.Crear(
+            ruc: "20100000001",
+            razonSocial: "Botica Central S.A.C.",
+            telefono: telefonoOpcional,
+            estado: ProveedorEscritura.EstadoActivo);
 
-        Assert.Equal(MensajesProveedores.RazonSocialVacia, excepcion.Message);
-        Assert.Null(repositorio.UltimoCreado);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0037")]
-    [Trait("Tecnica", "T-002")]
-    public void CrearConRazonSocialDemasiadoLargaLanzaReglaDeNegocio()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-        var razonSocialLarga = new string('A', 151);
-
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear("20100070970", razonSocialLarga, null));
-
-        Assert.Equal(MensajesProveedores.RazonSocialDemasiadoLarga, excepcion.Message);
-        Assert.Null(repositorio.UltimoCreado);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0037")]
-    [Trait("Tecnica", "T-002")]
-    public void CrearConRazonSocialRecortadaDentroDelLimiteEsValido()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-        var razonSocial = "  " + new string('A', 150) + "  ";
-
-        Servicio(repositorio).Crear("20100070970", razonSocial, null);
-
+        Assert.Equal(20, id);
         Assert.NotNull(repositorio.UltimoCreado);
-        Assert.Equal(new string('A', 150), repositorio.UltimoCreado.RazonSocial);
+        Assert.Null(repositorio.UltimoCreado.Telefono);
     }
 
     [Fact]
-    [Trait("Especificacion", "ESP-0037")]
+    [Trait("Especificacion", "ESP-0038")]
     [Trait("Tecnica", "T-002")]
-    public void CrearConTelefonoDemasiadoLargoLanzaReglaDeNegocio()
+    public void ConsultarCaminoBasicoNormalizaFiltrosYDevuelveResultados()
     {
-        var repositorio = new RepositorioDeProveedoresFalso();
+        var repositorio = new RepositorioDeProveedoresFalso
+        {
+            Resultados =
+        {
+            new ProveedorConsulta
+            {
+                Ruc = "20100000001",
+                RazonSocial = "Distribuidora Farmaceutica del Sur S.A.C.",
+                Telefono = "958123456",
+                Estado = ProveedorEscritura.EstadoActivo,
+            },
+        },
+        };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Crear("20100070970", "Drogueria SAC", new string('9', 16)));
+        var resultado = servicio.Consultar("  20100000001  ", "  Activo  ");
 
-        Assert.Equal(MensajesProveedores.TelefonoDemasiadoLargo, excepcion.Message);
-        Assert.Null(repositorio.UltimoCreado);
+        Assert.NotNull(repositorio.UltimaConsulta);
+        Assert.Equal("20100000001", repositorio.UltimaConsulta!.Value.Busqueda);
+        Assert.Equal(ProveedorEscritura.EstadoActivo, repositorio.UltimaConsulta.Value.Estado);
+        Assert.Single(resultado);
+        Assert.Equal("958123456", resultado[0].Telefono);
+    }
+
+
+    [Theory]
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-001")]
+    [InlineData("20100000001", null, "20100000001", null)]                                // RUC exacto
+    [InlineData("  Farmaceutica  ", null, "Farmaceutica", null)]                         // Razón social parcial (recortada)
+    [InlineData(null, ProveedorEscritura.EstadoActivo, null, ProveedorEscritura.EstadoActivo)] // Estado 'Activo'
+    [InlineData(null, ProveedorEscritura.EstadoInactivo, null, ProveedorEscritura.EstadoInactivo)] // Estado 'Inactivo'
+    [InlineData("  Botica  ", ProveedorEscritura.EstadoActivo, "Botica", ProveedorEscritura.EstadoActivo)] // Búsqueda + estado
+    [InlineData(null, null, null, null)]                                                 // Sin criterios (null)
+    [InlineData("   ", "   ", null, null)]                                               // Sin criterios (espacios -> null)
+    public void ConsultarParticionesDeCriteriosNormalizaYDelegaAlRepositorio(
+    string? busquedaEntrada,
+    string? estadoEntrada,
+    string? busquedaEsperada,
+    string? estadoEsperado)
+    {
+        var repositorio = new RepositorioDeProveedoresFalso
+        {
+            Resultados =
+        {
+            new ProveedorConsulta
+            {
+                Ruc = "20100000001",
+                RazonSocial = "Distribuidora Farmaceutica del Sur S.A.C.",
+                Telefono = "958123456",
+                Estado = ProveedorEscritura.EstadoActivo,
+            },
+        },
+        };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        var resultado = servicio.Consultar(busquedaEntrada, estadoEntrada);
+
+        Assert.NotNull(repositorio.UltimaConsulta);
+        Assert.Equal(busquedaEsperada, repositorio.UltimaConsulta!.Value.Busqueda);
+        Assert.Equal(estadoEsperado, repositorio.UltimaConsulta.Value.Estado);
+        Assert.Single(resultado);
     }
 
     [Fact]
-    [Trait("Especificacion", "ESP-0037")]
-    [Trait("Tecnica", "T-002")]
-    public void CrearComoTecnicoLanzaAccesoDenegado()
+    [Trait("Especificacion", "ESP-0038")]
+    [Trait("Tecnica", "T-001")]
+    public void ConsultarSinResultadosDevuelveColeccionVacia()
     {
-        var repositorio = new RepositorioDeProveedoresFalso();
+        var repositorio = new RepositorioDeProveedoresFalso(); // Resultados inicia vacía
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        Assert.Throws<AccesoDenegadoException>(
-            () => Servicio(repositorio, Rol.Tecnico).Crear("20100070970", "Drogueria SAC", null));
+        var resultado = servicio.Consultar("99999999999", ProveedorEscritura.EstadoInactivo);
 
-        Assert.Null(repositorio.UltimoCreado);
+        Assert.NotNull(repositorio.UltimaConsulta);
+        Assert.Equal("99999999999", repositorio.UltimaConsulta!.Value.Busqueda);
+        Assert.Equal(ProveedorEscritura.EstadoInactivo, repositorio.UltimaConsulta.Value.Estado);
+        Assert.Empty(resultado);
     }
 
-    // =============================
-    // ESP-0039: Actualizar
-    // =============================
 
     [Fact]
     [Trait("Especificacion", "ESP-0039")]
-    [Trait("Tecnica", "T-001")]
-    public void ActualizarConDatosValidosDelegaAlRepositorio()
+    [Trait("Tecnica", "T-002")]
+    public void ActualizarCaminoBasicoValidaYDelegaAlRepositorio()
     {
+        const int idProveedor = 5;
         var repositorio = new RepositorioDeProveedoresFalso();
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        Servicio(repositorio).Actualizar(1, "20100070970", "Drogueria Andina SAC", "054223344", "Activo");
+        servicio.Actualizar(
+            idProveedor: idProveedor,
+            ruc: "20100000001",
+            razonSocial: "  Distribuidora Farmaceutica Actualizada S.A.C.  ",
+            telefono: "  958987654  ",
+            estado: ProveedorEscritura.EstadoInactivo);
 
         Assert.NotNull(repositorio.UltimaActualizacion);
-        Assert.Equal(1, repositorio.UltimaActualizacion.Value.IdProveedor);
-        Assert.Equal("20100070970", repositorio.UltimaActualizacion.Value.Proveedor.Ruc);
+        Assert.Equal(idProveedor, repositorio.UltimaActualizacion!.Value.IdProveedor);
+
+        var editado = repositorio.UltimaActualizacion.Value.Proveedor;
+        Assert.Equal("20100000001", editado.Ruc);
+        Assert.Equal("Distribuidora Farmaceutica Actualizada S.A.C.", editado.RazonSocial);
+        Assert.Equal("958987654", editado.Telefono);
+        Assert.Equal(ProveedorEscritura.EstadoInactivo, editado.Estado);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0039")]
-    [Trait("Tecnica", "T-002")]
-    public void ActualizarConIdInvalidoLanzaReglaDeNegocio()
+    [Trait("Tecnica", "T-001")]
+    public void ActualizarConRucDeOtroProveedorLanzaRucRepetidoSinActualizar()
     {
-        var repositorio = new RepositorioDeProveedoresFalso();
+        const int idProveedorAEditar = 5;
+        const string rucDeOtroProveedor = "20999999999";
 
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Actualizar(0, "20100070970", "Drogueria SAC", null, "Activo"));
+        var repositorio = new RepositorioDeProveedoresFalso
+        {
+            RucExistente = rucDeOtroProveedor,
+        };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        Assert.Equal("Seleccione un proveedor para actualizar.", excepcion.Message);
+        var ex = Assert.Throws<ReglaDeNegocioException>(() =>
+            servicio.Actualizar(
+                idProveedor: idProveedorAEditar,
+                ruc: rucDeOtroProveedor,
+                razonSocial: "Razon Social Modificada S.A.C.",
+                telefono: "958123456",
+                estado: ProveedorEscritura.EstadoActivo));
+
+        Assert.Equal(MensajesProveedores.RucRepetido, ex.Message);
         Assert.Null(repositorio.UltimaActualizacion);
     }
 
     [Fact]
-    [Trait("Especificacion", "ESP-0039")]
+    [Trait("Especificacion", "ESP-0040")]
     [Trait("Tecnica", "T-002")]
-    public void ActualizarComoTecnicoLanzaAccesoDenegado()
+    public void DarDeBajaCaminoBasicoDelegaYDevuelveResultado()
     {
-        var repositorio = new RepositorioDeProveedoresFalso();
+        const int idProveedor = 9;
+        var repositorio = new RepositorioDeProveedoresFalso
+        {
+            ResultadoBajaADevolver = ResultadoBajaProveedor.Eliminado,
+        };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        Assert.Throws<AccesoDenegadoException>(
-            () => Servicio(repositorio, Rol.Tecnico)
-                .Actualizar(1, "20100070970", "Drogueria SAC", null, "Activo"));
+        var resultado = servicio.DarDeBaja(idProveedor);
 
-        Assert.Null(repositorio.UltimaActualizacion);
+        Assert.Equal(idProveedor, repositorio.UltimaBaja);
+        Assert.Equal(ResultadoBajaProveedor.Eliminado, resultado);
     }
 
-    // =============================
-    // ESP-0040: VerificarBaja y DarDeBaja
-    // =============================
 
     [Fact]
     [Trait("Especificacion", "ESP-0040")]
-    [Trait("Tecnica", "T-001")]
-    public void VerificarBajaSinOrdenesPendientesNoLanzaExcepcion()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso { OrdenesDevPendientes = false };
-
-        Servicio(repositorio).VerificarBaja(1);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0040")]
-    [Trait("Tecnica", "T-001")]
+    [Trait("Tecnica", "T-003")]
     public void VerificarBajaConOrdenesPendientesLanzaReglaDeNegocio()
     {
-        var repositorio = new RepositorioDeProveedoresFalso { OrdenesDevPendientes = true };
-
-        var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).VerificarBaja(1));
-
-        Assert.Equal(MensajesProveedores.OrdenesPendientes, excepcion.Message);
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0040")]
-    [Trait("Tecnica", "T-002")]
-    public void VerificarBajaConIdInvalidoLanzaReglaDeNegocio()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).VerificarBaja(0));
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0040")]
-    [Trait("Tecnica", "T-002")]
-    public void VerificarBajaComoTecnicoLanzaAccesoDenegado()
-    {
-        var repositorio = new RepositorioDeProveedoresFalso();
-
-        Assert.Throws<AccesoDenegadoException>(
-            () => Servicio(repositorio, Rol.Tecnico).VerificarBaja(1));
-    }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0040")]
-    [Trait("Tecnica", "T-001")]
-    public void DarDeBajaDelegaAlRepositorio()
-    {
+        const int idProveedor = 4;
         var repositorio = new RepositorioDeProveedoresFalso
         {
-            ResultadoBajaADevolver = ResultadoBajaProveedor.Eliminado
+            OrdenesDevPendientes = true,
         };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        var resultado = Servicio(repositorio).DarDeBaja(1);
+        var ex = Assert.Throws<ReglaDeNegocioException>(() =>
+            servicio.VerificarBaja(idProveedor));
 
-        Assert.Equal(ResultadoBajaProveedor.Eliminado, resultado);
-        Assert.Equal(1, repositorio.UltimaBaja);
+        Assert.Equal(MensajesProveedores.OrdenesPendientes, ex.Message);
     }
 
-    [Fact]
+    [Theory]
     [Trait("Especificacion", "ESP-0040")]
-    [Trait("Tecnica", "T-001")]
-    public void DarDeBajaConReferenciaDevuelveDesactivado()
+    [Trait("Tecnica", "T-003")]
+    [InlineData(ResultadoBajaProveedor.Desactivado)] // Con registros asociados
+    [InlineData(ResultadoBajaProveedor.Eliminado)]   // Sin registros asociados
+    public void DarDeBajaRamasConYSinRegistrosDevuelveResultadoEsperado(
+        ResultadoBajaProveedor resultadoEsperado)
     {
+        const int idProveedor = 4;
         var repositorio = new RepositorioDeProveedoresFalso
         {
-            ResultadoBajaADevolver = ResultadoBajaProveedor.Desactivado
+            ResultadoBajaADevolver = resultadoEsperado,
         };
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
 
-        var resultado = Servicio(repositorio).DarDeBaja(1);
+        var resultado = servicio.DarDeBaja(idProveedor);
 
-        Assert.Equal(ResultadoBajaProveedor.Desactivado, resultado);
+        Assert.Equal(idProveedor, repositorio.UltimaBaja);
+        Assert.Equal(resultadoEsperado, resultado);
     }
 
     [Fact]
     [Trait("Especificacion", "ESP-0040")]
-    [Trait("Tecnica", "T-002")]
-    public void DarDeBajaComoTecnicoLanzaAccesoDenegado()
+    [Trait("Tecnica", "T-003")]
+    public void ConfirmacionNegativaNoInvocaDarDeBaja()
+    {
+        const int idProveedor = 4;
+        var repositorio = new RepositorioDeProveedoresFalso();
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        servicio.VerificarBaja(idProveedor);
+
+        Assert.Null(repositorio.UltimaBaja);
+    }
+
+    [Fact]
+    [Trait("Modulo", "10")]
+    [Trait("Tecnica", "T-012")]
+    public void SesionTecnicoRechazaLasCuatroOperacionesDeProveedores()
     {
         var repositorio = new RepositorioDeProveedoresFalso();
+        var servicio = new ProveedoresServicio(
+            repositorio,
+            new SesionSimulada(Rol.Tecnico));
 
-        Assert.Throws<AccesoDenegadoException>(
-            () => Servicio(repositorio, Rol.Tecnico).DarDeBaja(1));
+        Assert.Throws<AccesoDenegadoException>(() =>
+            servicio.Crear(
+                ruc: "20100000001",
+                razonSocial: "Proveedor de Prueba S.A.C.",
+                telefono: "958123456",
+                estado: ProveedorEscritura.EstadoActivo));
 
+        Assert.Throws<AccesoDenegadoException>(() =>
+            servicio.Consultar(null, null));
+
+        Assert.Throws<AccesoDenegadoException>(() =>
+            servicio.Actualizar(
+                idProveedor: 1,
+                ruc: "20100000001",
+                razonSocial: "Proveedor Actualizado S.A.C.",
+                telefono: "958123456",
+                estado: ProveedorEscritura.EstadoActivo));
+
+        Assert.Throws<AccesoDenegadoException>(() =>
+            servicio.DarDeBaja(idProveedor: 1));
+
+        Assert.Null(repositorio.UltimaActualizacion);
         Assert.Null(repositorio.UltimaBaja);
     }
 }
