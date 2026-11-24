@@ -11,6 +11,7 @@ using FarmasilApp.Modelo.USR;
 using FarmasilApp.Modelo.VEN;
 using FarmasilApp.Persistencia;
 using FarmasilApp.Pruebas.INV;
+using FarmasilApp.Pruebas.PAG;
 using FarmasilApp.Pruebas.PRV;
 using FarmasilApp.Pruebas.USR;
 using Microsoft.Extensions.Configuration;
@@ -20,10 +21,10 @@ namespace FarmasilApp.Pruebas.Modelo;
 
 public class RegistroDependenciasPruebas
 {
-    /// <summary>Las ocho interfaces simuladas entre módulos de DEC-069 y la clase que las implementa mientras el módulo no esté listo.</summary>
+    /// <summary>Las interfaces entre módulos de DEC-069 y la implementación registrada para cada una.</summary>
     public static TheoryData<Type, Type> Contratos => new()
     {
-        { typeof(IPagos), typeof(PagosSimulado) },
+        { typeof(IPagos), typeof(MetodosPagoServicio) },
         { typeof(IRestricciones), typeof(RestriccionesSimulado) },
         { typeof(IProveedores), typeof(ProveedoresContrato) },
         { typeof(IInventario), typeof(InventarioSimulado) },
@@ -39,6 +40,7 @@ public class RegistroDependenciasPruebas
         servicios.AgregarModelo();
         // La Persistencia aporta el repositorio real; aquí basta uno de prueba para poder resolver InventarioServicio.
         servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
+        servicios.AddSingleton<IMetodosPagoRepositorio, RepositorioDeMetodosPagoFalso>();
         servicios.AddSingleton<IProveedoresRepositorio, RepositorioDeProveedoresFalso>();
         servicios.AddSingleton<IUsuariosRepositorio, RepositorioDeUsuariosFalso>();
         return servicios.BuildServiceProvider();
@@ -108,28 +110,28 @@ public class RegistroDependenciasPruebas
 
     [Theory]
     [MemberData(nameof(Contratos))]
-    public void CadaContratoSeRegistraUnaSolaVezConSuSimulada(Type contrato, Type simulada)
+    public void CadaContratoSeRegistraUnaSolaVezConSuImplementacion(Type contrato, Type implementacion)
     {
-        // Una sola línea por interfaz: cambiar la simulada por la real es cambiar el tipo de esa línea (plan, sección 10).
+        // Una sola línea por interfaz; PAG ya usa su implementación real.
         var servicios = new ServiceCollection();
 
         servicios.AgregarModelo();
 
         var registro = Assert.Single(servicios, servicio => servicio.ServiceType == contrato);
-        Assert.Equal(simulada, registro.ImplementationType);
+        Assert.Equal(implementacion, registro.ImplementationType);
         Assert.Equal(ServiceLifetime.Singleton, registro.Lifetime);
     }
 
     [Theory]
     [MemberData(nameof(Contratos))]
-    public void CadaContratoSeResuelveYEsUnaUnicaInstancia(Type contrato, Type simulada)
+    public void CadaContratoSeResuelveYEsUnaUnicaInstancia(Type contrato, Type implementacion)
     {
         using var proveedor = CrearProveedor();
 
         var primera = proveedor.GetRequiredService(contrato);
         var segunda = proveedor.GetRequiredService(contrato);
 
-        Assert.IsType(simulada, primera);
+        Assert.IsType(implementacion, primera);
         Assert.Same(primera, segunda);
     }
 
