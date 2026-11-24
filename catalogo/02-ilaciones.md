@@ -164,8 +164,8 @@
 | Código ilación | ILA-0009 |
 | --- | --- |
 | Nombre | Registrar comprobante tributario |
-| Versión | 08.00 |
-| Fecha | 14/11/2026 |
+| Versión | 09.00 |
+| Fecha | 24/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | FUE-0002, FUE-0003 |
@@ -173,12 +173,12 @@
 | Código educción | EDU-0003 |
 | Código especificación | ESP-0009 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador' o 'Tecnico'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. Existe al menos una venta registrada en **DB_FARMASIL.TBL_REGISTRO_VENTAS** que no tiene un comprobante tributario en estado 'Emitido'.<br>5. Se carga el mockup **ART-MKP-DOC-0001**. |
-| Procedimiento | 1. El usuario presiona **DOC-BTN-CREAR-COMPROBANTE**.<br>2. El sistema obtiene las ventas sin comprobante en estado 'Emitido' y carga **DOC-PNL-VENTAS** con una tarjeta **DOC-CRD-VENTA** por cada venta, mostrando el código visible calculado a partir de `id_venta` y `fecha_hora` según DEC-048.<br>3. El usuario filtra por código visible en **DOC-SRH-VENTA** o por fecha en **DOC-FEC-FILTRO-VENTA**; solo se aplican los filtros con valor.<br>4. El usuario selecciona una tarjeta mediante **DOC-BTN-SELECCIONAR-VENTA**; el sistema conserva `id_venta` como valor de **DOC-CMB-CODIGO-VENTA** y muestra el código visible de la venta seleccionada.<br>5. El sistema recupera `monto_total` y el detalle asociado a la venta, y muestra el monto en **DOC-LBL-MONTO-TOTAL**, de solo lectura.<br>6. El usuario selecciona el tipo en **DOC-CMB-TIPO-COMPROBANTE**, registra el número en **DOC-TXT-NUMERO-COMPROBANTE** y la fecha en **DOC-FEC-FECHA-EMISION**.<br>7. El usuario presiona **DOC-BTN-CREAR-COMPROBANTE** y revisa en **DOC-MDL-PREVISUALIZAR-COMPROBANTE** el tipo, número, fecha, venta, detalle de la venta (producto, lote, cantidad, precio unitario y subtotal) y monto total.<br>8. El usuario confirma con **DOC-BTN-CONFIRMAR-EMISION** o vuelve al formulario con **DOC-BTN-CANCELAR-EMISION**; es una sola previsualización, sin un segundo modal de confirmación.<br>9. El sistema valida tipo ('Boleta' o 'Factura'), número y fecha obligatorios, número no duplicado y ausencia de otro comprobante 'Emitido' para la venta.<br>10. El sistema registra el comprobante con `estado_documento` = 'Emitido' en **DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS** y confirma la transacción.<br>11. El sistema muestra "Comprobante registrado correctamente" y actualiza **DOC-TBL-COMPROBANTES**. |
+| Procedimiento | 1. El usuario presiona **DOC-BTN-CREAR-COMPROBANTE**.<br>2. El sistema obtiene las ventas sin comprobante en estado 'Emitido' y carga **DOC-PNL-VENTAS** con una tarjeta **DOC-CRD-VENTA** por cada venta, mostrando el código visible calculado a partir de `id_venta` y `fecha_hora` según DEC-048.<br>3. El usuario filtra por código visible en **DOC-SRH-VENTA** o por fecha en **DOC-FEC-FILTRO-VENTA**; solo se aplican los filtros con valor.<br>4. El usuario selecciona una tarjeta mediante **DOC-BTN-SELECCIONAR-VENTA**; el sistema conserva `id_venta` como valor de **DOC-CMB-CODIGO-VENTA** y muestra el código visible de la venta seleccionada.<br>5. El sistema obtiene mediante `IVentas` el monto total y el detalle de la venta (producto, lote, cantidad y precio unitario), y muestra el monto en **DOC-LBL-MONTO-TOTAL**, de solo lectura.<br>6. El usuario selecciona el tipo en **DOC-CMB-TIPO-COMPROBANTE**, registra el número en **DOC-TXT-NUMERO-COMPROBANTE** y la fecha en **DOC-FEC-FECHA-EMISION**.<br>7. El usuario presiona **DOC-BTN-CREAR-COMPROBANTE** y revisa en **DOC-MDL-PREVISUALIZAR-COMPROBANTE** el tipo, número, fecha, venta, detalle de la venta (producto, lote, cantidad, precio unitario y subtotal) y monto total.<br>8. El usuario confirma con **DOC-BTN-CONFIRMAR-EMISION** o vuelve al formulario con **DOC-BTN-CANCELAR-EMISION**; es una sola previsualización, sin un segundo modal de confirmación.<br>9. El sistema valida tipo ('Boleta' o 'Factura'), número y fecha obligatorios, número no duplicado y ausencia de otro comprobante 'Emitido' para la venta.<br>10. El sistema registra el comprobante con `estado_documento` = 'Emitido' en **DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS** y confirma la transacción.<br>11. El sistema muestra "Comprobante registrado correctamente" y actualiza **DOC-TBL-COMPROBANTES**. |
 | Postcondición | 1. El comprobante queda registrado en **DB_FARMASIL.TBL_COMPROBANTES_TRIBUTARIOS** con estado 'Emitido'.<br>2. El comprobante queda asociado a una única venta de **DB_FARMASIL.TBL_REGISTRO_VENTAS**, y esa venta tiene a lo sumo un comprobante 'Emitido'.<br>3. El registro aparece en **DOC-TBL-COMPROBANTES**.<br>4. La venta documentada queda bloqueada para modificación y eliminación directas, según ILA-0003 e ILA-0004. |
 | Código de artefactos asociados | ART-MKP-DOC-0001 |
 | Importancia | Vital |
 | Estado | Pendiente |
-| Comentario | La precondición anterior exigía que **TBL_COMPROBANTES_TRIBUTARIOS** ya tuviera entradas válidas para poder crear un comprobante, lo que hace imposible el primer registro del sistema. Se reemplazó por la precondición correcta: que exista una venta pendiente de documentar.<br>El monto dejó de ser un campo de captura manual: el diccionario no define un campo de monto en la tabla de comprobantes porque el importe pertenece a la venta. Ahora se recupera y se muestra en solo lectura, eliminando la posibilidad de que el comprobante y la venta declaren montos distintos.<br>Se corrigió el artefacto **ART-MKP-DOC--0001**, que tenía doble guion.<br>Queda Pendiente porque `numero_comprobante` no existe en el Diccionario de Datos y la emisión formal de un comprobante lo requiere. Ver Anexo.<br>**Versión 07.00:** alinea la ilación con ESP-0009 v03.00 (AUD-claude-014, AUD-gpt-017; DEC-017): se puede emitir un nuevo comprobante para una venta cuyo comprobante fue anulado.<br>**Versión 08.00:** (issue #83; DEC-048, DEC-061 y DEC-062) la búsqueda de ventas usa **DOC-SRH-VENTA** sobre el código visible derivado de `id_venta` y `fecha_hora`, y el filtro de fecha usa **DOC-FEC-FILTRO-VENTA**. Las ventas pendientes se cargan en **DOC-PNL-VENTAS** como tarjetas **DOC-CRD-VENTA** y se seleccionan con **DOC-BTN-SELECCIONAR-VENTA**; **DOC-CMB-CODIGO-VENTA** conserva `id_venta` como valor de selección. La previsualización de un solo paso muestra tipo, número, fecha, venta, detalle de la venta y monto. Los datos de cliente siguen en PEN-010; el IGV y cualquier declaración o envío a SUNAT/OSE siguen sujetos a PEN-003. La descarga de PDF queda fuera del alcance|
+| Comentario | La precondición anterior exigía que **TBL_COMPROBANTES_TRIBUTARIOS** ya tuviera entradas válidas para poder crear un comprobante, lo que hace imposible el primer registro del sistema. Se reemplazó por la precondición correcta: que exista una venta pendiente de documentar.<br>El monto dejó de ser un campo de captura manual: el diccionario no define un campo de monto en la tabla de comprobantes porque el importe pertenece a la venta. Ahora se recupera y se muestra en solo lectura, eliminando la posibilidad de que el comprobante y la venta declaren montos distintos.<br>Se corrigió el artefacto **ART-MKP-DOC--0001**, que tenía doble guion.<br>Queda Pendiente porque `numero_comprobante` no existe en el Diccionario de Datos y la emisión formal de un comprobante lo requiere. Ver Anexo.<br>**Versión 07.00:** alinea la ilación con ESP-0009 v03.00 (AUD-claude-014, AUD-gpt-017; DEC-017): se puede emitir un nuevo comprobante para una venta cuyo comprobante fue anulado.<br>**Versión 08.00:** (issue #83; DEC-048, DEC-061 y DEC-062) la búsqueda de ventas usa **DOC-SRH-VENTA** sobre el código visible derivado de `id_venta` y `fecha_hora`, y el filtro de fecha usa **DOC-FEC-FILTRO-VENTA**. Las ventas pendientes se cargan en **DOC-PNL-VENTAS** como tarjetas **DOC-CRD-VENTA** y se seleccionan con **DOC-BTN-SELECCIONAR-VENTA**; **DOC-CMB-CODIGO-VENTA** conserva `id_venta` como valor de selección. La previsualización de un solo paso muestra tipo, número, fecha, venta, detalle de la venta y monto. Los datos de cliente siguen en PEN-010; el IGV y cualquier declaración o envío a SUNAT/OSE siguen sujetos a PEN-003. La descarga de PDF queda fuera del alcance<br>**Versión 09.00:** (issue #97; DEC-084) el monto y el detalle de la venta se obtienen mediante `IVentas`, no consultando la tabla de ventas; el detalle incluye producto y lote, y el subtotal lo calcula DOC. |
 
 | Código ilación | ILA-0010 |
 | --- | --- |
@@ -562,8 +562,8 @@
 | Código ilación | ILA-0029 |
 | --- | --- |
 | Nombre | Registrar alerta de restricción de venta |
-| Versión | 06.00 |
-| Fecha | 05/09/2026 |
+| Versión | 07.00 |
+| Fecha | 23/11/2026 |
 | Autor de la plantilla | AUT-0006 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
@@ -571,69 +571,69 @@
 | Código educción | EDU-0012 |
 | Código especificación | ESP-0029 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene registros válidos.<br>4. La tabla **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** está creada.<br>5. Se carga el mockup **ART-MKP-RES-0001**. |
-| Procedimiento | 1. El usuario accede al módulo de alertas de restricción de venta.<br>2. El usuario selecciona el medicamento afectado en **RES-CMB-MEDICAMENTO**.<br>3. El usuario selecciona el tipo de restricción en **RES-CMB-TIPO-RESTRICCION**, con los valores 'Informativa' o 'Bloqueante'.<br>4. El usuario registra la condición del cliente en **RES-TXT-CONDICION-CLIENTE**.<br>5. El usuario registra el motivo de advertencia en **RES-TXA-MOTIVO-ADVERTENCIA**, que es el texto que verá el personal durante la venta.<br>6. El usuario selecciona el estado de la alerta en **RES-CMB-ESTADO-ALERTA**.<br>7. El usuario presiona **RES-BTN-CREAR-RESTRICCION**.<br>8. El sistema valida que los campos obligatorios estén completos y que el medicamento exista en el inventario.<br>9. El sistema registra la información en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**.<br>10. El sistema actualiza **RES-TBL-RESTRICCIONES-VENTA**. |
-| Postcondición | 1. La restricción queda almacenada en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**, asociada al medicamento seleccionado.<br>2. El registro se visualiza en **RES-TBL-RESTRICCIONES-VENTA**.<br>3. Si la restricción es de tipo 'Bloqueante' y su estado es 'Activo', el sistema impedirá agregar ese medicamento a una venta según el paso de verificación de ILA-0001. |
+| Procedimiento | 1. El usuario accede al módulo de alertas de restricción de venta en **ART-MKP-RES-0001**.<br>2. El usuario selecciona el medicamento afectado en **RES-CMB-MEDICAMENTO**.<br>3. El usuario selecciona el tipo de restricción en **RES-CMB-TIPO-RESTRICCION**, con los valores 'Informativa' o 'Bloqueante'.<br>4. El usuario registra la condición del cliente en **RES-TXT-CONDICION-CLIENTE**.<br>5. El usuario registra el motivo de advertencia en **RES-TXA-MOTIVO-ADVERTENCIA**, que es el texto que verá el personal durante la venta.<br>6. El usuario selecciona el estado de la alerta en **RES-CMB-ESTADO-ALERTA**.<br>7. El usuario presiona **RES-BTN-CREAR-RESTRICCION**.<br>8. El sistema valida que los campos obligatorios estén completos y que el medicamento exista en el inventario.<br>9. El sistema registra la información en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**.<br>10. El sistema actualiza **RES-PNL-RESTRICCIONES** y **RES-TBL-RESTRICCIONES-VENTA**. |
+| Postcondición | 1. La restricción queda almacenada en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**, asociada al medicamento seleccionado.<br>2. El registro se visualiza en **RES-PNL-RESTRICCIONES** y **RES-TBL-RESTRICCIONES-VENTA**.<br>3. Si la restricción es de tipo 'Bloqueante' y su estado es 'Activo', el sistema impedirá agregar ese medicamento a una venta según el paso de verificación de ILA-0001. |
 | Código de artefactos asociados | ART-MKP-RES-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | El módulo usaba el prefijo **ALR_** en todos sus identificadores mientras las especificaciones ya empleaban **RES-**; se unificó al prefijo vigente y se sustituyó el guion bajo por el guion.<br>La ilación invocaba una tabla llamada **ALR_TBL_ALERTAS_RESTRICCION_VENTA** que no existe en el modelo, y usaba ese mismo nombre para referirse indistintamente a la tabla de base de datos y a la tabla de la interfaz. Se separaron: **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** para el almacenamiento y **RES-TBL-RESTRICCIONES-VENTA** para la visualización.<br>El medicamento se capturaba como texto libre pese a que `id_producto` es clave foránea; se corrigió a selección desde el inventario. |
+| Comentario | El módulo usaba el prefijo **ALR_** en todos sus identificadores mientras las especificaciones ya empleaban **RES-**; se unificó al prefijo vigente y se sustituyó el guion bajo por el guion.<br>La ilación invocaba una tabla llamada **ALR_TBL_ALERTAS_RESTRICCION_VENTA** que no existe en el modelo, y usaba ese mismo nombre para referirse indistintamente a la tabla de base de datos y a la tabla de la interfaz. Se separaron: **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** para el almacenamiento y **RES-TBL-RESTRICCIONES-VENTA** para la visualización.<br>El medicamento se capturaba como texto libre pese a que `id_producto` es clave foránea; se corrigió a selección desde el inventario.<br>**Versión 07.00:** (issue #92, DEC-082) la creación se documenta en **ART-MKP-RES-0001**; la consulta y la tabla comparten el resultado con **RES-PNL-RESTRICCIONES**. |
 
 | Código ilación | ILA-0030 |
 | --- | --- |
 | Nombre | Consultar alerta de restricción de venta |
-| Versión | 06.00 |
-| Fecha | 05/09/2026 |
+| Versión | 07.00 |
+| Fecha | 23/11/2026 |
 | Autor de la plantilla | AUT-0006 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código educción | EDU-0012 |
 | Código especificación | ESP-0030 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador' o 'Tecnico'.<br>3. La tabla **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** contiene registros válidos.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** contiene registros válidos.<br>5. Se carga el mockup **ART-MKP-RES-0002**. |
-| Procedimiento | 1. El usuario accede al módulo de alertas de restricción de venta.<br>2. El usuario selecciona el medicamento a consultar en **RES-CMB-MEDICAMENTO**.<br>3. El usuario presiona **RES-BTN-LEER-RESTRICCION**.<br>4. El sistema consulta **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** y resuelve el nombre del medicamento contra **DB_FARMASIL.TBL_PRODUCTOS**.<br>5. El sistema muestra los resultados en **RES-TBL-RESTRICCIONES-VENTA**, indicando la condición del cliente, el tipo de restricción y el estado de cada regla. |
-| Postcondición | 1. El sistema muestra las restricciones asociadas al medicamento consultado en **RES-TBL-RESTRICCIONES-VENTA**.<br>2. La información permanece sin modificaciones en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**. |
-| Código de artefactos asociados | ART-MKP-RES-0002 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador' o 'Tecnico'.<br>3. La tabla **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** contiene registros válidos.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** contiene registros válidos.<br>5. Se carga el modo de consulta de **ART-MKP-RES-0001**. |
+| Procedimiento | 1. El usuario accede al módulo de alertas de restricción de venta.<br>2. El usuario ingresa, si desea, un criterio de búsqueda de medicamento en **RES-SRH-MEDICAMENTO** y selecciona, si desea, los filtros **RES-CMB-FILTRO-TIPO** y **RES-CMB-FILTRO-ESTADO**.<br>3. El usuario presiona **RES-BTN-LEER-RESTRICCION**.<br>4. El sistema consulta **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** y resuelve el nombre del medicamento contra **DB_FARMASIL.TBL_PRODUCTOS**.<br>5. El sistema aplica los criterios ingresados: el nombre del medicamento contiene el texto de **RES-SRH-MEDICAMENTO**, cuando no está vacío, y el tipo y el estado coinciden con los filtros seleccionados, cuando tienen valor.<br>6. El sistema muestra los resultados en **RES-PNL-RESTRICCIONES**, con una **RES-CRD-RESTRICCION** por resultado, y en **RES-TBL-RESTRICCIONES-VENTA**, indicando nombre, condición del cliente, tipo de restricción, motivo de advertencia y estado de cada regla. La selección de un resultado carga su restricción en la ficha. |
+| Postcondición | 1. El sistema muestra las restricciones que coinciden con los criterios ingresados en **RES-PNL-RESTRICCIONES** y **RES-TBL-RESTRICCIONES-VENTA**.<br>2. La información permanece sin modificaciones en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**. |
+| Código de artefactos asociados | ART-MKP-RES-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Se aplicaron las mismas correcciones de nomenclatura que en ILA-0029.<br>Facilita la verificación previa de medicamentos que requieren advertencias antes de completar una venta. |
+| Comentario | Se aplicaron las mismas correcciones de nomenclatura que en ILA-0029.<br>Facilita la verificación previa de medicamentos que requieren advertencias antes de completar una venta.<br>**Versión 07.00:** (issue #92, DEC-082) la búsqueda y los filtros opcionales de consulta reciben IDs propios; los resultados se muestran en la lista de tarjetas y en la tabla. El técnico conserva solo la consulta (DEC-075). |
 
 | Código ilación | ILA-0031 |
 | --- | --- |
 | Nombre | Modificar alerta de restricción de venta |
-| Versión | 06.00 |
-| Fecha | 05/09/2026 |
+| Versión | 07.00 |
+| Fecha | 23/11/2026 |
 | Autor de la plantilla | AUT-0006 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código educción | EDU-0012 |
 | Código especificación | ESP-0031 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Existen registros en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** y la alerta seleccionada existe.<br>4. Se carga el mockup **ART-MKP-RES-0003**. |
-| Procedimiento | 1. El usuario accede al módulo de alertas de restricción de venta y consulta la alerta que desea modificar.<br>2. El usuario selecciona el registro en **RES-TBL-RESTRICCIONES-VENTA**.<br>3. El usuario presiona **RES-BTN-ACTUALIZAR-RESTRICCION**.<br>4. El sistema carga la información existente en el mockup **ART-MKP-RES-0003**.<br>5. El usuario modifica el medicamento en **RES-CMB-MEDICAMENTO**, el tipo de restricción en **RES-CMB-TIPO-RESTRICCION**, la condición del cliente en **RES-TXT-CONDICION-CLIENTE**, el motivo de advertencia en **RES-TXA-MOTIVO-ADVERTENCIA** o el estado en **RES-CMB-ESTADO-ALERTA**.<br>6. El usuario presiona **RES-BTN-CONFIRMAR-ACTUALIZACION**.<br>7. El sistema valida la información ingresada.<br>8. El sistema actualiza el registro en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**.<br>9. El sistema actualiza **RES-TBL-RESTRICCIONES-VENTA**. |
-| Postcondición | 1. La restricción queda actualizada en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**.<br>2. La información modificada se visualiza en **RES-TBL-RESTRICCIONES-VENTA**.<br>3. El sistema aplicará la nueva configuración en las validaciones de venta posteriores. |
-| Código de artefactos asociados | ART-MKP-RES-0003 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Existen registros en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** y la alerta seleccionada existe.<br>4. Se carga el modo de actualización de **ART-MKP-RES-0001**. |
+| Procedimiento | 1. El usuario accede al módulo de alertas de restricción de venta y consulta la alerta que desea modificar.<br>2. El usuario selecciona el registro en **RES-TBL-RESTRICCIONES-VENTA** o **RES-PNL-RESTRICCIONES**.<br>3. El usuario presiona **RES-BTN-ACTUALIZAR-RESTRICCION** para cargar los datos vigentes en la ficha de **ART-MKP-RES-0001** e iniciar la edición.<br>4. El usuario modifica el medicamento en **RES-CMB-MEDICAMENTO**, el tipo de restricción en **RES-CMB-TIPO-RESTRICCION**, la condición del cliente en **RES-TXT-CONDICION-CLIENTE**, el motivo de advertencia en **RES-TXA-MOTIVO-ADVERTENCIA** o el estado en **RES-CMB-ESTADO-ALERTA**.<br>5. El usuario presiona **RES-BTN-CONFIRMAR-ACTUALIZACION** («Guardar cambios»).<br>6. El sistema valida la información ingresada.<br>7. El sistema actualiza el registro en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**.<br>8. El sistema actualiza **RES-PNL-RESTRICCIONES** y **RES-TBL-RESTRICCIONES-VENTA**. |
+| Postcondición | 1. La restricción queda actualizada en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**.<br>2. La información modificada se visualiza en **RES-PNL-RESTRICCIONES** y **RES-TBL-RESTRICCIONES-VENTA**.<br>3. El sistema aplicará la nueva configuración en las validaciones de venta posteriores. |
+| Código de artefactos asociados | ART-MKP-RES-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | El procedimiento anterior no incluía el paso de confirmación pese a que el componente **RES-BTN-CONFIRMAR-ACTUALIZACION** ya estaba definido en las especificaciones; se incorporó.<br>Se aplicaron las mismas correcciones de nomenclatura que en ILA-0029. |
+| Comentario | El procedimiento anterior no incluía el paso de confirmación pese a que el componente **RES-BTN-CONFIRMAR-ACTUALIZACION** ya estaba definido en las especificaciones; se incorporó.<br>Se aplicaron las mismas correcciones de nomenclatura que en ILA-0029.<br>**Versión 07.00:** (issue #92, DEC-082) la actualización se hace en la ficha de la pantalla única: **RES-BTN-ACTUALIZAR-RESTRICCION** inicia la edición y **RES-BTN-CONFIRMAR-ACTUALIZACION** guarda los cambios (DEC-046). |
 
 | Código ilación | ILA-0032 |
 | --- | --- |
 | Nombre | Desactivar alerta de restricción de venta |
-| Versión | 06.00 |
-| Fecha | 05/09/2026 |
+| Versión | 07.00 |
+| Fecha | 23/11/2026 |
 | Autor de la plantilla | AUT-0006 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código educción | EDU-0012 |
 | Código especificación | ESP-0032 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Existen registros en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** y la alerta seleccionada existe.<br>4. Se carga el mockup **ART-MKP-RES-0004**. |
-| Procedimiento | 1. El usuario accede al módulo de alertas de restricción de venta y consulta la alerta que desea desactivar.<br>2. El usuario selecciona el registro correspondiente en **RES-TBL-RESTRICCIONES-VENTA**.<br>3. El usuario presiona **RES-BTN-ELIMINAR-RESTRICCION**.<br>4. El sistema muestra el modal **RES-MDL-CONFIRMAR-ELIMINACION** con el mensaje **RES-TXT-MSJ**: "¿Está seguro de desactivar esta restricción? El medicamento dejará de mostrar la advertencia durante la venta."<br>5. Si el usuario presiona **RES-BTN-CONFIRMAR-SI**, el sistema actualiza `estado_alerta` a 'Inactivo' en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**.<br>6. Si el usuario presiona **RES-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>7. El sistema actualiza **RES-TBL-RESTRICCIONES-VENTA**. |
-| Postcondición | 1. La restricción queda marcada como 'Inactivo' en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**.<br>2. La restricción deja de participar en la validación de ventas descrita en ILA-0001.<br>3. Se conserva el historial de la restricción para auditoría sanitaria.<br>4. El nuevo estado se refleja en **RES-TBL-RESTRICCIONES-VENTA**. |
-| Código de artefactos asociados | ART-MKP-RES-0004 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Existen registros en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA** y la alerta seleccionada existe.<br>4. Se carga el modo de desactivación de **ART-MKP-RES-0001**. |
+| Procedimiento | 1. El usuario accede al módulo de alertas de restricción de venta y consulta la alerta que desea desactivar.<br>2. El usuario selecciona el registro correspondiente en **RES-TBL-RESTRICCIONES-VENTA** o **RES-PNL-RESTRICCIONES**.<br>3. El usuario presiona **RES-BTN-ELIMINAR-RESTRICCION**, rotulado «Desactivar».<br>4. El sistema muestra el modal **RES-MDL-CONFIRMAR-ELIMINACION** con el mensaje **RES-TXT-MSJ**: "¿Está seguro de desactivar esta restricción? El medicamento dejará de mostrar la advertencia durante la venta."<br>5. Si el usuario presiona **RES-BTN-CONFIRMAR-SI**, el sistema actualiza `estado_alerta` a 'Inactivo' en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**.<br>6. Si el usuario presiona **RES-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>7. El sistema actualiza **RES-PNL-RESTRICCIONES** y **RES-TBL-RESTRICCIONES-VENTA**. |
+| Postcondición | 1. La restricción queda marcada como 'Inactivo' en **DB_FARMASIL.TBL_RESTRICCIONES_VENTA**.<br>2. La restricción deja de participar en la validación de ventas descrita en ILA-0001.<br>3. Se conserva el historial de la restricción para auditoría sanitaria.<br>4. El nuevo estado se refleja en **RES-PNL-RESTRICCIONES** y **RES-TBL-RESTRICCIONES-VENTA**. |
+| Código de artefactos asociados | ART-MKP-RES-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La ilación ya resolvía correctamente la fase Eliminar como baja lógica, criterio adecuado tratándose de información de farmacovigilancia. Se ajustó el nombre para que refleje la operación real y se aplicaron las correcciones de nomenclatura del módulo. |
+| Comentario | La ilación ya resolvía correctamente la fase Eliminar como baja lógica, criterio adecuado tratándose de información de farmacovigilancia. Se ajustó el nombre para que refleje la operación real y se aplicaron las correcciones de nomenclatura del módulo.<br>**Versión 07.00:** (issue #92, DEC-082) la desactivación se confirma en el modal de **ART-MKP-RES-0001**, conserva el mensaje exacto de ESP-0032 y actualiza la lista y la tabla; el rol Técnico solo consulta. |
 
 ---
 

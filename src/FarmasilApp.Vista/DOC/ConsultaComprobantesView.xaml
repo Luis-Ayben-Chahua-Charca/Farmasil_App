@@ -1,149 +1,520 @@
 <UserControl x:Class="FarmasilApp.Vista.DOC.ConsultaComprobantesView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:comun="clr-namespace:FarmasilApp.Vista.Comun"
-             xmlns:primitivas="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework"
-             MinWidth="760"
-             MinHeight="420">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    MinWidth="760"
+    MinHeight="520">
     <Grid Background="{StaticResource PincelFondoAplicacion}" Margin="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0"
-                   Text="Consulta de comprobantes tributarios"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   Foreground="{StaticResource PincelTextoPrincipal}"
-                   Margin="0,0,0,16" />
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
 
-        <Border Grid.Row="1"
-                Background="{StaticResource PincelMarca}"
-                CornerRadius="8"
-                Padding="14"
-                Margin="0,0,0,14">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.1*" />
-                    <ColumnDefinition Width="1.5*" />
-                    <ColumnDefinition Width="1.1*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+                <TextBlock Text="Documentación tributaria"
+                    FontSize="24"
+                    FontWeight="Bold"
+                    Foreground="{StaticResource PincelTextoPrincipal}"
+                    Margin="0,0,0,16" />
 
-                <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,10,0">
-                    <TextBlock Text="Tipo de comprobante" Foreground="{StaticResource PincelSuperficie}" FontWeight="SemiBold" Margin="0,0,0,5" />
-                    <comun:FiltroComun Style="{StaticResource EstiloFiltroComun}" ItemsSource="{Binding TiposComprobante}"
-                              SelectedItem="{Binding TipoComprobanteSeleccionado, UpdateSourceTrigger=PropertyChanged}"
-                              Height="36"
-                              AutomationProperties.AutomationId="DOC-CMB-FILTRO-TIPO" />
-                </StackPanel>
+                <!-- REGISTRO DE COMPROBANTE: VENTAS PENDIENTES -->
+                <Border Background="{StaticResource PincelSuperficie}"
+                    CornerRadius="8"
+                    Padding="14"
+                    Margin="0,0,0,14"
+                    AutomationProperties.AutomationId="DOC-PNL-VENTAS">
+                    <StackPanel>
+                        <TextBlock Text="Registrar comprobante"
+                            FontSize="19"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource PincelTextoPrincipal}"
+                            Margin="0,0,0,12" />
 
-                <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,10,0">
-                    <TextBlock Text="Número de comprobante" Foreground="{StaticResource PincelSuperficie}" FontWeight="SemiBold" Margin="0,0,0,5" />
-                    <comun:BusquedaComun Style="{StaticResource EstiloBusquedaComun}" Text="{Binding NumeroComprobante, UpdateSourceTrigger=PropertyChanged}"
-                             MaxLength="20"
-                             Height="36"
-                             VerticalContentAlignment="Center"
-                             ToolTip="Puede buscar por una parte del número"
-                             AutomationProperties.AutomationId="DOC-SRH-NUMERO-COMPROBANTE" />
-                </StackPanel>
+                        <TextBlock Text="Seleccione una venta pendiente"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource PincelTextoPrincipal}"
+                            Margin="0,0,0,5" />
 
-                <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,10,0">
-                    <TextBlock Text="Fecha de emisión" Foreground="{StaticResource PincelSuperficie}" FontWeight="SemiBold" Margin="0,0,0,5" />
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox Grid.Column="0"
+                                Text="{Binding BuscarCodigoVenta, UpdateSourceTrigger=PropertyChanged}"
+                                Height="36"
+                                VerticalContentAlignment="Center"
+                                Margin="0,0,8,0"
+                                ToolTip="Buscar por código de venta"
+                                AutomationProperties.AutomationId="DOC-SRH-VENTA" />
+
+                            <DatePicker Grid.Column="1"
+                                SelectedDate="{Binding FechaFiltroVenta, UpdateSourceTrigger=PropertyChanged}"
+                                Height="36"
+                                Width="155"
+                                Margin="0,0,8,0"
+                                ToolTip="Filtrar ventas por fecha"
+                                AutomationProperties.AutomationId="DOC-FEC-FILTRO-VENTA" />
+
+                            <Button Grid.Column="2"
+                                Content="Limpiar filtros"
+                                Command="{Binding LimpiarFiltrosVentasCommand}"
+                                Height="36"
+                                Padding="12,0" />
+                        </Grid>
+
+                        <Grid Height="36">
+                            <ComboBox ItemsSource="{Binding VentasPendientes}"
+                                SelectedItem="{Binding VentaSeleccionada, UpdateSourceTrigger=PropertyChanged}"
+                                DisplayMemberPath="CodigoVenta"
+                                Height="36"
+                                Padding="8,4"
+                                IsTextSearchEnabled="True"
+                                ToolTip="Seleccione el código de la venta pendiente"
+                                AutomationProperties.AutomationId="DOC-CMB-CODIGO-VENTA" />
+
+                            <TextBlock Text="No hay ventas pendientes de comprobante."
+                                VerticalAlignment="Center"
+                                Margin="10,0,35,0"
+                                Foreground="#64748B"
+                                IsHitTestVisible="False">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding VentasPendientes.Count}"
+                                                Value="0">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+
+                        <Border Background="{StaticResource PincelFondoAplicacion}"
+                            CornerRadius="6"
+                            Padding="12"
+                            Margin="0,12,0,0"
+                            AutomationProperties.AutomationId="DOC-CRD-VENTA">
+                            <StackPanel>
+                                <TextBlock Text="Detalle de la venta seleccionada"
+                                    FontWeight="SemiBold"
+                                    FontSize="15"
+                                    Foreground="{StaticResource PincelTextoPrincipal}"
+                                    Margin="0,0,0,8" />
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                        <TextBlock Text="Código de venta"
+                                            Foreground="{StaticResource PincelSecundario}" />
+                                        <TextBlock Text="{Binding CodigoVentaSeleccionada}"
+                                            FontWeight="SemiBold"
+                                            Foreground="{StaticResource PincelTextoPrincipal}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                                        <TextBlock Text="Fecha de venta"
+                                            Foreground="{StaticResource PincelSecundario}" />
+                                        <TextBlock
+                                            Text="{Binding FechaVentaSeleccionada, StringFormat={}{0:dd/MM/yyyy HH:mm}}"
+                                            FontWeight="SemiBold"
+                                            Foreground="{StaticResource PincelTextoPrincipal}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Importe total"
+                                            Foreground="{StaticResource PincelSecundario}" />
+                                        <TextBlock
+                                            Text="{Binding MontoTotalSeleccionado, StringFormat={}{0:C2}}"
+                                            FontSize="17"
+                                            FontWeight="Bold"
+                                            Foreground="{StaticResource PincelTextoPrincipal}"
+                                            AutomationProperties.AutomationId="DOC-LBL-MONTO-TOTAL" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Datos del comprobante"
+                            FontWeight="SemiBold"
+                            FontSize="15"
+                            Foreground="{StaticResource PincelTextoPrincipal}"
+                            Margin="0,14,0,8" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="1.5*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                <TextBlock Text="Tipo"
+                                    Foreground="{StaticResource PincelSecundario}"
+                                    Margin="0,0,0,4" />
+                                <ComboBox ItemsSource="{Binding TiposComprobanteRegistro}"
+                                    SelectedItem="{Binding TipoComprobanteRegistro, UpdateSourceTrigger=PropertyChanged}"
+                                    Height="36"
+                                    AutomationProperties.AutomationId="DOC-CMB-TIPO-COMPROBANTE" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                                <TextBlock Text="Número de comprobante"
+                                    Foreground="{StaticResource PincelSecundario}"
+                                    Margin="0,0,0,4" />
+                                <TextBox
+                                    Text="{Binding NumeroComprobanteRegistro, UpdateSourceTrigger=PropertyChanged}"
+                                    MaxLength="20"
+                                    Height="36"
+                                    Padding="8,4"
+                                    VerticalContentAlignment="Center"
+                                    AutomationProperties.AutomationId="DOC-TXT-NUMERO-COMPROBANTE" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" Margin="0,0,8,0">
+                                <TextBlock Text="Fecha de emisión"
+                                    Foreground="{StaticResource PincelSecundario}"
+                                    Margin="0,0,0,4" />
+                                <TextBox
+                                    Text="{Binding FechaEmisionRegistroTexto, UpdateSourceTrigger=PropertyChanged}"
+                                    Height="36"
+                                    Padding="8,4"
+                                    VerticalContentAlignment="Center"
+                                    ToolTip="Ingrese la fecha en formato dd/MM/aaaa"
+                                    AutomationProperties.AutomationId="DOC-FEC-FECHA-EMISION" />
+                            </StackPanel>
+
+                            <Button Grid.Column="3"
+                                Content="Previsualizar"
+                                Command="{Binding CrearComprobanteCommand}"
+                                MinWidth="135"
+                                Height="36"
+                                Margin="0,20,0,0"
+                                Padding="12,0"
+                                Background="{StaticResource PincelMarca}"
+                                Foreground="{StaticResource PincelSuperficie}"
+                                FontWeight="Bold"
+                                AutomationProperties.AutomationId="DOC-BTN-CREAR-COMPROBANTE" />
+                        </Grid>
+
+                        <TextBlock
+                            Text="Las ventas con comprobante emitido no aparecen en esta lista."
+                            Foreground="{StaticResource PincelSecundario}"
+                            FontSize="12"
+                            Margin="0,10,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- CONSULTA DE COMPROBANTES: ESP-0010 -->
+                <Border Background="{StaticResource PincelMarca}"
+                    CornerRadius="8"
+                    Padding="14"
+                    Margin="0,0,0,14">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="32" />
+                            <ColumnDefinition Width="1.1*" />
+                            <ColumnDefinition Width="1.5*" />
+                            <ColumnDefinition Width="1.1*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0"
-                                 Text="{Binding FechaEmisionTexto, UpdateSourceTrigger=PropertyChanged}"
-                                 Height="36"
-                                 VerticalContentAlignment="Center"
-                                 ToolTip="Fecha opcional: dd/MM/aaaa. Puede escribirla o elegirla en el calendario."
-                                 AutomationProperties.AutomationId="DOC-FEC-FILTRO-EMISION" />
-                        <!-- El texto editable se valida en Modelo; el calendario solo aporta fechas válidas. -->
-                        <DatePicker Grid.Column="1"
-                                    SelectedDate="{Binding FechaEmision, UpdateSourceTrigger=PropertyChanged}"
-                                    Height="36"
-                                    MinWidth="0"
-                                    ToolTip="Elegir fecha de emisión"
-                                    AutomationProperties.Name="Elegir fecha de emisión">
-                            <DatePicker.Resources>
-                                <Style TargetType="{x:Type primitivas:DatePickerTextBox}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </Style>
-                            </DatePicker.Resources>
-                        </DatePicker>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,10,0">
+                            <TextBlock Text="Tipo de comprobante"
+                                Foreground="{StaticResource PincelSuperficie}"
+                                FontWeight="SemiBold"
+                                Margin="0,0,0,5" />
+                            <ComboBox ItemsSource="{Binding TiposComprobante}"
+                                SelectedItem="{Binding TipoComprobanteSeleccionado, UpdateSourceTrigger=PropertyChanged}"
+                                Height="36"
+                                AutomationProperties.AutomationId="DOC-CMB-FILTRO-TIPO" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,10,0">
+                            <TextBlock Text="Número de comprobante"
+                                Foreground="{StaticResource PincelSuperficie}"
+                                FontWeight="SemiBold"
+                                Margin="0,0,0,5" />
+                            <TextBox
+                                Text="{Binding NumeroComprobante, UpdateSourceTrigger=PropertyChanged}"
+                                MaxLength="20"
+                                Height="36"
+                                Padding="8,4"
+                                VerticalContentAlignment="Center"
+                                ToolTip="Puede buscar por una parte del número"
+                                AutomationProperties.AutomationId="DOC-SRH-NUMERO-COMPROBANTE" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,10,0">
+                            <TextBlock Text="Fecha de emisión"
+                                Foreground="{StaticResource PincelSuperficie}"
+                                FontWeight="SemiBold"
+                                Margin="0,0,0,5" />
+                            <TextBox
+                                Text="{Binding FechaEmisionTexto, UpdateSourceTrigger=PropertyChanged}"
+                                Height="36"
+                                Padding="8,4"
+                                VerticalContentAlignment="Center"
+                                ToolTip="Fecha opcional: dd/MM/aaaa"
+                                AutomationProperties.AutomationId="DOC-FEC-FILTRO-EMISION" />
+                        </StackPanel>
+
+                        <Button Grid.Column="3"
+                            Grid.Row="0"
+                            Content="Consultar"
+                            Command="{Binding ConsultarCommand}"
+                            MinWidth="130"
+                            Height="36"
+                            Margin="0,24,0,0"
+                            Padding="16,0"
+                            Background="#9ea8a2"
+                            Foreground="{StaticResource PincelSuperficie}"
+                            FontWeight="Bold"
+                            AutomationProperties.AutomationId="DOC-BTN-LEER-COMPROBANTE" />
+
+                        <TextBlock Grid.Row="1"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="4"
+                            Text="Todos los filtros son opcionales. El número se busca por coincidencia parcial."
+                            Foreground="{StaticResource PincelSuperficie}"
+                            FontSize="12"
+                            Margin="0,9,0,0" />
                     </Grid>
-                </StackPanel>
+                </Border>
 
-                <Button Grid.Column="3" Grid.Row="0"
-                        Content="Consultar"
-                        Command="{Binding ConsultarCommand}"
-                        MinWidth="130"
-                        Height="36"
-                        Margin="0,24,0,0"
-                        Padding="16,0"
-                        Background="{StaticResource PincelMarca}"
-                        Foreground="{StaticResource PincelSuperficie}"
-                        FontWeight="Bold"
-                        AutomationProperties.AutomationId="DOC-BTN-LEER-COMPROBANTE" />
+                <!-- RESULTADOS -->
+                <Border Background="{StaticResource PincelSuperficie}"
+                    CornerRadius="8"
+                    Padding="12"
+                    Margin="0,0,0,14">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="260" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
-                           Text="Todos los filtros son opcionales. El número se busca por coincidencia parcial."
-                           Foreground="{StaticResource PincelSuperficie}"
-                           FontSize="12"
-                           Margin="0,9,0,0" />
-            </Grid>
-        </Border>
+                        <TextBlock Grid.Row="0"
+                            Text="Comprobantes registrados"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource PincelTextoPrincipal}"
+                            Margin="0,0,0,10" />
 
-        <Border Grid.Row="2" Background="{StaticResource PincelSuperficie}" CornerRadius="8" Padding="12">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+                        <DataGrid Grid.Row="1"
+                            ItemsSource="{Binding Comprobantes}"
+                            AutoGenerateColumns="False"
+                            IsReadOnly="True"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            SelectionMode="Single"
+                            HeadersVisibility="Column"
+                            GridLinesVisibility="Horizontal"
+                            AlternatingRowBackground="{StaticResource PincelFondoAplicacion}"
+                            AutomationProperties.AutomationId="DOC-TBL-COMPROBANTES">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="N° Comprobante"
+                                    Binding="{Binding NumeroComprobante}"
+                                    Width="2*" />
+                                <DataGridTextColumn Header="Tipo"
+                                    Binding="{Binding TipoComprobante}"
+                                    Width="1.1*" />
+                                <DataGridTextColumn Header="Fecha de emisión"
+                                    Binding="{Binding FechaEmision, StringFormat={}{0:dd/MM/yyyy}}"
+                                    Width="1.3*" />
+                                <DataGridTextColumn Header="Total"
+                                    Binding="{Binding MontoTotal, StringFormat={}{0:C2}}"
+                                    Width="1.1*" />
+                                <DataGridTextColumn Header="Estado"
+                                    Binding="{Binding EstadoDocumento}"
+                                    Width="1.1*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
 
-                <TextBlock Grid.Row="0"
-                           Text="Resultados de consulta"
-                           FontSize="18"
-                           FontWeight="SemiBold"
-                           Foreground="{StaticResource PincelTextoPrincipal}"
-                           Margin="0,0,0,10" />
+                        <TextBlock Grid.Row="2"
+                            Text="{Binding Mensaje}"
+                            Foreground="{StaticResource PincelSecundario}"
+                            Margin="0,10,0,0"
+                            TextWrapping="Wrap" />
+                    </Grid>
+                </Border>
 
-                <DataGrid Grid.Row="1"
-                          ItemsSource="{Binding Comprobantes}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          SelectionMode="Single"
-                          HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal"
-                          AlternatingRowBackground="{StaticResource PincelFondoAplicacion}"
-                          AutomationProperties.AutomationId="DOC-TBL-COMPROBANTES">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="N° Comprobante" Binding="{Binding NumeroComprobante}" Width="2*" />
-                        <DataGridTextColumn Header="Tipo" Binding="{Binding TipoComprobante}" Width="1.1*" />
-                        <DataGridTextColumn Header="Fecha de emisión" Binding="{Binding FechaEmision, StringFormat={}{0:dd/MM/yyyy}}" Width="1.3*" />
-                        <DataGridTextColumn Header="Total" Binding="{Binding MontoTotal, StringFormat={}{0:C2}}" Width="1.1*" />
-                        <DataGridTextColumn Header="Estado" Binding="{Binding EstadoDocumento}" Width="1.1*" />
-                    </DataGrid.Columns>
-                </DataGrid>
+            </StackPanel>
+        </ScrollViewer>
 
-                <TextBlock Grid.Row="2"
-                           Text="{Binding Mensaje}"
-                           Foreground="{StaticResource PincelSecundario}"
-                           Margin="0,10,0,0"
-                           TextWrapping="Wrap" />
-            </Grid>
+        <!-- MODAL DE PREVISUALIZACIÓN: ESP-0009 -->
+        <Border Grid.Row="0"
+            Background="#99000000"
+            Panel.ZIndex="10"
+            Padding="20">
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding PrevisualizacionVisible}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <Border Background="{StaticResource PincelSuperficie}"
+                CornerRadius="10"
+                Padding="22"
+                MaxWidth="760"
+                MaxHeight="650"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                BorderBrush="{StaticResource PincelMarca}"
+                BorderThickness="1"
+                AutomationProperties.AutomationId="DOC-MDL-PREVISUALIZAR-COMPROBANTE">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Previsualizar comprobante"
+                            FontSize="21"
+                            FontWeight="Bold"
+                            Foreground="{StaticResource PincelTextoPrincipal}"
+                            Margin="0,0,0,14" />
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                <TextBlock Text="Venta"
+                                    Foreground="{StaticResource PincelSecundario}" />
+                                <TextBlock Text="{Binding CodigoVentaPrevisualizada}"
+                                    FontWeight="SemiBold"
+                                    Foreground="{StaticResource PincelTextoPrincipal}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                                <TextBlock Text="Fecha de venta"
+                                    Foreground="{StaticResource PincelSecundario}" />
+                                <TextBlock
+                                    Text="{Binding FechaVentaPrevisualizada, StringFormat={}{0:dd/MM/yyyy HH:mm}}"
+                                    FontWeight="SemiBold"
+                                    Foreground="{StaticResource PincelTextoPrincipal}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Importe total"
+                                    Foreground="{StaticResource PincelSecundario}" />
+                                <TextBlock
+                                    Text="{Binding MontoTotalPrevisualizado, StringFormat={}{0:C2}}"
+                                    FontSize="17"
+                                    FontWeight="Bold"
+                                    Foreground="{StaticResource PincelTextoPrincipal}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Productos y lotes"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource PincelTextoPrincipal}"
+                            Margin="0,0,0,6" />
+
+                        <DataGrid ItemsSource="{Binding DetalleVentaPrevisualizada}"
+                            AutoGenerateColumns="False"
+                            IsReadOnly="True"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            HeadersVisibility="Column"
+                            GridLinesVisibility="Horizontal"
+                            Height="170"
+                            Margin="0,0,0,14">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Producto"
+                                    Binding="{Binding NombreProducto}"
+                                    Width="2*" />
+                                <DataGridTextColumn Header="N° de lote"
+                                    Binding="{Binding NumeroLote}"
+                                    Width="1.2*" />
+                                <DataGridTextColumn Header="Cantidad"
+                                    Binding="{Binding Cantidad}"
+                                    Width="0.8*" />
+                                <DataGridTextColumn Header="Precio unitario"
+                                    Binding="{Binding PrecioUnitario, StringFormat={}{0:C2}}"
+                                    Width="1.2*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <TextBlock Text="Datos del comprobante"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource PincelTextoPrincipal}"
+                            Margin="0,0,0,6" />
+
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                <TextBlock Text="Tipo"
+                                    Foreground="{StaticResource PincelSecundario}" />
+                                <TextBlock Text="{Binding TipoComprobanteRegistro}"
+                                    FontWeight="SemiBold"
+                                    Foreground="{StaticResource PincelTextoPrincipal}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                                <TextBlock Text="Número"
+                                    Foreground="{StaticResource PincelSecundario}" />
+                                <TextBlock Text="{Binding NumeroComprobanteRegistro}"
+                                    FontWeight="SemiBold"
+                                    Foreground="{StaticResource PincelTextoPrincipal}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Fecha de emisión"
+                                    Foreground="{StaticResource PincelSecundario}" />
+                                <TextBlock Text="{Binding FechaEmisionRegistroTexto}"
+                                    FontWeight="SemiBold"
+                                    Foreground="{StaticResource PincelTextoPrincipal}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="{Binding Mensaje}"
+                            Foreground="{StaticResource PincelSecundario}"
+                            TextWrapping="Wrap"
+                            Margin="0,0,0,14" />
+
+                        <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+                            <Button Content="Cancelar"
+                                Command="{Binding CancelarEmisionCommand}"
+                                MinWidth="120"
+                                Height="38"
+                                Margin="0,0,8,0"
+                                AutomationProperties.AutomationId="DOC-BTN-CANCELAR-EMISION" />
+
+                            <Button Content="Confirmar emisión"
+                                Command="{Binding ConfirmarEmisionCommand}"
+                                MinWidth="160"
+                                Height="38"
+                                Background="{StaticResource PincelMarca}"
+                                Foreground="{StaticResource PincelSuperficie}"
+                                FontWeight="Bold"
+                                AutomationProperties.AutomationId="DOC-BTN-CONFIRMAR-EMISION" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
         </Border>
     </Grid>
 </UserControl>

@@ -57,35 +57,68 @@ public sealed class VentasSimulado : IVentas
 
     private static VentaDto[] Ventas(DateTime ahora)
     {
+        var lotes = DatosDePrueba.Lotes(
+            DateOnly.FromDateTime(ahora));
+
         return new[]
         {
-            new VentaDto
+        new VentaDto
+        {
+            IdVenta = 1,
+            FechaHora = ahora.AddDays(-10),
+            MontoTotal = 5.00m,
+            IdMetodoPago = 1,
+            IdUsuario = 2,
+            Detalle = new[]
             {
-                IdVenta = 1,
-                FechaHora = ahora.AddDays(-10),
-                MontoTotal = 5.00m,
-                IdMetodoPago = 1,
-                IdUsuario = 2,
-                Detalle = new[] { new DetalleVentaDto { IdLote = 1, Cantidad = 2, PrecioUnitario = 2.50m } },
+                CrearDetalleVenta(1, 2, 2.50m, lotes)
             },
-            new VentaDto
+        },
+        new VentaDto
+        {
+            IdVenta = 2,
+            FechaHora = ahora.AddDays(-40),
+            MontoTotal = 4.00m,
+            IdMetodoPago = 1,
+            IdUsuario = 2,
+            Detalle = new[]
             {
-                IdVenta = 2,
-                FechaHora = ahora.AddDays(-40),
-                MontoTotal = 4.00m,
-                IdMetodoPago = 1,
-                IdUsuario = 2,
-                Detalle = new[] { new DetalleVentaDto { IdLote = 3, Cantidad = 1, PrecioUnitario = 4.00m } },
+                CrearDetalleVenta(3, 1, 4.00m, lotes)
             },
-            new VentaDto
+        },
+        new VentaDto
+        {
+            IdVenta = 3,
+            FechaHora = ahora.AddDays(-5),
+            MontoTotal = 2.50m,
+            IdMetodoPago = 2,
+            IdUsuario = 1,
+            Detalle = new[]
             {
-                IdVenta = 3,
-                FechaHora = ahora.AddDays(-5),
-                MontoTotal = 2.50m,
-                IdMetodoPago = 2,
-                IdUsuario = 1,
-                Detalle = new[] { new DetalleVentaDto { IdLote = 1, Cantidad = 1, PrecioUnitario = 2.50m } },
+                CrearDetalleVenta(1, 1, 2.50m, lotes)
             },
+        },
+    };
+    }
+
+    private static DetalleVentaDto CrearDetalleVenta(
+        int idLote,
+        int cantidad,
+        decimal precioUnitario,
+        IReadOnlyList<LoteDePrueba> lotes)
+    {
+        var lote = lotes.Single(x => x.IdLote == idLote);
+
+        var producto = DatosDePrueba.Productos.Single(
+            x => x.IdProducto == lote.IdProducto);
+
+        return new DetalleVentaDto
+        {
+            IdLote = idLote,
+            NombreProducto = producto.Nombre,
+            NumeroLote = lote.NumeroLote,
+            Cantidad = cantidad,
+            PrecioUnitario = precioUnitario
         };
     }
 }

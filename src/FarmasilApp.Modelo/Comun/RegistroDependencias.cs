@@ -45,9 +45,9 @@ public static class RegistroDependencias
         servicios.AddSingleton<SesionActual>();
         servicios.AddSingleton<ISesion>(proveedor => proveedor.GetRequiredService<SesionActual>());
         servicios.AddSingleton<IAutenticacion>(proveedor => proveedor.GetRequiredService<SesionActual>());
-        servicios.AddSingleton<IPagos, PagosSimulado>();
+        servicios.AddSingleton<IPagos, MetodosPagoServicio>();
         servicios.AddSingleton<IRestricciones, RestriccionesSimulado>();
-        servicios.AddSingleton<IProveedores, ProveedoresSimulado>();
+        servicios.AddSingleton<IProveedores, ProveedoresContrato>();
         servicios.AddSingleton<IInventario, InventarioSimulado>();
         servicios.AddSingleton<ILotes, LotesSimulado>();
         servicios.AddSingleton<IVentas, VentasSimulado>();
