@@ -56,11 +56,11 @@ public sealed class ProveedoresServicio
         var estadoNormalizado = Normalizar(estado);
 
         if (estadoNormalizado is not null
-            && estadoNormalizado != "Activo"
-            && estadoNormalizado != "Inactivo")
+            && estadoNormalizado != ProveedorEscritura.EstadoActivo
+            && estadoNormalizado != ProveedorEscritura.EstadoInactivo)
         {
             throw new ReglaDeNegocioException(
-                "El estado debe ser Activo o Inactivo.");
+                MensajesProveedores.EstadoInvalido);
         }
 
         return _repositorio.Consultar(busquedaNormalizada, estadoNormalizado);
@@ -72,11 +72,12 @@ public sealed class ProveedoresServicio
     public int Crear(
         string? ruc,
         string? razonSocial,
-        string? telefono)
+        string? telefono,
+        string? estado = ProveedorEscritura.EstadoActivo)
     {
         _sesion.ExigirRol(Rol.Administrador);
 
-        var proveedor = ValidarProveedor(ruc, razonSocial, telefono, excluirIdProveedor: null);
+        var proveedor = ValidarProveedor(ruc, razonSocial, telefono, estado, excluirIdProveedor: null);
 
         return _repositorio.Crear(proveedor);
     }
@@ -88,17 +89,18 @@ public sealed class ProveedoresServicio
         int idProveedor,
         string? ruc,
         string? razonSocial,
-        string? telefono)
+        string? telefono,
+        string? estado)
     {
         _sesion.ExigirRol(Rol.Administrador);
 
         if (idProveedor <= 0)
         {
             throw new ReglaDeNegocioException(
-                "Seleccione un proveedor para actualizar.");
+                MensajesProveedores.SeleccioneParaActualizar);
         }
 
-        var proveedor = ValidarProveedor(ruc, razonSocial, telefono, excluirIdProveedor: idProveedor);
+        var proveedor = ValidarProveedor(ruc, razonSocial, telefono, estado, excluirIdProveedor: idProveedor);
 
         _repositorio.Actualizar(idProveedor, proveedor);
     }
@@ -114,7 +116,7 @@ public sealed class ProveedoresServicio
         if (idProveedor <= 0)
         {
             throw new ReglaDeNegocioException(
-                "Seleccione un proveedor para dar de baja.");
+                MensajesProveedores.SeleccioneParaDarDeBaja);
         }
 
         if (_repositorio.TieneOrdenesPendientes(idProveedor))
@@ -134,7 +136,7 @@ public sealed class ProveedoresServicio
         if (idProveedor <= 0)
         {
             throw new ReglaDeNegocioException(
-                "Seleccione un proveedor para dar de baja.");
+                MensajesProveedores.SeleccioneParaDarDeBaja);
         }
 
         return _repositorio.DarDeBaja(idProveedor);
@@ -144,6 +146,7 @@ public sealed class ProveedoresServicio
         string? ruc,
         string? razonSocial,
         string? telefono,
+        string? estado,
         int? excluirIdProveedor)
     {
         // RUC: exactamente 11 dígitos, sin recortar (los espacios causan rechazo).
@@ -179,11 +182,18 @@ public sealed class ProveedoresServicio
             throw new ReglaDeNegocioException(MensajesProveedores.TelefonoDemasiadoLargo);
         }
 
+        // Estado: el de la ficha, solo 'Activo' o 'Inactivo' (sin recortar ni cambiar mayúsculas).
+        if (estado != ProveedorEscritura.EstadoActivo && estado != ProveedorEscritura.EstadoInactivo)
+        {
+            throw new ReglaDeNegocioException(MensajesProveedores.EstadoInvalido);
+        }
+
         return new ProveedorEscritura
         {
             Ruc = ruc,
             RazonSocial = razonSocialNormalizada,
             Telefono = telefonoNormalizado,
+            Estado = estado,
         };
     }
 

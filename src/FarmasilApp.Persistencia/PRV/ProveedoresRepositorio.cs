@@ -217,7 +217,7 @@ public sealed class ProveedoresRepositorio : IProveedoresRepositorio
     }
 
     /// <summary>
-    /// ESP-0037. Registra el proveedor como Activo y devuelve
+    /// ESP-0037. Registra el proveedor con el estado de la ficha y devuelve
     /// el identificador generado por SQL Server.
     /// </summary>
     public int Crear(ProveedorEscritura proveedor)
@@ -238,7 +238,7 @@ public sealed class ProveedoresRepositorio : IProveedoresRepositorio
                     @ruc,
                     @razonSocial,
                     @telefono,
-                    N'Activo'
+                    @estado
                 );
             """;
 
@@ -276,7 +276,7 @@ public sealed class ProveedoresRepositorio : IProveedoresRepositorio
     }
 
     /// <summary>
-    /// ESP-0039. Actualiza solamente los datos editables.
+    /// ESP-0039. Actualiza solamente los datos editables, incluido el estado.
     /// El identificador permanece intacto.
     /// </summary>
     public void Actualizar(
@@ -289,7 +289,8 @@ public sealed class ProveedoresRepositorio : IProveedoresRepositorio
             UPDATE dbo.TBL_PROVEEDORES
             SET ruc = @ruc,
                 razon_social = @razonSocial,
-                telefono = @telefono
+                telefono = @telefono,
+                estado = @estado
             WHERE id_proveedor = @idProveedor;
             """;
 
@@ -458,6 +459,15 @@ public sealed class ProveedoresRepositorio : IProveedoresRepositorio
                 ProveedoresServicio.LongitudMaximaTelefono)
             {
                 Value = (object?)proveedor.Telefono ?? DBNull.Value
+            });
+
+        comando.Parameters.Add(
+            new SqlParameter(
+                "@estado",
+                SqlDbType.NVarChar,
+                10)
+            {
+                Value = proveedor.Estado
             });
     }
 

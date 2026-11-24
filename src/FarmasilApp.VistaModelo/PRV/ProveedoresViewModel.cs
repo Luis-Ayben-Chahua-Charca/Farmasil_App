@@ -15,6 +15,7 @@ namespace FarmasilApp.VistaModelo.PRV;
 public sealed class ProveedoresViewModel : ViewModelBase
 {
     private const string Todos = "Todos";
+    private const string EstadoPorDefecto = "Activo";
 
     private readonly ProveedoresServicio _servicio;
     private readonly IMensajeServicio _mensajes;
@@ -28,7 +29,7 @@ public sealed class ProveedoresViewModel : ViewModelBase
     private string _ruc = string.Empty;
     private string _razonSocial = string.Empty;
     private string _telefono = string.Empty;
-    private string _estadoFicha = string.Empty;
+    private string _estadoFicha = EstadoPorDefecto;
     private bool _enEdicion;
     private string _mensaje = string.Empty;
 
@@ -97,6 +98,9 @@ public sealed class ProveedoresViewModel : ViewModelBase
     public ObservableCollection<ProveedorConsulta> Proveedores { get; } = new();
 
     public ObservableCollection<string> Estados { get; } = new();
+
+    /// <summary>Opciones de <c>PRV-CMB-ESTADO-PROVEEDOR</c> en la ficha (sin «Todos»).</summary>
+    public IReadOnlyList<string> EstadosFicha { get; } = new[] { "Activo", "Inactivo" };
 
     public AsyncRelayCommand InicializarCommand { get; }
 
@@ -170,7 +174,7 @@ public sealed class ProveedoresViewModel : ViewModelBase
     public string EstadoFicha
     {
         get => _estadoFicha;
-        private set => Establecer(ref _estadoFicha, value);
+        set => Establecer(ref _estadoFicha, value);
     }
 
     public bool EnEdicion
@@ -251,20 +255,20 @@ public sealed class ProveedoresViewModel : ViewModelBase
                 var ruc = Ruc;
                 var razonSocial = RazonSocial;
                 var telefono = Telefono;
+                var estado = EstadoFicha;
 
-                var idProveedor = await Task.Run(
+                await Task.Run(
                     () => _servicio.Crear(
                         ruc,
                         razonSocial,
-                        telefono));
+                        telefono,
+                        estado));
 
                 _mensajes.MostrarExito(
                     MensajesProveedores.Titulo,
                     MensajesProveedores.ProveedorRegistrado);
 
                 await RefrescarAsync();
-
-                IdProveedorFicha = idProveedor;
             });
 
     private void IniciarEdicion()
@@ -292,13 +296,15 @@ public sealed class ProveedoresViewModel : ViewModelBase
                 var ruc = Ruc;
                 var razonSocial = RazonSocial;
                 var telefono = Telefono;
+                var estado = EstadoFicha;
 
                 await Task.Run(
                     () => _servicio.Actualizar(
                         proveedor.IdProveedor,
                         ruc,
                         razonSocial,
-                        telefono));
+                        telefono,
+                        estado));
 
                 _mensajes.MostrarExito(
                     MensajesProveedores.Titulo,
@@ -385,7 +391,7 @@ public sealed class ProveedoresViewModel : ViewModelBase
         Ruc = string.Empty;
         RazonSocial = string.Empty;
         Telefono = string.Empty;
-        EstadoFicha = string.Empty;
+        EstadoFicha = EstadoPorDefecto;
         EnEdicion = false;
     }
 

@@ -206,6 +206,77 @@ public class ProveedoresServicioPruebas
 
     [Fact]
     [Trait("Especificacion", "ESP-0037")]
+    [Trait("Tecnica", "T-006")]
+    public void CrearSinIndicarEstadoLoRegistraActivo()
+    {
+        var repositorio = new RepositorioDeProveedoresFalso();
+
+        Servicio(repositorio).Crear("20100070970", "Drogueria SAC", null);
+
+        Assert.Equal("Activo", repositorio.UltimoCreado!.Estado);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0037")]
+    [Trait("Tecnica", "T-006")]
+    public void CrearConEstadoInactivoLoPasaAlRepositorio()
+    {
+        var repositorio = new RepositorioDeProveedoresFalso();
+
+        Servicio(repositorio).Crear("20100070970", "Drogueria SAC", null, "Inactivo");
+
+        Assert.Equal("Inactivo", repositorio.UltimoCreado!.Estado);
+    }
+
+    [Theory]
+    [Trait("Especificacion", "ESP-0037")]
+    [Trait("Tecnica", "T-002")]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("activo")]
+    [InlineData("Suspendido")]
+    public void CrearConEstadoInvalidoLanzaReglaDeNegocio(string? estado)
+    {
+        var repositorio = new RepositorioDeProveedoresFalso();
+
+        var excepcion = Assert.Throws<ReglaDeNegocioException>(
+            () => Servicio(repositorio).Crear("20100070970", "Drogueria SAC", null, estado));
+
+        Assert.Equal(MensajesProveedores.EstadoInvalido, excepcion.Message);
+        Assert.Null(repositorio.UltimoCreado);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0039")]
+    [Trait("Tecnica", "T-007")]
+    public void ActualizarConEstadoInactivoLoPasaAlRepositorio()
+    {
+        var repositorio = new RepositorioDeProveedoresFalso();
+
+        Servicio(repositorio).Actualizar(1, "20100070970", "Drogueria SAC", null, "Inactivo");
+
+        Assert.Equal("Inactivo", repositorio.UltimaActualizacion!.Value.Proveedor.Estado);
+    }
+
+    [Theory]
+    [Trait("Especificacion", "ESP-0039")]
+    [Trait("Tecnica", "T-002")]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("Suspendido")]
+    public void ActualizarConEstadoInvalidoLanzaReglaDeNegocio(string? estado)
+    {
+        var repositorio = new RepositorioDeProveedoresFalso();
+
+        var excepcion = Assert.Throws<ReglaDeNegocioException>(
+            () => Servicio(repositorio).Actualizar(1, "20100070970", "Drogueria SAC", null, estado));
+
+        Assert.Equal(MensajesProveedores.EstadoInvalido, excepcion.Message);
+        Assert.Null(repositorio.UltimaActualizacion);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0037")]
     [Trait("Tecnica", "T-002")]
     public void CrearConTelefonoVacioLoPasaComoNulo()
     {
@@ -362,7 +433,7 @@ public class ProveedoresServicioPruebas
     {
         var repositorio = new RepositorioDeProveedoresFalso();
 
-        Servicio(repositorio).Actualizar(1, "20100070970", "Drogueria Andina SAC", "054223344");
+        Servicio(repositorio).Actualizar(1, "20100070970", "Drogueria Andina SAC", "054223344", "Activo");
 
         Assert.NotNull(repositorio.UltimaActualizacion);
         Assert.Equal(1, repositorio.UltimaActualizacion.Value.IdProveedor);
@@ -377,7 +448,7 @@ public class ProveedoresServicioPruebas
         var repositorio = new RepositorioDeProveedoresFalso();
 
         var excepcion = Assert.Throws<ReglaDeNegocioException>(
-            () => Servicio(repositorio).Actualizar(0, "20100070970", "Drogueria SAC", null));
+            () => Servicio(repositorio).Actualizar(0, "20100070970", "Drogueria SAC", null, "Activo"));
 
         Assert.Equal("Seleccione un proveedor para actualizar.", excepcion.Message);
         Assert.Null(repositorio.UltimaActualizacion);
@@ -392,7 +463,7 @@ public class ProveedoresServicioPruebas
 
         Assert.Throws<AccesoDenegadoException>(
             () => Servicio(repositorio, Rol.Tecnico)
-                .Actualizar(1, "20100070970", "Drogueria SAC", null));
+                .Actualizar(1, "20100070970", "Drogueria SAC", null, "Activo"));
 
         Assert.Null(repositorio.UltimaActualizacion);
     }

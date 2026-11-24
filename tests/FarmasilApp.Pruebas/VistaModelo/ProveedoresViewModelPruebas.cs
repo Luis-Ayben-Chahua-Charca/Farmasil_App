@@ -180,7 +180,9 @@ public class ProveedoresViewModelPruebas
         Assert.Single(mensajes.Exitos);
         Assert.Equal(MensajesProveedores.Titulo, mensajes.Exitos[0].Titulo);
         Assert.Equal(MensajesProveedores.ProveedorRegistrado, mensajes.Exitos[0].Mensaje);
-        Assert.Equal(5, vistaModelo.IdProveedorFicha);
+        Assert.Null(vistaModelo.IdProveedorFicha);
+        Assert.Equal(string.Empty, vistaModelo.Ruc);
+        Assert.Equal("Activo", vistaModelo.EstadoFicha);
     }
 
     [Fact]
@@ -235,6 +237,62 @@ public class ProveedoresViewModelPruebas
 
         Assert.Single(mensajes.Exitos);
         Assert.Equal(MensajesProveedores.ProveedorActualizado, mensajes.Exitos[0].Mensaje);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0037")]
+    [Trait("Tecnica", "T-006")]
+    public async Task CrearConEstadoInactivoDeLaFichaLoEnviaAlRepositorio()
+    {
+        var repositorio = new RepositorioDeProveedoresFalso();
+        var vistaModelo = Crear(repositorio);
+
+        vistaModelo.Ruc = "20100070970";
+        vistaModelo.RazonSocial = "Drogueria Andina SAC";
+        vistaModelo.EstadoFicha = "Inactivo";
+
+        await vistaModelo.CrearCommand.ExecuteAsync();
+
+        Assert.Equal("Inactivo", repositorio.UltimoCreado!.Estado);
+        Assert.Equal("Activo", vistaModelo.EstadoFicha);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0037")]
+    [Trait("Tecnica", "T-002")]
+    public void LaFichaNuevaOfreceActivoEInactivoYEmpiezaEnActivo()
+    {
+        var vistaModelo = Crear(new RepositorioDeProveedoresFalso());
+
+        Assert.Equal(new[] { "Activo", "Inactivo" }, vistaModelo.EstadosFicha);
+        Assert.Equal("Activo", vistaModelo.EstadoFicha);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0039")]
+    [Trait("Tecnica", "T-007")]
+    public async Task ConfirmarActualizacionConEstadoCambiadoLoEnviaAlRepositorio()
+    {
+        var repositorio = new RepositorioDeProveedoresFalso();
+        repositorio.Resultados.Add(new ProveedorConsulta
+        {
+            IdProveedor = 1,
+            Ruc = "20100070970",
+            RazonSocial = "Drogueria Andina SAC",
+            Telefono = "054223344",
+            Estado = "Activo"
+        });
+        var vistaModelo = Crear(repositorio);
+        await vistaModelo.InicializarCommand.ExecuteAsync();
+
+        vistaModelo.ProveedorSeleccionado = vistaModelo.Proveedores[0];
+        vistaModelo.ActualizarCommand.Execute(null);
+        vistaModelo.EstadoFicha = "Inactivo";
+
+        await vistaModelo.ConfirmarActualizacionCommand.ExecuteAsync();
+
+        Assert.Equal(1, repositorio.UltimaActualizacion!.Value.IdProveedor);
+        Assert.Equal("Inactivo", repositorio.UltimaActualizacion.Value.Proveedor.Estado);
     }
 
     // =============================

@@ -44,6 +44,15 @@ public static class MensajesProveedores
     /// <summary>ESP-0037 y ESP-0039: <c>VALIDAR LONGITUD(telefono) <= 15</c>. Texto no fijado por la ESP.</summary>
     public const string TelefonoDemasiadoLargo = "El teléfono no puede superar los 15 caracteres.";
 
+    /// <summary>ESP-0037 y ESP-0039: <c>VALIDAR estado EN ('Activo', 'Inactivo')</c>. Texto no fijado por la ESP.</summary>
+    public const string EstadoInvalido = "El estado debe ser Activo o Inactivo.";
+
+    /// <summary>ESP-0039: no hay proveedor seleccionado. Texto no fijado por la ESP.</summary>
+    public const string SeleccioneParaActualizar = "Seleccione un proveedor para actualizar.";
+
+    /// <summary>ESP-0040: no hay proveedor seleccionado. Texto no fijado por la ESP.</summary>
+    public const string SeleccioneParaDarDeBaja = "Seleccione un proveedor para dar de baja.";
+
     /// <summary>Sesión sin el rol 'Administrador' (RNF-0006, condición 3). Texto no fijado por la ESP.</summary>
     public const string AccesoDenegado = "Su rol no permite gestionar proveedores.";
 

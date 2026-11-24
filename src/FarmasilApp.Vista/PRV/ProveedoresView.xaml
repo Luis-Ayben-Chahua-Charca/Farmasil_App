@@ -223,8 +223,7 @@
                                    Foreground="Gray"
                                    VerticalAlignment="Center"/>
 
-                        <TextBlock AutomationProperties.AutomationId="PRV-LBL-ID-PROVEEDOR"
-                                   Text="{Binding IdProveedorFicha, TargetNullValue=Nuevo}"
+                        <TextBlock Text="{Binding IdProveedorFicha, TargetNullValue=Nuevo}"
                                    FontWeight="SemiBold"
                                    VerticalAlignment="Center"/>
 
@@ -288,12 +287,11 @@
 
                         <TextBlock Text="Estado"/>
 
-                        <TextBox AutomationProperties.AutomationId="PRV-CMB-ESTADO-PROVEEDOR"
-                                 Text="{Binding EstadoFicha}"
-                                 Height="32"
-                                 Margin="0,5,0,0"
-                                 IsReadOnly="True"
-                                 Background="#F5F5F5"/>
+                        <ComboBox AutomationProperties.AutomationId="PRV-CMB-ESTADO-PROVEEDOR"
+                                  ItemsSource="{Binding EstadosFicha}"
+                                  SelectedItem="{Binding EstadoFicha}"
+                                  Height="32"
+                                  Margin="0,5,0,0"/>
 
                     </StackPanel>
 
@@ -314,8 +312,7 @@
 
                         <Run Text="Estado actual: "/>
 
-                        <Run Text="{Binding EstadoFicha,
-                                           TargetNullValue=Activo}"
+                        <Run Text="{Binding EstadoFicha, Mode=OneWay}"
                              FontWeight="SemiBold"/>
 
                     </TextBlock>

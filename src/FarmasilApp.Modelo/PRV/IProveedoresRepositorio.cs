@@ -30,7 +30,7 @@ public interface IProveedoresRepositorio
     bool TieneOrdenesPendientes(int idProveedor);
 
     /// <summary>
-    /// ESP-0037. Registra el proveedor como Activo y devuelve el identificador generado por SQL Server.
+    /// ESP-0037. Registra el proveedor con el estado de la ficha y devuelve el identificador generado por SQL Server.
     /// </summary>
     int Crear(ProveedorEscritura proveedor);
 
