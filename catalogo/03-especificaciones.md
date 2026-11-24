@@ -568,7 +568,7 @@
 | Código de artefactos asociados | ART-MKP-RES-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Es una de las nueve operaciones disponibles para ambos roles: la técnica necesita verificar las advertencias sanitarias de un medicamento antes de completar una venta.<br>**Versión 03.00:** (issue #92, DEC-082) la búsqueda y los filtros opcionales reciben identificadores separados de la ficha; la salida conserva todas las columnas de esta especificación aunque no se representen todavía en el PNG. El Técnico solo consulta (DEC-075). |
+| Comentario | Es una de las nueve operaciones disponibles para ambos roles: la técnica necesita verificar las advertencias sanitarias de un medicamento antes de completar una venta.<br>**Versión 03.00:** (issue #92, DEC-082) la búsqueda y los filtros opcionales reciben identificadores separados de la ficha; la salida conserva todas las columnas de esta especificación, que ya se representan en el PNG de **ART-MKP-RES-0001**. El Técnico solo consulta (DEC-075). |
 
 | Código especificación | ESP-0031 |
 | --- | --- |
