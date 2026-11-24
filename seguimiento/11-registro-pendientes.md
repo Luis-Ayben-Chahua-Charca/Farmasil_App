@@ -2,7 +2,7 @@
 
 | Artefacto | Registro de pendientes y decisiones |
 | --- | --- |
-| Versión | 25.00 |
+| Versión | 26.00 |
 | Fecha | 24/11/2026 |
 | Responsable | AUT-0001 |
 
@@ -28,6 +28,7 @@
 | 23.00 | 22/11/2026 | Issue #88: se incorpora DEC-080 sobre el inicio de sesión y la sesión real (interfaz `IAutenticacion`, mensajes de rechazo, identificadores de la pantalla sin mockup y alcance); la agenda con la dueña suma la revisión de esa pantalla. |
 | 24.00 | 22/11/2026 | Issue #88: se incorpora DEC-081, que crea `seguimiento/15-hallazgos-de-uso.md` y el código `HAL-NNN` para lo que solo se descubre usando la aplicación. |
 | 25.00 | 24/11/2026 | Issue #92: se incorpora DEC-082, que aplica los criterios C1 a C4 de DEC-042 a las discrepancias del módulo RES; PEN-025 se mantiene abierto. |
+| 26.00 | 24/11/2026 | Issue #98: se incorpora PEN-039 sobre la integración transaccional entre ALV y LOT (retiros, `ILotes.Bloquear` y `ILotes.Liberar`); no hay decisión nueva. |
 
 ## 1. Para qué existe y por qué tiene esta forma
 
@@ -96,6 +97,7 @@ No se duplica el backlog ni los riesgos: un pendiente que se convierte en trabaj
 | PEN-035 | Autenticación de la aplicación ante SQL Server: ¿cuenta de Windows o inicio de sesión SQL? Provisional: cuenta de Windows de quien ejecuta la aplicación (`Integrated Security=true`), sin usuario ni contraseña en el repositorio. | Equipo | Leyni | Ninguno (hay comportamiento provisional aplicado); se confirma antes de la puesta en producción (plan de implementación, sección 10) | Media | Abierto | Decisión registrada como `DEC-NNN`. Si se mantiene la cuenta de Windows: confirmar que las cuentas del equipo de la farmacia tienen permiso sobre `DB_FARMASIL` y quitar la marca de provisional del README y de `architecture.md`. Si se elige un inicio de sesión SQL: definir dónde se guarda la contraseña fuera del repositorio, cambiar `appsettings.json` y la prueba `CadenaDeConexionPruebas`, y actualizar el README y VF-01 | `architecture.md` §3 (decisión abierta), VF-01, plan de implementación §10 | #53 |
 | PEN-036 | ¿La dueña solicita una descripción y un icono por método, y un panel de previsualización? Ninguno está respaldado por las especificaciones ni por el modelo de datos; no se agregan columnas ni requisitos. Provisionalmente, no son parte del alcance aprobado. | Alcance | Dueña | Ninguno; el #76 se cierra al registrar estas discrepancias | Baja | En espera del cliente | Respuesta de la dueña registrada. Si aprueba alguno, abrir un issue para definir requisito, datos y mockup antes de incorporarlo; si lo descarta, registrar el rechazo. | `seguimiento/12-revision-mockups.md`, módulo 5 (PAG): discrepancias de descripción/icono y previsualización; #76 | — |
 | PEN-037 | La guía de nomenclatura define el tipo de componente MNU, pero ningún identificador para la ventana principal: ni la barra de módulos ni sus botones. Provisional: los botones del menú no llevan `AutomationId`; no se inventa uno (DEC-060). | Diseño UI | Leyni | Las pruebas de interfaz que abren un módulo desde el menú (#94) y la prueba T-016 de RNF-0006, condición 4 | Media | Abierto | Identificadores de la ventana principal y del menú agregados a `diseno/06-guia-nomenclatura-mockups.md` y aplicados en `MainWindow.xaml` | Revisión del PR #171 | #74 |
+| PEN-039 | Integración transaccional entre el registro/eliminación de retiros ALV y las operaciones `ILotes.Bloquear` y `ILotes.Liberar`: la transacción actual de ALV solo abarca `TBL_PRODUCTOS_RETIRADOS`. Provisional aprobado (22/11/2026, opción A): llamar a `ILotes` desde el servicio y no escribir `TBL_LOTES` desde ALV. Al compartir la unidad de trabajo, `ILotes` debe usar la misma conexión y transacción que ALV: ALV abre su transacción en aislamiento `SERIALIZABLE`, y una segunda conexión que actualice la fila de la remesa esperaría a ALV mientras ALV espera su respuesta. | Arquitectura | R1 y responsable de LOT (#99 y #101) | Atomicidad real entre ALV y LOT, prueba T-012 | Alta | Abierto; solución provisional aprobada | Fusionar #99 y #101, compartir unidad de trabajo en ILotes y automatizar T-012 con resultado verde | Ficha técnica S2, issue #98; DEC-055, DEC-069 | #98 |
 
 ## 4. Agenda para la próxima reunión con la dueña
 
