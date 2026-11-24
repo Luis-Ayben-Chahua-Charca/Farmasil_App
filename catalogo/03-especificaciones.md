@@ -537,74 +537,74 @@
 | Código especificación | ESP-0029 |
 | --- | --- |
 | Nombre | Registro de restricción de venta |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 23/11/2026 |
 | Autor de la plantilla | AUT-0006 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0029 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PRODUCTOS <> VACIA**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA = DISPONIBLE**<br>&nbsp;&nbsp;**CARGAR ART-MKP-RES-0001**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**medicamento = RES-CMB-MEDICAMENTO**<br>&nbsp;&nbsp;**tipoRestriccion = RES-CMB-TIPO-RESTRICCION**<br>&nbsp;&nbsp;**condicionCliente = RES-TXT-CONDICION-CLIENTE**<br>&nbsp;&nbsp;**motivoAdvertencia = RES-TXA-MOTIVO-ADVERTENCIA**<br>&nbsp;&nbsp;**estadoAlerta = RES-CMB-ESTADO-ALERTA**<br>&nbsp;&nbsp;**PRESIONAR RES-BTN-CREAR-RESTRICCION**<br>&nbsp;&nbsp;**VALIDAR medicamento EXISTE EN DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**VALIDAR tipoRestriccion EN ('Informativa', 'Bloqueante')**<br>&nbsp;&nbsp;**VALIDAR condicionCliente <> VACIO**<br>&nbsp;&nbsp;**VALIDAR motivoAdvertencia <> VACIO**<br>&nbsp;&nbsp;**VALIDAR estadoAlerta EN ('Activo', 'Inactivo')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (medicamento, condicionCliente, tipoRestriccion, motivoAdvertencia, estadoAlerta) EN DB_FARMASIL.TBL_RESTRICCIONES_VENTA**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR RES-TBL-RESTRICCIONES-VENTA**<br>&nbsp;&nbsp;**MOSTRAR "Restricción registrada correctamente"**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR RESTRICCION ASOCIADA A medicamento**<br>&nbsp;&nbsp;**VERIFICAR RES-TBL-RESTRICCIONES-VENTA = ACTUALIZADA**<br>&nbsp;&nbsp;**SI tipoRestriccion = 'Bloqueante' Y estadoAlerta = 'Activo' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR MEDICAMENTO BLOQUEADO EN ESP-0001**<br>&nbsp;&nbsp;**FIN SI**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**medicamento = RES-CMB-MEDICAMENTO**<br>&nbsp;&nbsp;**tipoRestriccion = RES-CMB-TIPO-RESTRICCION**<br>&nbsp;&nbsp;**condicionCliente = RES-TXT-CONDICION-CLIENTE**<br>&nbsp;&nbsp;**motivoAdvertencia = RES-TXA-MOTIVO-ADVERTENCIA**<br>&nbsp;&nbsp;**estadoAlerta = RES-CMB-ESTADO-ALERTA**<br>&nbsp;&nbsp;**PRESIONAR RES-BTN-CREAR-RESTRICCION**<br>&nbsp;&nbsp;**VALIDAR medicamento EXISTE EN DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**VALIDAR tipoRestriccion EN ('Informativa', 'Bloqueante')**<br>&nbsp;&nbsp;**VALIDAR condicionCliente <> VACIO**<br>&nbsp;&nbsp;**VALIDAR motivoAdvertencia <> VACIO**<br>&nbsp;&nbsp;**VALIDAR estadoAlerta EN ('Activo', 'Inactivo')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (medicamento, condicionCliente, tipoRestriccion, motivoAdvertencia, estadoAlerta) EN DB_FARMASIL.TBL_RESTRICCIONES_VENTA**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR RES-PNL-RESTRICCIONES Y RES-TBL-RESTRICCIONES-VENTA**<br>&nbsp;&nbsp;**MOSTRAR "Restricción registrada correctamente"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR RESTRICCION ASOCIADA A medicamento**<br>&nbsp;&nbsp;**VERIFICAR RES-PNL-RESTRICCIONES Y RES-TBL-RESTRICCIONES-VENTA = ACTUALIZADAS**<br>&nbsp;&nbsp;**SI tipoRestriccion = 'Bloqueante' Y estadoAlerta = 'Activo' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR MEDICAMENTO BLOQUEADO EN ESP-0001**<br>&nbsp;&nbsp;**FIN SI**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-RES-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | El módulo usaba el prefijo **ALR_** con guion bajo y una tabla inexistente, **ALR_TBL_ALERTAS_RESTRICCION_VENTA**, empleando el mismo nombre para la tabla de base de datos y la de la interfaz. Se separaron y se unificó al prefijo **RES**.<br>El medicamento se capturaba como texto libre pese a ser clave foránea; ahora se selecciona del inventario.<br>La operación quedó restringida al administrador: definir qué medicamento se bloquea para qué grupo de riesgo es una decisión de farmacovigilancia. |
+| Comentario | El módulo usaba el prefijo **ALR_** con guion bajo y una tabla inexistente, **ALR_TBL_ALERTAS_RESTRICCION_VENTA**, empleando el mismo nombre para la tabla de base de datos y la de la interfaz. Se separaron y se unificó al prefijo **RES**.<br>El medicamento se capturaba como texto libre pese a ser clave foránea; ahora se selecciona del inventario.<br>La operación quedó restringida al administrador: definir qué medicamento se bloquea para qué grupo de riesgo es una decisión de farmacovigilancia.<br>**Versión 03.00:** (issue #92, DEC-082) la creación permanece exclusiva del Administrador y se integra en la pantalla única; el resultado se actualiza tanto en el panel de tarjetas como en la tabla. |
 
 | Código especificación | ESP-0030 |
 | --- | --- |
 | Nombre | Consulta de restricciones de venta |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 23/11/2026 |
 | Autor de la plantilla | AUT-0006 |
 | Actor | ACT-0001, ACT-0002 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0030 |
-| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) EN ('Administrador', 'Tecnico')**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA <> VACIA**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PRODUCTOS <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-RES-0002**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**medicamento = RES-CMB-MEDICAMENTO**<br>&nbsp;&nbsp;**PRESIONAR RES-BTN-LEER-RESTRICCION**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA UNIENDO DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**APLICAR FILTRO id_producto = medicamento**<br>&nbsp;&nbsp;**CARGAR RES-TBL-RESTRICCIONES-VENTA CON (nombre, condicion_cliente, tipo_restriccion, motivo_advertencia, estado_alerta)**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR RES-TBL-RESTRICCIONES-VENTA = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA = SIN_MODIFICACION**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-RES-0002 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) EN ('Administrador', 'Tecnico')**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA <> VACIA**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_PRODUCTOS <> VACIA**<br>&nbsp;&nbsp;**CARGAR MODO_CONSULTA DE ART-MKP-RES-0001**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SI ROL(SESION_USUARIO) = 'Tecnico' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR RES-BTN-CREAR-RESTRICCION, RES-BTN-ACTUALIZAR-RESTRICCION, RES-BTN-CONFIRMAR-ACTUALIZACION Y RES-BTN-ELIMINAR-RESTRICCION DESHABILITADOS CON EL MOTIVO "Solo disponible para el Administrador."**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**busqueda = RES-SRH-MEDICAMENTO**<br>&nbsp;&nbsp;**tipoFiltro = RES-CMB-FILTRO-TIPO**<br>&nbsp;&nbsp;**estadoFiltro = RES-CMB-FILTRO-ESTADO**<br>&nbsp;&nbsp;**PRESIONAR RES-BTN-LEER-RESTRICCION**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA UNIENDO DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**APLICAR FILTRO nombre CONTIENE busqueda SI busqueda <> VACIO**<br>&nbsp;&nbsp;**APLICAR FILTRO tipo_restriccion = tipoFiltro SI tipoFiltro <> VACIO**<br>&nbsp;&nbsp;**APLICAR FILTRO estado_alerta = estadoFiltro SI estadoFiltro <> VACIO**<br>&nbsp;&nbsp;**CARGAR RES-PNL-RESTRICCIONES CON UNA RES-CRD-RESTRICCION POR CADA RESULTADO**<br>&nbsp;&nbsp;**CARGAR RES-TBL-RESTRICCIONES-VENTA CON (nombre, condicion_cliente, tipo_restriccion, motivo_advertencia, estado_alerta)**<br>&nbsp;&nbsp;**SELECCIONAR una tarjeta o fila PARA CARGAR LA RESTRICCION EN LA FICHA**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR RES-PNL-RESTRICCIONES Y RES-TBL-RESTRICCIONES-VENTA = ACTUALIZADAS**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA = SIN_MODIFICACION**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-RES-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Es una de las nueve operaciones disponibles para ambos roles: la técnica necesita verificar las advertencias sanitarias de un medicamento antes de completar una venta. |
+| Comentario | Es una de las nueve operaciones disponibles para ambos roles: la técnica necesita verificar las advertencias sanitarias de un medicamento antes de completar una venta.<br>**Versión 03.00:** (issue #92, DEC-082) la búsqueda y los filtros opcionales reciben identificadores separados de la ficha; la salida conserva todas las columnas de esta especificación, que ya se representan en el PNG de **ART-MKP-RES-0001**. El Técnico solo consulta (DEC-075). |
 
 | Código especificación | ESP-0031 |
 | --- | --- |
 | Nombre | Modificación de restricción de venta |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 23/11/2026 |
 | Autor de la plantilla | AUT-0006 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0031 |
-| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-RES-0003**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR restriccion EN RES-TBL-RESTRICCIONES-VENTA**<br>&nbsp;&nbsp;**PRESIONAR RES-BTN-ACTUALIZAR-RESTRICCION**<br>&nbsp;&nbsp;**CARGAR ART-MKP-RES-0003 CON INFORMACION VIGENTE**<br>&nbsp;&nbsp;**medicamento = RES-CMB-MEDICAMENTO**<br>&nbsp;&nbsp;**tipoRestriccion = RES-CMB-TIPO-RESTRICCION**<br>&nbsp;&nbsp;**condicionCliente = RES-TXT-CONDICION-CLIENTE**<br>&nbsp;&nbsp;**motivoAdvertencia = RES-TXA-MOTIVO-ADVERTENCIA**<br>&nbsp;&nbsp;**estadoAlerta = RES-CMB-ESTADO-ALERTA**<br>&nbsp;&nbsp;**PRESIONAR RES-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR tipoRestriccion EN ('Informativa', 'Bloqueante')**<br>&nbsp;&nbsp;**VALIDAR condicionCliente <> VACIO**<br>&nbsp;&nbsp;**VALIDAR motivoAdvertencia <> VACIO**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA DONDE id_restriccion = restriccion**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR RES-TBL-RESTRICCIONES-VENTA**<br>&nbsp;&nbsp;**MOSTRAR "Restricción actualizada correctamente"**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR RES-TBL-RESTRICCIONES-VENTA = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR NUEVA_CONFIGURACION APLICADA EN VALIDACIONES POSTERIORES DE ESP-0001**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-RES-0003 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA <> VACIA**<br>&nbsp;&nbsp;**CARGAR MODO_ACTUALIZACION DE ART-MKP-RES-0001**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR restriccion EN RES-TBL-RESTRICCIONES-VENTA O RES-PNL-RESTRICCIONES**<br>&nbsp;&nbsp;**PRESIONAR RES-BTN-ACTUALIZAR-RESTRICCION PARA INICIAR EDICION EN LA FICHA DE ART-MKP-RES-0001**<br>&nbsp;&nbsp;**medicamento = RES-CMB-MEDICAMENTO**<br>&nbsp;&nbsp;**tipoRestriccion = RES-CMB-TIPO-RESTRICCION**<br>&nbsp;&nbsp;**condicionCliente = RES-TXT-CONDICION-CLIENTE**<br>&nbsp;&nbsp;**motivoAdvertencia = RES-TXA-MOTIVO-ADVERTENCIA**<br>&nbsp;&nbsp;**estadoAlerta = RES-CMB-ESTADO-ALERTA**<br>&nbsp;&nbsp;**PRESIONAR RES-BTN-CONFIRMAR-ACTUALIZACION ("Guardar cambios")**<br>&nbsp;&nbsp;**VALIDAR tipoRestriccion EN ('Informativa', 'Bloqueante')**<br>&nbsp;&nbsp;**VALIDAR condicionCliente <> VACIO**<br>&nbsp;&nbsp;**VALIDAR motivoAdvertencia <> VACIO**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA DONDE id_restriccion = restriccion**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR RES-PNL-RESTRICCIONES Y RES-TBL-RESTRICCIONES-VENTA**<br>&nbsp;&nbsp;**MOSTRAR "Restricción actualizada correctamente"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR RES-PNL-RESTRICCIONES Y RES-TBL-RESTRICCIONES-VENTA = ACTUALIZADAS**<br>&nbsp;&nbsp;**VERIFICAR NUEVA_CONFIGURACION APLICADA EN VALIDACIONES POSTERIORES DE ESP-0001**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-RES-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | Se incorporó el paso de confirmación explícito, pese a que el componente **RES-BTN-CONFIRMAR-ACTUALIZACION** ya estaba definido, y se aplicaron las correcciones de nomenclatura y tipo del módulo. |
+| Comentario | Se incorporó el paso de confirmación explícito, pese a que el componente **RES-BTN-CONFIRMAR-ACTUALIZACION** ya estaba definido, y se aplicaron las correcciones de nomenclatura y tipo del módulo.<br>**Versión 03.00:** (issue #92, DEC-082) **RES-BTN-ACTUALIZAR-RESTRICCION** inicia la edición y **RES-BTN-CONFIRMAR-ACTUALIZACION** («Guardar cambios») confirma la escritura, conforme a DEC-046; la operación sigue reservada al Administrador. |
 
 | Código especificación | ESP-0032 |
 | --- | --- |
 | Nombre | Desactivación de restricción de venta |
-| Versión | 02.00 |
-| Fecha | 05/09/2026 |
+| Versión | 03.00 |
+| Fecha | 23/11/2026 |
 | Autor de la plantilla | AUT-0006 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 1 |
 | Experto | Ninguno |
 | Código ilación | ILA-0032 |
-| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-RES-0004**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR restriccion EN RES-TBL-RESTRICCIONES-VENTA**<br>&nbsp;&nbsp;**PRESIONAR RES-BTN-ELIMINAR-RESTRICCION**<br>&nbsp;&nbsp;**MOSTRAR RES-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR RES-TXT-MSJ = "¿Está seguro de desactivar esta restricción? El medicamento dejará de mostrar la advertencia durante la venta."**<br>&nbsp;&nbsp;**SI PRESIONAR RES-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA.estado_alerta = 'Inactivo' DONDE id_restriccion = restriccion**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Restricción desactivada correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR RES-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR RES-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR RES-TBL-RESTRICCIONES-VENTA**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA.estado_alerta = 'Inactivo'**<br>&nbsp;&nbsp;**VERIFICAR RESTRICCION NO PARTICIPA EN VALIDACIONES DE ESP-0001**<br>&nbsp;&nbsp;**VERIFICAR HISTORIAL_CONSERVADO_PARA_AUDITORIA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR RES-TBL-RESTRICCIONES-VENTA = ACTUALIZADA**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-RES-0004 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA <> VACIA**<br>&nbsp;&nbsp;**CARGAR MODO_DESACTIVACION DE ART-MKP-RES-0001**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR restriccion EN RES-TBL-RESTRICCIONES-VENTA O RES-PNL-RESTRICCIONES**<br>&nbsp;&nbsp;**PRESIONAR RES-BTN-ELIMINAR-RESTRICCION, ROTULADO "Desactivar"**<br>&nbsp;&nbsp;**MOSTRAR RES-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR RES-TXT-MSJ = "¿Está seguro de desactivar esta restricción? El medicamento dejará de mostrar la advertencia durante la venta."**<br>&nbsp;&nbsp;**SI PRESIONAR RES-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA.estado_alerta = 'Inactivo' DONDE id_restriccion = restriccion**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Restricción desactivada correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR RES-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR RES-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR RES-PNL-RESTRICCIONES Y RES-TBL-RESTRICCIONES-VENTA**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_RESTRICCIONES_VENTA.estado_alerta = 'Inactivo'**<br>&nbsp;&nbsp;**VERIFICAR RESTRICCION NO PARTICIPA EN VALIDACIONES DE ESP-0001**<br>&nbsp;&nbsp;**VERIFICAR HISTORIAL_CONSERVADO_PARA_AUDITORIA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR RES-PNL-RESTRICCIONES Y RES-TBL-RESTRICCIONES-VENTA = ACTUALIZADAS**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-RES-0001 |
 | Importancia | Vital |
 | Estado | Concluido |
-| Comentario | La fase Eliminar se resuelve como baja lógica, criterio adecuado tratándose de información de farmacovigilancia que debe conservarse para auditoría sanitaria. |
+| Comentario | La fase Eliminar se resuelve como baja lógica, criterio adecuado tratándose de información de farmacovigilancia que debe conservarse para auditoría sanitaria.<br>**Versión 03.00:** (issue #92, DEC-082) se mantiene el nombre técnico **RES-BTN-ELIMINAR-RESTRICCION**, pero el rótulo visible es «Desactivar» y el modal usa el mensaje definido aquí, dentro de **ART-MKP-RES-0001**. |
 
 ---
 
