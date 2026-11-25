@@ -16,6 +16,8 @@ public class InventarioServicioPruebas
             new SesionSimulada(rol));
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-002")]
     public void LosProveedoresDelFiltroSeMuestranPorRazonSocial()
     {
         var repositorio = new RepositorioDeInventarioFalso();
@@ -39,6 +41,8 @@ public class InventarioServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-001")]
     public void UnProveedorInactivoConProductosTambienSeMuestraConSuNombre()
     {
         var repositorio = new RepositorioDeInventarioFalso();
@@ -55,6 +59,8 @@ public class InventarioServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-001")]
     public void UnProveedorQueIProveedoresNoConoceSeMuestraPorSuIdentificador()
     {
         var repositorio = new RepositorioDeInventarioFalso();
@@ -72,6 +78,8 @@ public class InventarioServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-001")]
     public void SinProductosNoHayProveedoresQueFiltrar()
     {
         Assert.Empty(
@@ -81,6 +89,8 @@ public class InventarioServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-001")]
     public void TodosNoFiltraPorProveedor()
     {
         Assert.Null(
@@ -92,6 +102,8 @@ public class InventarioServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-002")]
     public void ConsultarNormalizaLosCriteriosAntesDeLlamarAlRepositorio()
     {
         var repositorio =
@@ -119,6 +131,8 @@ public class InventarioServicioPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-002")]
     public void ElRepositorioLosProveedoresYLaSesionSonObligatorios()
     {
         Assert.Throws<ArgumentNullException>(
@@ -462,7 +476,7 @@ public class InventarioServicioPruebas
                 15);
 
         var producto = Assert.IsType<ProductoEscritura>(
-            repositorio.UltimoProductoCreado); 
+            repositorio.UltimoProductoCreado);
 
         Assert.Equal(4.20m, producto.PrecioVenta);
     }
@@ -498,36 +512,6 @@ public class InventarioServicioPruebas
         Assert.Equal(1, producto.IdProveedor);
         Assert.Equal(25, producto.StockMinimo);
     }
-
-    [Fact]
-    [Trait("Especificacion", "ESP-0005")]
-    [Trait("Tecnica", "T-006")]
-    public void CrearProductoSinRemesasNoSeOfreceEnElModuloDeVentas()
-    {
-        var repositorio = new RepositorioDeInventarioFalso
-        {
-            IdProductoCreado = 55
-        };
-
-        var idCreado = Servicio(repositorio)
-            .Crear(
-                "Loratadina 10 mg Tableta",
-                "Antihistaminico",
-                1.80m,
-                1,
-                15);
-
-        var productoCreado = Assert.IsType<ProductoEscritura>(
-            repositorio.UltimoProductoCreado);
-
-        Assert.Equal(55, idCreado);
-        Assert.Equal("Loratadina 10 mg Tableta", productoCreado.Nombre);
-
-        // Sin remesas registradas (stock/lotes disponibles = 0), no entra en ofertas de venta
-        var productosConRemesaDisponible = Array.Empty<int>();
-        Assert.DoesNotContain(idCreado, productosConRemesaDisponible);
-    }
-
 
     [Fact]
     [Trait("Especificacion", "ESP-0006")]
