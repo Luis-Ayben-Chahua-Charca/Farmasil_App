@@ -369,4 +369,345 @@ public class MetodosPagoServicioPruebas
             NombreMetodo = nombre,
             Estado = estado
         };
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0017")]
+    [Trait("Tecnica", "T-002")]
+    public void CrearCaminoBasicoValidaUnicidadYRegistraMetodoPago()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        var servicio = new MetodosPagoServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        var idCreado = servicio.Crear("  Yape  ", "Activo");
+
+        Assert.Equal(1, idCreado);
+        Assert.Equal(("Yape", null), repositorio.UltimaExistenciaNombre);
+        Assert.Equal(("Yape", "Activo"), repositorio.UltimoCrear);
+        Assert.Single(repositorio.Resultados);
+        Assert.Equal("Yape", repositorio.Resultados[0].NombreMetodo);
+        Assert.Equal("Activo", repositorio.Resultados[0].Estado);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0017")]
+    [Trait("Tecnica", "T-001")]
+    public void CrearParticionSobreNombreValidoDuplicadoVacioYExcesoLongitud()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 1,
+            NombreMetodo = "Efectivo",
+            Estado = "Activo",
+        });
+        var servicio = new MetodosPagoServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        var idValido = servicio.Crear("Transferencia", "Activo");
+        Assert.Equal(2, idValido);
+        Assert.Equal(("Transferencia", null), repositorio.UltimaExistenciaNombre);
+        Assert.Equal(("Transferencia", "Activo"), repositorio.UltimoCrear);
+        Assert.Equal(2, repositorio.Resultados.Count);
+
+        var exDuplicado = Assert.Throws<ReglaDeNegocioException>(() =>
+            servicio.Crear("efectivo", "Activo"));
+        Assert.Equal(MensajesMetodosPago.NombreRepetido, exDuplicado.Message);
+        Assert.Equal(("Transferencia", "Activo"), repositorio.UltimoCrear);
+        Assert.Equal(2, repositorio.Resultados.Count);
+
+        var exVacio = Assert.Throws<ReglaDeNegocioException>(() =>
+            servicio.Crear("   ", "Activo"));
+        Assert.Equal(MensajesMetodosPago.NombreVacio, exVacio.Message);
+        Assert.Equal(("Transferencia", "Activo"), repositorio.UltimoCrear);
+        Assert.Equal(2, repositorio.Resultados.Count);
+
+        var nombreLargo = new string('A', MetodosPagoServicio.LongitudMaximaNombre + 1);
+        var exLongitud = Assert.Throws<ReglaDeNegocioException>(() =>
+            servicio.Crear(nombreLargo, "Activo"));
+        Assert.Equal(MensajesMetodosPago.NombreDemasiadoLargo, exLongitud.Message);
+        Assert.Equal(("Transferencia", "Activo"), repositorio.UltimoCrear);
+        Assert.Equal(2, repositorio.Resultados.Count);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0018")]
+    [Trait("Tecnica", "T-002")]
+    public void ConsultarCaminoBasicoFiltraPorNombreYEstado()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 1,
+            NombreMetodo = "Yape",
+            Estado = "Activo",
+        });
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 2,
+            NombreMetodo = "Yape QR",
+            Estado = "Inactivo",
+        });
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 3,
+            NombreMetodo = "Plin",
+            Estado = "Activo",
+        });
+
+        var servicio = new MetodosPagoServicio(
+            repositorio,
+            new SesionSimulada(Rol.Tecnico));
+
+        var resultados = servicio.Consultar("  Yape  ", "  Activo  ");
+
+        Assert.Equal(("Yape", "Activo"), repositorio.UltimaConsulta);
+        var item = Assert.Single(resultados);
+        Assert.Equal(1, item.IdMetodoPago);
+        Assert.Equal("Yape", item.NombreMetodo);
+        Assert.Equal("Activo", item.Estado);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0018")]
+    [Trait("Tecnica", "T-001")]
+    public void ConsultarParticionDeCriteriosNombreParcialEstadoCombinacionYSinFiltros()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 1,
+            NombreMetodo = "Yape",
+            Estado = "Activo",
+        });
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 2,
+            NombreMetodo = "Yape QR",
+            Estado = "Inactivo",
+        });
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 3,
+            NombreMetodo = "Efectivo",
+            Estado = "Activo",
+        });
+
+        var servicio = new MetodosPagoServicio(
+            repositorio,
+            new SesionSimulada(Rol.Tecnico));
+
+        // Nombre exacto
+        var porNombreExacto = servicio.Consultar("Efectivo", null);
+        Assert.Equal(("Efectivo", null), repositorio.UltimaConsulta);
+        Assert.Equal(new[] { 3 }, porNombreExacto.Select(x => x.IdMetodoPago));
+
+        // Nombre parcial
+        var porNombreParcial = servicio.Consultar("Yape", null);
+        Assert.Equal(("Yape", null), repositorio.UltimaConsulta);
+        Assert.Equal(new[] { 1, 2 }, porNombreParcial.Select(x => x.IdMetodoPago));
+
+        // Estado Activo / Inactivo
+        var activos = servicio.Consultar(null, "Activo");
+        Assert.Equal((null, "Activo"), repositorio.UltimaConsulta);
+        Assert.Equal(new[] { 1, 3 }, activos.Select(x => x.IdMetodoPago));
+
+        var inactivos = servicio.Consultar(null, "Inactivo");
+        Assert.Equal((null, "Inactivo"), repositorio.UltimaConsulta);
+        Assert.Equal(new[] { 2 }, inactivos.Select(x => x.IdMetodoPago));
+
+        // Combinación de nombre y estado
+        var combinados = servicio.Consultar("Yape", "Inactivo");
+        Assert.Equal(("Yape", "Inactivo"), repositorio.UltimaConsulta);
+        Assert.Equal(new[] { 2 }, combinados.Select(x => x.IdMetodoPago));
+
+        // Sin criterios
+        var todos = servicio.Consultar(null, null);
+        Assert.Equal((null, null), repositorio.UltimaConsulta);
+        Assert.Equal(new[] { 1, 2, 3 }, todos.Select(x => x.IdMetodoPago));
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0019")]
+    [Trait("Tecnica", "T-002")]
+    public void ActualizarCaminoBasicoModificaNombreYEstadoConfirmandoCambios()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 4,
+            NombreMetodo = "Tarjeta",
+            Estado = "Activo",
+        });
+        var servicio = new MetodosPagoServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        servicio.Actualizar(4, "  Tarjeta Debito  ", "Inactivo");
+
+        Assert.Equal(("Tarjeta Debito", 4), repositorio.UltimaExistenciaNombre);
+        Assert.Equal((4, "Tarjeta Debito", "Inactivo"), repositorio.UltimoActualizar);
+        Assert.Equal("Tarjeta Debito", repositorio.Resultados[0].NombreMetodo);
+        Assert.Equal("Inactivo", repositorio.Resultados[0].Estado);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0019")]
+    [Trait("Tecnica", "T-001")]
+    public void ActualizarConNombreDeOtroMetodoLanzaExcepcionYNoActualiza()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 1,
+            NombreMetodo = "Yape",
+            Estado = "Activo",
+        });
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 2,
+            NombreMetodo = "Plin",
+            Estado = "Activo",
+        });
+        var servicio = new MetodosPagoServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        var ex = Assert.Throws<ReglaDeNegocioException>(() =>
+            servicio.Actualizar(2, "  yape  ", "Activo"));
+
+        Assert.Equal(MensajesMetodosPago.NombreRepetido, ex.Message);
+        Assert.Equal(("yape", 2), repositorio.UltimaExistenciaNombre);
+        Assert.Null(repositorio.UltimoActualizar);
+        Assert.Equal("Plin", repositorio.Resultados[1].NombreMetodo);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0020")]
+    [Trait("Tecnica", "T-002")]
+    public void DarDeBajaCaminoBasicoAplicaBajaYRetornaResultado()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 5,
+            NombreMetodo = "Billetera",
+            Estado = "Activo",
+        });
+        var servicio = new MetodosPagoServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        var resultado = servicio.DarDeBaja(5);
+
+        Assert.Equal(5, repositorio.UltimaBaja);
+        Assert.Equal(ResultadoBajaMetodoPago.Eliminado, resultado);
+        Assert.Equal(ResultadoBajaMetodoPago.Eliminado, repositorio.UltimoResultadoBaja);
+        Assert.Empty(repositorio.Resultados);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0020")]
+    [Trait("Tecnica", "T-003")]
+    public void DarDeBajaRamasSinVentasYConVentas()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 1,
+            NombreMetodo = "Efectivo",
+            Estado = "Activo",
+        });
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 2,
+            NombreMetodo = "Yape",
+            Estado = "Activo",
+        });
+        repositorio.MarcarConVentas(2);
+
+        var servicio = new MetodosPagoServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        // Rama sin ventas -> eliminado
+        var resultadoSinVentas = servicio.DarDeBaja(1);
+        Assert.Equal(ResultadoBajaMetodoPago.Eliminado, resultadoSinVentas);
+        Assert.Equal(1, repositorio.UltimaBaja);
+        Assert.DoesNotContain(repositorio.Resultados, m => m.IdMetodoPago == 1);
+
+        // Rama con ventas -> desactivado (estado "Inactivo")
+        var resultadoConVentas = servicio.DarDeBaja(2);
+        Assert.Equal(ResultadoBajaMetodoPago.Desactivado, resultadoConVentas);
+        Assert.Equal(2, repositorio.UltimaBaja);
+        var metodoConVentas = Assert.Single(repositorio.Resultados, m => m.IdMetodoPago == 2);
+        Assert.Equal("Inactivo", metodoConVentas.Estado);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "ESP-0020")]
+    [Trait("Tecnica", "T-006")]
+    public void DarDeBajaMetodoConVentasAplicaBajaLogicaConEstadoInactivo()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 7,
+            NombreMetodo = "POS Visa",
+            Estado = "Activo",
+        });
+        repositorio.MarcarConVentas(7);
+
+        var servicio = new MetodosPagoServicio(
+            repositorio,
+            new SesionSimulada(Rol.Administrador));
+
+        var resultado = servicio.DarDeBaja(7);
+
+        Assert.Equal(7, repositorio.UltimaBaja);
+        Assert.Equal(ResultadoBajaMetodoPago.Desactivado, resultado);
+        Assert.Equal(ResultadoBajaMetodoPago.Desactivado, repositorio.UltimoResultadoBaja);
+        var metodo = Assert.Single(repositorio.Resultados, m => m.IdMetodoPago == 7);
+        Assert.Equal("Inactivo", metodo.Estado);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "RNF-0006")]
+    [Trait("Tecnica", "T-012")]
+    public void SesionTecnicoPermiteConsultarYRechazaCrearActualizarYDarDeBaja()
+    {
+        var repositorio = new RepositorioDeMetodosPagoFalso();
+        repositorio.Agregar(new MetodoPagoConsulta
+        {
+            IdMetodoPago = 1,
+            NombreMetodo = "Efectivo",
+            Estado = "Activo",
+        });
+
+        var servicio = new MetodosPagoServicio(
+            repositorio,
+            new SesionSimulada(Rol.Tecnico));
+
+        // ESP-0018 (Consultar): permitido para Técnico
+        var consulta = servicio.Consultar(null, "Activo");
+        Assert.Single(consulta);
+        Assert.Equal((null, "Activo"), repositorio.UltimaConsulta);
+
+        // ESP-0017 (Crear): rechazado
+        Assert.Throws<AccesoDenegadoException>(() =>
+            servicio.Crear("Yape", "Activo"));
+        Assert.Null(repositorio.UltimoCrear);
+
+        // ESP-0019 (Actualizar): rechazado
+        Assert.Throws<AccesoDenegadoException>(() =>
+            servicio.Actualizar(1, "Efectivo Caja", "Activo"));
+        Assert.Null(repositorio.UltimoActualizar);
+
+        // ESP-0020 (DarDeBaja): rechazado
+        Assert.Throws<AccesoDenegadoException>(() =>
+            servicio.DarDeBaja(1));
+        Assert.Null(repositorio.UltimaBaja);
+    }
 }
