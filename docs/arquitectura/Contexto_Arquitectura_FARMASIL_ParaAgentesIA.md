@@ -87,6 +87,7 @@ Comparación Precios → Inventario, Proveedores, Reabastecimiento
 | H2 | Inventario y Reabastecimiento | `VW_STOCK_FISICO` y `VW_STOCK_VENDIBLE`, vistas de Lotes (DEC-056) | Mostrar el stock físico; comparar el stock vendible con `stock_minimo` | ESP-0006; RNF-0010, proceso 2 |
 | H3 | Lotes | `TBL_DETALLE_DEVOLUCION` y `TBL_ORDENES_DEVOLUCION` | Detectar una remesa comprometida en una orden de devolución | ESP-0043, ESP-0044 |
 | H4 | Proveedores | `TBL_ORDENES_DEVOLUCION` | Impedir la baja de un proveedor con órdenes pendientes | ESP-0040 |
+| H5 | Lotes | `TBL_PRODUCTOS` (`nombre`, `accion_terapeutica`, `precio_venta`, `estado_producto`) | Mostrar los datos del medicamento en las remesas y en las lecturas de `ILotes`, y aplicar la vendibilidad de DEC-033 (DEC-087) | ESP-0042, ESP-0043; `ILotes` |
 
 Cualquier lectura nueva de una tabla ajena requiere la aprobación de la instancia maestra y su registro como `DEC-NNN`. Fuera de esta lista, lo que un módulo obtiene de otro lo obtiene por la interfaz del dueño, a través de las aristas de la sección 3, aunque el pseudocódigo de la especificación lo exprese como `CONSULTAR` sobre la tabla. Por ejemplo, Devoluciones obtiene el número de lote y el nombre del medicamento por `ILotes` (DEC-057).
 

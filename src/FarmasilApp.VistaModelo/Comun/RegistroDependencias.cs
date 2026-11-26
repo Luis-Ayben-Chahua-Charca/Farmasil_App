@@ -1,6 +1,7 @@
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.VistaModelo.ALV;
 using FarmasilApp.VistaModelo.INV;
+using FarmasilApp.VistaModelo.LOT;
 using FarmasilApp.VistaModelo.DOC;
 using FarmasilApp.VistaModelo.Principal;
 using FarmasilApp.VistaModelo.PAG;
@@ -30,6 +31,7 @@ public static class RegistroDependencias
         servicios.AgregarModuloNavegable<VentaViewModel>("Ventas", Rol.Administrador, Rol.Tecnico);
         servicios.AgregarModuloNavegable<ComprobantesViewModel>("Comprobantes tributarios", Rol.Administrador, Rol.Tecnico);
         servicios.AgregarModuloNavegable<InventarioViewModel>("Inventario", Rol.Administrador, Rol.Tecnico);
+        servicios.AgregarModuloNavegable<LotesViewModel>("Lotes", Rol.Administrador, Rol.Tecnico);
         servicios.AgregarModuloNavegable<AlertasViewModel>("Alertas de vencimiento", Rol.Administrador, Rol.Tecnico);
         servicios.AgregarModuloNavegable<MetodosPagoViewModel>("Métodos de pago", Rol.Administrador, Rol.Tecnico);
         servicios.AgregarModuloNavegable<UsuariosViewModel>("Usuarios", Rol.Administrador);

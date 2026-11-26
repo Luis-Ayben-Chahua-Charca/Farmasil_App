@@ -4,11 +4,13 @@
                     xmlns:vmAlv="clr-namespace:FarmasilApp.VistaModelo.ALV;assembly=FarmasilApp.VistaModelo"
                     xmlns:vistaAlv="clr-namespace:FarmasilApp.Vista.ALV"
                     xmlns:vmInv="clr-namespace:FarmasilApp.VistaModelo.INV;assembly=FarmasilApp.VistaModelo"
+                    xmlns:vmLot="clr-namespace:FarmasilApp.VistaModelo.LOT;assembly=FarmasilApp.VistaModelo"
                     xmlns:vmDoc="clr-namespace:FarmasilApp.VistaModelo.DOC;assembly=FarmasilApp.VistaModelo"
                     xmlns:vistaDoc="clr-namespace:FarmasilApp.Vista.DOC"
                     xmlns:vmPag="clr-namespace:FarmasilApp.VistaModelo.PAG;assembly=FarmasilApp.VistaModelo"
                     xmlns:vista="clr-namespace:FarmasilApp.Vista.Principal"
                     xmlns:vistaInv="clr-namespace:FarmasilApp.Vista.INV"
+                    xmlns:vistaLot="clr-namespace:FarmasilApp.Vista.LOT"
                     xmlns:vistaPag="clr-namespace:FarmasilApp.Vista.PAG"
                     xmlns:vmPrv="clr-namespace:FarmasilApp.VistaModelo.PRV;assembly=FarmasilApp.VistaModelo"
                     xmlns:vistaPrv="clr-namespace:FarmasilApp.Vista.PRV"
@@ -34,6 +36,10 @@
     <!-- Consulta de Inventario (ESP-0006). -->
     <DataTemplate DataType="{x:Type vmInv:InventarioViewModel}">
         <vistaInv:InventarioView />
+    </DataTemplate>
+    <!-- Gestión de remesas (ESP-0041 a ESP-0044). -->
+    <DataTemplate DataType="{x:Type vmLot:LotesViewModel}">
+        <vistaLot:LotesView />
     </DataTemplate>
 
     <!-- Consulta de métodos de pago (ESP-0018). -->

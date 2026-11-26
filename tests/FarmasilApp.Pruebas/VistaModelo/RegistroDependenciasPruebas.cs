@@ -2,6 +2,7 @@ using FarmasilApp.Modelo.ALV;
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Pruebas.ALV;
 using FarmasilApp.Modelo.INV;
+using FarmasilApp.Modelo.LOT;
 using FarmasilApp.Modelo.PAG;
 using FarmasilApp.Modelo.PRV;
 using FarmasilApp.Modelo.USR;
@@ -12,6 +13,7 @@ using FarmasilApp.Pruebas.USR;
 using FarmasilApp.VistaModelo.ALV;
 using FarmasilApp.VistaModelo.Comun;
 using FarmasilApp.VistaModelo.INV;
+using FarmasilApp.VistaModelo.LOT;
 using FarmasilApp.VistaModelo.Principal;
 using FarmasilApp.VistaModelo.PAG;
 using FarmasilApp.VistaModelo.PRV;
@@ -34,6 +36,7 @@ public class RegistroDependenciasPruebas
         servicios.AddSingleton<IUsuariosRepositorio, RepositorioDeUsuariosFalso>();
         servicios.AddSingleton<IAlertasRepositorio, AlertasRepositorioFalso>();
         servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
+        servicios.AddSingleton<ILotesRepositorio, RepositorioLotesFalso>();
 
         // Repositorio falso del módulo DOC.
         servicios.AddSingleton<IComprobanteRepositorio, ComprobanteRepositorioFalso>();
@@ -59,6 +62,7 @@ public class RegistroDependenciasPruebas
         Assert.NotNull(proveedor.GetRequiredService<InicioSesionViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<AlertasViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<InventarioViewModel>());
+        Assert.NotNull(proveedor.GetRequiredService<LotesViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<MetodosPagoViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<ProveedoresViewModel>());
         Assert.NotNull(proveedor.GetRequiredService<UsuariosViewModel>());
@@ -78,6 +82,7 @@ public class RegistroDependenciasPruebas
       "Ventas",
       "Comprobantes tributarios",
     "Inventario",
+    "Lotes",
     "Alertas de vencimiento",
     "Métodos de pago",
     "Usuarios",
@@ -116,5 +121,45 @@ public class RegistroDependenciasPruebas
         var segunda = proveedor.GetRequiredService<InicioViewModel>();
 
         Assert.NotSame(primera, segunda);
+    }
+
+    private sealed class RepositorioLotesFalso : ILotesRepositorio
+    {
+        public IReadOnlyList<RemesaConsulta> Consultar(
+            int? idProducto,
+            string? numeroLote,
+            EstadoLote? estado)
+            => Array.Empty<RemesaConsulta>();
+
+        public RemesaConsulta? ObtenerPorId(int idLote)
+            => null;
+
+        public bool ExisteNumeroLote(
+            int idProducto,
+            string numeroLote,
+            int? excluirIdLote = null)
+            => false;
+
+        public int Crear(NuevaRemesa remesa)
+            => 1;
+
+        public bool TieneDetalleDevolucion(int idLote)
+            => false;
+
+        public int CantidadComprometidaPendiente(int idLote)
+            => 0;
+
+        public void Actualizar(
+            int idLote,
+            ActualizacionRemesa remesa,
+            EstadoLote estadoNuevo)
+        {
+        }
+
+        public bool TieneDevolucionPendiente(int idLote)
+            => false;
+
+        public ResultadoBajaRemesa DarDeBaja(int idLote)
+            => ResultadoBajaRemesa.Eliminada;
     }
 }
