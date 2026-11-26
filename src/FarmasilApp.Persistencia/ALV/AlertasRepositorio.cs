@@ -8,8 +8,23 @@ namespace FarmasilApp.Persistencia.ALV;
 public sealed class AlertasRepositorio : IAlertasRepositorio
 {
     private readonly OpcionesBaseDatos _opciones;
-    public AlertasRepositorio(OpcionesBaseDatos opciones) =>
-        _opciones = opciones ?? throw new ArgumentNullException(nameof(opciones));
+    private readonly ContextoTransaccionSql _contextoTransaccion;
+
+    public AlertasRepositorio(OpcionesBaseDatos opciones)
+        : this(opciones, new ContextoTransaccionSql())
+    {
+    }
+
+    public AlertasRepositorio(
+        OpcionesBaseDatos opciones,
+        ContextoTransaccionSql contextoTransaccion)
+    {
+        _opciones = opciones
+            ?? throw new ArgumentNullException(nameof(opciones));
+
+        _contextoTransaccion = contextoTransaccion
+            ?? throw new ArgumentNullException(nameof(contextoTransaccion));
+    }
 
     public int ObtenerUmbralMesesActivo()
     {
@@ -64,10 +79,21 @@ public sealed class AlertasRepositorio : IAlertasRepositorio
         using var conexion = new SqlConnection(_opciones.CadenaConexion);
         conexion.Open();
         // SERIALIZABLE protege el conteo de retiros ante borrados/altas concurrentes.
-        using var transaccion = conexion.BeginTransaction(IsolationLevel.Serializable);
+        using var transaccion =
+            conexion.BeginTransaction(
+                IsolationLevel.Serializable);
+
+        using var alcance =
+            _contextoTransaccion.Establecer(
+                conexion,
+                transaccion);
+
         try
         {
-            var unidad = new UnidadTrabajo(conexion, transaccion);
+            var unidad =
+                new UnidadTrabajo(
+                    conexion,
+                    transaccion);
             var resultado = operacion(unidad);
             transaccion.Commit();
             return resultado;

@@ -7,6 +7,7 @@ using FarmasilApp.VistaModelo.ALV;
 using FarmasilApp.VistaModelo.Comun;
 using FarmasilApp.VistaModelo.DOC;
 using FarmasilApp.VistaModelo.INV;
+using FarmasilApp.VistaModelo.LOT;
 using FarmasilApp.VistaModelo.PAG;
 using FarmasilApp.VistaModelo.Principal;
 using FarmasilApp.VistaModelo.PRV;
@@ -29,6 +30,7 @@ public class MainViewModelPruebas
         "Ventas",
         "Comprobantes tributarios",
         "Inventario",
+        "Lotes",
         "Alertas de vencimiento",
         "Métodos de pago",
         "Usuarios",
@@ -91,6 +93,7 @@ public class MainViewModelPruebas
                 "Ventas",
                 "Comprobantes tributarios",
                 "Inventario",
+                "Lotes",
                 "Alertas de vencimiento",
                 "Métodos de pago"
             },
@@ -203,6 +206,7 @@ public class MainViewModelPruebas
     [InlineData("Comprobantes tributarios", typeof(ComprobantesViewModel))]
     [InlineData("Alertas de vencimiento", typeof(AlertasViewModel))]
     [InlineData("Inventario", typeof(InventarioViewModel))]
+    [InlineData("Lotes", typeof(LotesViewModel))]
     [InlineData("Métodos de pago", typeof(MetodosPagoViewModel))]
     [InlineData("Usuarios", typeof(UsuariosViewModel))]
     [InlineData("Proveedores", typeof(ProveedoresViewModel))]

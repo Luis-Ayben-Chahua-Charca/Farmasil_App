@@ -1,6 +1,7 @@
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.VistaModelo.ALV;
 using FarmasilApp.VistaModelo.INV;
+using FarmasilApp.VistaModelo.LOT;
 using FarmasilApp.VistaModelo.DOC;
 using FarmasilApp.VistaModelo.Principal;
 using FarmasilApp.VistaModelo.PAG;
@@ -25,11 +26,12 @@ public static class RegistroDependencias
         servicios.AddTransient<InicioViewModel>();
         servicios.AddTransient<InicioSesionViewModel>();
 
-        // Menú por rol: un módulo por línea, en el orden del catálogo, con los roles que la matriz de permisos
+        // Menú por rol: un mó
         // le concede para abrirlo. Los demás roles lo ven deshabilitado, con el motivo (DEC-075).
         servicios.AgregarModuloNavegable<VentaViewModel>("Ventas", Rol.Administrador, Rol.Tecnico);
         servicios.AgregarModuloNavegable<ComprobantesViewModel>("Comprobantes tributarios", Rol.Administrador, Rol.Tecnico);
         servicios.AgregarModuloNavegable<InventarioViewModel>("Inventario", Rol.Administrador, Rol.Tecnico);
+        servicios.AgregarModuloNavegable<LotesViewModel>("Lotes", Rol.Administrador, Rol.Tecnico);
         servicios.AgregarModuloNavegable<AlertasViewModel>("Alertas de vencimiento", Rol.Administrador, Rol.Tecnico);
         servicios.AgregarModuloNavegable<MetodosPagoViewModel>("Métodos de pago", Rol.Administrador, Rol.Tecnico);
         servicios.AgregarModuloNavegable<UsuariosViewModel>("Usuarios", Rol.Administrador);

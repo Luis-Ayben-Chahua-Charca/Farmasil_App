@@ -23,10 +23,7 @@ public static class RegistroConsultaAlertasSql
             ServiceDescriptor.Transient<AlertasServicio>(proveedor =>
                 new AlertasServicio(
                     proveedor.GetRequiredService<IAlertasRepositorio>(),
-                    new LotesSqlVencimientos(
-                        proveedor.GetRequiredService<OpcionesBaseDatos>(),
-                        proveedor.GetRequiredService<ILotes>()
-                    ),
+                    proveedor.GetRequiredService<ILotes>(),
                     proveedor.GetRequiredService<ISesion>(),
                     proveedor.GetRequiredService<TimeProvider>(),
                     proveedor.GetRequiredService<IDevoluciones>()
