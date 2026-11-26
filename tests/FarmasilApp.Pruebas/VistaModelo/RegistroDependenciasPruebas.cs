@@ -37,7 +37,6 @@ public class RegistroDependenciasPruebas
         servicios.AddSingleton<IAlertasRepositorio, AlertasRepositorioFalso>();
         servicios.AddSingleton<IInventarioRepositorio, RepositorioDeInventarioFalso>();
         servicios.AddSingleton<ILotesRepositorio, RepositorioLotesFalso>();
-        servicios.AddTransient<LotesServicio>();
 
         // Repositorio falso del módulo DOC.
         servicios.AddSingleton<IComprobanteRepositorio, ComprobanteRepositorioFalso>();

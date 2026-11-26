@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace FarmasilApp.Vista;
 
 /// <summary>
-/// Punto de entrada de la aplicació
+/// Punto de entrada de la aplicación WPF. Lee la configuración, registra las dependencias una sola vez
 /// al arrancar (VP-00) y abre la ventana principal.
 /// </summary>
 public partial class App : Application

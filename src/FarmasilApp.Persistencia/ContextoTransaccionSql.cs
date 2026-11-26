@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using Microsoft.Data.SqlClient;
 
 namespace FarmasilApp.Persistencia;

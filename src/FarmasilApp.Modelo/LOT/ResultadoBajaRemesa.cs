@@ -1,4 +1,4 @@
-﻿namespace FarmasilApp.Modelo.LOT;
+namespace FarmasilApp.Modelo.LOT;
 
 /// <summary>
 /// Resultado de la baja condicional de una remesa

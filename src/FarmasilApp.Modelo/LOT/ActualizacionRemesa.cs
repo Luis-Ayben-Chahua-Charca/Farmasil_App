@@ -1,4 +1,4 @@
-﻿namespace FarmasilApp.Modelo.LOT;
+namespace FarmasilApp.Modelo.LOT;
 
 /// <summary>
 /// Datos validados necesarios para actualizar una remesa existente.

@@ -1,4 +1,4 @@
-﻿using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Modelo.INV;
 using FarmasilApp.Modelo.LOT;
 using FarmasilApp.Modelo.PRV;
@@ -401,7 +401,7 @@ public class LotesServicioPruebas
     }
 
     [Fact]
-    [Trait("Especificacion", "ESP-0042")]
+    [Trait("Especificacion", "RNF-0006")]
     [Trait("Tecnica", "T-012")]
     public void TecnicoPuedeConsultarPeroNoPuedeCrearActualizarNiDarDeBaja()
     {
@@ -486,13 +486,15 @@ public class LotesServicioPruebas
             int? IdProducto,
             string? NumeroLote,
             EstadoLote? Estado
-        )? UltimaConsulta { get; private set; }
+        )? UltimaConsulta
+        { get; private set; }
 
         public (
             int IdLote,
             ActualizacionRemesa Remesa,
             EstadoLote Estado
-        )? UltimaActualizacion { get; private set; }
+        )? UltimaActualizacion
+        { get; private set; }
 
         public int? UltimaBaja { get; private set; }
 

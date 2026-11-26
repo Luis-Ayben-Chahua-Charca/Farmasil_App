@@ -101,78 +101,69 @@
                    Foreground="Gray"/>
 
         <!-- Tarjetas de remesas -->
-        <ScrollViewer Grid.Row="3"
-                      HorizontalScrollBarVisibility="Disabled"
-                      VerticalScrollBarVisibility="Auto"
-                      MaxHeight="190"
-                      Margin="0,0,0,14">
+        <!-- Las tarjetas no tienen botón: un clic selecciona la remesa y carga la ficha (DEC-062).
+             ListaComun es un ListBox, así que cada tarjeta es un ListBoxItem visible en UI Automation. -->
+        <comun:ListaComun Grid.Row="3"
+                          AutomationProperties.AutomationId="LOT-PNL-REMESAS"
+                          ItemsSource="{Binding Remesas}"
+                          SelectedItem="{Binding RemesaSeleccionada, Mode=TwoWay}"
+                          Style="{StaticResource EstiloListaComun}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          MaxHeight="190"
+                          Margin="0,0,0,14">
 
-            <ItemsControl AutomationProperties.AutomationId="LOT-PNL-REMESAS"
-                          ItemsSource="{Binding Remesas}">
+            <comun:ListaComun.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="AutomationProperties.AutomationId" Value="LOT-CRD-REMESA"/>
+                </Style>
+            </comun:ListaComun.ItemContainerStyle>
 
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+            <comun:ListaComun.ItemTemplate>
+                <DataTemplate>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
+                    <Border BorderBrush="#D0D0D0"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="12"
+                            Margin="0,0,10,10"
+                            Width="250">
 
-                        <Border AutomationProperties.AutomationId="LOT-CRD-REMESA"
-                                BorderBrush="#D0D0D0"
-                                BorderThickness="1"
-                                CornerRadius="6"
-                                Padding="12"
-                                Margin="0,0,10,10"
-                                Width="250">
+                        <StackPanel>
 
-                            <StackPanel>
+                            <TextBlock Text="{Binding NombreMedicamento}"
+                                       FontWeight="Bold"
+                                       FontSize="15"
+                                       TextWrapping="Wrap"/>
 
-                                <TextBlock Text="{Binding NombreMedicamento}"
-                                           FontWeight="Bold"
-                                           FontSize="15"
-                                           TextWrapping="Wrap"/>
+                            <TextBlock Margin="0,5,0,0">
+                                <Run Text="Lote: "/>
+                                <Run Text="{Binding NumeroLote}"/>
+                            </TextBlock>
 
-                                <TextBlock Margin="0,5,0,0">
-                                    <Run Text="Lote: "/>
-                                    <Run Text="{Binding NumeroLote}"/>
-                                </TextBlock>
+                            <TextBlock>
+                                <Run Text="Vence: "/>
+                                <Run Text="{Binding FechaVencimiento,
+                                                   StringFormat={}{0:dd/MM/yyyy}}"/>
+                            </TextBlock>
 
-                                <TextBlock>
-                                    <Run Text="Vence: "/>
-                                    <Run Text="{Binding FechaVencimiento,
-                                                       StringFormat={}{0:dd/MM/yyyy}}"/>
-                                </TextBlock>
+                            <TextBlock>
+                                <Run Text="Stock: "/>
+                                <Run Text="{Binding StockActual}"/>
+                            </TextBlock>
 
-                                <TextBlock>
-                                    <Run Text="Stock: "/>
-                                    <Run Text="{Binding StockActual}"/>
-                                </TextBlock>
+                            <TextBlock>
+                                <Run Text="Estado: "/>
+                                <Run Text="{Binding Estado}"/>
+                            </TextBlock>
 
-                                <TextBlock>
-                                    <Run Text="Estado: "/>
-                                    <Run Text="{Binding Estado}"/>
-                                </TextBlock>
+                        </StackPanel>
 
-                                <Button AutomationProperties.AutomationId="LOT-BTN-SELECCIONAR-REMESA"
-                                        Content="Seleccionar"
-                                        Margin="0,10,0,0"
-                                        Padding="10,4"
-                                        Command="{Binding DataContext.SeleccionarRemesaCommand,
-                                                  RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                        CommandParameter="{Binding}"/>
+                    </Border>
 
-                            </StackPanel>
+                </DataTemplate>
+            </comun:ListaComun.ItemTemplate>
 
-                        </Border>
-
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-
-            </ItemsControl>
-
-        </ScrollViewer>
+        </comun:ListaComun>
 
         <!-- Tabla ESP-0042 -->
         <DataGrid Grid.Row="4"
@@ -410,12 +401,15 @@
 
                         <TextBlock Text="Estado"/>
 
-                        <TextBox AutomationProperties.AutomationId="LOT-TXT-ESTADO-LOTE"
-                                 Text="{Binding EstadoFicha,
-                                                Mode=OneWay}"
-                                 IsReadOnly="True"
-                                 Height="32"
-                                 Margin="0,5,0,0"/>
+                        <!-- Solo lectura: el estado se deriva de las existencias (ESP-0043, DEC-034). -->
+                        <ComboBox AutomationProperties.AutomationId="LOT-CMB-ESTADO-LOTE"
+                                  IsEditable="True"
+                                  IsReadOnly="True"
+                                  IsEnabled="False"
+                                  Text="{Binding EstadoFicha,
+                                                 Mode=OneWay}"
+                                  Height="32"
+                                  Margin="0,5,0,0"/>
 
                     </StackPanel>
 
@@ -445,15 +439,9 @@
                     <StackPanel Grid.Column="1"
                                 Orientation="Horizontal">
 
-                        <Button AutomationProperties.AutomationId="LOT-BTN-NUEVA-REMESA"
-                                Content="Nueva remesa"
-                                Command="{Binding NuevaCommand}"
-                                MinWidth="110"
-                                Height="34"
-                                Margin="0,0,8,0"
-                                Padding="12,0"/>
-
                         <Button AutomationProperties.AutomationId="LOT-BTN-CREAR-LOTE"
+                                ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
                                 Content="Crear remesa"
                                 Command="{Binding CrearCommand}"
                                 MinWidth="110"
@@ -462,6 +450,8 @@
                                 Padding="12,0"/>
 
                         <Button AutomationProperties.AutomationId="LOT-BTN-ACTUALIZAR-LOTE"
+                                ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
                                 Content="Actualizar"
                                 Command="{Binding ActualizarCommand}"
                                 MinWidth="100"
@@ -470,6 +460,8 @@
                                 Padding="12,0"/>
 
                         <Button AutomationProperties.AutomationId="LOT-BTN-CONFIRMAR-ACTUALIZACION"
+                                ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
                                 Content="Guardar cambios"
                                 Command="{Binding ConfirmarActualizacionCommand}"
                                 MinWidth="125"
@@ -478,6 +470,8 @@
                                 Padding="12,0"/>
 
                         <Button AutomationProperties.AutomationId="LOT-BTN-ELIMINAR-LOTE"
+                                ToolTip="{Binding MotivoAccionesAdministrador}"
+                                ToolTipService.ShowOnDisabled="True"
                                 Content="Dar de baja"
                                 Command="{Binding EliminarCommand}"
                                 MinWidth="105"

@@ -1,4 +1,4 @@
-﻿using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Modelo.Comun;
 
 namespace FarmasilApp.Modelo.LOT;
 

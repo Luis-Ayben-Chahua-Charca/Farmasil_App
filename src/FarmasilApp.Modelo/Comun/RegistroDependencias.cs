@@ -29,6 +29,7 @@ public static class RegistroDependencias
         servicios.AddTransient<AlertasServicio>();
         servicios.AddTransient<ComprobanteServicio>();
         servicios.AddTransient<InventarioServicio>();
+        servicios.AddTransient<LotesServicio>();
         servicios.AddTransient<MetodosPagoServicio>();
         servicios.AddTransient<ProveedoresServicio>();
         servicios.AddTransient<UsuariosServicio>();
@@ -48,7 +49,8 @@ public static class RegistroDependencias
         servicios.AddSingleton<IPagos, MetodosPagoServicio>();
         servicios.AddSingleton<IRestricciones, RestriccionesSimulado>();
         servicios.AddSingleton<IProveedores, ProveedoresContrato>();
-        servicios.AddSingleton<IInventario, InventarioSimulado>();
+        servicios.AddSingleton<IInventario, InventarioContrato>();
+        // ILotes real (LotesSql) vive en Persistencia, que el Modelo no ve: la reemplaza AgregarLotesSql (#101).
         servicios.AddSingleton<ILotes, LotesSimulado>();
         servicios.AddSingleton<IVentas, VentasSimulado>();
         servicios.AddSingleton<IDevoluciones, DevolucionesSimulado>();

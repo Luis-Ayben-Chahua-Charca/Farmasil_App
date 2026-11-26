@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Modelo.INV;
@@ -58,16 +58,10 @@ public sealed class LotesViewModel : ViewModelBase
         BuscarCommand =
             new AsyncRelayCommand(ConsultarAsync);
 
-        NuevaCommand =
-            new RelayCommand(
-                PrepararNueva,
-                () => EsAdministrador);
-
         CrearCommand =
             new AsyncRelayCommand(
                 CrearAsync,
-                () => EsAdministrador
-                    && IdLoteFicha is null);
+                () => EsAdministrador);
 
         ActualizarCommand =
             new RelayCommand(
@@ -87,11 +81,6 @@ public sealed class LotesViewModel : ViewModelBase
                 DarDeBajaAsync,
                 () => EsAdministrador
                     && RemesaSeleccionada is not null);
-
-        SeleccionarRemesaCommand =
-            new RelayCommand<RemesaConsulta>(
-                SeleccionarRemesa,
-                remesa => remesa is not null);
     }
 
     private bool EsAdministrador =>
@@ -114,7 +103,6 @@ public sealed class LotesViewModel : ViewModelBase
 
     public AsyncRelayCommand BuscarCommand { get; }
 
-    public RelayCommand NuevaCommand { get; }
 
     public AsyncRelayCommand CrearCommand { get; }
 
@@ -124,7 +112,6 @@ public sealed class LotesViewModel : ViewModelBase
 
     public AsyncRelayCommand EliminarCommand { get; }
 
-    public RelayCommand<RemesaConsulta> SeleccionarRemesaCommand { get; }
 
     public MedicamentoDto? MedicamentoFiltro
     {
@@ -425,15 +412,6 @@ public sealed class LotesViewModel : ViewModelBase
 
                 await RefrescarAsync();
             });
-
-    private void SeleccionarRemesa(
-        RemesaConsulta? remesa)
-    {
-        if (remesa is not null)
-        {
-            RemesaSeleccionada = remesa;
-        }
-    }
 
     private void CargarFicha(
         RemesaConsulta? remesa)

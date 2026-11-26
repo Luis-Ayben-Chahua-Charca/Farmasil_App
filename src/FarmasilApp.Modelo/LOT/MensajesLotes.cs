@@ -1,4 +1,4 @@
-﻿namespace FarmasilApp.Modelo.LOT;
+namespace FarmasilApp.Modelo.LOT;
 
 /// <summary>
 /// Mensajes funcionales del módulo LOT.

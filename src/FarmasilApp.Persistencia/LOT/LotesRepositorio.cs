@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using System.Globalization;
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Modelo.LOT;
