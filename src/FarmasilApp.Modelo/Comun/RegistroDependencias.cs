@@ -32,6 +32,7 @@ public static class RegistroDependencias
         servicios.AddTransient<MetodosPagoServicio>();
         servicios.AddTransient<ProveedoresServicio>();
         servicios.AddTransient<UsuariosServicio>();
+        servicios.AddTransient<VentaServicio>();
 
         // El hash no tiene estado: una sola instancia sirve a Usuarios y al inicio de sesión (#88).
         servicios.AddSingleton<IHashContrasenas, HashContrasenasPbkdf2>();
@@ -44,7 +45,7 @@ public static class RegistroDependencias
         servicios.AddSingleton<SesionActual>();
         servicios.AddSingleton<ISesion>(proveedor => proveedor.GetRequiredService<SesionActual>());
         servicios.AddSingleton<IAutenticacion>(proveedor => proveedor.GetRequiredService<SesionActual>());
-        servicios.AddSingleton<IPagos, PagosSimulado>();
+        servicios.AddSingleton<IPagos, MetodosPagoServicio>();
         servicios.AddSingleton<IRestricciones, RestriccionesSimulado>();
         servicios.AddSingleton<IProveedores, ProveedoresContrato>();
         servicios.AddSingleton<IInventario, InventarioSimulado>();

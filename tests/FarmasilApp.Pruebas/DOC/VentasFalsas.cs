@@ -11,7 +11,7 @@ internal sealed class VentasFalsas : IVentas
 
     public void Agregar(VentaDto venta) => _ventas[venta.IdVenta] = venta;
 
-    public IReadOnlyList<VentaDto> ConsultarVentas(FiltroVentas filtro) => Array.Empty<VentaDto>();
+    public IReadOnlyList<VentaDto> ConsultarVentas(FiltroVentas filtro) => _ventas.Values.OrderBy(v => v.IdVenta).ToArray();
 
     public VentaDto? ObtenerVenta(int idVenta)
     {

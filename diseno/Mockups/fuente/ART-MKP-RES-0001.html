@@ -28,15 +28,15 @@ table th { background: #f8f9fa; }
 <header>
   <div class="element-wrapper" style="flex:2;">
     <input type="text" placeholder="Buscar medicamento restringido...">
-    <span class="ui-tag">Campo Texto: RES-CMB-MEDICAMENTO</span>
+    <span class="ui-tag">Barra de búsqueda: RES-SRH-MEDICAMENTO</span>
   </div>
   <div class="element-wrapper" style="flex:1;">
-    <select><option>-- Tipo --</option><option>Bloqueante</option><option>Informativa</option></select>
-    <span class="ui-tag">ComboBox: RES-CMB-TIPO-RESTRICCION</span>
+    <select><option value="">-- Tipo --</option><option>Bloqueante</option><option>Informativa</option></select>
+    <span class="ui-tag">Filtro: RES-CMB-FILTRO-TIPO</span>
   </div>
   <div class="element-wrapper" style="flex:1;">
-    <select><option>-- Estado --</option><option>Activo</option><option>Inactivo</option></select>
-    <span class="ui-tag">ComboBox: RES-CMB-ESTADO-ALERTA</span>
+    <select><option value="">-- Estado --</option><option>Activo</option><option>Inactivo</option></select>
+    <span class="ui-tag">Filtro: RES-CMB-FILTRO-ESTADO</span>
   </div>
   <div class="element-wrapper" style="width:auto;">
     <button style="background:#198754;color:white;">Buscar</button>
@@ -47,11 +47,11 @@ table th { background: #f8f9fa; }
   <div class="panel">
     <h3>Restricciones Activas</h3>
     <div style="max-height:500px;overflow-y:auto;">
-      <div class="restriccion-card"><b>Amoxicilina 500mg</b><br>Tipo: Bloqueante<br><span style="color:#6c757d;">Requiere receta médica</span></div>
+      <div class="restriccion-card"><b>Amoxicilina 500mg</b><br>Tipo: Bloqueante<br><span style="color:#6c757d;">Requiere receta médica</span><br><span class="ui-tag">Tarjeta: RES-CRD-RESTRICCION</span></div>
       <div class="restriccion-card" style="border-left-color:#ffc107;background:#fffdf5;"><b>Ibuprofeno 400mg</b><br>Tipo: Informativa<br><span style="color:#6c757d;">Advertir sobre estómago vacío</span></div>
       <div class="restriccion-card"><b>Tramadol 50mg</b><br>Tipo: Bloqueante<br><span style="color:#6c757d;">Venta bajo receta retenida</span></div>
     </div>
-    <span class="ui-tag" style="margin-top:5px;">Lista: RES-TBL-RESTRICCIONES-VENTA</span>
+    <span class="ui-tag" style="margin-top:5px;">Panel: RES-PNL-RESTRICCIONES</span>
   </div>
   <div class="panel">
     <h3>Ficha de Restricción</h3>
@@ -87,26 +87,27 @@ table th { background: #f8f9fa; }
     <hr style="margin-bottom:10px;">
     <div class="element-wrapper">
       <table>
-        <thead><tr><th>Medicamento</th><th>Tipo</th><th>Estado</th></tr></thead>
+        <thead><tr><th>Medicamento</th><th>Condición del Cliente</th><th>Tipo</th><th>Motivo / Advertencia</th><th>Estado</th></tr></thead>
         <tbody>
-          <tr><td>Amoxicilina</td><td>Bloqueante</td><td>Activo</td></tr>
-          <tr><td>Ibuprofeno</td><td>Informativa</td><td>Activo</td></tr>
-          <tr><td>Tramadol</td><td>Bloqueante</td><td>Activo</td></tr>
+          <tr><td>Amoxicilina</td><td>Mayor de 18 años con receta</td><td>Bloqueante</td><td>Requiere receta médica</td><td>Activo</td></tr>
+          <tr><td>Ibuprofeno</td><td>—</td><td>Informativa</td><td>Advertir sobre estómago vacío</td><td>Activo</td></tr>
+          <tr><td>Tramadol</td><td>—</td><td>Bloqueante</td><td>Venta bajo receta retenida</td><td>Activo</td></tr>
         </tbody>
       </table>
       <span class="ui-tag">Tabla: RES-TBL-RESTRICCIONES-VENTA</span>
     </div>
     <div class="btn-actions">
-      <div class="element-wrapper"><button style="background:#198754;color:white;">Crear</button><span class="ui-tag-btn">RES-BTN-CREAR-RESTRICCION</span></div>
-      <div class="element-wrapper"><button style="background:#ffc107;color:#333;">Actualizar</button><span class="ui-tag-btn">RES-BTN-ACTUALIZAR-RESTRICCION</span></div>
-      <div class="element-wrapper"><button style="background:#dc3545;color:white;" onclick="document.getElementById('RES-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Eliminar</button><span class="ui-tag-btn">RES-BTN-ELIMINAR-RESTRICCION</span></div>
+      <div class="element-wrapper"><button style="background:#198754;color:white;" title="Solo disponible para el Administrador.">Crear</button><span class="ui-tag-btn">RES-BTN-CREAR-RESTRICCION</span><span class="ui-tag-btn">Solo disponible para el Administrador.</span></div>
+      <div class="element-wrapper"><button style="background:#ffc107;color:#333;" title="Solo disponible para el Administrador.">Actualizar</button><span class="ui-tag-btn">RES-BTN-ACTUALIZAR-RESTRICCION</span><span class="ui-tag-btn">Solo disponible para el Administrador.</span></div>
+      <div class="element-wrapper"><button style="background:#0d6efd;color:white;" title="Solo disponible para el Administrador.">Guardar cambios</button><span class="ui-tag-btn">RES-BTN-CONFIRMAR-ACTUALIZACION</span><span class="ui-tag-btn">Solo disponible para el Administrador.</span></div>
+      <div class="element-wrapper"><button style="background:#dc3545;color:white;" title="Solo disponible para el Administrador." onclick="document.getElementById('RES-MDL-CONFIRMAR-ELIMINACION').style.display='flex'">Desactivar</button><span class="ui-tag-btn">RES-BTN-ELIMINAR-RESTRICCION</span><span class="ui-tag-btn">Solo disponible para el Administrador.</span></div>
     </div>
   </div>
 </div>
 <div class="modal" id="RES-MDL-CONFIRMAR-ELIMINACION">
   <div class="modal-content">
-    <div class="element-wrapper" style="align-items:center;"><h4>Eliminar Restricción</h4><span class="ui-tag">Modal: RES-MDL-CONFIRMAR-ELIMINACION</span></div>
-    <div class="element-wrapper" style="align-items:center;margin:15px 0;"><p>¿Está seguro de eliminar esta restricción de venta?</p><span class="ui-tag">Mensaje: RES-TXT-MSJ</span></div>
+    <div class="element-wrapper" style="align-items:center;"><h4>Desactivar Restricción</h4><span class="ui-tag">Modal: RES-MDL-CONFIRMAR-ELIMINACION</span></div>
+    <div class="element-wrapper" style="align-items:center;margin:15px 0;"><p>¿Está seguro de desactivar esta restricción? El medicamento dejará de mostrar la advertencia durante la venta.</p><span class="ui-tag">Mensaje: RES-TXT-MSJ</span></div>
     <div style="display:flex;gap:15px;justify-content:center;">
       <div class="element-wrapper" style="width:auto;"><button style="background:#dc3545;color:white;">Sí, Eliminar</button><span class="ui-tag-btn">RES-BTN-CONFIRMAR-SI</span></div>
       <div class="element-wrapper" style="width:auto;"><button style="background:#6c757d;color:white;" onclick="document.getElementById('RES-MDL-CONFIRMAR-ELIMINACION').style.display='none'">Cancelar</button><span class="ui-tag-btn">RES-BTN-CONFIRMAR-NO</span></div>

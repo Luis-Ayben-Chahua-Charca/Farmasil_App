@@ -1,93 +1,93 @@
 # Guía de pruebas exploratorias
 
-| Artefacto | Guía de pruebas exploratorias e índice del manual de usuario |
+| Artefacto | Guía de pruebas exploratorias de USR, PRV, INV y PAG |
 | --- | --- |
-| Versión | 02.01 |
+| Versión | 03.00 |
 | Fecha | 25/11/2026 |
-| Responsable | R4 — Pruebas exploratorias y documentación de usuario |
+| Responsable | R4 — Pruebas exploratorias y documentación de usuario. Sesiones de cierre de S2: R1, por ausencia de R4. |
 
 ## Historial de versiones
 
 | Versión | Fecha | Cambio |
 | --- | --- | --- |
 | 01.00 | 16/11/2026 | Primera versión (issue #78): lista común de revisión por pantalla, misiones de exploración de Inventario, Proveedores y Usuarios, plantillas de sesión y de defectos, e índice del manual de usuario por módulo. |
-| 02.00 | 23/11/2026 | Issue #93: se actualiza el alcance según el código vigente; se agregan los recorridos de PAG, las columnas de resultado observado y evidencia y borradores del manual de USR y PAG. |
-| 02.01 | 25/11/2026 | Integra enlaces a las capturas existentes en `evidencias-pdf` sin atribuirles resultados no verificados ni cambiar los estados de implementación. |
+| 02.00 | 23/11/2026 | Issue #93: recorridos de PAG, columnas de resultado observado y evidencia, y borrador del manual de USR y PAG. |
+| 02.01 | 25/11/2026 | Issue #93: capturas de los recorridos en `evidencias-pdf/`. |
+| 03.00 | 25/11/2026 | Issue #93 (revisión del PR #188): se alinea con `main`. PAG tiene alta, actualización y baja (#186) y el menú tiene siete módulos. Los recorridos llevan los datos de prueba de cada rama. Se agregan los hallazgos de la revisión estática y la lista de capturas por repetir. El índice y el manual de USR y PAG pasan a [docs/manual/manual-usuario.md](../manual/manual-usuario.md). |
 
 ## Propósito
 
-Esta guía sirve para explorar desde la interfaz los módulos USR, PRV, INV y PAG y para preparar el índice del manual de usuario. Los flujos esperados proceden de las especificaciones vigentes; las vistas WPF y sus VistaModelos permiten distinguir lo implementado de lo pendiente. Los HTML de `diseno/Mockups/fuente/` se usan solo como referencia visual y de rótulos, nunca como evidencia de ejecución. Incluye una [lista común](#lista-comun-de-revision), los recorridos disponibles y enlaces a capturas guardadas; los resultados observados se completan únicamente durante una sesión real. El alcance se contrastó con el [mapa del repositorio](../../architecture.md), el [contexto de arquitectura y módulos](../../docs/arquitectura/Contexto_Arquitectura_FARMASIL_ParaAgentesIA.md) y las responsabilidades de R4 en el [plan, sección 3](../../docs/plan/plan-implementacion.md#3-roles-y-responsabilidades).
+Esta guía sirve para explorar desde la interfaz los módulos USR, PRV, INV y PAG. Los resultados esperados salen de las especificaciones vigentes (ESP-0005 a ESP-0008, ESP-0017 a ESP-0020 y ESP-0033 a ESP-0040), de la [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md) y de la [matriz de permisos](../../diseno/07-matriz-permisos.md). Los mockups HTML son solo una referencia visual.
 
 ## Cómo usar la guía
 
-1. Registra una sesión con la plantilla de este documento.
-2. Confirma los datos iniciales y el entorno antes de abrir una pantalla.
-3. Recorre la [lista común de revisión](#lista-comun-de-revision) y después la misión del módulo; registra tanto los resultados correctos como las diferencias.
-4. Si una pantalla u operación no está disponible, registra el bloqueo o déjala pendiente; no supongas navegación ni funciones a partir del mockup.
-5. Las capturas existentes en `evidencias-pdf/` son referencias visuales; no reemplazan el registro de pasos, resultados observados ni estado de implementación.
-6. Informa los defectos con el formato de la sección [Reporte de defectos](#reporte-de-defectos).
+1. Prepara la base y la cuenta como dice [Entorno de pruebas](#entorno-de-pruebas).
+2. Recorre la [lista común de revisión](#lista-comun-de-revision) en cada pantalla y después la tabla del módulo, fila por fila, con los datos indicados.
+3. Anota en «Resultado observado» lo que pasó, también cuando coincide con lo esperado. En «Evidencia», el nombre de la captura.
+4. Haz primero todo lo de `tecnico_prueba` (menú, Inventario y Métodos de pago). La baja de Usuarios deja esa cuenta 'Inactivo', y después ya no se puede entrar con ella; para repetir, recrea la base.
+5. Lo que no coincide se registra como hallazgo de uso (`HAL-NNN`, DEC-081) y, si es un error, como issue con el formato de [Reporte de defectos](#reporte-de-defectos).
 
 ## Índice
 
-- [Alcance y evidencia](#alcance-y-evidencia)
+- [Alcance](#alcance)
 - [Entorno de pruebas](#entorno-de-pruebas)
 - [Lista común de revisión](#lista-comun-de-revision)
 - [Inicio de sesión y ventana principal](#inicio-de-sesion-y-ventana-principal)
 - [Inventario (INV)](#inventario-inv)
-  - [Pantalla de Inventario](#pantalla-de-inventario)
 - [Proveedores (PRV)](#proveedores-prv)
-  - [Pantalla de Proveedores](#pantalla-de-proveedores)
 - [Usuarios (USR)](#usuarios-usr)
-  - [Pantalla de Usuarios](#pantalla-de-usuarios)
 - [Métodos de pago (PAG)](#metodos-de-pago-pag)
-  - [Pantalla de Métodos de pago](#pantalla-de-metodos-de-pago)
-- [Índice del manual de usuario](#indice-del-manual-de-usuario)
-- [Borrador del manual: USR y PAG](#borrador-del-manual-usr-y-pag)
+- [Hallazgos de la revisión estática](#hallazgos-de-la-revision-estatica)
+- [Capturas](#capturas)
 - [Plantilla de sesión](#plantilla-de-sesion)
 - [Reporte de defectos](#reporte-de-defectos)
 - [Fuentes y diferencias por confirmar](#fuentes-y-diferencias-por-confirmar)
 
-## Alcance y evidencia
+## Alcance
 
-Las vistas WPF identificadas para este issue son [InicioSesionView.xaml](../../src/FarmasilApp.Vista/USR/InicioSesionView.xaml), `InventarioView`, `ProveedoresView`, `UsuariosView` y `MetodosPagoView`; las cuatro pantallas de módulo se enlazan desde [Plantillas.xaml](../../src/FarmasilApp.Vista/Comun/Plantillas.xaml). El inicio de sesión conduce al menú por rol y a la pantalla de inicio. El menú registra INV y PAG para Administrador y Técnico, y PRV y USR solo para Administrador, de acuerdo con la [matriz de permisos](../../diseno/07-matriz-permisos.md).
+Las cuatro pantallas tienen consulta, alta, actualización y baja: [InventarioView.xaml](../../src/FarmasilApp.Vista/INV/InventarioView.xaml), [ProveedoresView.xaml](../../src/FarmasilApp.Vista/PRV/ProveedoresView.xaml), [UsuariosView.xaml](../../src/FarmasilApp.Vista/USR/UsuariosView.xaml) y [MetodosPagoView.xaml](../../src/FarmasilApp.Vista/PAG/MetodosPagoView.xaml). Se llega a ellas desde el menú de la ventana principal, después del [inicio de sesión](../../src/FarmasilApp.Vista/USR/InicioSesionView.xaml).
 
-**Alcance de implementación observado en los archivos (no equivale a una prueba ejecutada):** las vistas y VistaModelos de INV, PRV y USR contienen consulta, alta, actualización y baja; PAG contiene consulta y selección, pero su vista y VistaModelo no incluyen comandos de alta, actualización o baja. Para esas tres operaciones de PAG se documenta el flujo especificado y se marca pendiente de implementación/verificación. La disponibilidad, navegación real, conexión y respuestas visuales quedan por confirmar al ejecutar la aplicación.
+El menú tiene siete módulos ([RegistroDependencias.cs](../../src/FarmasilApp.VistaModelo/Comun/RegistroDependencias.cs)):
 
-Las capturas existentes en [evidencias-pdf/](evidencias-pdf/) se enlazan como archivos de evidencia de los recorridos indicados, pero no se completan resultados observados ni se atribuye a esta revisión una ejecución de la aplicación, pruebas, compilación o scripts. No se registran defectos como reproducidos sin una sesión que los confirme.
+| Módulo del menú | Administrador | Técnico |
+| --- | --- | --- |
+| Ventas | Sí | Sí |
+| Comprobantes tributarios | Sí | Sí |
+| Inventario | Sí | Sí; solo consulta |
+| Alertas de vencimiento | Sí | Sí |
+| Métodos de pago | Sí | Sí; solo consulta |
+| Usuarios | Sí | No: deshabilitado con el motivo |
+| Proveedores | Sí | No: deshabilitado con el motivo |
+
+Ventas, Comprobantes tributarios y Alertas de vencimiento quedan fuera de esta guía; solo se comprueba que aparezcan en el menú.
 
 ## Entorno de pruebas
 
-| Aspecto | Información documentada |
+| Aspecto | Qué usar |
 | --- | --- |
-| Stack | C# sobre .NET 10 LTS, WPF con MVVM y SQL Server 2025 Express. El acceso a datos usa ADO.NET con `Microsoft.Data.SqlClient`, sin ORM. |
-| Equipo | Windows 11; la aplicación y la instancia `SQLEXPRESS` se ejecutan en el mismo equipo. |
-| Base | Las sesiones exploratorias usan `DB_FARMASIL_PRUEBAS`, creada con `database/recrear.ps1 -Base DB_FARMASIL_PRUEBAS`, que también carga los datos de prueba. Nunca se explora sobre una base con datos reales. |
-| Configuración de prueba | Para que la aplicación apunte a `DB_FARMASIL_PRUEBAS`, el README describe `src/FarmasilApp.Vista/appsettings.local.json`; ese archivo local no se versiona. |
-| Cuentas de prueba | `admin_prueba` ('Administrador') y `tecnico_prueba` ('Tecnico'), cargadas por `database/002_datos_prueba.sql`. No incluyas contraseñas en las capturas ni en el registro de sesión. |
-| Herramientas | SDK de .NET 10 (10.0.100 o posterior de la serie 10.0) y Git. Visual Studio 2026 Community con «Desarrollo de escritorio de .NET» es recomendado; VS Code con C# Dev Kit o Rider son alternativas. |
-| Comprobaciones documentadas | `dotnet build FarmasilApp.slnx --configuration Release` y `dotnet test FarmasilApp.slnx --configuration Release --no-build`. |
+| Base | `DB_FARMASIL_PRUEBAS`, creada y cargada con los datos de prueba como explica el [README](../../README.md#levantar-la-base-de-datos). Nunca una base con datos reales. Recréala antes de la sesión para empezar desde los datos conocidos. |
+| Conexión | La aplicación apunta a `DB_FARMASIL_PRUEBAS` con el `appsettings.local.json` que describe el README. Ese archivo no se versiona. |
+| Cuentas | `admin_prueba` ('Administrador') y `tecnico_prueba` ('Tecnico'), de `database/002_datos_prueba.sql`. Las contraseñas no se escriben en el registro de sesión ni aparecen en las capturas. |
+| Ejecución | `dotnet run --project src/FarmasilApp.Vista`, o desde Visual Studio. |
 
-Referencias: [README.md](../../README.md), [CONTRIBUTING.md](../../CONTRIBUTING.md) y [RNF-0008](../../catalogo/08-requisitos-no-funcionales.md). Usa una base de pruebas, no una base de operación. Las pruebas automatizadas de servicio y VistaModelo usan repositorios falsos; las capturas de esta guía son evidencia manual separada. Registra la base y el entorno usados en cada sesión.
+### Datos de prueba que usa cada recorrido
 
-### Evidencia técnica complementaria
-
-Estas capturas documentan compilación, ejecución y generación de PDF; no reemplazan la evidencia de los recorridos exploratorios de cada módulo.
-
-<details>
-<summary>Compilación, ejecución y PDF generado</summary>
-
-![Resumen de compilación](evidencias-pdf/01-resumen-compilacion.png)
-
-![Ejecución de FarmasilApp](evidencias-pdf/02-ejecucion-farmasilapp.png)
-
-![PDF generado](evidencias-pdf/03-pdf-generado.png)
-
-</details>
+| Dato | Para qué sirve |
+| --- | --- |
+| Droguería Andina SAC (RUC 20100070970) | Tiene una orden de devolución 'Pendiente': su baja se rechaza (ESP-0040). |
+| Distribuidora Salud Sur SAC y Laboratorios del Pacífico SAC | Tienen productos y remesas: su baja queda en 'Inactivo'. |
+| Proveedor Inactivo SAC | Estado 'Inactivo'; no debe ofrecerse en el combo de proveedor de Inventario. |
+| Omeprazol 20 mg | Sin remesas: stock físico 0. |
+| Paracetamol 500 mg | Con remesas y ventas: su baja queda en 'Descontinuado'. |
+| Producto Descontinuado | Ya está en 'Descontinuado'. |
+| Efectivo y Yape | Usados en ventas: su baja queda en 'Inactivo'. |
+| Tarjeta | 'Inactivo' y sin ventas: su baja lo elimina. |
+| `admin_prueba` y `tecnico_prueba` | Las dos tienen ventas registradas. |
 
 <a id="lista-comun-de-revision"></a>
 ## Lista común de revisión
 
-Se aplica a cualquier pantalla, antes de su misión. Cada punto sale de una regla que ya rige el proyecto; si una pantalla no la cumple, es un hallazgo. Para leer el identificador de un control se usa una herramienta de inspección de UI Automation de Windows, que muestra el `AutomationId` del control bajo el cursor.
+Se aplica a cualquier pantalla, antes de su recorrido. Para leer el identificador de un control se usa una herramienta de inspección de UI Automation de Windows (por ejemplo, Accessibility Insights o Inspect), que muestra el `AutomationId` del control bajo el cursor.
 
 | Qué revisar | Qué se espera | Regla |
 | --- | --- | --- |
@@ -95,399 +95,175 @@ Se aplica a cualquier pantalla, antes de su misión. Cada punto sale de una regl
 | Búsqueda y filtros | El buscador se llama `<MOD>-SRH-…` y los filtros de lista cerrada `<MOD>-CMB-FILTRO-…`. Cada filtro permite volver a «Todos». Sin criterios, la consulta hace lo que dice su especificación. | DEC-061 |
 | Tarjetas y tabla | Las tarjetas (`<MOD>-CRD-…` dentro de `<MOD>-PNL-…`) y la tabla (`<MOD>-TBL-…`) muestran el mismo resultado. Seleccionar una tarjeta o una fila carga la ficha. | DEC-062 |
 | Actualización | La actualización tiene dos pasos: el botón que la inicia y `<MOD>-BTN-CONFIRMAR-ACTUALIZACION`, con el rótulo «Guardar cambios». | DEC-046 |
-| Baja | La baja pide confirmación en el modal `<MOD>-MDL-CONFIRMAR-ELIMINACION`, con el texto `<MOD>-TXT-MSJ` exacto de la especificación y los botones `<MOD>-BTN-CONFIRMAR-SI` («Sí, Confirmar Acción») y `<MOD>-BTN-CONFIRMAR-NO` («Cancelar»). Escape cancela y Enter no confirma. | DEC-047, [CONTRIBUTING](../../CONTRIBUTING.md) |
-| Mensajes | Los mensajes de éxito y de las reglas de negocio son los de la especificación, palabra por palabra. Cuando la especificación no fija el texto, el mensaje es claro y no muestra detalles técnicos (excepciones, trazas, nombres de tablas). | Especificación de la operación |
-| Permisos | Contrasta el menú con la [matriz de permisos](../../diseno/07-matriz-permisos.md): los módulos no permitidos deben aparecer deshabilitados y explicar el motivo (RNF-0006, DEC-075). No supongas que los controles de operaciones inexistentes deben estar presentes. | RNF-0006, condición 4; DEC-075 |
-| Datos | Una consulta no modifica datos. Un resultado vacío muestra un mensaje, no una pantalla en blanco. Si falla la conexión, la pantalla lo informa sin cerrarse. | Postcondiciones de cada especificación |
-| Acceso | La pantalla se abre desde el menú por rol. Si no se puede llegar a ella, se registra como bloqueo. | Plan, sección 3 (R4) |
+| Baja | La baja pide confirmación en el modal `<MOD>-MDL-CONFIRMAR-ELIMINACION`, con el texto `<MOD>-TXT-MSJ` exacto de la especificación y los botones `<MOD>-BTN-CONFIRMAR-SI` («Sí, Confirmar Acción») y `<MOD>-BTN-CONFIRMAR-NO` («Cancelar»). Escape cancela y Enter no confirma. | DEC-047 |
+| Mensajes | Los mensajes de éxito y de las reglas de negocio son los de la especificación, palabra por palabra. Cuando la especificación no fija el texto, el mensaje es claro y no muestra detalles técnicos. | Especificación de la operación |
+| Permisos | Lo reservado al Administrador se ve deshabilitado para el Técnico y explica el motivo al pasar el cursor: «Solo disponible para el Administrador.». | RNF-0006, DEC-075 |
+| Datos | Una consulta no modifica datos. Un resultado vacío muestra un mensaje. Si falla la conexión, la pantalla lo informa sin cerrarse. | Postcondiciones de cada especificación |
+| Presentación | Con la ventana a su tamaño normal se leen todas las columnas de la tabla y más de una fila. | Uso |
 
 ## Inicio de sesión y ventana principal
 
-La ventana principal inicia en `InicioSesionView`. Tras una autenticación aceptada, muestra el menú correspondiente al rol y navega a `InicioView`; el menú incluye un botón para cerrar sesión. La pantalla de Inicio y su generación de PDF quedan fuera de las misiones de este issue, salvo por verificar que se llega a ella después del acceso. La navegación está enlazada en [MainViewModel.cs](../../src/FarmasilApp.VistaModelo/Principal/MainViewModel.cs), [MainWindow.xaml](../../src/FarmasilApp.Vista/Principal/MainWindow.xaml) y [RegistroDependencias.cs](../../src/FarmasilApp.VistaModelo/Comun/RegistroDependencias.cs).
-
-| Flujo | Revisión y resultado esperado según la fuente | Resultado observado | Evidencia |
+| Flujo | Qué hacer y qué se espera | Resultado observado | Evidencia |
 | --- | --- | --- | --- |
-| Inicio de sesión (RNF-0006, DEC-080) | Con credenciales válidas de una cuenta activa, debe abrirse la sesión, mostrarse el nombre y rol, aparecer el menú según permisos y quedar vacía la contraseña. Una cuenta inactiva no inicia sesión. | | |
-| Rechazo de autenticación | Usuario inexistente y contraseña errónea muestran el mismo mensaje; la contraseña se borra y vuelve a enmascararse después del intento. Un error técnico muestra el mensaje general, sin detalles técnicos. | | |
-| Menú y cierre de sesión | Dentro del alcance de esta guía, INV y PAG están disponibles para Administrador y Técnico; PRV y USR solo para Administrador. Las opciones no permitidas están deshabilitadas y explican el motivo. Cerrar sesión vacía el menú y vuelve al inicio de sesión. | | |
+| Inicio de sesión correcto | Entrar con `admin_prueba`. Se abre la ventana principal con el menú y el pie «admin_prueba · Administrador»; la contraseña queda vacía. Repetir con `tecnico_prueba`. | | COM-01, COM-02; Técnico: COM-03 |
+| Rechazo | Usuario inexistente y contraseña errónea muestran el mismo mensaje, `Usuario o contraseña incorrectos.`; la contraseña se borra. | | |
+| Menú del Administrador | Los siete módulos están habilitados. | | COM-02 |
+| Menú del Técnico | Usuarios y Proveedores se ven deshabilitados y, al pasar el cursor, dicen `Solo disponible para el Administrador.`; los otros cinco están habilitados. | | COM-04 |
+| Cierre de sesión | `USR-BTN-CERRAR-SESION` vacía el menú y vuelve al inicio de sesión. | | |
 
-**Controles documentados**
-
-| Nombre exacto | Uso |
+| Control | Uso |
 | --- | --- |
-| `USR-FRM-INICIO-SESION` | Formulario de inicio de sesión. |
-| `USR-TXT-USUARIO-SESION` | Usuario. |
-| `USR-PWD-CONTRASENA-SESION` | Contraseña enmascarada. |
-| `USR-BTN-VER-CONTRASENA-SESION` | Alterna la visibilidad de la contraseña. |
-| `USR-LBL-ERROR-SESION` | Mensajes del inicio de sesión. |
-| `USR-BTN-INICIAR-SESION` | Envía las credenciales. |
+| `USR-TXT-USUARIO-SESION`, `USR-PWD-CONTRASENA-SESION`, `USR-BTN-VER-CONTRASENA-SESION` | Usuario, contraseña enmascarada y botón para mostrarla. |
+| `USR-BTN-INICIAR-SESION`, `USR-LBL-ERROR-SESION` | Envía las credenciales y muestra el error. |
 | `USR-BTN-CERRAR-SESION` | Cierra la sesión. |
-| Sin identificador AutomationId documentado | Botones de módulos en el menú; la guía de nomenclatura los deja pendientes (PEN-037). No asignarles un ID por inferencia. |
+| Botones de módulos del menú | Sin identificador: la guía los deja pendientes (PEN-037). |
 
-**Mensajes del inicio de sesión**
-
-| Situación | Mensaje documentado |
+| Situación | Mensaje |
 | --- | --- |
 | Usuario inexistente o contraseña incorrecta | `Usuario o contraseña incorrectos.` |
 | Cuenta inactiva | `La cuenta está inactiva. Consulte con un administrador.` |
 | Falla técnica | `No se pudo iniciar sesión. Inténtelo nuevamente.` |
-| Módulo no disponible para el Técnico | `Solo disponible para el Administrador.` |
-
-<details>
-<summary>Capturas COM: inicio de sesión y menú por rol</summary>
-
-![Inicio de sesión como Administrador](evidencias-pdf/COM-01-inicio-admin.png)
-
-![Menú de Administrador](evidencias-pdf/COM-02-menu-admin.png)
-
-![Inicio de sesión como Técnico](evidencias-pdf/COM-03-inicio-tecnico.png)
-
-![Menú de Técnico](evidencias-pdf/COM-04-menu-tecnico.png)
-
-</details>
 
 ## Inventario (INV)
 
-La vista [InventarioView.xaml](../../src/FarmasilApp.Vista/INV/InventarioView.xaml) y su VistaModelo incluyen consulta, alta, actualización y baja. El menú admite Administrador y Técnico; las operaciones de escritura son exclusivas del Administrador. La fuente de los resultados esperados es ESP-0005 a ESP-0008; el HTML [ART-MKP-INV-0001](../../diseno/Mockups/fuente/ART-MKP-INV-0001.html) sirve solo de referencia, pues sus controles y rótulos no sustituyen la especificación vigente.
+Administrador: las cuatro operaciones. Técnico: solo la consulta (ESP-0006); crear, actualizar y dar de baja se ven deshabilitados con el motivo.
 
-**Misión:** recorre los cuatro flujos con una cuenta de prueba, registra filtros, mensajes y confirmación de baja, y comprueba con Técnico que las operaciones de escritura estén deshabilitadas. Para la consulta, usa también las particiones `T-001`, `T-002`, `T-006` y `T-007` del plan de pruebas. Utiliza únicamente datos de `DB_FARMASIL_PRUEBAS`.
-
-<a id="pantalla-de-inventario"></a>
-### Pantalla de Inventario
-
-| Flujo | Revisión y resultado esperado según la especificación | Resultado observado | Evidencia |
+| Flujo | Qué hacer y qué se espera | Resultado observado | Evidencia |
 | --- | --- | --- | --- |
-| Consulta (ESP-0006) | Buscar por ID exacto o nombre parcial; probar filtros opcionales de proveedor y acción terapéutica, por separado y combinados, y consulta sin criterios. Tarjetas y tabla muestran los mismos productos y los campos ID, nombre, acción terapéutica, precio, estado y stock físico. Sin remesas, el stock físico es 0. Seleccionar una tarjeta o fila carga su ficha; consultar no modifica productos. | | |
-| Alta (ESP-0005) | Crear producto con nombre, acción terapéutica, precio decimal no negativo, proveedor activo y stock mínimo entero no negativo. Debe generarse y mostrarse el ID, quedar el estado inicial «Disponible» y actualizarse la tabla. | | |
-| Actualización (ESP-0007) | Seleccionar un producto, iniciar la edición y confirmar con «Guardar cambios». El ID no cambia; nombre, acción terapéutica, precio, proveedor y stock mínimo se actualizan, y se conservan las referencias existentes. | | |
-| Baja (ESP-0008) | Seleccionar un producto y abrir la confirmación. Cancelar o Escape no cambia datos. Al confirmar, un producto sin referencias puede eliminarse físicamente; si tiene referencias, queda «Descontinuado». El historial se conserva y el producto deja de ofrecerse para ventas. Enter no confirma. | | |
-| Permisos | Administrador puede consultar y ejecutar las cuatro operaciones. Técnico puede consultar; los botones de alta, actualización y baja están deshabilitados y muestran el motivo documentado. | | |
+| Consulta (ESP-0006) | Sin criterios: 7 productos. Buscar «ibu» (parcial), el ID 3 (exacto), el proveedor Laboratorios del Pacífico y la acción terapéutica «Antiinflamatorio», por separado y combinados. Tarjetas y tabla muestran lo mismo. Omeprazol 20 mg muestra stock físico 0. Seleccionar una tarjeta o una fila carga la ficha. | | INV-01 |
+| Alta (ESP-0005) | Crear «Cetirizina 10 mg», «Antihistaminico», precio 3.50, Droguería Andina, stock mínimo 5: `Producto registrado correctamente`, ID generado y estado 'Disponible'. Probar también nombre vacío, precio negativo, precio con letras y stock mínimo negativo. El combo de proveedor no ofrece Proveedor Inactivo SAC. | | INV-02 |
+| Actualización (ESP-0007) | Seleccionar Amoxicilina 500 mg, «Actualizar producto», cambiar el precio a 7.00 y «Guardar cambios»: `Producto actualizado correctamente`; el ID no cambia. | | INV-03 |
+| Baja (ESP-0008) | Con «Cetirizina 10 mg» (sin remesas): confirmar y el producto desaparece. Con Paracetamol 500 mg (con remesas): queda 'Descontinuado'. En el modal, Cancelar y Escape no cambian nada; Enter no confirma. | | INV-04, INV-05 |
+| Permisos | Con `tecnico_prueba`: la consulta funciona y los botones de alta, actualización y baja están deshabilitados y muestran el motivo. | | INV-06 |
 
-**Controles documentados**
-
-| Nombre exacto | Rótulo o uso |
+| Control | Rótulo o uso |
 | --- | --- |
-| `INV-SRH-PRODUCTO`, `INV-CMB-FILTRO-PROVEEDOR`, `INV-CMB-FILTRO-ACCION-TERAPEUTICA`, `INV-BTN-LEER-PRODUCTO` | Búsqueda por ID/nombre, filtros de consulta y botón «Buscar». |
-| `INV-PNL-CATALOGO`, `INV-CRD-PRODUCTO`, `INV-BTN-SELECCIONAR-PRODUCTO`, `INV-TBL-PRODUCTOS` | Tarjetas y tabla de resultados; seleccionar la tarjeta o una fila carga la ficha. |
-| `INV-LBL-ID-PRODUCTO`, `INV-TXT-NOMBRE-PRODUCTO`, `INV-TXT-ACCION-TERAPEUTICA`, `INV-NUM-PRECIO-PRODUCTO`, `INV-CMB-PROVEEDOR`, `INV-NUM-STOCK-MINIMO` | ID de solo lectura y campos de la ficha. |
-| `INV-BTN-CREAR-PRODUCTO`, `INV-BTN-ACTUALIZAR-PRODUCTO`, `INV-BTN-CONFIRMAR-ACTUALIZACION`, `INV-BTN-ELIMINAR-PRODUCTO` | Alta, inicio de actualización, guardado y baja. |
-| `INV-MDL-CONFIRMAR-ELIMINACION`, `INV-TXT-MSJ`, `INV-BTN-CONFIRMAR-SI`, `INV-BTN-CONFIRMAR-NO` | Controles de confirmación de baja según la nomenclatura y ESP-0008. |
-| Sin identificador AutomationId en XAML | Texto de estado/mensaje de la vista. |
-
-**Mensajes documentados en código y especificación**
+| `INV-SRH-PRODUCTO`, `INV-CMB-FILTRO-PROVEEDOR`, `INV-CMB-FILTRO-ACCION-TERAPEUTICA`, `INV-BTN-LEER-PRODUCTO` | Búsqueda, filtros y «Buscar». |
+| `INV-PNL-CATALOGO`, `INV-CRD-PRODUCTO`, `INV-BTN-SELECCIONAR-PRODUCTO`, `INV-TBL-PRODUCTOS` | Tarjetas con «Seleccionar» y tabla. |
+| `INV-LBL-ID-PRODUCTO`, `INV-TXT-NOMBRE-PRODUCTO`, `INV-TXT-ACCION-TERAPEUTICA`, `INV-NUM-PRECIO-PRODUCTO`, `INV-CMB-PROVEEDOR`, `INV-NUM-STOCK-MINIMO` | Ficha; el ID es de solo lectura. |
+| `INV-BTN-CREAR-PRODUCTO`, `INV-BTN-ACTUALIZAR-PRODUCTO`, `INV-BTN-CONFIRMAR-ACTUALIZACION`, `INV-BTN-ELIMINAR-PRODUCTO` | «Crear producto», «Actualizar producto», «Guardar cambios» y «Dar de baja». |
 
 | Situación | Mensaje |
 | --- | --- |
-| Hay resultados / sin resultados | `Productos encontrados: {cantidad}.` / `No se encontraron productos.` |
-| Error de consulta / creación / actualización / baja | `No se pudo consultar el inventario. Inténtelo nuevamente.` / `No se pudo registrar el producto.` / `No se pudo actualizar el producto.` / `No se pudo dar de baja el producto.` |
-| Alta / actualización / baja correctas | `Producto registrado correctamente` / `Producto actualizado correctamente` / `Producto dado de baja correctamente` |
-| Validación de alta o actualización | `El nombre del producto es obligatorio.`, `El nombre del producto supera la longitud permitida.`, `La acción terapéutica es obligatoria.`, `La acción terapéutica supera la longitud permitida.`, `El precio de venta debe ser mayor o igual a cero.`, `El stock mínimo debe ser mayor o igual a cero.`, `Seleccione un proveedor.`, `El proveedor seleccionado no está activo.` |
-| Falta selección para actualizar o dar de baja | `Seleccione un producto para actualizar.` / `Seleccione un producto para dar de baja.` |
-| Confirmación de baja (ESP-0008) | `¿Está seguro de dar de baja este producto?` |
-| Operación reservada al Administrador | `Solo disponible para el Administrador.` |
+| Con o sin resultados | `Productos encontrados: {cantidad}.` / `No se encontraron productos.` |
+| Alta, actualización y baja correctas | `Producto registrado correctamente` / `Producto actualizado correctamente` / `Producto dado de baja correctamente` |
+| Validaciones | `El nombre del producto es obligatorio.`, `La acción terapéutica es obligatoria.`, `El precio de venta debe ser mayor o igual a cero.`, `El precio de venta debe ser un número válido.`, `El stock mínimo debe ser mayor o igual a cero.`, `Seleccione un proveedor.`, `El proveedor seleccionado no está activo.` |
+| Confirmación de baja | `¿Está seguro de dar de baja este producto?` |
 
-**Riesgos documentados**
-
-| Riesgo | Observación para la sesión |
-| --- | --- |
-| `ILA-0006-R01` | El riesgo afirma que la búsqueda por nombre es de igualdad exacta; la versión vigente de `ESP-0006`, el plan de pruebas y el repositorio describen coincidencia parcial. La diferencia sigue registrada como pendiente en riesgos: anotar el resultado observado, sin resolver la discrepancia en esta guía. |
-| `ILA-0006-R02` | El riesgo propone un indicador visual de alertas de vencimiento; `ESP-0006` no lo define y la vista actual no lo muestra. Registra lo observado sin tratar ese indicador como resultado obligatorio. |
-| `ILA-0006-R03` | Riesgo pendiente por falta de un límite de registros/paginación documentado. Registrar problemas observables con catálogos grandes, sin asumir un límite esperado. |
-
-<details>
-<summary>Capturas INV: consulta, alta, actualización, baja y permisos del Técnico</summary>
-
-![Consulta de Inventario](evidencias-pdf/INV-01-consulta-resultados.png)
-
-![Resultado del alta de producto](evidencias-pdf/INV-02-alta-resultado.png)
-
-![Resultado de la actualización de producto](evidencias-pdf/INV-03-actualizacion-resultado.png)
-
-![Confirmación de baja de producto](evidencias-pdf/INV-04-baja-confirmacion.png)
-
-![Resultado de baja de producto](evidencias-pdf/INV-05-baja-resultado.png)
-
-![Permisos de Técnico en Inventario](evidencias-pdf/INV-06-permisos-tecnico.jpeg)
-
-</details>
-
-Fuentes: [ESP-0005 a ESP-0008](../../catalogo/03-especificaciones.md), [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md), [permisos](../../diseno/07-matriz-permisos.md), [pruebas de Inventario](<../../pruebas de software/09-pruebas-software.md>), [riesgos de Inventario](../../riesgos/10-gestion-riesgos.md), [InventarioView.xaml](../../src/FarmasilApp.Vista/INV/InventarioView.xaml), [InventarioViewModel.cs](../../src/FarmasilApp.VistaModelo/INV/InventarioViewModel.cs), [InventarioServicio.cs](../../src/FarmasilApp.Modelo/INV/InventarioServicio.cs), [InventarioRepositorio.cs](../../src/FarmasilApp.Persistencia/INV/InventarioRepositorio.cs), [pruebas del servicio](../../tests/FarmasilApp.Pruebas/INV/InventarioServicioPruebas.cs) y [pruebas del VistaModelo](../../tests/FarmasilApp.Pruebas/VistaModelo/InventarioViewModelPruebas.cs).
+Riesgos pendientes de la gestión de riesgos: `ILA-0006-R01` (búsqueda exacta o parcial; la ESP vigente dice parcial), `ILA-0006-R02` (indicador de vencimiento, que la ESP no define) e `ILA-0006-R03` (sin paginación). Anota lo que observes sin resolver aquí la diferencia.
 
 ## Proveedores (PRV)
 
-La vista [ProveedoresView.xaml](../../src/FarmasilApp.Vista/PRV/ProveedoresView.xaml) y su VistaModelo incluyen los cuatro flujos. El acceso al módulo es exclusivo del Administrador. El HTML [ART-MKP-PRV-0001](../../diseno/Mockups/fuente/ART-MKP-PRV-0001.html) se consulta como referencia; prevalecen las especificaciones, que incluyen el teléfono en la tabla y los controles de confirmación.
+Solo el Administrador.
 
-**Misión de exploración:** como Administrador, consulta proveedores por RUC o razón social, aplica el filtro de estado, compara tarjetas y tabla, y selecciona un resultado para revisar su ficha. Recorre también el alta, la actualización y la baja/desactivación (ESP-0037 a ESP-0040); registra mensajes y confirmaciones.
-
-<a id="pantalla-de-proveedores"></a>
-### Pantalla de Proveedores
-
-| Flujo | Revisión y resultado esperado según la especificación | Resultado observado | Evidencia |
+| Flujo | Qué hacer y qué se espera | Resultado observado | Evidencia |
 | --- | --- | --- | --- |
-| Consulta (ESP-0038) | Con Administrador, buscar por RUC exacto o razón social parcial; probar filtro de estado «Todos», «Activo» e «Inactivo», su combinación con texto y consulta sin criterios. Tarjetas y tabla representan los mismos resultados; la tabla incluye RUC, razón social, teléfono y estado. Seleccionar tarjeta o fila carga la ficha. La consulta no modifica proveedores. | | |
-| Alta (ESP-0037) | Crear proveedor con RUC de 11 dígitos numéricos no repetido, razón social no vacía, teléfono dentro del máximo documentado y estado válido. La tabla se actualiza; si queda Activo, debe poder elegirse en los módulos que requieren proveedor activo. | | |
-| Actualización (ESP-0039) | Seleccionar y editar un proveedor; guardar con «Guardar cambios». RUC sigue único, la razón social no queda vacía, y los cambios se reflejan en la tabla. Al pasar a Inactivo, deja de ofrecerse en los selectores de productos y devoluciones; las referencias se conservan. | | |
-| Baja (ESP-0040) | Si hay una orden de devolución pendiente de despacho, la operación se cancela y muestra el mensaje de regla. En otro caso, se presenta el modal con el texto especificado. Cancelar o Escape no cambia datos. Confirmar aplica la baja condicional, conserva referencias y actualiza la lista. Enter no confirma. | | |
-| Permisos | En sesión Técnico, la opción Proveedores del menú está deshabilitada y explica que solo está disponible para Administrador. Las operaciones del módulo se exploran con una cuenta Administrador. | | |
+| Consulta (ESP-0038) | Sin criterios: 4 proveedores. Buscar «20100070970» (RUC exacto) y «salud» (razón social parcial); filtro de estado «Activo», «Inactivo» y «Todos», solo y con texto. La tabla incluye RUC, razón social, teléfono y estado. | | PRV-01 |
+| Alta (ESP-0037) | Crear RUC 20512345678, «Farmacéutica Norte SAC», sin teléfono, 'Activo': `Proveedor registrado correctamente`. Probar RUC de 10 y 12 dígitos, con letras y repetido (20100070970). Después, en Inventario, el nuevo proveedor aparece en el combo. | | PRV-02 |
+| Actualización (ESP-0039) | Seleccionar «Farmacéutica Norte SAC», «Actualizar proveedor», poner el teléfono 054111222 y «Guardar cambios»: `Proveedor actualizado correctamente`. Cambiarlo a 'Inactivo': deja de ofrecerse en el combo de Inventario. Probar el RUC de otro proveedor: rechazo. | | PRV-03 |
+| Baja (ESP-0040) | Droguería Andina SAC: `El proveedor tiene órdenes de devolución pendientes de despacho` y no hay modal. Distribuidora Salud Sur SAC: confirmar y queda 'Inactivo'. «Farmacéutica Norte SAC»: confirmar y desaparece. Cancelar y Escape no cambian nada. | | PRV-04, PRV-05 |
+| Permisos | Con `tecnico_prueba`, Proveedores está deshabilitado en el menú (ver [Inicio de sesión](#inicio-de-sesion-y-ventana-principal)). | | COM-04 |
 
-**Controles documentados**
-
-| Nombre exacto | Rótulo o uso |
+| Control | Rótulo o uso |
 | --- | --- |
-| `PRV-SRH-PROVEEDOR`, `PRV-CMB-FILTRO-ESTADO`, `PRV-BTN-LEER-PROVEEDOR` | Búsqueda por RUC/razón social, filtro de estado y botón «Buscar». |
-| `PRV-PNL-PROVEEDORES`, `PRV-CRD-PROVEEDOR`, `PRV-BTN-SELECCIONAR-PROVEEDOR`, `PRV-TBL-PROVEEDORES` | Tarjetas y tabla de resultados; la tabla incluye teléfono. |
-| `PRV-TXT-RUC`, `PRV-TXT-RAZON-SOCIAL`, `PRV-TXT-TELEFONO`, `PRV-CMB-ESTADO-PROVEEDOR` | Campos de la ficha. |
-| `PRV-BTN-CREAR-PROVEEDOR`, `PRV-BTN-ACTUALIZAR-PROVEEDOR`, `PRV-BTN-CONFIRMAR-ACTUALIZACION`, `PRV-BTN-ELIMINAR-PROVEEDOR` | Alta, inicio de actualización, guardado y baja. |
-| `PRV-MDL-CONFIRMAR-ELIMINACION`, `PRV-TXT-MSJ`, `PRV-BTN-CONFIRMAR-SI`, `PRV-BTN-CONFIRMAR-NO` | Controles de confirmación de baja según la nomenclatura y ESP-0040. |
-| Sin identificador AutomationId en XAML | Texto de estado/mensaje de la vista. |
-
-**Mensajes documentados en código y especificación**
+| `PRV-SRH-PROVEEDOR`, `PRV-CMB-FILTRO-ESTADO`, `PRV-BTN-LEER-PROVEEDOR` | Búsqueda, filtro de estado y «Buscar». |
+| `PRV-PNL-PROVEEDORES`, `PRV-CRD-PROVEEDOR`, `PRV-TBL-PROVEEDORES` | Tarjetas y tabla. La vista agrega `PRV-BTN-SELECCIONAR-PROVEEDOR`, que la guía no define (ver [E1](#hallazgos-de-la-revision-estatica)). |
+| `PRV-TXT-RUC`, `PRV-TXT-RAZON-SOCIAL`, `PRV-TXT-TELEFONO`, `PRV-CMB-ESTADO-PROVEEDOR` | Ficha. |
+| `PRV-BTN-CREAR-PROVEEDOR`, `PRV-BTN-ACTUALIZAR-PROVEEDOR`, `PRV-BTN-CONFIRMAR-ACTUALIZACION`, `PRV-BTN-ELIMINAR-PROVEEDOR` | «Crear proveedor», «Actualizar proveedor», «Guardar cambios» y «Dar de baja». |
 
 | Situación | Mensaje |
 | --- | --- |
-| Hay resultados / sin resultados | `Proveedores encontrados: {cantidad}.` / `No se encontraron proveedores.` |
-| Error de consulta / escritura | `No se pudo consultar los proveedores. Inténtelo nuevamente.` / `No se pudo completar la operación. Inténtelo nuevamente.` |
-| Alta / actualización / baja correctas | `Proveedor registrado correctamente` / `Proveedor actualizado correctamente` / `Proveedor dado de baja correctamente` |
-| Validación de alta o actualización | `El RUC debe tener exactamente 11 dígitos numéricos.`, `Ya existe un proveedor con ese RUC.`, `Ingrese la razón social del proveedor.`, `La razón social no puede superar los 150 caracteres.`, `El teléfono no puede superar los 15 caracteres.`, `El estado debe ser Activo o Inactivo.` |
-| Sin selección para actualizar o dar de baja | `Seleccione un proveedor para actualizar.` / `Seleccione un proveedor para dar de baja.` |
-| Órdenes pendientes de despacho | `El proveedor tiene órdenes de devolución pendientes de despacho` |
-| Confirmación de baja (ESP-0040) | `¿Está seguro de dar de baja este proveedor? Los productos y devoluciones ya registrados no se verán afectados.` |
-| Opción del menú para Técnico / operación invocada sin rol | `Solo disponible para el Administrador.` / `Su rol no permite gestionar proveedores.` |
+| Con o sin resultados | `Proveedores encontrados: {cantidad}.` / `No se encontraron proveedores.` |
+| Alta, actualización y baja correctas | `Proveedor registrado correctamente` / `Proveedor actualizado correctamente` / `Proveedor dado de baja correctamente` |
+| Validaciones | `El RUC debe tener exactamente 11 dígitos numéricos.`, `Ya existe un proveedor con ese RUC.`, `Ingrese la razón social del proveedor.`, `La razón social no puede superar los 150 caracteres.`, `El teléfono no puede superar los 15 caracteres.` |
+| Órdenes pendientes | `El proveedor tiene órdenes de devolución pendientes de despacho` |
+| Confirmación de baja | `¿Está seguro de dar de baja este proveedor? Los productos y devoluciones ya registrados no se verán afectados.` |
 
-**Riesgo documentado**
-
-`ILA-0038-R01` permanece pendiente y afirma que la consulta exige criterio y usa igualdad exacta. La versión vigente de `ESP-0038`, el plan de pruebas y el repositorio describen búsqueda parcial por razón social y consulta sin criterios. Registra lo observado sin resolver aquí la diferencia entre fuentes.
-
-<details>
-<summary>Capturas PRV: consulta, alta, actualización y baja</summary>
-
-![Consulta de proveedores](evidencias-pdf/PRV-01-consulta-resultados.png)
-
-![Resultado del alta de proveedor](evidencias-pdf/PRV-02-alta-resultado.png)
-
-![Resultado de la actualización de proveedor](evidencias-pdf/PRV-03-actualizacion-resultado.png)
-
-![Confirmación de baja de proveedor](evidencias-pdf/PRV-04-baja-confirmacion.png)
-
-![Resultado de baja de proveedor](evidencias-pdf/PRV-05-baja-resultado.png)
-
-</details>
-
-Fuentes: [ESP-0037 a ESP-0040](../../catalogo/03-especificaciones.md), [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md), [permisos](../../diseno/07-matriz-permisos.md), [pruebas de Proveedores](<../../pruebas de software/09-pruebas-software.md>), [riesgos de Proveedores](../../riesgos/10-gestion-riesgos.md), [ProveedoresView.xaml](../../src/FarmasilApp.Vista/PRV/ProveedoresView.xaml), [ProveedoresViewModel.cs](../../src/FarmasilApp.VistaModelo/PRV/ProveedoresViewModel.cs), [ProveedoresServicio.cs](../../src/FarmasilApp.Modelo/PRV/ProveedoresServicio.cs), [ProveedoresRepositorio.cs](../../src/FarmasilApp.Persistencia/PRV/ProveedoresRepositorio.cs), [MensajesProveedores.cs](../../src/FarmasilApp.Modelo/PRV/MensajesProveedores.cs) y [pruebas del servicio](../../tests/FarmasilApp.Pruebas/PRV/ProveedoresServicioPruebas.cs).
+Riesgo pendiente: `ILA-0038-R01` (la consulta exigiría criterio e igualdad exacta; la ESP vigente admite consulta sin criterios y búsqueda parcial).
 
 ## Usuarios (USR)
 
-<a id="pantalla-de-usuarios"></a>
-### Pantalla de Usuarios
+Solo el Administrador.
 
-| Flujo | Revisión y resultado esperado según la especificación | Resultado observado | Evidencia |
+| Flujo | Qué hacer y qué se espera | Resultado observado | Evidencia |
 | --- | --- | --- | --- |
-| Consulta (ESP-0034) | Buscar por nombre de usuario y filtrar por rol, incluso con «Todos». La lista y la tabla muestran el mismo nombre, rol y estado; no se muestra contraseña ni `id_usuario`. Seleccionar tarjeta o fila carga la ficha. Registrar si la búsqueda es exacta o parcial: la especificación describe igualdad y el riesgo `ILA-0034-R01` mantiene el criterio por confirmar. | | |
-| Alta (ESP-0033) | Crear cuenta con nombre único de hasta 50 caracteres, contraseña no vacía, rol válido y estado válido. Un nombre solo con espacios cuenta como vacío; la comparación de duplicados no distingue mayúsculas. La contraseña está enmascarada y no aparece en la tabla. | | |
-| Actualización (ESP-0035) | Seleccionar cuenta y pulsar «Actualizar»; la contraseña queda vacía. Guardar sin contraseña conserva la contraseña vigente. No debe ser posible dejar el sistema sin Administrador activo ni cambiar el rol/estado de la cuenta de la sesión; sí se permite cambiar su nombre y contraseña. | | |
-| Baja (ESP-0036) | No se puede dar de baja la cuenta de la sesión. Para otra cuenta, mostrar el modal con el texto especificado; cancelar o Escape no cambia datos. Confirmar aplica baja condicional: las cuentas con operaciones quedan Inactivas y se conserva la trazabilidad. Enter no confirma. | | |
-| Permisos | En sesión Técnico, la opción Usuarios del menú está deshabilitada y explica que solo está disponible para Administrador. Las operaciones del módulo se exploran con una cuenta Administrador. | | |
+| Consulta (ESP-0034) | Sin criterios: 2 cuentas. Buscar «admin» y filtrar por rol «Tecnico» y «Todos». Tarjetas y tabla muestran usuario, rol y estado; nunca la contraseña. Anota si la búsqueda es exacta o parcial (`ILA-0034-R01`). | | USR-01 |
+| Alta (ESP-0033) | Crear `cajero_prueba`, una contraseña cualquiera, 'Tecnico', 'Activo': `Usuario registrado correctamente`. Probar nombre vacío, solo espacios, más de 50 caracteres y repetido con otras mayúsculas (`ADMIN_PRUEBA`). | | USR-02 |
+| Actualización (ESP-0035) | Seleccionar `cajero_prueba`, «Actualizar», cambiar el rol a 'Administrador' sin escribir contraseña y «Guardar cambios»: `Usuario actualizado correctamente` y la contraseña anterior sigue sirviendo. Con la cuenta de la sesión, cambiar su rol o estado: rechazo. | | USR-03 |
+| Baja (ESP-0036) | `admin_prueba` (la sesión): `No es posible dar de baja la cuenta con la que se encuentra abierta la sesión`. `cajero_prueba` (sin operaciones): confirmar y desaparece. `tecnico_prueba` (con ventas): confirmar y queda 'Inactivo'. Cancelar y Escape no cambian nada. | | USR-04, USR-05 |
+| Permisos | Con `tecnico_prueba`, Usuarios está deshabilitado en el menú. | | COM-04 |
 
-**Controles documentados**
-
-| Nombre exacto | Rótulo o uso |
+| Control | Rótulo o uso |
 | --- | --- |
-| `USR-SRH-USUARIO`, `USR-CMB-FILTRO-ROL`, `USR-BTN-LEER-USUARIO` | Búsqueda, filtro de rol («Todos») y botón «Buscar». |
-| `USR-PNL-CUENTAS`, `USR-CRD-USUARIO`, `USR-TBL-USUARIOS` | Lista en tarjetas y tabla con usuario, rol y estado; la tarjeta no tiene botón y se selecciona con un clic. |
-| `USR-TXT-NOMBRE-USUARIO`, `USR-PWD-CONTRASENA`, `USR-CMB-ROL`, `USR-CMB-ESTADO-USUARIO` | Campos de ficha; la contraseña se enmascara y se excluye de resultados. |
-| `USR-BTN-CREAR-USUARIO`, `USR-BTN-ACTUALIZAR-USUARIO`, `USR-BTN-CONFIRMAR-ACTUALIZACION`, `USR-BTN-ELIMINAR-USUARIO` | Alta, inicio de actualización, guardado y baja. |
-| `USR-MDL-CONFIRMAR-ELIMINACION`, `USR-TXT-MSJ`, `USR-BTN-CONFIRMAR-SI`, `USR-BTN-CONFIRMAR-NO` | Modal común de confirmación de la baja. |
-
-**Mensajes documentados**
+| `USR-SRH-USUARIO`, `USR-CMB-FILTRO-ROL`, `USR-BTN-LEER-USUARIO` | Búsqueda, filtro de rol y «Buscar». |
+| `USR-PNL-CUENTAS`, `USR-CRD-USUARIO`, `USR-TBL-USUARIOS` | Tarjetas (sin botón: se seleccionan con un clic) y tabla. |
+| `USR-TXT-NOMBRE-USUARIO`, `USR-PWD-CONTRASENA`, `USR-CMB-ROL`, `USR-CMB-ESTADO-USUARIO` | Ficha; la contraseña va enmascarada. |
+| `USR-BTN-CREAR-USUARIO`, `USR-BTN-ACTUALIZAR-USUARIO`, `USR-BTN-CONFIRMAR-ACTUALIZACION`, `USR-BTN-ELIMINAR-USUARIO` | «Crear», «Actualizar», «Guardar cambios» y «Eliminar». |
 
 | Situación | Mensaje |
 | --- | --- |
-| Hay resultados / sin resultados | `Cuentas encontradas: {cantidad}.` / `No se encontraron cuentas.` |
-| Alta / actualización / baja correctas | `Usuario registrado correctamente` / `Usuario actualizado correctamente` / `Cuenta dada de baja correctamente` |
-| No queda Administrador activo | `El sistema debe conservar al menos una cuenta administradora activa` |
-| Cambio de rol/estado o baja de cuenta propia | `No es posible cambiar el rol ni el estado de la cuenta con la que se encuentra abierta la sesión` / `No es posible dar de baja la cuenta con la que se encuentra abierta la sesión` |
-| Confirmación de baja (ESP-0036) | `¿Está seguro de dar de baja esta cuenta? El histórico de operaciones que registró se conservará.` |
-| Validaciones (textos no fijados por ESP) | `Ingrese el nombre de usuario.`, `El nombre de usuario no puede superar los 50 caracteres.`, `Ya existe una cuenta con ese nombre de usuario.`, `Ingrese la contraseña.`, `Seleccione un rol válido.` y `Seleccione un estado válido.` |
-| Opción del menú para Técnico / operación invocada sin rol | `Solo disponible para el Administrador.` / `Su rol no permite gestionar usuarios.` |
-| Error de consulta / operación | `No se pudo consultar las cuentas. Inténtelo nuevamente.` / `No se pudo completar la operación. Inténtelo nuevamente.` |
+| Con o sin resultados | `Cuentas encontradas: {cantidad}.` / `No se encontraron cuentas.` |
+| Alta, actualización y baja correctas | `Usuario registrado correctamente` / `Usuario actualizado correctamente` / `Cuenta dada de baja correctamente` |
+| Reglas | `El sistema debe conservar al menos una cuenta administradora activa`, `No es posible cambiar el rol ni el estado de la cuenta con la que se encuentra abierta la sesión`, `No es posible dar de baja la cuenta con la que se encuentra abierta la sesión` |
+| Validaciones | `Ingrese el nombre de usuario.`, `El nombre de usuario no puede superar los 50 caracteres.`, `Ya existe una cuenta con ese nombre de usuario.`, `Ingrese la contraseña.` |
+| Confirmación de baja | `¿Está seguro de dar de baja esta cuenta? El histórico de operaciones que registró se conservará.` |
 
-**Riesgos documentados**
-
-| Riesgo | Observación para la sesión |
-| --- | --- |
-| `ILA-0033-R01` | No hay una política mínima de contraseña: la especificación solo exige que no esté vacía. Anota si una contraseña muy corta se acepta, sin tratarlo como defecto. |
-| `ILA-0034-R01` | Está pendiente definir si la búsqueda por nombre de usuario es exacta o parcial. Registra cuál se observa. |
-| `ILA-0035-R02` | No está definido si un cambio de rol o estado afecta a una sesión ya abierta de esa cuenta. Registrar lo que se observe, sin convertirlo en una regla no especificada. |
-
-<details>
-<summary>Capturas USR: consulta, alta, actualización y baja</summary>
-
-![Consulta de usuarios](evidencias-pdf/USR-01-consulta-resultados.png)
-
-![Resultado del alta de usuario](evidencias-pdf/USR-02-alta-resultado.png)
-
-![Resultado de la actualización de usuario](evidencias-pdf/USR-03-actualizacion-resultado.png)
-
-![Confirmación de baja de usuario](evidencias-pdf/USR-04-baja-confirmacion.png)
-
-![Resultado de baja de usuario](evidencias-pdf/USR-05-baja-resultado.png)
-
-</details>
-
-Fuentes: [ESP-0033 a ESP-0036](../../catalogo/03-especificaciones.md), [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md), [permisos](../../diseno/07-matriz-permisos.md), [pruebas de Usuarios](<../../pruebas de software/09-pruebas-software.md>), [riesgos de Usuarios](../../riesgos/10-gestion-riesgos.md), [UsuariosView.xaml](../../src/FarmasilApp.Vista/USR/UsuariosView.xaml), [UsuariosViewModel.cs](../../src/FarmasilApp.VistaModelo/USR/UsuariosViewModel.cs), [MensajesUsuarios.cs](../../src/FarmasilApp.Modelo/USR/MensajesUsuarios.cs), [UsuariosServicio.cs](../../src/FarmasilApp.Modelo/USR/UsuariosServicio.cs) y [UsuariosRepositorio.cs](../../src/FarmasilApp.Persistencia/USR/UsuariosRepositorio.cs).
+Riesgos pendientes: `ILA-0033-R01` (sin política mínima de contraseña), `ILA-0034-R01` (búsqueda exacta o parcial) e `ILA-0035-R02` (efecto de un cambio de rol sobre una sesión ya abierta).
 
 ## Métodos de pago (PAG)
 
-La vista [MetodosPagoView.xaml](../../src/FarmasilApp.Vista/PAG/MetodosPagoView.xaml) y su VistaModelo implementan actualmente la consulta (ESP-0018); la ficha es de solo lectura y no hay comandos WPF para alta, actualización o baja. Para esas operaciones, las especificaciones y el HTML [ART-MKP-PAG-0001](../../diseno/Mockups/fuente/ART-MKP-PAG-0001.html) sirven de referencia para registrar qué falta, no para considerar implementado el flujo.
+Administrador: las cuatro operaciones (#186). Técnico: solo la consulta (ESP-0018); Crear, Modificar y Eliminar se ven deshabilitados con el motivo.
 
-<a id="pantalla-de-metodos-de-pago"></a>
-### Pantalla de Métodos de pago
-
-| Flujo | Revisión y resultado esperado según la especificación | Resultado observado | Evidencia |
+| Flujo | Qué hacer y qué se espera | Resultado observado | Evidencia |
 | --- | --- | --- | --- |
-| Consulta (ESP-0018) | Administrador y Técnico pueden consultar. Buscar nombre parcial y filtrar por estado («Todos», «Activo», «Inactivo»), probando filtros separados, combinados y sin criterios. Las tarjetas y la tabla muestran los mismos métodos y estado; seleccionar tarjeta o fila carga la ficha de solo lectura. La consulta no modifica datos. | | |
-| Alta (ESP-0017) — pendiente | La especificación requiere nombre no vacío y único y estado válido; al registrar se actualizan lista y tabla. La vista WPF actual no expone formulario editable ni comando de alta: no ejecutar ni registrar como probado. | | |
-| Actualización (ESP-0019) — pendiente | Según la especificación, seleccionar el método, iniciar edición y guardar nombre único y estado válido; conservar las ventas históricas al cambiar a Inactivo. Los controles de edición/guardado están en la nomenclatura y el mockup, pero no en la vista WPF actual. | | |
-| Baja (ESP-0020) — pendiente | Según la especificación, confirmar la baja condicional; con referencias el método queda Inactivo y las ventas históricas se conservan. La vista WPF actual no expone botón ni modal para esta operación. | | |
+| Consulta (ESP-0018) | Sin criterios: 3 métodos. Buscar «ya» (parcial) y filtrar por «Activo», «Inactivo» y «Todos», solo y con texto. Tarjetas y tabla muestran lo mismo. | | PAG-01 |
+| Alta (ESP-0017) | Crear «Plin», 'Activo': `Método de pago registrado correctamente`; aparece en el combo de método de la pantalla de Ventas. Probar nombre vacío, más de 50 caracteres y repetido («yape»). | | PAG-03 |
+| Actualización (ESP-0019) | Seleccionar «Plin», «Modificar», cambiarlo a 'Inactivo' y «Guardar cambios»: `Método de pago actualizado correctamente`; deja de ofrecerse en Ventas. Probar renombrarlo a «Efectivo»: rechazo. | | PAG-04 |
+| Baja (ESP-0020) | Tarjeta (sin ventas): confirmar y desaparece. Yape (con ventas): confirmar y queda 'Inactivo'. Cancelar y Escape no cambian nada. | | PAG-05, PAG-06 |
+| Permisos | Con `tecnico_prueba`: la consulta funciona y Crear, Modificar y Eliminar están deshabilitados con el motivo. | | PAG-02 |
 
-**Controles documentados**
-
-| Nombre exacto | Estado y uso |
+| Control | Rótulo o uso |
 | --- | --- |
-| `PAG-CMB-FILTRO-ESTADO`, `PAG-SRH-METODO`, `PAG-BTN-LEER-METODO` | Presentes en XAML: filtro, búsqueda y botón «Buscar». |
-| `PAG-PNL-METODOS-PAGO`, `PAG-CRD-METODO-PAGO`, `PAG-TBL-METODOS-PAGO` | Presentes en XAML: lista de tarjetas, tarjeta seleccionable y tabla. |
-| `PAG-TXT-METODO-PAGO`, `PAG-CMB-ESTADO-METODO` | Presentes en XAML; ficha de solo lectura. |
-| `PAG-BTN-CREAR-METODO`, `PAG-BTN-ACTUALIZAR-METODO`, `PAG-BTN-CONFIRMAR-ACTUALIZACION`, `PAG-BTN-ELIMINAR-METODO` | Documentados en especificaciones/nomenclatura/mockup; no presentes en la vista WPF actual. Pendientes. |
-| `PAG-MDL-CONFIRMAR-ELIMINACION`, `PAG-TXT-MSJ`, `PAG-BTN-CONFIRMAR-SI`, `PAG-BTN-CONFIRMAR-NO` | Documentados para ESP-0020; no presentes en la vista WPF actual. Pendientes. |
-
-**Mensajes documentados**
+| `PAG-SRH-METODO`, `PAG-CMB-FILTRO-ESTADO`, `PAG-BTN-LEER-METODO` | Búsqueda, filtro de estado y «Buscar». |
+| `PAG-PNL-METODOS-PAGO`, `PAG-CRD-METODO-PAGO`, `PAG-TBL-METODOS-PAGO` | Tarjetas y tabla. |
+| `PAG-TXT-METODO-PAGO`, `PAG-CMB-ESTADO-METODO` | Ficha. |
+| `PAG-BTN-CREAR-METODO`, `PAG-BTN-ACTUALIZAR-METODO`, `PAG-BTN-CONFIRMAR-ACTUALIZACION`, `PAG-BTN-ELIMINAR-METODO` | «Crear», «Modificar», «Guardar cambios» y «Eliminar». |
 
 | Situación | Mensaje |
 | --- | --- |
-| Hay resultados / sin resultados | `Métodos de pago encontrados: {cantidad}.` / `No se encontraron métodos de pago.` |
-| Falla la consulta | `No se pudieron consultar los métodos de pago. Inténtelo nuevamente.` |
-| Alta / actualización / baja correctas (texto de especificación; flujo WPF pendiente) | `Método de pago registrado correctamente` / `Método de pago actualizado correctamente` / `Método de pago dado de baja correctamente` |
-| Confirmación de baja (ESP-0020; flujo WPF pendiente) | `¿Está seguro de dar de baja este método de pago? Las ventas ya registradas con él no se verán afectadas.` |
+| Con o sin resultados | `Métodos de pago encontrados: {cantidad}.` / `No se encontraron métodos de pago.` |
+| Alta, actualización y baja correctas | `Método de pago registrado correctamente` / `Método de pago actualizado correctamente` / `Método de pago dado de baja correctamente` |
+| Validaciones | `El nombre del método de pago es obligatorio.`, `El nombre del método de pago no puede exceder los 50 caracteres.`, `Ya existe un método de pago con ese nombre.` |
+| Confirmación de baja | `¿Está seguro de dar de baja este método de pago? Las ventas ya registradas con él no se verán afectadas.` |
 
-Las capturas PAG-03 a PAG-06 están conservadas con sus nombres originales, pero la vista WPF de esta rama no incluye controles CRUD. No se atribuyen esas imágenes a una ejecución de esta versión ni se completan con ellas los campos de resultado observado; verifica su procedencia y compatibilidad antes de usarlas como evidencia de un flujo disponible.
+<a id="hallazgos-de-la-revision-estatica"></a>
+## Hallazgos de la revisión estática
 
-<details>
-<summary>Capturas PAG existentes (consulta y archivos de estados CRUD pendientes de corroborar)</summary>
+Revisión del XAML, las VistaModelos y los mensajes contra las especificaciones, la guía de nomenclatura y la matriz de permisos (25/11/2026), y de las capturas de la versión 02.01. Los mensajes de éxito, de confirmación y de las reglas de negocio coinciden con las especificaciones, y el menú coincide con la matriz de permisos.
 
-![Captura PAG-01-consulta-admin.png](evidencias-pdf/PAG-01-consulta-admin.png)
+| Código | Hallazgo | Estado |
+| --- | --- | --- |
+| E1 | La tarjeta de Proveedores tiene un botón «Seleccionar» con `PRV-BTN-SELECCIONAR-PROVEEDOR`, que no está en la guía de nomenclatura. ESP-0038 a ESP-0040 seleccionan el proveedor en `PRV-TBL-PROVEEDORES` o en `PRV-PNL-PROVEEDORES`, sin botón (DEC-060). | Confirmado en el código: registrar como issue. |
+| C1 | En las capturas, las tablas de Inventario y de Proveedores muestran una o dos filas con la ventana a su tamaño normal. | Confirmar en la sesión. |
+| C2 | En las capturas, la columna «Estado» de la tabla de Usuarios queda cortada a la derecha. | Confirmar en la sesión. |
 
-![Captura PAG-02-consulta-tecnico.png](evidencias-pdf/PAG-02-consulta-tecnico.png)
+## Capturas
 
-![Captura PAG-03-alta-resultado.png](evidencias-pdf/PAG-03-alta-resultado.png)
+Las capturas están en [evidencias-pdf/](evidencias-pdf/), sin contraseñas ni rutas personales. Estas no muestran lo que dice su nombre y hay que repetirlas en la sesión, con el mismo nombre de archivo:
 
-![Captura PAG-04-actualizacion-resultado.png](evidencias-pdf/PAG-04-actualizacion-resultado.png)
+| Captura | Qué muestra hoy | Qué debe mostrar |
+| --- | --- | --- |
+| COM-03-inicio-tecnico | La pantalla de inicio, sin la cuenta | La ventana principal con «tecnico_prueba · Tecnico» |
+| COM-04-menu-tecnico | El menú del Administrador | El menú del Técnico, con Usuarios y Proveedores deshabilitados |
+| INV-02-alta-resultado | La selección de Amoxicilina | El mensaje y el producto nuevo con su ID |
+| INV-06-permisos-tecnico | La sesión del Administrador | Inventario con la sesión del Técnico y los botones deshabilitados |
+| PAG-02-consulta-tecnico | La sesión del Administrador | Métodos de pago con la sesión del Técnico y los botones deshabilitados |
+| PAG-04-actualizacion-resultado | Solo la tabla, sin mensaje | El mensaje y el método actualizado |
+| PRV-03-actualizacion-resultado | La lista después de un alta | El mensaje y el proveedor actualizado |
+| USR-02-alta-resultado | Texto en el buscador, sin cuenta nueva | El mensaje y la cuenta nueva |
+| USR-03-actualizacion-resultado | Solo la tabla, sin mensaje | El mensaje y la cuenta actualizada |
 
-![Captura PAG-05-baja-confirmacion.png](evidencias-pdf/PAG-05-baja-confirmacion.png)
-
-![Captura PAG-06-baja-resultado.png](evidencias-pdf/PAG-06-baja-resultado.png)
-
-</details>
-
-Fuentes: [ESP-0017 a ESP-0020](../../catalogo/03-especificaciones.md), [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md), [permisos](../../diseno/07-matriz-permisos.md), [pruebas de Métodos de pago](<../../pruebas de software/09-pruebas-software.md>), [MetodosPagoView.xaml](../../src/FarmasilApp.Vista/PAG/MetodosPagoView.xaml), [MetodosPagoViewModel.cs](../../src/FarmasilApp.VistaModelo/PAG/MetodosPagoViewModel.cs) y [ART-MKP-PAG-0001.html](../../diseno/Mockups/fuente/ART-MKP-PAG-0001.html).
-
-<a id="indice-del-manual-de-usuario"></a>
-## Índice del manual de usuario
-
-El repositorio no contiene todavía un manual de usuario completo. Este índice fija su estructura por módulo y operación, con los roles de la [matriz de permisos](../../diseno/07-matriz-permisos.md). El estado «vista implementada» describe únicamente los archivos del repositorio; no indica que la interfaz haya sido ejecutada o explorada.
-
-1. **Introducción**: qué es FARMASIL, los dos roles (Administrador y Técnico) y cómo se lee este manual.
-2. **Inicio y cierre de sesión** (RNF-0006): ingresar con usuario y contraseña, y qué pasa con una cuenta inactiva. **(vista implementada; recorrido pendiente de verificación; capturas COM adjuntas)**
-3. **Ventana principal y menú**: cómo abrir cada módulo y por qué algunas opciones se ven deshabilitadas para el Técnico. **(implementación presente; recorrido pendiente de verificación; capturas COM adjuntas)**
-4. **Ventas (VEN)** — implementación y pantallas pendientes de verificación.
-   - Registrar una venta (ESP-0001) — Administrador y Técnico.
-   - Consultar ventas (ESP-0002) — Administrador y Técnico.
-   - Modificar una venta (ESP-0003) — Administrador.
-   - Eliminar una venta (ESP-0004) — Administrador.
-5. **Inventario (INV)**: vista con CRUD identificada; exploración pendiente de registrar. **(capturas INV adjuntas)**
-   - Registrar un producto (ESP-0005) — Administrador.
-   - Consultar el inventario (ESP-0006) — Administrador y Técnico.
-   - Actualizar un producto (ESP-0007) — Administrador.
-   - Dar de baja un producto (ESP-0008) — Administrador. **(vista implementada; exploración pendiente)**
-6. **Documentación tributaria (DOC)** — implementación y pantallas pendientes de verificación.
-   - Emitir un comprobante (ESP-0009) — Administrador y Técnico.
-   - Consultar comprobantes (ESP-0010) — Administrador y Técnico.
-   - Corregir un comprobante (ESP-0011) — Administrador.
-   - Anular un comprobante (ESP-0012) — Administrador.
-7. **Alertas de vencimiento (ALV)** — implementación y pantallas pendientes de verificación.
-   - Consultar las alertas (ESP-0013) — Administrador y Técnico.
-   - Registrar una alerta manualmente (ESP-0014) — Administrador y Técnico.
-   - Modificar una alerta (ESP-0015) — Administrador.
-   - Eliminar una alerta (ESP-0016) — Administrador.
-8. **Métodos de pago (PAG)**: consulta implementada; exploración pendiente de registrar. **(capturas PAG adjuntas; CRUD pendiente en la vista actual)**
-   - Registrar un método de pago (ESP-0017) — Administrador. **(pendiente en la vista actual)**
-   - Consultar los métodos de pago (ESP-0018) — Administrador y Técnico.
-   - Actualizar un método de pago (ESP-0019) — Administrador. **(pendiente en la vista actual)**
-   - Desactivar un método de pago (ESP-0020) — Administrador. **(pendiente en la vista actual)**
-9. **Reportes de ventas (REP)**: solo Administrador; implementación y pantallas pendientes de verificación.
-   - Generar un reporte (ESP-0021).
-   - Consultar los reportes (ESP-0022).
-   - Cambiar el intervalo de un reporte (ESP-0023).
-   - Eliminar un reporte (ESP-0024).
-10. **Devoluciones a proveedores (DEV)**: solo Administrador; implementación y pantallas pendientes de verificación.
-    - Registrar una orden de devolución (ESP-0025).
-    - Consultar las órdenes (ESP-0026).
-    - Actualizar una orden (ESP-0027).
-    - Eliminar una orden (ESP-0028).
-11. **Restricciones de venta (RES)**: implementación y pantallas pendientes de verificación.
-    - Registrar una restricción (ESP-0029) — Administrador.
-    - Consultar las restricciones (ESP-0030) — Administrador y Técnico.
-    - Modificar una restricción (ESP-0031) — Administrador.
-    - Desactivar una restricción (ESP-0032) — Administrador.
-12. **Usuarios (USR)**: solo Administrador. **(vista implementada; recorrido pendiente de verificar; capturas USR adjuntas)**
-    - Crear una cuenta (ESP-0033).
-    - Consultar las cuentas (ESP-0034).
-    - Actualizar una cuenta (ESP-0035).
-    - Dar de baja una cuenta (ESP-0036).
-13. **Proveedores (PRV)**: solo Administrador. **(vista implementada; recorrido pendiente de verificar; capturas PRV adjuntas)**
-    - Registrar un proveedor (ESP-0037).
-    - Consultar los proveedores (ESP-0038).
-    - Actualizar un proveedor (ESP-0039).
-    - Desactivar un proveedor (ESP-0040).
-14. **Lotes (LOT)**: implementación y pantallas pendientes de verificación.
-    - Registrar una remesa (ESP-0041) — Administrador.
-    - Consultar las remesas (ESP-0042) — Administrador y Técnico.
-    - Actualizar una remesa (ESP-0043) — Administrador.
-    - Dar de baja una remesa (ESP-0044) — Administrador.
-15. **Reabastecimiento (REA)**: solo Administrador; implementación y pantallas pendientes de verificación.
-    - Agregar un ítem a la lista de reabastecimiento (ESP-0045).
-    - Consultar la lista (ESP-0046).
-    - Actualizar un ítem (ESP-0047).
-    - Eliminar un ítem (ESP-0048).
-16. **Comparación de precios de proveedores (COT)**: solo Administrador; implementación y pantallas pendientes de verificación.
-    - Registrar una cotización (ESP-0049).
-    - Comparar precios y exportar por proveedor (ESP-0050).
-    - Actualizar una cotización (ESP-0051).
-    - Eliminar una cotización (ESP-0052).
-17. **Anexos**: mensajes del sistema por módulo y glosario (remesa, stock físico y vendible, comprobante, baja lógica).
-
-<a id="borrador-del-manual-usr-y-pag"></a>
-## Borrador del manual: USR y PAG
-
-Este borrador se basa en especificaciones, permisos y controles del repositorio. Debe validarse con la aplicación antes de publicarse como manual final. Los pasos de PAG que no tienen controles en la vista WPF se presentan como flujos especificados pendientes, no como acciones disponibles.
-
-### Usuarios (USR)
-
-El módulo Usuarios es exclusivo del Administrador. Las contraseñas no aparecen en los resultados ni en la tabla.
-
-1. **Iniciar sesión:** escribe el nombre de usuario y la contraseña en `USR-TXT-USUARIO-SESION` y `USR-PWD-CONTRASENA-SESION`, y activa `USR-BTN-INICIAR-SESION`. La contraseña aparece enmascarada; el botón `USR-BTN-VER-CONTRASENA-SESION` permite mostrarla temporalmente. Si la cuenta está inactiva, consulta con un Administrador. Si las credenciales no coinciden, verifica los datos antes de volver a intentarlo. La contraseña se borra al terminar cada intento.
-2. **Abrir Usuarios:** desde el menú, elige Usuarios. Si la opción está deshabilitada, la sesión no tiene el rol requerido. `USR-BTN-CERRAR-SESION` termina la sesión y vuelve al formulario de acceso.
-3. **Consultar cuentas:** escribe un nombre en `USR-SRH-USUARIO`, elige un rol en `USR-CMB-FILTRO-ROL` o «Todos» y pulsa `USR-BTN-LEER-USUARIO`. La lista y la tabla muestran usuario, rol y estado. Selecciona una tarjeta o fila para cargar la ficha; la contraseña no se muestra.
-4. **Crear cuenta:** completa nombre de usuario, contraseña, rol y estado, y pulsa `USR-BTN-CREAR-USUARIO`. El nombre debe ser único y no superar 50 caracteres; la contraseña no puede estar vacía.
-5. **Actualizar cuenta:** selecciona la cuenta, pulsa `USR-BTN-ACTUALIZAR-USUARIO`, modifica la ficha y pulsa `USR-BTN-CONFIRMAR-ACTUALIZACION` («Guardar cambios»). La contraseña aparece vacía: déjala así para conservar la existente o escribe una nueva. El sistema debe conservar al menos un Administrador activo; la cuenta de la sesión no puede cambiar su propio rol ni estado.
-6. **Dar de baja:** selecciona una cuenta distinta de la cuenta de la sesión, pulsa `USR-BTN-ELIMINAR-USUARIO` y confirma en el modal. Si cancelas, no se aplica la baja. Las cuentas con operaciones se conservan como Inactivas.
-
-### Métodos de pago (PAG)
-
-Administrador y Técnico pueden abrir el módulo para consultar métodos. La vista actual es de solo lectura.
-
-1. **Consultar:** escribe parte del nombre en `PAG-SRH-METODO`, elige un estado en `PAG-CMB-FILTRO-ESTADO` («Todos», «Activo» o «Inactivo») y pulsa `PAG-BTN-LEER-METODO`. Sin criterios se consultan todos. Las tarjetas y la tabla deben mostrar los mismos métodos y estado.
-2. **Ver un método:** selecciona una tarjeta de `PAG-PNL-METODOS-PAGO` o una fila de `PAG-TBL-METODOS-PAGO`; la ficha muestra el nombre y estado en modo de solo lectura.
-3. **Crear, actualizar o dar de baja:** las especificaciones asignan estas operaciones al Administrador, pero sus controles y comandos no están en la vista WPF actual. Los flujos están pendientes de implementación/verificación; no sigas estos pasos en la versión actual. Cuando estén disponibles, aplicar ESP-0017, ESP-0019 y ESP-0020: los métodos activos se ofrecen para ventas, y dar de baja un método no altera las ventas ya registradas.
+[Evidencia-POC-generacion-PDF.md](evidencias-pdf/Evidencia-POC-generacion-PDF.md) y sus capturas `01` a `03` son de la prueba de concepto del PDF, no de esta guía.
 
 <a id="plantilla-de-sesion"></a>
 ## Plantilla de sesión
@@ -496,10 +272,9 @@ Administrador y Técnico pueden abrir el módulo para consultar métodos. La vis
 Fecha:
 Duración:
 Participante:
+Cuenta y rol:
 Módulo / pantalla:
-Misión:
-Entorno (SO, versión de la aplicación, instancia/base):
-Datos y estado previo:
+Entorno (SO, commit de la aplicación, instancia y base):
 
 Pasos realizados:
 1.
@@ -508,34 +283,30 @@ Pasos realizados:
 
 Resultado esperado:
 Resultado observado:
-Hallazgos:
-Preguntas / puntos por confirmar:
-Evidencia (referencia o ruta):
+Hallazgos (HAL-NNN):
+Evidencia:
 ```
 
 ## Reporte de defectos
 
-Al registrar un defecto como issue, incluye:
+Un error encontrado en la sesión se registra como `HAL-NNN` en [seguimiento/15-hallazgos-de-uso.md](../../seguimiento/15-hallazgos-de-uso.md) (DEC-081) y se corrige con su propio issue, que incluye:
 
 ```text
 Módulo y pantalla:
+Cuenta y rol:
 Pasos para reproducir:
 1.
 2.
 3.
-Resultado esperado:
+Resultado esperado (con la ESP):
 Resultado obtenido:
-Evidencia (referencia, datos de prueba o registro relevante):
+Evidencia:
 ```
 
-Describe pasos concretos y conserva los datos de prueba necesarios para repetir el resultado. No adjuntes credenciales ni datos reales de clientes.
+No adjuntes contraseñas ni datos reales.
 
 ## Fuentes y diferencias por confirmar
 
-- [README.md](../../README.md) informa 257 pruebas; la versión actual del [plan de pruebas](<../../pruebas de software/09-pruebas-software.md>) informa 275. Se conserva la diferencia documental y esta guía no fija un total.
-- La presencia de vistas, servicios y repositorios en el código no demuestra que la aplicación se conecte correctamente a la base preparada; esa conexión queda pendiente de la sesión exploratoria.
-- Los HTML de [Inventario](../../diseno/Mockups/fuente/ART-MKP-INV-0001.html), [Proveedores](../../diseno/Mockups/fuente/ART-MKP-PRV-0001.html), [Usuarios](../../diseno/Mockups/fuente/ART-MKP-USR-0001.html) y [Métodos de pago](../../diseno/Mockups/fuente/ART-MKP-PAG-0001.html) son referencias de diseño. En particular, el mockup PAG muestra botones CRUD que no están en la vista WPF actual; no se consideran comportamiento disponible ni evidencia.
-- La [matriz de permisos](../../diseno/07-matriz-permisos.md), el inicio de sesión y el menú por rol están representados en el código. Su funcionamiento visual y autorización efectiva permanecen **pendientes de verificación**; esta resolución documental no ejecuta la aplicación ni completa resultados de sesión.
-- El issue #93 pide registrar como issues los errores reproducibles. No se registra ningún error antes de realizar la exploración; completar ese criterio y la definición de terminado de la [sección 8 del plan](../../docs/plan/plan-implementacion.md#8-definicion-de-terminado-y-forma-de-trabajo) después de ejecutarla y completar la CI requerida.
-- [CONTRIBUTING.md](../../CONTRIBUTING.md) conserva instrucciones del esqueleto inicial; contrasta cualquier diferencia con la configuración y persistencia actuales antes de cada sesión. La conexión efectiva depende del entorno local.
-- Los roles y permisos se documentan en la [matriz de permisos](../../diseno/07-matriz-permisos.md). Usa las capturas COM como referencias visuales y registra en una sesión el comportamiento efectivamente observado.
+- Las especificaciones están en [03-especificaciones.md](../../catalogo/03-especificaciones.md), los riesgos en [10-gestion-riesgos.md](../../riesgos/10-gestion-riesgos.md) y las pruebas del plan en [09-pruebas-software.md](<../../pruebas de software/09-pruebas-software.md>).
+- Los riesgos `ILA-0006-R01`, `ILA-0034-R01` e `ILA-0038-R01` siguen pendientes en la gestión de riesgos; esta guía no los resuelve.
+- Las pruebas automatizadas usan repositorios falsos. Esta guía es la evidencia manual sobre la base de pruebas.

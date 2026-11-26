@@ -20,6 +20,8 @@
 | 14/11/2026 | 14.00 | Adecuación de Alertas de Vencimiento al mockup aprobado (issue #86, DEC-042 y DEC-076; nomenclatura según DEC-061 y DEC-062): se incorporan **ALV-CMB-FILTRO-LOTE** (filtro opcional de remesa), **ALV-CMB-FILTRO-ESTADO-VENCIMIENTO** (Todos, Por vencer o Retirados), **ALV-PNL-LOTES-RIESGO** y **ALV-CRD-LOTE** (lista de tarjetas, separada de **ALV-TBL-ALERTAS-VENCIMIENTO**); **ALV-CMB-LOTE-ALERTA** y **ALV-LBL-FECHA-VENCIMIENTO** quedan reservados a la ficha sanitaria, y **ALV-CHK-LOTE-DEFECTUOSO** indica solo el defecto físico. Una sola pantalla, **ART-MKP-ALV-0001**. | AUT-0001 |
 | 17/11/2026 | 15.00 | Adecuación del módulo DOC a ART-MKP-DOC-0001 (issue #83): incorporación de buscadores, filtros, tarjetas y botones de selección conforme a DEC-061 y DEC-062; actualización de los identificadores de previsualización, cancelación y anulación conforme a las especificaciones DOC. | AUT-0001 |
 | 22/11/2026 | 16.00 | Inicio de sesión (issue #88, DEC-080): se incorporan en el módulo 9 los identificadores de la pantalla mínima de inicio de sesión, que no tiene mockup aprobado: **USR-FRM-INICIO-SESION**, **USR-TXT-USUARIO-SESION**, **USR-PWD-CONTRASENA-SESION**, **USR-BTN-INICIAR-SESION**, **USR-LBL-ERROR-SESION**, **USR-BTN-VER-CONTRASENA-SESION** y **USR-BTN-CERRAR-SESION**. | AUT-0001 |
+| 23/11/2026 | 17.00 | Adecuación de Restricciones de Venta (issue #92, DEC-082): se distinguen los IDs del buscador y filtros de la ficha, y la lista de tarjetas del control tabular; se documentan sus modos en **ART-MKP-RES-0001**, las columnas completas de ESP-0030 y el acceso de solo consulta para el Técnico. | AUT-0001 |
+| 24/11/2026 | 18.00 | Adecuación de Devoluciones a Proveedores (issue #96, DEC-083): se separan el buscador (**DEV-SRH-ORDEN**) y filtro (**DEV-CMB-FILTRO-PROVEEDOR**) de la ficha, y el panel de tarjetas (**DEV-PNL-ORDENES**, **DEV-CRD-ORDEN**) como única lista de órdenes, sin tabla de órdenes; se incorporan **DEV-BTN-AGREGAR-LINEA**, **DEV-BTN-QUITAR-LINEA** y **DEV-CMB-ESTADO-ORDEN**; se confirma la edición en dos pasos con **DEV-BTN-CONFIRMAR-ACTUALIZACION** («Guardar cambios», DEC-046) y se documenta el acceso exclusivo del Administrador (DEC-075). | AUT-0001 |
 
 ---
 
@@ -344,7 +346,7 @@ Los identificadores nuevos se organizan por módulo. En PAG, el mockup y las esp
 | VEN-PNL-DETALLE-VENTA | Panel | Detalle de la venta: tabla de líneas, monto total, método de pago y registro. Su rótulo es «Detalle de la venta» y sustituye a «Carrito de compras» (DEC-066). | ART-MKP-VEN-0001 |
 | VEN-LBL-ADVERTENCIAS | Etiqueta | Área de los mensajes de vendibilidad y de restricción al agregar una línea (PEN-030). | ART-MKP-VEN-0001 |
 
-#### INV y DEV
+#### INV
 
 | Componente | Tipo | Función | Mockup afectado |
 | --- | --- | --- | --- |
@@ -356,9 +358,22 @@ Los identificadores nuevos se organizan por módulo. En PAG, el mockup y las esp
 | INV-PNL-CATALOGO | Panel | Catálogo general en tarjetas: contiene una tarjeta **INV-CRD-PRODUCTO** por medicamento (DEC-062). | ART-MKP-INV-0001 |
 | INV-CRD-PRODUCTO | Tarjeta | Tarjeta de un medicamento: nombre, acción terapéutica y precio. Sus textos no llevan identificador propio; la imagen queda fuera del alcance (PEN-027). | ART-MKP-INV-0001 |
 | INV-BTN-SELECCIONAR-PRODUCTO | Botón | «Seleccionar» de la tarjeta: carga la ficha del producto. No ejecuta la consulta, que corresponde a **INV-BTN-LEER-PRODUCTO**. | ART-MKP-INV-0001 |
+
+#### DEV
+
+| Componente | Tipo | Función | Mockup afectado |
+| --- | --- | --- | --- |
+| DEV-PNL-ORDENES | Panel | Lista de órdenes en tarjetas: contiene una tarjeta **DEV-CRD-ORDEN** por orden (DEC-062). | ART-MKP-DEV-0001 |
+| DEV-CRD-ORDEN | Tarjeta | Tarjeta de orden de devolución: código visible «ORD-AAAA-NNN» (DEC-048), proveedor, motivo, líneas, estado y fecha. Al seleccionarla se carga la ficha. | ART-MKP-DEV-0001 |
+| DEV-CMB-FILTRO-PROVEEDOR | ComboBox | Filtro opcional de consulta por proveedor. Se mantiene separado de **DEV-CMB-PROVEEDOR**, usado en la ficha. | ART-MKP-DEV-0001 |
+| DEV-SRH-ORDEN | Barra de búsqueda | Búsqueda de órdenes por número visible «ORD-AAAA-NNN» o número de lote (DEC-061). | ART-MKP-DEV-0001 |
 | DEV-TBL-DETALLE-DEVOLUCION | Tabla | Medicamentos incluidos en la orden: producto, lote y cantidad a devolver. | ART-MKP-DEV-0001 |
 | DEV-NUM-CANTIDAD-DEVOLVER | Campo numérico | Unidades físicas a devolver por cada línea de la orden. | ART-MKP-DEV-0001 |
+| DEV-BTN-AGREGAR-LINEA | Botón | Agrega la remesa y la cantidad seleccionadas como línea al detalle de la orden. | ART-MKP-DEV-0001 |
+| DEV-BTN-QUITAR-LINEA | Botón | Retira del detalle la línea seleccionada. | ART-MKP-DEV-0001 |
+| DEV-CMB-ESTADO-ORDEN | ComboBox | Estado de la orden ('Pendiente', 'Completada') para la transición según EST-02. | ART-MKP-DEV-0001 |
 | DEV-TXA-COMENTARIO | Área de texto | Observaciones de la orden. Obligatorio cuando el motivo es la depuración de un error. | ART-MKP-DEV-0001 |
+| DEV-BTN-CONFIRMAR-ACTUALIZACION | Botón | «Guardar cambios»: confirma la edición de la orden en dos pasos (DEC-046). | ART-MKP-DEV-0001 |
 
 #### ALV
 
@@ -387,9 +402,13 @@ Los componentes ya definidos en las especificaciones se mantienen. El inventario
 | **ALV** | ALV-CMB-FILTRO-LOTE, ALV-CMB-FILTRO-ESTADO-VENCIMIENTO, ALV-PNL-LOTES-RIESGO, ALV-CRD-LOTE, ALV-TBL-ALERTAS-VENCIMIENTO, ALV-CMB-LOTE-ALERTA, ALV-LBL-FECHA-VENCIMIENTO, ALV-CHK-LOTE-DEFECTUOSO, ALV-TXT-ALERTA-DIGEMID, ALV-BTN-CREAR-ALERTA, ALV-BTN-LEER-ALERTA, ALV-BTN-ACTUALIZAR-ALERTA, ALV-BTN-CONFIRMAR-ACTUALIZACION, ALV-BTN-ELIMINAR-ALERTA, ALV-MDL-CONFIRMAR-ELIMINACION, ALV-TXT-MSJ, ALV-BTN-CONFIRMAR-SI, ALV-BTN-CONFIRMAR-NO |
 | **PAG** | PAG-PNL-METODOS-PAGO, PAG-CRD-METODO-PAGO, PAG-SRH-METODO, PAG-CMB-FILTRO-ESTADO, PAG-TBL-METODOS-PAGO, PAG-TXT-METODO-PAGO, PAG-CMB-ESTADO-METODO, PAG-BTN-CREAR-METODO, PAG-BTN-LEER-METODO, PAG-BTN-ACTUALIZAR-METODO, PAG-BTN-CONFIRMAR-ACTUALIZACION, PAG-BTN-ELIMINAR-METODO, PAG-MDL-CONFIRMAR-ELIMINACION, PAG-TXT-MSJ, PAG-BTN-CONFIRMAR-SI, PAG-BTN-CONFIRMAR-NO |
 | **REP** | REP-TBL-REPORTES, REP-CMB-TIPO-REPORTE, REP-CMB-FORMATO-REPORTE, REP-FEC-FECHA-INICIO, REP-FEC-FECHA-FIN, REP-BTN-GENERAR-REPORTE, REP-BTN-LEER-REPORTE, REP-BTN-ACTUALIZAR-REPORTE, REP-BTN-CONFIRMAR-ACTUALIZACION, REP-BTN-ELIMINAR-REPORTE, REP-MDL-CONFIRMAR-ELIMINACION, REP-TXT-MSJ, REP-BTN-CONFIRMAR-SI, REP-BTN-CONFIRMAR-NO |
-| **DEV** | DEV-TBL-ORDENES-DEVOLUCION, DEV-TBL-DETALLE-DEVOLUCION, DEV-CMB-PROVEEDOR, DEV-CMB-LOTE-DEVOLUCION, DEV-CMB-MOTIVO-DEVOLUCION, DEV-NUM-CANTIDAD-DEVOLVER, DEV-TXA-COMENTARIO, DEV-FEC-FECHA-DEVOLUCION, DEV-BTN-CREAR-DEVOLUCION, DEV-BTN-LEER-DEVOLUCION, DEV-BTN-ACTUALIZAR-DEVOLUCION, DEV-BTN-CONFIRMAR-ACTUALIZACION, DEV-BTN-ELIMINAR-DEVOLUCION, DEV-MDL-CONFIRMAR-ELIMINACION, DEV-TXT-MSJ, DEV-BTN-CONFIRMAR-SI, DEV-BTN-CONFIRMAR-NO |
+| **DEV** | DEV-PNL-ORDENES, DEV-CRD-ORDEN, DEV-CMB-FILTRO-PROVEEDOR, DEV-SRH-ORDEN, DEV-BTN-LEER-DEVOLUCION, DEV-CMB-PROVEEDOR, DEV-FEC-FECHA-DEVOLUCION, DEV-CMB-MOTIVO-DEVOLUCION, DEV-CMB-LOTE-DEVOLUCION, DEV-NUM-CANTIDAD-DEVOLVER, DEV-BTN-AGREGAR-LINEA, DEV-BTN-QUITAR-LINEA, DEV-CMB-ESTADO-ORDEN, DEV-TXA-COMENTARIO, DEV-TBL-DETALLE-DEVOLUCION, DEV-BTN-CREAR-DEVOLUCION, DEV-BTN-ACTUALIZAR-DEVOLUCION, DEV-BTN-CONFIRMAR-ACTUALIZACION, DEV-BTN-ELIMINAR-DEVOLUCION, DEV-MDL-CONFIRMAR-ELIMINACION, DEV-TXT-MSJ, DEV-BTN-CONFIRMAR-SI, DEV-BTN-CONFIRMAR-NO |
 | **LOT** | LOT-PNL-REMESAS, LOT-CRD-REMESA, LOT-TBL-LOTES, LOT-CMB-PRODUCTO, LOT-CMB-PROVEEDOR-LOTE, LOT-TXT-NUMERO-LOTE, LOT-FEC-FECHA-VENCIMIENTO, LOT-NUM-STOCK-LOTE, LOT-FEC-FECHA-INGRESO, LOT-CMB-ESTADO-LOTE, LOT-CMB-FILTRO-PRODUCTO, LOT-SRH-NUMERO-LOTE, LOT-CMB-FILTRO-ESTADO-LOTE, LOT-BTN-CREAR-LOTE, LOT-BTN-LEER-LOTE, LOT-BTN-ACTUALIZAR-LOTE, LOT-BTN-CONFIRMAR-ACTUALIZACION, LOT-BTN-ELIMINAR-LOTE, LOT-MDL-CONFIRMAR-ELIMINACION, LOT-TXT-MSJ, LOT-BTN-CONFIRMAR-SI, LOT-BTN-CONFIRMAR-NO |
-| **RES** | RES-TBL-RESTRICCIONES-VENTA, RES-CMB-MEDICAMENTO, RES-CMB-TIPO-RESTRICCION, RES-CMB-ESTADO-ALERTA, RES-TXT-CONDICION-CLIENTE, RES-TXA-MOTIVO-ADVERTENCIA, RES-BTN-CREAR-RESTRICCION, RES-BTN-LEER-RESTRICCION, RES-BTN-ACTUALIZAR-RESTRICCION, RES-BTN-CONFIRMAR-ACTUALIZACION, RES-BTN-ELIMINAR-RESTRICCION, RES-MDL-CONFIRMAR-ELIMINACION, RES-TXT-MSJ, RES-BTN-CONFIRMAR-SI, RES-BTN-CONFIRMAR-NO |
+| **RES** | RES-SRH-MEDICAMENTO, RES-CMB-FILTRO-TIPO, RES-CMB-FILTRO-ESTADO, RES-PNL-RESTRICCIONES, RES-CRD-RESTRICCION, RES-TBL-RESTRICCIONES-VENTA, RES-CMB-MEDICAMENTO, RES-CMB-TIPO-RESTRICCION, RES-TXT-CONDICION-CLIENTE, RES-TXA-MOTIVO-ADVERTENCIA, RES-CMB-ESTADO-ALERTA, RES-BTN-CREAR-RESTRICCION, RES-BTN-LEER-RESTRICCION, RES-BTN-ACTUALIZAR-RESTRICCION, RES-BTN-CONFIRMAR-ACTUALIZACION, RES-BTN-ELIMINAR-RESTRICCION, RES-MDL-CONFIRMAR-ELIMINACION, RES-TXT-MSJ, RES-BTN-CONFIRMAR-SI, RES-BTN-CONFIRMAR-NO |
+
+En RES, **RES-SRH-MEDICAMENTO** y los dos **RES-CMB-FILTRO-…** son controles de consulta; **RES-CMB-MEDICAMENTO**, **RES-CMB-TIPO-RESTRICCION** y **RES-CMB-ESTADO-ALERTA** pertenecen a la ficha. **RES-PNL-RESTRICCIONES** contiene tarjetas **RES-CRD-RESTRICCION** y **RES-TBL-RESTRICCIONES-VENTA** identifica solo la tabla. Crear, actualizar, confirmar y desactivar son acciones exclusivas del Administrador; para el Técnico quedan visibles y deshabilitadas con el motivo «Solo disponible para el Administrador.» (DEC-075).
+
+En DEV, **DEV-CMB-FILTRO-PROVEEDOR** y **DEV-SRH-ORDEN** son controles de consulta superior; **DEV-CMB-PROVEEDOR** (editable al registrar y de solo lectura al actualizar según DEC-038), **DEV-FEC-FECHA-DEVOLUCION**, **DEV-CMB-MOTIVO-DEVOLUCION**, **DEV-CMB-LOTE-DEVOLUCION**, **DEV-NUM-CANTIDAD-DEVOLVER**, **DEV-BTN-AGREGAR-LINEA**, **DEV-BTN-QUITAR-LINEA**, **DEV-CMB-ESTADO-ORDEN** y **DEV-TXA-COMENTARIO** pertenecen a la ficha y al detalle de la orden. **DEV-PNL-ORDENES** contiene las tarjetas **DEV-CRD-ORDEN** y es la única lista de órdenes (no hay tabla de órdenes, DEC-083), mientras **DEV-TBL-DETALLE-DEVOLUCION** lista las líneas de la orden seleccionada. La confirmación de actualización usa **DEV-BTN-CONFIRMAR-ACTUALIZACION** («Guardar cambios», DEC-046). Las cuatro operaciones son exclusivas del Administrador (DEC-075).
 
 ---
 

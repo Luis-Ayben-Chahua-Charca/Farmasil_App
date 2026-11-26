@@ -46,6 +46,8 @@ public class InventarioViewModelPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-002")]
     public async Task InicializarCargaElFiltroDeProveedorPorRazonSocial()
     {
         var repositorio = new RepositorioDeInventarioFalso();
@@ -70,6 +72,8 @@ public class InventarioViewModelPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-001")]
     public async Task ConTodosSeleccionadoLaConsultaNoFiltraPorProveedor()
     {
         var repositorio = new RepositorioDeInventarioFalso();
@@ -84,6 +88,8 @@ public class InventarioViewModelPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-001")]
     public async Task AlElegirUnProveedorLaConsultaFiltraPorSuIdentificador()
     {
         var repositorio = new RepositorioDeInventarioFalso();
@@ -105,6 +111,8 @@ public class InventarioViewModelPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-001")]
     public async Task SiLaListaDeProveedoresSePierdeLaConsultaNoFiltra()
     {
         // Al vaciarse la lista, el ComboBox deja la selección en nulo.
@@ -123,6 +131,8 @@ public class InventarioViewModelPruebas
     }
 
     [Fact]
+    [Trait("Especificacion", "ESP-0006")]
+    [Trait("Tecnica", "T-002")]
     public async Task SiFallaLaCargaDeProveedoresQuedaSoloTodosYSeAvisa()
     {
         var repositorio =

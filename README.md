@@ -70,6 +70,46 @@ Ejecutar la aplicación:
 dotnet run --project src/FarmasilApp.Vista
 ```
 
+### Levantar la base de datos
+
+Esta guía deja una base de pruebas lista para usar la aplicación. Usa siempre una base de pruebas: el script **elimina y vuelve a crear** la base que le indiques, así que nunca lo apuntes a una base con datos reales.
+
+1. Comprueba que la instancia `SQLEXPRESS` está en marcha. Debe responder con la versión de SQL Server:
+
+   ```powershell
+   sqlcmd -S "lpc:localhost\SQLEXPRESS" -E -Q "SELECT @@VERSION"
+   ```
+
+2. Crea la base de pruebas con sus datos, desde la raíz del repositorio:
+
+   ```powershell
+   powershell -NoProfile -File database/recrear.ps1 -Base DB_FARMASIL_PRUEBAS
+   ```
+
+   El script elimina la base si ya existe, la crea con la intercalación `Modern_Spanish_CI_AS`, ejecuta `database/001_esquema.sql` y `database/002_datos_prueba.sql`, y al final muestra cuántas tablas y vistas creó (deben ser 16 y 2). Sin `-Base`, usa `DB_FARMASIL`; el otro parámetro, `-Servidor`, vale por defecto `lpc:localhost\SQLEXPRESS`.
+
+3. Apunta la aplicación a esa base con `src/FarmasilApp.Vista/appsettings.local.json`. Ese archivo no se versiona y prevalece sobre `appsettings.json`:
+
+   ```json
+   {
+     "ConnectionStrings": {
+       "DB_FARMASIL": "Server=.\\SQLEXPRESS;Database=DB_FARMASIL_PRUEBAS;Integrated Security=true;TrustServerCertificate=true"
+     }
+   }
+   ```
+
+4. Ejecuta la aplicación con `dotnet run --project src/FarmasilApp.Vista` e inicia sesión con una cuenta de [Datos de prueba](#datos-de-prueba).
+
+Problemas frecuentes:
+
+| Síntoma | Qué hacer |
+| --- | --- |
+| PowerShell bloquea el script por la política de ejecución | Ejecútalo con `powershell -NoProfile -ExecutionPolicy Bypass -File database/recrear.ps1 -Base DB_FARMASIL_PRUEBAS` |
+| `sqlcmd` no encuentra la instancia | Comprueba que el servicio `SQL Server (SQLEXPRESS)` está iniciado y que la instancia se llama `SQLEXPRESS` |
+| `sqlcmd` falla con un error de certificado | El `sqlcmd` instalado con `winget` cifra la conexión por defecto y no confía en el certificado de Express. `recrear.ps1` todavía no tiene un parámetro para confiar en él: avisa a R1 en lugar de cambiar el script en tu PR |
+| Error 1934 al cargar los datos | Es el `sqlcmd` antiguo (ODBC). El script ya usa `-I` para evitarlo; actualiza `sqlcmd` si aún aparece |
+| La aplicación no se conecta | Revisa que `appsettings.local.json` apunte a la base que creaste y que la cuenta de Windows con la que ejecutas tenga acceso a la instancia |
+
 ### Cadena de conexión
 
 La aplicación lee `ConnectionStrings:DB_FARMASIL` de `src/FarmasilApp.Vista/appsettings.json`:
@@ -78,21 +118,21 @@ La aplicación lee `ConnectionStrings:DB_FARMASIL` de `src/FarmasilApp.Vista/app
 Server=.\SQLEXPRESS;Database=DB_FARMASIL;Integrated Security=true;TrustServerCertificate=true
 ```
 
-- Se conecta con la cuenta de Windows de quien ejecuta la aplicación. Esta forma es provisional (PEN-035) y no lleva usuario ni contraseña: no se guardan credenciales en el repositorio.
+- Se conecta con la cuenta de Windows de quien ejecuta la aplicación. Esta forma es provisional (PEN-035) y la cadena de conexión no lleva usuario ni contraseña de SQL Server. Las cuentas de la aplicación son otra cosa: la aplicación pide iniciar sesión (DEC-080) y sus contraseñas se guardan como hash en `TBL_USUARIOS`; las cuentas de prueba están en [Datos de prueba](#datos-de-prueba).
 - `TrustServerCertificate=true` es necesario porque el cliente cifra la conexión por defecto y la instancia local de Express no tiene un certificado de confianza.
 - Para usar otra instancia o base, por ejemplo `DB_FARMASIL_PRUEBAS`, crea `src/FarmasilApp.Vista/appsettings.local.json` con la misma estructura. Ese archivo no se versiona (`*.local.json` está en `.gitignore`) y prevalece sobre `appsettings.json`.
-- La base se crea con los scripts de `database/`, que escribe R2 (plan de implementación, sección 10).
+- La base se crea con los scripts de `database/`, como se explica en [Levantar la base de datos](#levantar-la-base-de-datos).
 
 ### Datos de prueba
 
-Al ejecutar `database/recrear.ps1` se cargan datos iniciales para pruebas locales.
+Al ejecutar `database/recrear.ps1` se cargan datos iniciales para pruebas locales. Con estas cuentas se inicia sesión en la aplicación.
 
 | Usuario | Contraseña | Rol | Estado |
 | --- | --- | --- | --- |
 | `admin_prueba` | `Farmasil2026!` | Administrador | Activo |
 | `tecnico_prueba` | `Farmasil2026!` | Tecnico | Activo |
 
-Estas credenciales son exclusivamente para el entorno local de desarrollo y pruebas.
+Estas credenciales son exclusivamente para el entorno local de desarrollo y pruebas. No las copies en issues, PR ni capturas de pantalla.
 Las contraseñas se almacenan en `TBL_USUARIOS` como hashes PBKDF2-SHA256 con sal, nunca como texto plano.
 
 ### Pruebas Automatizadas

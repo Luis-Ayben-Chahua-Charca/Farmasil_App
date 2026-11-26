@@ -2,10 +2,11 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:comun="clr-namespace:FarmasilApp.Vista.Comun"
-             MinWidth="760" MinHeight="500"
+             MinWidth="760" MinHeight="620"
              comun:ComandoAlCargar.Command="{Binding InicializarCommand}">
     <Grid Margin="24">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -14,7 +15,7 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
             <TextBlock Text="ALV — Alertas de vencimiento" FontSize="25" FontWeight="Bold"/>
-            <TextBlock Text="Consulta ESP-0013 · Vista de solo lectura" Foreground="Gray"/>
+            <TextBlock Text="Consulta y gestión ESP-0013 a ESP-0016" Foreground="Gray"/>
         </StackPanel>
         <Grid Grid.Row="1" Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
@@ -59,28 +60,79 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border AutomationProperties.AutomationId="ALV-CRD-LOTE"
+                            <Button AutomationProperties.AutomationId="ALV-CRD-LOTE"
+                                    Command="{Binding DataContext.SeleccionarAlertaCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}" Padding="0" Margin="0,0,10,8">
+                              <Border
                                     BorderBrush="#CCD3DD" BorderThickness="1" CornerRadius="5"
-                                    Margin="0,0,10,8" Padding="10" Width="225">
+                                    Padding="10" Width="225">
                                 <StackPanel>
                                     <TextBlock Text="{Binding Medicamento}" FontWeight="Bold" TextWrapping="Wrap"/>
                                     <TextBlock Text="{Binding NumeroLote}"/>
                                     <TextBlock Text="{Binding FechaVencimiento}"/>
                                     <TextBlock Text="{Binding Origen}" FontWeight="SemiBold"/>
                                 </StackPanel>
-                            </Border>
+                              </Border>
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
         </StackPanel>
-        <Grid Grid.Row="4">
+        <Border Grid.Row="4" Margin="0,0,0,12" BorderBrush="#CCD3DD" BorderThickness="1" Padding="12">
+            <StackPanel>
+                <TextBlock Text="Control sanitario de lote" FontSize="17" FontWeight="Bold" Margin="0,0,0,8"/>
+                <WrapPanel>
+                    <StackPanel Width="220" Margin="0,0,10,8">
+                        <TextBlock Text="Lote / remesa afectada"/>
+                        <ComboBox AutomationProperties.AutomationId="ALV-CMB-LOTE-ALERTA"
+                                  ItemsSource="{Binding LotesFicha}" DisplayMemberPath="Descripcion"
+                                  SelectedItem="{Binding LoteFichaSeleccionado}"
+                                  IsEnabled="{Binding PuedeElegirRemesa}" Height="30"/>
+                    </StackPanel>
+                    <StackPanel Width="140" Margin="0,0,10,8">
+                        <TextBlock Text="Fecha de vencimiento"/>
+                        <TextBox AutomationProperties.AutomationId="ALV-LBL-FECHA-VENCIMIENTO"
+                                 Text="{Binding FechaFicha, Mode=OneWay}" IsReadOnly="True" IsTabStop="False" Height="30"/>
+                    </StackPanel>
+                    <StackPanel Width="145" Margin="0,0,10,8">
+                        <TextBlock Text="Defecto físico"/>
+                        <CheckBox AutomationProperties.AutomationId="ALV-CHK-LOTE-DEFECTUOSO"
+                                  IsChecked="{Binding Defectuoso}" Content="Lote defectuoso" Margin="0,7,0,0"/>
+                    </StackPanel>
+                    <StackPanel Width="230" Margin="0,0,10,8">
+                        <TextBlock Text="Código de alerta DIGEMID"/>
+                        <TextBox AutomationProperties.AutomationId="ALV-TXT-ALERTA-DIGEMID"
+                                 Text="{Binding CodigoDigemid, UpdateSourceTrigger=PropertyChanged}" MaxLength="100" Height="30"/>
+                    </StackPanel>
+                </WrapPanel>
+                <WrapPanel>
+                    <Button AutomationProperties.AutomationId="ALV-BTN-CREAR-ALERTA"
+                            Content="Registrar alerta" Command="{Binding CrearCommand}"
+                            Margin="0,0,8,0" Padding="12,5"/>
+                    <Button AutomationProperties.AutomationId="ALV-BTN-ACTUALIZAR-ALERTA"
+                            Content="Modificar" Command="{Binding ActualizarCommand}"
+                            ToolTip="{Binding MotivoSinPermiso}" ToolTipService.ShowOnDisabled="True"
+                            Margin="0,0,8,0" Padding="12,5"/>
+                    <Button AutomationProperties.AutomationId="ALV-BTN-CONFIRMAR-ACTUALIZACION"
+                            Content="Guardar cambios" Command="{Binding ConfirmarActualizacionCommand}"
+                            ToolTip="{Binding MotivoSinPermiso}" ToolTipService.ShowOnDisabled="True"
+                            Margin="0,0,8,0" Padding="12,5"/>
+                    <Button AutomationProperties.AutomationId="ALV-BTN-ELIMINAR-ALERTA"
+                            Content="Eliminar alerta" Command="{Binding EliminarCommand}"
+                            ToolTip="{Binding MotivoSinPermiso}" ToolTipService.ShowOnDisabled="True"
+                            Padding="12,5"/>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+        <Grid Grid.Row="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/><RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Text="{Binding Mensaje}" Margin="0,0,0,8" Foreground="DimGray"/>
             <DataGrid Grid.Row="1" AutomationProperties.AutomationId="ALV-TBL-ALERTAS-VENCIMIENTO"
                       ItemsSource="{Binding Alertas}" AutoGenerateColumns="False"
+                      SelectedItem="{Binding AlertaSeleccionada, Mode=TwoWay}"
                       IsReadOnly="True" CanUserAddRows="False" SelectionMode="Single">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Medicamento" Binding="{Binding Medicamento}" Width="2*"/>
@@ -88,6 +140,7 @@
                     <DataGridTextColumn Header="Vencimiento" Binding="{Binding FechaVencimiento}" Width="*"/>
                     <DataGridCheckBoxColumn Header="Defectuoso" Binding="{Binding EsLoteDefectuoso}" Width="*"/>
                     <DataGridTextColumn Header="Origen" Binding="{Binding Origen}" Width="*"/>
+                    <DataGridTextColumn Header="DIGEMID" Binding="{Binding AlertaDigemid}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
