@@ -2,8 +2,8 @@
 
 | Artefacto | Guía de pruebas exploratorias e índice del manual de usuario |
 | --- | --- |
-| Versión | 02.00 |
-| Fecha | 23/11/2026 |
+| Versión | 02.01 |
+| Fecha | 25/11/2026 |
 | Responsable | R4 — Pruebas exploratorias y documentación de usuario |
 
 ## Historial de versiones
@@ -12,10 +12,11 @@
 | --- | --- | --- |
 | 01.00 | 16/11/2026 | Primera versión (issue #78): lista común de revisión por pantalla, misiones de exploración de Inventario, Proveedores y Usuarios, plantillas de sesión y de defectos, e índice del manual de usuario por módulo. |
 | 02.00 | 23/11/2026 | Issue #93: se actualiza el alcance según el código vigente; se agregan los recorridos de PAG, las columnas de resultado observado y evidencia y borradores del manual de USR y PAG. |
+| 02.01 | 25/11/2026 | Integra enlaces a las capturas existentes en `evidencias-pdf` sin atribuirles resultados no verificados ni cambiar los estados de implementación. |
 
 ## Propósito
 
-Esta guía sirve para explorar desde la interfaz los módulos USR, PRV, INV y PAG y para preparar el índice del manual de usuario. Los flujos esperados proceden de las especificaciones vigentes; las vistas WPF y sus VistaModelos permiten distinguir lo implementado de lo pendiente. Los HTML de `diseno/Mockups/fuente/` se usan solo como referencia visual y de rótulos, nunca como evidencia de ejecución. Los resultados observados y las evidencias se completan únicamente durante una sesión real.
+Esta guía sirve para explorar desde la interfaz los módulos USR, PRV, INV y PAG y para preparar el índice del manual de usuario. Los flujos esperados proceden de las especificaciones vigentes; las vistas WPF y sus VistaModelos permiten distinguir lo implementado de lo pendiente. Los HTML de `diseno/Mockups/fuente/` se usan solo como referencia visual y de rótulos, nunca como evidencia de ejecución. Incluye una [lista común](#lista-comun-de-revision), los recorridos disponibles y enlaces a capturas guardadas; los resultados observados se completan únicamente durante una sesión real. El alcance se contrastó con el [mapa del repositorio](../../architecture.md), el [contexto de arquitectura y módulos](../../docs/arquitectura/Contexto_Arquitectura_FARMASIL_ParaAgentesIA.md) y las responsabilidades de R4 en el [plan, sección 3](../../docs/plan/plan-implementacion.md#3-roles-y-responsabilidades).
 
 ## Cómo usar la guía
 
@@ -23,7 +24,8 @@ Esta guía sirve para explorar desde la interfaz los módulos USR, PRV, INV y PA
 2. Confirma los datos iniciales y el entorno antes de abrir una pantalla.
 3. Recorre la [lista común de revisión](#lista-comun-de-revision) y después la misión del módulo; registra tanto los resultados correctos como las diferencias.
 4. Si una pantalla u operación no está disponible, registra el bloqueo o déjala pendiente; no supongas navegación ni funciones a partir del mockup.
-5. Informa los defectos con el formato de la sección [Reporte de defectos](#reporte-de-defectos).
+5. Las capturas existentes en `evidencias-pdf/` son referencias visuales; no reemplazan el registro de pasos, resultados observados ni estado de implementación.
+6. Informa los defectos con el formato de la sección [Reporte de defectos](#reporte-de-defectos).
 
 ## Índice
 
@@ -51,7 +53,7 @@ Las vistas WPF identificadas para este issue son [InicioSesionView.xaml](../../s
 
 **Alcance de implementación observado en los archivos (no equivale a una prueba ejecutada):** las vistas y VistaModelos de INV, PRV y USR contienen consulta, alta, actualización y baja; PAG contiene consulta y selección, pero su vista y VistaModelo no incluyen comandos de alta, actualización o baja. Para esas tres operaciones de PAG se documenta el flujo especificado y se marca pendiente de implementación/verificación. La disponibilidad, navegación real, conexión y respuestas visuales quedan por confirmar al ejecutar la aplicación.
 
-Esta preparación fue documental: no se ejecutó la aplicación, pruebas, compilación ni scripts, y no se creó ni modificó ninguna base de datos. Por tanto, las columnas de resultado y evidencia permanecen en blanco y no se registran defectos como si se hubieran reproducido.
+Las capturas existentes en [evidencias-pdf/](evidencias-pdf/) se enlazan como archivos de evidencia de los recorridos indicados, pero no se completan resultados observados ni se atribuye a esta revisión una ejecución de la aplicación, pruebas, compilación o scripts. No se registran defectos como reproducidos sin una sesión que los confirme.
 
 ## Entorno de pruebas
 
@@ -61,11 +63,26 @@ Esta preparación fue documental: no se ejecutó la aplicación, pruebas, compil
 | Equipo | Windows 11; la aplicación y la instancia `SQLEXPRESS` se ejecutan en el mismo equipo. |
 | Base | Las sesiones exploratorias usan `DB_FARMASIL_PRUEBAS`, creada con `database/recrear.ps1 -Base DB_FARMASIL_PRUEBAS`, que también carga los datos de prueba. Nunca se explora sobre una base con datos reales. |
 | Configuración de prueba | Para que la aplicación apunte a `DB_FARMASIL_PRUEBAS`, el README describe `src/FarmasilApp.Vista/appsettings.local.json`; ese archivo local no se versiona. |
-| Cuentas de prueba | `admin_prueba` ('Administrador') y `tecnico_prueba` ('Tecnico'), cargadas por `database/002_datos_prueba.sql`, donde está documentada su contraseña. Confirmar su disponibilidad y usar únicamente una base de pruebas al preparar una sesión exploratoria. |
+| Cuentas de prueba | `admin_prueba` ('Administrador') y `tecnico_prueba` ('Tecnico'), cargadas por `database/002_datos_prueba.sql`. No incluyas contraseñas en las capturas ni en el registro de sesión. |
 | Herramientas | SDK de .NET 10 (10.0.100 o posterior de la serie 10.0) y Git. Visual Studio 2026 Community con «Desarrollo de escritorio de .NET» es recomendado; VS Code con C# Dev Kit o Rider son alternativas. |
 | Comprobaciones documentadas | `dotnet build FarmasilApp.slnx --configuration Release` y `dotnet test FarmasilApp.slnx --configuration Release --no-build`. |
 
-Referencias: [README.md](../../README.md), [CONTRIBUTING.md](../../CONTRIBUTING.md) y [RNF-0008](../../catalogo/08-requisitos-no-funcionales.md). Usa una base de pruebas, no una base de operación. Las pruebas de servicio y VistaModelo de Inventario, Proveedores y Usuarios usan repositorios falsos; no confirman que las pantallas consulten una instancia preparada.
+Referencias: [README.md](../../README.md), [CONTRIBUTING.md](../../CONTRIBUTING.md) y [RNF-0008](../../catalogo/08-requisitos-no-funcionales.md). Usa una base de pruebas, no una base de operación. Las pruebas automatizadas de servicio y VistaModelo usan repositorios falsos; las capturas de esta guía son evidencia manual separada. Registra la base y el entorno usados en cada sesión.
+
+### Evidencia técnica complementaria
+
+Estas capturas documentan compilación, ejecución y generación de PDF; no reemplazan la evidencia de los recorridos exploratorios de cada módulo.
+
+<details>
+<summary>Compilación, ejecución y PDF generado</summary>
+
+![Resumen de compilación](evidencias-pdf/01-resumen-compilacion.png)
+
+![Ejecución de FarmasilApp](evidencias-pdf/02-ejecucion-farmasilapp.png)
+
+![PDF generado](evidencias-pdf/03-pdf-generado.png)
+
+</details>
 
 <a id="lista-comun-de-revision"></a>
 ## Lista común de revisión
@@ -92,7 +109,7 @@ La ventana principal inicia en `InicioSesionView`. Tras una autenticación acept
 | --- | --- | --- | --- |
 | Inicio de sesión (RNF-0006, DEC-080) | Con credenciales válidas de una cuenta activa, debe abrirse la sesión, mostrarse el nombre y rol, aparecer el menú según permisos y quedar vacía la contraseña. Una cuenta inactiva no inicia sesión. | | |
 | Rechazo de autenticación | Usuario inexistente y contraseña errónea muestran el mismo mensaje; la contraseña se borra y vuelve a enmascararse después del intento. Un error técnico muestra el mensaje general, sin detalles técnicos. | | |
-| Menú y cierre de sesión | INV y PAG están disponibles para Administrador y Técnico; PRV y USR solo para Administrador. Para el Técnico, las opciones no permitidas están deshabilitadas y explican el motivo. Cerrar sesión vacía el menú y vuelve al inicio de sesión. | | |
+| Menú y cierre de sesión | Dentro del alcance de esta guía, INV y PAG están disponibles para Administrador y Técnico; PRV y USR solo para Administrador. Las opciones no permitidas están deshabilitadas y explican el motivo. Cerrar sesión vacía el menú y vuelve al inicio de sesión. | | |
 
 **Controles documentados**
 
@@ -116,9 +133,24 @@ La ventana principal inicia en `InicioSesionView`. Tras una autenticación acept
 | Falla técnica | `No se pudo iniciar sesión. Inténtelo nuevamente.` |
 | Módulo no disponible para el Técnico | `Solo disponible para el Administrador.` |
 
+<details>
+<summary>Capturas COM: inicio de sesión y menú por rol</summary>
+
+![Inicio de sesión como Administrador](evidencias-pdf/COM-01-inicio-admin.png)
+
+![Menú de Administrador](evidencias-pdf/COM-02-menu-admin.png)
+
+![Inicio de sesión como Técnico](evidencias-pdf/COM-03-inicio-tecnico.png)
+
+![Menú de Técnico](evidencias-pdf/COM-04-menu-tecnico.png)
+
+</details>
+
 ## Inventario (INV)
 
 La vista [InventarioView.xaml](../../src/FarmasilApp.Vista/INV/InventarioView.xaml) y su VistaModelo incluyen consulta, alta, actualización y baja. El menú admite Administrador y Técnico; las operaciones de escritura son exclusivas del Administrador. La fuente de los resultados esperados es ESP-0005 a ESP-0008; el HTML [ART-MKP-INV-0001](../../diseno/Mockups/fuente/ART-MKP-INV-0001.html) sirve solo de referencia, pues sus controles y rótulos no sustituyen la especificación vigente.
+
+**Misión:** recorre los cuatro flujos con una cuenta de prueba, registra filtros, mensajes y confirmación de baja, y comprueba con Técnico que las operaciones de escritura estén deshabilitadas. Para la consulta, usa también las particiones `T-001`, `T-002`, `T-006` y `T-007` del plan de pruebas. Utiliza únicamente datos de `DB_FARMASIL_PRUEBAS`.
 
 <a id="pantalla-de-inventario"></a>
 ### Pantalla de Inventario
@@ -162,11 +194,30 @@ La vista [InventarioView.xaml](../../src/FarmasilApp.Vista/INV/InventarioView.xa
 | `ILA-0006-R02` | El riesgo propone un indicador visual de alertas de vencimiento; `ESP-0006` no lo define y la vista actual no lo muestra. Registra lo observado sin tratar ese indicador como resultado obligatorio. |
 | `ILA-0006-R03` | Riesgo pendiente por falta de un límite de registros/paginación documentado. Registrar problemas observables con catálogos grandes, sin asumir un límite esperado. |
 
-Fuentes: [ESP-0006](../../catalogo/03-especificaciones.md), [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md), [permisos](../../diseno/07-matriz-permisos.md), [pruebas de Inventario](<../../pruebas de software/09-pruebas-software.md>), [riesgos de Inventario](../../riesgos/10-gestion-riesgos.md), [InventarioViewModel.cs](../../src/FarmasilApp.VistaModelo/INV/InventarioViewModel.cs), [InventarioServicio.cs](../../src/FarmasilApp.Modelo/INV/InventarioServicio.cs), [InventarioRepositorio.cs](../../src/FarmasilApp.Persistencia/INV/InventarioRepositorio.cs), [pruebas del servicio](../../tests/FarmasilApp.Pruebas/INV/InventarioServicioPruebas.cs) y [pruebas del VistaModelo](../../tests/FarmasilApp.Pruebas/VistaModelo/InventarioViewModelPruebas.cs).
+<details>
+<summary>Capturas INV: consulta, alta, actualización, baja y permisos del Técnico</summary>
+
+![Consulta de Inventario](evidencias-pdf/INV-01-consulta-resultados.png)
+
+![Resultado del alta de producto](evidencias-pdf/INV-02-alta-resultado.png)
+
+![Resultado de la actualización de producto](evidencias-pdf/INV-03-actualizacion-resultado.png)
+
+![Confirmación de baja de producto](evidencias-pdf/INV-04-baja-confirmacion.png)
+
+![Resultado de baja de producto](evidencias-pdf/INV-05-baja-resultado.png)
+
+![Permisos de Técnico en Inventario](evidencias-pdf/INV-06-permisos-tecnico.jpeg)
+
+</details>
+
+Fuentes: [ESP-0005 a ESP-0008](../../catalogo/03-especificaciones.md), [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md), [permisos](../../diseno/07-matriz-permisos.md), [pruebas de Inventario](<../../pruebas de software/09-pruebas-software.md>), [riesgos de Inventario](../../riesgos/10-gestion-riesgos.md), [InventarioView.xaml](../../src/FarmasilApp.Vista/INV/InventarioView.xaml), [InventarioViewModel.cs](../../src/FarmasilApp.VistaModelo/INV/InventarioViewModel.cs), [InventarioServicio.cs](../../src/FarmasilApp.Modelo/INV/InventarioServicio.cs), [InventarioRepositorio.cs](../../src/FarmasilApp.Persistencia/INV/InventarioRepositorio.cs), [pruebas del servicio](../../tests/FarmasilApp.Pruebas/INV/InventarioServicioPruebas.cs) y [pruebas del VistaModelo](../../tests/FarmasilApp.Pruebas/VistaModelo/InventarioViewModelPruebas.cs).
 
 ## Proveedores (PRV)
 
 La vista [ProveedoresView.xaml](../../src/FarmasilApp.Vista/PRV/ProveedoresView.xaml) y su VistaModelo incluyen los cuatro flujos. El acceso al módulo es exclusivo del Administrador. El HTML [ART-MKP-PRV-0001](../../diseno/Mockups/fuente/ART-MKP-PRV-0001.html) se consulta como referencia; prevalecen las especificaciones, que incluyen el teléfono en la tabla y los controles de confirmación.
+
+**Misión de exploración:** como Administrador, consulta proveedores por RUC o razón social, aplica el filtro de estado, compara tarjetas y tabla, y selecciona un resultado para revisar su ficha. Recorre también el alta, la actualización y la baja/desactivación (ESP-0037 a ESP-0040); registra mensajes y confirmaciones.
 
 <a id="pantalla-de-proveedores"></a>
 ### Pantalla de Proveedores
@@ -207,11 +258,24 @@ La vista [ProveedoresView.xaml](../../src/FarmasilApp.Vista/PRV/ProveedoresView.
 
 `ILA-0038-R01` permanece pendiente y afirma que la consulta exige criterio y usa igualdad exacta. La versión vigente de `ESP-0038`, el plan de pruebas y el repositorio describen búsqueda parcial por razón social y consulta sin criterios. Registra lo observado sin resolver aquí la diferencia entre fuentes.
 
-Fuentes: [ESP-0037 a ESP-0040](../../catalogo/03-especificaciones.md), [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md), [permisos](../../diseno/07-matriz-permisos.md), [pruebas de Proveedores](<../../pruebas de software/09-pruebas-software.md>), [riesgos de Proveedores](../../riesgos/10-gestion-riesgos.md), [ProveedoresView.xaml](../../src/FarmasilApp.Vista/PRV/ProveedoresView.xaml), [ProveedoresViewModel.cs](../../src/FarmasilApp.VistaModelo/PRV/ProveedoresViewModel.cs), [ProveedoresServicio.cs](../../src/FarmasilApp.Modelo/PRV/ProveedoresServicio.cs), [ProveedoresRepositorio.cs](../../src/FarmasilApp.Persistencia/PRV/ProveedoresRepositorio.cs) y [MensajesProveedores.cs](../../src/FarmasilApp.Modelo/PRV/MensajesProveedores.cs).
+<details>
+<summary>Capturas PRV: consulta, alta, actualización y baja</summary>
+
+![Consulta de proveedores](evidencias-pdf/PRV-01-consulta-resultados.png)
+
+![Resultado del alta de proveedor](evidencias-pdf/PRV-02-alta-resultado.png)
+
+![Resultado de la actualización de proveedor](evidencias-pdf/PRV-03-actualizacion-resultado.png)
+
+![Confirmación de baja de proveedor](evidencias-pdf/PRV-04-baja-confirmacion.png)
+
+![Resultado de baja de proveedor](evidencias-pdf/PRV-05-baja-resultado.png)
+
+</details>
+
+Fuentes: [ESP-0037 a ESP-0040](../../catalogo/03-especificaciones.md), [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md), [permisos](../../diseno/07-matriz-permisos.md), [pruebas de Proveedores](<../../pruebas de software/09-pruebas-software.md>), [riesgos de Proveedores](../../riesgos/10-gestion-riesgos.md), [ProveedoresView.xaml](../../src/FarmasilApp.Vista/PRV/ProveedoresView.xaml), [ProveedoresViewModel.cs](../../src/FarmasilApp.VistaModelo/PRV/ProveedoresViewModel.cs), [ProveedoresServicio.cs](../../src/FarmasilApp.Modelo/PRV/ProveedoresServicio.cs), [ProveedoresRepositorio.cs](../../src/FarmasilApp.Persistencia/PRV/ProveedoresRepositorio.cs), [MensajesProveedores.cs](../../src/FarmasilApp.Modelo/PRV/MensajesProveedores.cs) y [pruebas del servicio](../../tests/FarmasilApp.Pruebas/PRV/ProveedoresServicioPruebas.cs).
 
 ## Usuarios (USR)
-
-La vista [UsuariosView.xaml](../../src/FarmasilApp.Vista/USR/UsuariosView.xaml) y su VistaModelo incluyen consulta, alta, actualización y baja. El menú admite el módulo solo para Administrador. La pantalla de inicio de sesión se describe en [Inicio de sesión y ventana principal](#inicio-de-sesion-y-ventana-principal).
 
 <a id="pantalla-de-usuarios"></a>
 ### Pantalla de Usuarios
@@ -255,6 +319,21 @@ La vista [UsuariosView.xaml](../../src/FarmasilApp.Vista/USR/UsuariosView.xaml) 
 | `ILA-0034-R01` | Está pendiente definir si la búsqueda por nombre de usuario es exacta o parcial. Registra cuál se observa. |
 | `ILA-0035-R02` | No está definido si un cambio de rol o estado afecta a una sesión ya abierta de esa cuenta. Registrar lo que se observe, sin convertirlo en una regla no especificada. |
 
+<details>
+<summary>Capturas USR: consulta, alta, actualización y baja</summary>
+
+![Consulta de usuarios](evidencias-pdf/USR-01-consulta-resultados.png)
+
+![Resultado del alta de usuario](evidencias-pdf/USR-02-alta-resultado.png)
+
+![Resultado de la actualización de usuario](evidencias-pdf/USR-03-actualizacion-resultado.png)
+
+![Confirmación de baja de usuario](evidencias-pdf/USR-04-baja-confirmacion.png)
+
+![Resultado de baja de usuario](evidencias-pdf/USR-05-baja-resultado.png)
+
+</details>
+
 Fuentes: [ESP-0033 a ESP-0036](../../catalogo/03-especificaciones.md), [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md), [permisos](../../diseno/07-matriz-permisos.md), [pruebas de Usuarios](<../../pruebas de software/09-pruebas-software.md>), [riesgos de Usuarios](../../riesgos/10-gestion-riesgos.md), [UsuariosView.xaml](../../src/FarmasilApp.Vista/USR/UsuariosView.xaml), [UsuariosViewModel.cs](../../src/FarmasilApp.VistaModelo/USR/UsuariosViewModel.cs), [MensajesUsuarios.cs](../../src/FarmasilApp.Modelo/USR/MensajesUsuarios.cs), [UsuariosServicio.cs](../../src/FarmasilApp.Modelo/USR/UsuariosServicio.cs) y [UsuariosRepositorio.cs](../../src/FarmasilApp.Persistencia/USR/UsuariosRepositorio.cs).
 
 ## Métodos de pago (PAG)
@@ -290,6 +369,25 @@ La vista [MetodosPagoView.xaml](../../src/FarmasilApp.Vista/PAG/MetodosPagoView.
 | Alta / actualización / baja correctas (texto de especificación; flujo WPF pendiente) | `Método de pago registrado correctamente` / `Método de pago actualizado correctamente` / `Método de pago dado de baja correctamente` |
 | Confirmación de baja (ESP-0020; flujo WPF pendiente) | `¿Está seguro de dar de baja este método de pago? Las ventas ya registradas con él no se verán afectadas.` |
 
+Las capturas PAG-03 a PAG-06 están conservadas con sus nombres originales, pero la vista WPF de esta rama no incluye controles CRUD. No se atribuyen esas imágenes a una ejecución de esta versión ni se completan con ellas los campos de resultado observado; verifica su procedencia y compatibilidad antes de usarlas como evidencia de un flujo disponible.
+
+<details>
+<summary>Capturas PAG existentes (consulta y archivos de estados CRUD pendientes de corroborar)</summary>
+
+![Captura PAG-01-consulta-admin.png](evidencias-pdf/PAG-01-consulta-admin.png)
+
+![Captura PAG-02-consulta-tecnico.png](evidencias-pdf/PAG-02-consulta-tecnico.png)
+
+![Captura PAG-03-alta-resultado.png](evidencias-pdf/PAG-03-alta-resultado.png)
+
+![Captura PAG-04-actualizacion-resultado.png](evidencias-pdf/PAG-04-actualizacion-resultado.png)
+
+![Captura PAG-05-baja-confirmacion.png](evidencias-pdf/PAG-05-baja-confirmacion.png)
+
+![Captura PAG-06-baja-resultado.png](evidencias-pdf/PAG-06-baja-resultado.png)
+
+</details>
+
 Fuentes: [ESP-0017 a ESP-0020](../../catalogo/03-especificaciones.md), [guía de nomenclatura](../../diseno/06-guia-nomenclatura-mockups.md), [permisos](../../diseno/07-matriz-permisos.md), [pruebas de Métodos de pago](<../../pruebas de software/09-pruebas-software.md>), [MetodosPagoView.xaml](../../src/FarmasilApp.Vista/PAG/MetodosPagoView.xaml), [MetodosPagoViewModel.cs](../../src/FarmasilApp.VistaModelo/PAG/MetodosPagoViewModel.cs) y [ART-MKP-PAG-0001.html](../../diseno/Mockups/fuente/ART-MKP-PAG-0001.html).
 
 <a id="indice-del-manual-de-usuario"></a>
@@ -298,14 +396,14 @@ Fuentes: [ESP-0017 a ESP-0020](../../catalogo/03-especificaciones.md), [guía de
 El repositorio no contiene todavía un manual de usuario completo. Este índice fija su estructura por módulo y operación, con los roles de la [matriz de permisos](../../diseno/07-matriz-permisos.md). El estado «vista implementada» describe únicamente los archivos del repositorio; no indica que la interfaz haya sido ejecutada o explorada.
 
 1. **Introducción**: qué es FARMASIL, los dos roles (Administrador y Técnico) y cómo se lee este manual.
-2. **Inicio y cierre de sesión** (RNF-0006): ingresar con usuario y contraseña, y qué pasa con una cuenta inactiva. **(vista implementada; exploración pendiente)**
-3. **Ventana principal y menú**: cómo abrir cada módulo y por qué algunas opciones se ven deshabilitadas para el Técnico. **(implementación presente; exploración pendiente)**
+2. **Inicio y cierre de sesión** (RNF-0006): ingresar con usuario y contraseña, y qué pasa con una cuenta inactiva. **(vista implementada; recorrido pendiente de verificación; capturas COM adjuntas)**
+3. **Ventana principal y menú**: cómo abrir cada módulo y por qué algunas opciones se ven deshabilitadas para el Técnico. **(implementación presente; recorrido pendiente de verificación; capturas COM adjuntas)**
 4. **Ventas (VEN)** — implementación y pantallas pendientes de verificación.
    - Registrar una venta (ESP-0001) — Administrador y Técnico.
    - Consultar ventas (ESP-0002) — Administrador y Técnico.
    - Modificar una venta (ESP-0003) — Administrador.
    - Eliminar una venta (ESP-0004) — Administrador.
-5. **Inventario (INV)**: vista con CRUD identificada; exploración pendiente.
+5. **Inventario (INV)**: vista con CRUD identificada; exploración pendiente de registrar. **(capturas INV adjuntas)**
    - Registrar un producto (ESP-0005) — Administrador.
    - Consultar el inventario (ESP-0006) — Administrador y Técnico.
    - Actualizar un producto (ESP-0007) — Administrador.
@@ -320,9 +418,9 @@ El repositorio no contiene todavía un manual de usuario completo. Este índice 
    - Registrar una alerta manualmente (ESP-0014) — Administrador y Técnico.
    - Modificar una alerta (ESP-0015) — Administrador.
    - Eliminar una alerta (ESP-0016) — Administrador.
-8. **Métodos de pago (PAG)**
+8. **Métodos de pago (PAG)**: consulta implementada; exploración pendiente de registrar. **(capturas PAG adjuntas; CRUD pendiente en la vista actual)**
    - Registrar un método de pago (ESP-0017) — Administrador. **(pendiente en la vista actual)**
-   - Consultar los métodos de pago (ESP-0018) — Administrador y Técnico. **(vista implementada; exploración pendiente)**
+   - Consultar los métodos de pago (ESP-0018) — Administrador y Técnico.
    - Actualizar un método de pago (ESP-0019) — Administrador. **(pendiente en la vista actual)**
    - Desactivar un método de pago (ESP-0020) — Administrador. **(pendiente en la vista actual)**
 9. **Reportes de ventas (REP)**: solo Administrador; implementación y pantallas pendientes de verificación.
@@ -340,12 +438,12 @@ El repositorio no contiene todavía un manual de usuario completo. Este índice 
     - Consultar las restricciones (ESP-0030) — Administrador y Técnico.
     - Modificar una restricción (ESP-0031) — Administrador.
     - Desactivar una restricción (ESP-0032) — Administrador.
-12. **Usuarios (USR)**: solo Administrador. **(vista implementada; exploración pendiente)**
+12. **Usuarios (USR)**: solo Administrador. **(vista implementada; recorrido pendiente de verificar; capturas USR adjuntas)**
     - Crear una cuenta (ESP-0033).
     - Consultar las cuentas (ESP-0034).
     - Actualizar una cuenta (ESP-0035).
     - Dar de baja una cuenta (ESP-0036).
-13. **Proveedores (PRV)**: solo Administrador. **(vista implementada; exploración pendiente)**
+13. **Proveedores (PRV)**: solo Administrador. **(vista implementada; recorrido pendiente de verificar; capturas PRV adjuntas)**
     - Registrar un proveedor (ESP-0037).
     - Consultar los proveedores (ESP-0038).
     - Actualizar un proveedor (ESP-0039).
@@ -437,5 +535,7 @@ Describe pasos concretos y conserva los datos de prueba necesarios para repetir 
 - [README.md](../../README.md) informa 257 pruebas; la versión actual del [plan de pruebas](<../../pruebas de software/09-pruebas-software.md>) informa 275. Se conserva la diferencia documental y esta guía no fija un total.
 - La presencia de vistas, servicios y repositorios en el código no demuestra que la aplicación se conecte correctamente a la base preparada; esa conexión queda pendiente de la sesión exploratoria.
 - Los HTML de [Inventario](../../diseno/Mockups/fuente/ART-MKP-INV-0001.html), [Proveedores](../../diseno/Mockups/fuente/ART-MKP-PRV-0001.html), [Usuarios](../../diseno/Mockups/fuente/ART-MKP-USR-0001.html) y [Métodos de pago](../../diseno/Mockups/fuente/ART-MKP-PAG-0001.html) son referencias de diseño. En particular, el mockup PAG muestra botones CRUD que no están en la vista WPF actual; no se consideran comportamiento disponible ni evidencia.
-- La [matriz de permisos](../../diseno/07-matriz-permisos.md), el inicio de sesión y el menú por rol están representados en el código. Su funcionamiento visual y autorización efectiva permanecen **pendientes de verificación** porque no se ejecutó la aplicación.
+- La [matriz de permisos](../../diseno/07-matriz-permisos.md), el inicio de sesión y el menú por rol están representados en el código. Su funcionamiento visual y autorización efectiva permanecen **pendientes de verificación**; esta resolución documental no ejecuta la aplicación ni completa resultados de sesión.
 - El issue #93 pide registrar como issues los errores reproducibles. No se registra ningún error antes de realizar la exploración; completar ese criterio y la definición de terminado de la [sección 8 del plan](../../docs/plan/plan-implementacion.md#8-definicion-de-terminado-y-forma-de-trabajo) después de ejecutarla y completar la CI requerida.
+- [CONTRIBUTING.md](../../CONTRIBUTING.md) conserva instrucciones del esqueleto inicial; contrasta cualquier diferencia con la configuración y persistencia actuales antes de cada sesión. La conexión efectiva depende del entorno local.
+- Los roles y permisos se documentan en la [matriz de permisos](../../diseno/07-matriz-permisos.md). Usa las capturas COM como referencias visuales y registra en una sesión el comportamiento efectivamente observado.
