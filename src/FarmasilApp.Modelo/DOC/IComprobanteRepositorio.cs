@@ -1,28 +1,26 @@
 namespace FarmasilApp.Modelo.DOC;
 
-/// <summary>
-/// Contrato de consulta y registro de comprobantes tributarios.
-/// </summary>
+/// <summary>Contrato de consulta, registro, actualización y anulación de comprobantes tributarios.</summary>
 public interface IComprobanteRepositorio
 {
-    /// <summary>
-    /// Consulta los comprobantes según los filtros indicados.
-    /// </summary>
-    IReadOnlyList<ComprobanteTributario> Consultar(
-        FiltroConsultaComprobantes filtro);
+    /// <summary>Consulta comprobantes según los filtros indicados.</summary>
+    IReadOnlyList<ComprobanteTributario> Consultar(FiltroConsultaComprobantes filtro);
 
-    /// <summary>
-    /// Obtiene los identificadores de ventas que ya tienen
-    /// un comprobante con estado Emitido.
-    /// </summary>
+    /// <summary>Obtiene un comprobante por su identificador interno.</summary>
+    ComprobanteTributario? ObtenerPorId(int idComprobante);
+
+    /// <summary>Obtiene las ventas que ya tienen un comprobante con estado Emitido.</summary>
     IReadOnlyList<int> ConsultarIdsVentasConComprobanteEmitido();
 
+    /// <summary>Registra un comprobante tributario para una venta.</summary>
+    void Registrar(string numeroComprobante, string tipoComprobante, DateTime fechaEmision, int idVenta);
+
     /// <summary>
-    /// Registra un comprobante tributario para una venta.
+    /// Actualiza los datos corregibles de un comprobante que continúa Emitido.
+    /// Devuelve false si ya no existe o dejó de estar Emitido.
     /// </summary>
-    void Registrar(
-        string numeroComprobante,
-        string tipoComprobante,
-        DateTime fechaEmision,
-        int idVenta);
+    bool Actualizar(int idComprobante, string numeroComprobante, string tipoComprobante, DateTime fechaEmision);
+
+    /// <summary>Marca como Anulado un comprobante Emitido, sin eliminarlo físicamente.</summary>
+    bool Anular(int idComprobante);
 }

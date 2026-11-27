@@ -182,8 +182,83 @@ public class ComprobantesViewModelPruebas
         Assert.Equal(fecha, repositorio.UltimoFiltro!.FechaEmision);
     }
 
+
+    [Fact]
+    [Trait("Especificacion", "DOC-MDL-PREVISUALIZAR-COMPROBANTE")]
+    public void PrevisualizacionNoSeAbreSiFaltaElNumeroDeComprobante()
+    {
+        var ventas = new VentasFalsas();
+        ventas.Agregar(new VentaDto
+        {
+            IdVenta = 43,
+            FechaHora = new DateTime(2026, 11, 25),
+            MontoTotal = 10m
+        });
+        var vistaModelo = Crear(new ComprobanteRepositorioFalso(), ventas);
+
+        vistaModelo.VentaSeleccionada = Assert.Single(vistaModelo.VentasPendientes);
+        vistaModelo.CrearComprobanteCommand.Execute(null);
+
+        Assert.False(vistaModelo.PrevisualizacionVisible);
+        Assert.Equal(MensajesComprobantes.NumeroObligatorio, vistaModelo.Mensaje);
+    }
+
+    [Fact]
+    [Trait("Especificacion", "DOC-MDL-PREVISUALIZAR-COMPROBANTE")]
+    public void DescargarPdfEnvíaAlServicioLosDatosDeLaVentaPrevisualizada()
+    {
+        var repositorio = new ComprobanteRepositorioFalso();
+        var ventas = new VentasFalsas();
+        ventas.Agregar(new VentaDto
+        {
+            IdVenta = 42,
+            FechaHora = new DateTime(2026, 11, 25, 10, 30, 0),
+            MontoTotal = 24.00m,
+            Detalle = new[]
+            {
+                new DetalleVentaDto
+                {
+                    NombreProducto = "Producto de prueba",
+                    NumeroLote = "L-2026-01",
+                    Cantidad = 2,
+                    PrecioUnitario = 12.00m
+                }
+            }
+        });
+        var pdf = new PdfServicioFalso();
+        var sesion = new SesionSimulada();
+        var vistaModelo = new ComprobantesViewModel(
+            new ComprobanteServicio(repositorio, ventas, sesion), pdf, sesion);
+
+        vistaModelo.VentaSeleccionada = Assert.Single(vistaModelo.VentasPendientes);
+        vistaModelo.NumeroComprobanteRegistro = "B001-000042";
+        vistaModelo.CrearComprobanteCommand.Execute(null);
+        vistaModelo.DescargarPdfCommand.Execute(null);
+
+        Assert.Equal(1, pdf.Llamadas);
+        Assert.NotNull(pdf.UltimosDatosComprobante);
+        Assert.Equal("B001-000042", pdf.UltimosDatosComprobante.NumeroComprobante);
+        Assert.Equal("VEN-2026-042", pdf.UltimosDatosComprobante.CodigoVenta);
+        Assert.Equal(24.00m, pdf.UltimosDatosComprobante.MontoTotal);
+        var detalle = Assert.Single(pdf.UltimosDatosComprobante.Detalle);
+        Assert.Equal(24.00m, detalle.Subtotal);
+        Assert.Contains("Borrador PDF generado", vistaModelo.Mensaje);
+    }
+
     private static ComprobantesViewModel Crear(
         ComprobanteRepositorioFalso repositorio,
         VentasFalsas ventas) =>
-        new(new ComprobanteServicio(repositorio, ventas, new SesionSimulada()));
+        Crear(repositorio, ventas, new PdfServicioFalso());
+
+    private static ComprobantesViewModel Crear(
+        ComprobanteRepositorioFalso repositorio,
+        VentasFalsas ventas,
+        PdfServicioFalso pdf)
+    {
+        var sesion = new SesionSimulada();
+        return new ComprobantesViewModel(
+            new ComprobanteServicio(repositorio, ventas, sesion),
+            pdf,
+            sesion);
+    }
 }

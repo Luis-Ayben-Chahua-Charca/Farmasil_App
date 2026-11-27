@@ -28,6 +28,18 @@
                             Foreground="{StaticResource PincelTextoPrincipal}"
                             Margin="0,0,0,12" />
 
+                        <StackPanel>
+                            <StackPanel.Style>
+                                <Style TargetType="{x:Type StackPanel}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding EditandoComprobante}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
                         <TextBlock Text="Seleccione una venta pendiente"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource PincelTextoPrincipal}"
@@ -60,7 +72,8 @@
                                 Content="Limpiar filtros"
                                 Command="{Binding LimpiarFiltrosVentasCommand}"
                                 Height="36"
-                                Padding="12,0" />
+                                Padding="12,0"
+                                AutomationProperties.AutomationId="DOC-BTN-LIMPIAR-FILTROS-VENTA" />
                         </Grid>
 
                         <Grid Height="36">
@@ -116,7 +129,8 @@
                                             Foreground="{StaticResource PincelSecundario}" />
                                         <TextBlock Text="{Binding CodigoVentaSeleccionada}"
                                             FontWeight="SemiBold"
-                                            Foreground="{StaticResource PincelTextoPrincipal}" />
+                                            Foreground="{StaticResource PincelTextoPrincipal}"
+                                            AutomationProperties.AutomationId="DOC-LBL-CODIGO-VENTA" />
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1" Margin="0,0,8,0">
@@ -140,6 +154,28 @@
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
+                        </Border>
+                        </StackPanel>
+
+                        <Border Background="{StaticResource PincelFondoAplicacion}"
+                            CornerRadius="6"
+                            Padding="10"
+                            Margin="0,8,0,0">
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding EditandoComprobante}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Foreground="{StaticResource PincelTextoPrincipal}"
+                                FontWeight="SemiBold">
+                                <Run Text="Venta asociada (solo lectura): " />
+                                  <Run Text="{Binding VentaIdEnEdicion, Mode=OneWay}" />
+                            </TextBlock>
                         </Border>
 
                         <TextBlock Text="Datos del comprobante"
@@ -192,17 +228,67 @@
                                     AutomationProperties.AutomationId="DOC-FEC-FECHA-EMISION" />
                             </StackPanel>
 
-                            <Button Grid.Column="3"
-                                Content="Previsualizar"
-                                Command="{Binding CrearComprobanteCommand}"
-                                MinWidth="135"
-                                Height="36"
-                                Margin="0,20,0,0"
-                                Padding="12,0"
-                                Background="{StaticResource PincelMarca}"
-                                Foreground="{StaticResource PincelSuperficie}"
-                                FontWeight="Bold"
-                                AutomationProperties.AutomationId="DOC-BTN-CREAR-COMPROBANTE" />
+                            <StackPanel Grid.Column="3" VerticalAlignment="Bottom">
+                                <Button Content="Previsualizar"
+                                    Command="{Binding CrearComprobanteCommand}"
+                                    MinWidth="135"
+                                    Height="36"
+                                    Margin="0,20,0,4"
+                                    Padding="12,0"
+                                    Background="{StaticResource PincelMarca}"
+                                    Foreground="{StaticResource PincelSuperficie}"
+                                    FontWeight="Bold"
+                                    AutomationProperties.AutomationId="DOC-BTN-CREAR-COMPROBANTE">
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding EditandoComprobante}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="Confirmar actualización"
+                                    Command="{Binding ConfirmarActualizacionCommand}"
+                                    MinWidth="160"
+                                    Height="36"
+                                    Margin="0,20,0,4"
+                                    Padding="10,0"
+                                    Background="{StaticResource PincelMarca}"
+                                    Foreground="{StaticResource PincelSuperficie}"
+                                    FontWeight="Bold"
+                                    AutomationProperties.AutomationId="DOC-BTN-CONFIRMAR-ACTUALIZACION">
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding EditandoComprobante}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="Cancelar edición"
+                                    Command="{Binding CancelarEdicionCommand}"
+                                    MinWidth="135"
+                                    Height="32"
+                                    Padding="10,0"
+                                    AutomationProperties.AutomationId="DOC-BTN-CANCELAR-ACTUALIZACION">
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding EditandoComprobante}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
                         </Grid>
 
                         <TextBlock
@@ -303,6 +389,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="260" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0"
@@ -314,6 +401,7 @@
 
                         <DataGrid Grid.Row="1"
                             ItemsSource="{Binding Comprobantes}"
+                            SelectedItem="{Binding ComprobanteSeleccionado, UpdateSourceTrigger=PropertyChanged}"
                             AutoGenerateColumns="False"
                             IsReadOnly="True"
                             CanUserAddRows="False"
@@ -342,7 +430,24 @@
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <TextBlock Grid.Row="2"
+                        <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0,10,0,0">
+                            <Button Content="Actualizar"
+                                Command="{Binding ActualizarComprobanteCommand}"
+                                MinWidth="120"
+                                Height="34"
+                                Margin="0,0,8,0"
+                                AutomationProperties.AutomationId="DOC-BTN-ACTUALIZAR-COMPROBANTE" />
+                            <Button Content="Anular"
+                                Command="{Binding AnularComprobanteCommand}"
+                                MinWidth="100"
+                                Height="34"
+                                AutomationProperties.AutomationId="DOC-BTN-ELIMINAR-COMPROBANTE" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="3"
                             Text="{Binding Mensaje}"
                             Foreground="{StaticResource PincelSecundario}"
                             Margin="0,10,0,0"
@@ -435,7 +540,8 @@
                             HeadersVisibility="Column"
                             GridLinesVisibility="Horizontal"
                             Height="170"
-                            Margin="0,0,0,14">
+                            Margin="0,0,0,14"
+                            AutomationProperties.AutomationId="DOC-TBL-DETALLE-PREVISUALIZACION">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Producto"
                                     Binding="{Binding NombreProducto}"
@@ -448,6 +554,9 @@
                                     Width="0.8*" />
                                 <DataGridTextColumn Header="Precio unitario"
                                     Binding="{Binding PrecioUnitario, StringFormat={}{0:C2}}"
+                                    Width="1.2*" />
+                                <DataGridTextColumn Header="Subtotal"
+                                    Binding="{Binding Subtotal, StringFormat={}{0:C2}}"
                                     Width="1.2*" />
                             </DataGrid.Columns>
                         </DataGrid>
@@ -496,6 +605,12 @@
 
                         <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right">
+                            <Button Content="Descargar borrador PDF"
+                                Command="{Binding DescargarPdfCommand}"
+                                MinWidth="175"
+                                Height="38"
+                                Margin="0,0,8,0"
+                                AutomationProperties.AutomationId="DOC-BTN-DESCARGAR-PDF" />
                             <Button Content="Cancelar"
                                 Command="{Binding CancelarEmisionCommand}"
                                 MinWidth="120"
@@ -514,6 +629,61 @@
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
+            </Border>
+        </Border>
+
+        <!-- MODAL DE CONFIRMACIÓN DE ANULACIÓN: ESP-0012 -->
+        <Border Grid.Row="0"
+            Background="#99000000"
+            Panel.ZIndex="20"
+            Padding="20">
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding AnulacionVisible}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Border Background="{StaticResource PincelSuperficie}"
+                CornerRadius="10"
+                Padding="22"
+                MaxWidth="480"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                BorderBrush="{StaticResource PincelMarca}"
+                BorderThickness="1"
+                AutomationProperties.AutomationId="DOC-MDL-CONFIRMAR-ELIMINACION">
+                <StackPanel>
+                    <TextBlock Text="Confirmar anulación"
+                        FontSize="19"
+                        FontWeight="Bold"
+                        Foreground="{StaticResource PincelTextoPrincipal}"
+                        Margin="0,0,0,12" />
+                    <TextBlock Text="¿Está seguro de anular este comprobante? El documento se conservará con estado Anulado."
+                        TextWrapping="Wrap"
+                        Foreground="{StaticResource PincelTextoPrincipal}"
+                        Margin="0,0,0,18"
+                        AutomationProperties.AutomationId="DOC-TXT-MSJ" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="No"
+                            Command="{Binding CancelarAnulacionCommand}"
+                            MinWidth="90"
+                            Height="36"
+                            Margin="0,0,8,0"
+                            AutomationProperties.AutomationId="DOC-BTN-CONFIRMAR-NO" />
+                        <Button Content="Sí, anular"
+                            Command="{Binding ConfirmarAnulacionCommand}"
+                            MinWidth="110"
+                            Height="36"
+                            Background="{StaticResource PincelMarca}"
+                            Foreground="{StaticResource PincelSuperficie}"
+                            FontWeight="Bold"
+                            AutomationProperties.AutomationId="DOC-BTN-CONFIRMAR-SI" />
+                    </StackPanel>
+                </StackPanel>
             </Border>
         </Border>
     </Grid>

@@ -16,6 +16,9 @@ public sealed class ComprobanteTributario
 
     public int IdVenta { get; init; }
 
+    /// <summary>Código visible derivado de la venta, cuando IVentas la proporciona.</summary>
+    public string CodigoVenta { get; init; } = string.Empty;
+
     public decimal MontoTotal { get; init; }
 
     public string EstadoDocumento { get; init; } = string.Empty;

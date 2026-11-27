@@ -15,4 +15,7 @@ public sealed class DetalleVentaDto
     public int Cantidad { get; init; }
 
     public decimal PrecioUnitario { get; init; }
+
+    /// <summary>Subtotal informativo de la línea (cantidad por precio unitario).</summary>
+    public decimal Subtotal => Cantidad * PrecioUnitario;
 }
