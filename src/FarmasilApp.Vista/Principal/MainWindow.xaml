@@ -48,10 +48,29 @@
             </StackPanel>
         </Border>
 
-        <Border Grid.Column="1"
-                Margin="16"
-                Style="{StaticResource EstiloContenidoPrincipal}">
-            <ContentControl Content="{Binding Navegacion.Actual}" />
-        </Border>
+        <Grid Grid.Column="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- RNF-0010.1: el evento de fondo actualiza este aviso desde el hilo de WPF. -->
+            <Border Grid.Row="0" Padding="12" Margin="0,0,0,10"
+                    CornerRadius="6" Background="#FFF4DE" BorderBrush="#D5A14E"
+                    BorderThickness="1"
+                    Visibility="{Binding HayAvisoVencimientos, Converter={StaticResource BooleanAVisibilidad}}">
+                <DockPanel LastChildFill="True">
+                    <Button DockPanel.Dock="Right" Content="Ver alertas"
+                            Margin="12,0,0,0" Padding="12,5"
+                            Command="{Binding AbrirAvisoVencimientosCommand}" />
+                    <TextBlock Text="{Binding TextoAvisoVencimientos}" TextWrapping="Wrap"
+                               VerticalAlignment="Center" Foreground="#493500" />
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Row="1" Style="{StaticResource EstiloContenidoPrincipal}">
+                <ContentControl Content="{Binding Navegacion.Actual}" />
+            </Border>
+        </Grid>
     </Grid>
 </Window>

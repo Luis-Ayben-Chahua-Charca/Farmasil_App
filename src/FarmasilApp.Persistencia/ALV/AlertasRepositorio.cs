@@ -43,6 +43,22 @@ public sealed class AlertasRepositorio : IAlertasRepositorio
         return umbral;
     }
 
+    public void ActualizarFechaUltimaVerificacion(DateTime fechaHoraLocal)
+    {
+        const string sql = """
+            UPDATE dbo.TBL_ALERTAS_VENCIMIENTO
+            SET fecha_ultima_verif = @fecha
+            WHERE estado = @estado;
+            """;
+        using var conexion = new SqlConnection(_opciones.CadenaConexion);
+        using var comando = new SqlCommand(sql, conexion);
+        comando.Parameters.Add("@fecha", SqlDbType.DateTime2).Value = fechaHoraLocal;
+        comando.Parameters.Add("@estado", SqlDbType.NVarChar, 10).Value = "Activo";
+        conexion.Open();
+        if (comando.ExecuteNonQuery() != 1)
+            throw new InvalidOperationException("Debe existir una sola regla activa para registrar la evaluación.");
+    }
+
     public IReadOnlyList<AlertaConsulta> ConsultarRetiros()
     {
         const string sql = """

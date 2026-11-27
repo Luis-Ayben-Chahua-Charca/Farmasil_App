@@ -88,6 +88,7 @@ public sealed class AlertasViewModelPruebas
     private sealed class RepositorioConUnRetiro : IAlertasRepositorio
     {
         public int ObtenerUmbralMesesActivo() => 2;
+        public void ActualizarFechaUltimaVerificacion(DateTime fechaHoraLocal) { }
 
         public IReadOnlyList<AlertaConsulta> ConsultarRetiros() => new[]
         {

@@ -1,11 +1,14 @@
 using System.Windows;
+using System.Windows.Threading;
 using FarmasilApp.Vista.Comun;
+using FarmasilApp.Modelo.ALV;
 using FarmasilApp.Modelo.Comun;
 using FarmasilApp.Persistencia;
 using FarmasilApp.Persistencia.ALV;
 using FarmasilApp.Persistencia.LOT;
 using FarmasilApp.Vista.Principal;
 using FarmasilApp.VistaModelo.Comun;
+using FarmasilApp.VistaModelo.Principal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +21,8 @@ namespace FarmasilApp.Vista;
 public partial class App : Application
 {
     private ServiceProvider? _proveedor;
+    private CancellationTokenSource? _cancelacionEvaluacion;
+    private Task? _tareaEvaluacion;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -43,10 +48,21 @@ public partial class App : Application
         _proveedor = servicios.BuildServiceProvider();
 
         _proveedor.GetRequiredService<MainWindow>().Show();
+        _proveedor.GetRequiredService<MainViewModel>()
+            .ConfigurarContextoAvisos(new DispatcherSynchronizationContext(Dispatcher));
+
+        // Issue #109: se lanza después de crear la ventana, sin bloquear el hilo WPF.
+        // La evaluación no requiere que se haya iniciado sesión (VP-00).
+        _cancelacionEvaluacion = new CancellationTokenSource();
+        _tareaEvaluacion = _proveedor.GetRequiredService<ProcesoDiarioVencimientos>()
+            .EjecutarAsync(_cancelacionEvaluacion.Token);
     }
 
     protected override void OnExit(ExitEventArgs e)
     {
+        // Al cerrar se cancela el retraso periódico; no esperamos SQL bloqueando la interfaz.
+        _cancelacionEvaluacion?.Cancel();
+        _cancelacionEvaluacion?.Dispose();
         _proveedor?.Dispose();
         base.OnExit(e);
     }

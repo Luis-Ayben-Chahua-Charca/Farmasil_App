@@ -1,4 +1,6 @@
 using FarmasilApp.Modelo.Seguridad;
+using FarmasilApp.Modelo.ALV;
+using FarmasilApp.VistaModelo.ALV;
 using FarmasilApp.VistaModelo.Comun;
 using FarmasilApp.VistaModelo.USR;
 
@@ -24,20 +26,32 @@ public class MainViewModel : ViewModelBase
 
     private IReadOnlyList<ModuloMenuViewModel> _modulos = SinModulos;
     private string _usuarioSesion = string.Empty;
+    private SynchronizationContext? _contextoInterfaz;
+    private AvisoVencimientos? _ultimoAviso;
 
     public MainViewModel(
         INavegacionServicio navegacion,
         IAutenticacion autenticacion,
         ISesion sesion,
-        IEnumerable<ModuloMenu> modulosRegistrados)
+        IEnumerable<ModuloMenu> modulosRegistrados,
+        CanalAvisosVencimientos? avisos = null)
     {
         Navegacion = navegacion ?? throw new ArgumentNullException(nameof(navegacion));
         _autenticacion = autenticacion ?? throw new ArgumentNullException(nameof(autenticacion));
         _sesion = sesion ?? throw new ArgumentNullException(nameof(sesion));
         ArgumentNullException.ThrowIfNull(modulosRegistrados);
         _modulosRegistrados = modulosRegistrados.ToArray();
+        _contextoInterfaz = SynchronizationContext.Current;
+        if (avisos is not null) avisos.AvisoPublicado += AlRecibirAviso;
 
         CerrarSesionCommand = new RelayCommand(CerrarSesion, () => HaySesion);
+        AbrirAvisoVencimientosCommand = new RelayCommand(
+            () =>
+            {
+                if (HayAvisoVencimientos)
+                    Navegacion.NavegarA<AlertasViewModel>();
+            },
+            () => HayAvisoVencimientos);
 
         MostrarInicioSesion();
     }
@@ -63,6 +77,35 @@ public class MainViewModel : ViewModelBase
 
     /// <summary>USR-BTN-CERRAR-SESION.</summary>
     public RelayCommand CerrarSesionCommand { get; }
+
+    /// <summary>El aviso recibido del hilo de fondo solo se muestra dentro de una sesión autorizada.</summary>
+    public bool HayAvisoVencimientos => HaySesion && _ultimoAviso is not null;
+
+    public string TextoAvisoVencimientos => _ultimoAviso is null ? string.Empty
+        : $"Se encontraron {_ultimoAviso.CantidadRemesas} remesas próximas a vencer " +
+          $"(hasta {_ultimoAviso.FechaLimite:dd/MM/yyyy}).";
+
+    public RelayCommand AbrirAvisoVencimientosCommand { get; }
+
+    /// <summary>La capa WPF configura su Dispatcher antes de arrancar el proceso de fondo.</summary>
+    public void ConfigurarContextoAvisos(SynchronizationContext contexto) =>
+        _contextoInterfaz = contexto ?? throw new ArgumentNullException(nameof(contexto));
+
+    private void AlRecibirAviso(object? emisor, AvisoVencimientos aviso)
+    {
+        // El evento nace fuera del hilo WPF (DEC-021). Solo la UI actualiza sus enlaces.
+        if (_contextoInterfaz is not null && SynchronizationContext.Current != _contextoInterfaz)
+            _contextoInterfaz.Post(_ => MostrarAviso(aviso), null);
+        else MostrarAviso(aviso);
+    }
+
+    private void MostrarAviso(AvisoVencimientos aviso)
+    {
+        _ultimoAviso = aviso;
+        Notificar(nameof(TextoAvisoVencimientos));
+        Notificar(nameof(HayAvisoVencimientos));
+        AbrirAvisoVencimientosCommand.NotificarPuedeEjecutar();
+    }
 
     public string Titulo => "FARMASIL";
 
@@ -113,6 +156,8 @@ public class MainViewModel : ViewModelBase
     private void NotificarSesion()
     {
         Notificar(nameof(HaySesion));
+        Notificar(nameof(HayAvisoVencimientos));
         CerrarSesionCommand.NotificarPuedeEjecutar();
+        AbrirAvisoVencimientosCommand.NotificarPuedeEjecutar();
     }
 }

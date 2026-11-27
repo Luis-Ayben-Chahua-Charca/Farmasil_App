@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Modelo.ALV;
 using FarmasilApp.Modelo.Seguridad;
 using FarmasilApp.Modelo.USR;
 using FarmasilApp.Pruebas.USR;
@@ -36,6 +37,34 @@ public class MainViewModelPruebas
         "Usuarios",
         "Proveedores"
     };
+
+    [Fact]
+    [Trait("Especificacion", "RNF-0010")]
+    [Trait("Tecnica", "T-001")]
+    public async Task ElAvisoSeRecibeDesdeElEventoYPermiteNavegarALaConsulta()
+    {
+        using var proveedor = CrearProveedor(out var navegacion,
+            servicios => servicios.AddSingleton<CanalAvisosVencimientos>());
+        var principal = proveedor.GetRequiredService<MainViewModel>();
+        var canal = proveedor.GetRequiredService<CanalAvisosVencimientos>();
+        var aviso = new AvisoVencimientos(3, new DateOnly(2027, 1, 26),
+            new DateTimeOffset(2026, 11, 26, 14, 0, 0, TimeSpan.Zero));
+
+        canal.Publicar(aviso); // la evaluación puede terminar antes de iniciar sesión
+        Assert.False(principal.HayAvisoVencimientos);
+        Assert.False(principal.AbrirAvisoVencimientosCommand.CanExecute(null));
+
+        await IniciarSesionAsync(principal, "tecnico");
+        Assert.True(principal.HayAvisoVencimientos);
+        Assert.Contains("3 remesas", principal.TextoAvisoVencimientos);
+        Assert.True(principal.AbrirAvisoVencimientosCommand.CanExecute(null));
+        principal.AbrirAvisoVencimientosCommand.Execute(null);
+        Assert.Equal(typeof(AlertasViewModel), navegacion.Destino);
+
+        principal.CerrarSesionCommand.Execute(null);
+        Assert.False(principal.HayAvisoVencimientos);
+        Assert.False(principal.AbrirAvisoVencimientosCommand.CanExecute(null));
+    }
 
     [Fact]
     [Trait("Especificacion", "RNF-0006")]
