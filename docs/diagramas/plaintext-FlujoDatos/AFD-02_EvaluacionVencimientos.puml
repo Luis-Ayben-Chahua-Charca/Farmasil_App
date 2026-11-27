@@ -1,0 +1,57 @@
+@startuml AFD-02_EvaluacionVencimientos
+' Arquitectura centrada en el flujo de datos FARMASIL_APP — AFD-02 Evaluación de vencimientos — v01.00 — 27/11/2026
+' Variante: tuberías y filtros. Fuente: TBL_LOTES y la regla activa de TBL_ALERTAS_VENCIMIENTO; sumideros: aviso y
+' fecha_ultima_verif. Cada filtro recibe un flujo de remesas y entrega uno reducido.
+' Fuentes: RNF-0010 (proceso 1), ESP-0013, Diccionario de Datos (TBL_ALERTAS_VENCIMIENTO), DEC-018, DEC-021,
+' DEC-032, DEC-087. Proceso de control equivalente: VP-04 y VP-T2.
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam componentStyle rectangle
+skinparam ArrowColor #444444
+skinparam component {
+  BorderColor #8577E0
+  BackgroundColor #EDECFB
+}
+skinparam database {
+  BorderColor #444444
+  BackgroundColor #FFF8DC
+}
+skinparam rectangle {
+  BorderColor #999999
+  BackgroundColor #FFFFFF
+}
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 35
+skinparam ranksep 40
+left to right direction
+title AFD-02 Evaluación de vencimientos (RNF-0010, proceso 1): tuberías y filtros
+
+database "TBL_LOTES\n(dueño: LOT)" as LOTES
+database "TBL_ALERTAS_VENCIMIENTO\nregla activa (dueño: ALV)" as REGLA
+rectangle "Disparador\nal iniciar y cada 24 h" as RELOJ
+
+component "F0 Calcular fecha límite\nhoy + umbral_meses" as F0
+component "F1 Estado y existencias\nestado_lote = 'Disponible'\nY stock_actual > 0" as F1
+component "F2 Ventana de vencimiento\nfecha_vencimiento <= límite" as F2
+component "F3 Contar\nremesas restantes" as F3
+rectangle "Sumidero: aviso\n(evento, DEC-021)\nconduce a ALV-TBL-ALERTAS-VENCIMIENTO" as AVISO
+
+RELOJ --> F0 : fecha actual
+REGLA --> F0 : umbral_meses
+F0 --> F1 : fecha límite
+LOTES --> F1 : remesas\n(lectura de ILotes)
+F1 --> F2 : remesas vendibles\ncon existencias
+F2 --> F3 : remesas por vencer
+F3 --> AVISO : cantidad y fecha límite
+F3 --> REGLA : fecha_ultima_verif\n(al terminar sin error)
+
+legend bottom
+  El cálculo es el mismo de ESP-0013: el proceso no crea retiros, no bloquea remesas ni cambia stock o estados.
+  fecha_ultima_verif es NULL hasta la primera evaluación y solo se escribe si la evaluación termina (DEC-018, DEC-032).
+  Las remesas se leen por ILotes; Lotes lee TBL_LOTES en su Persistencia (DEC-055, DEC-087).
+  El aviso se publica como evento: el proceso no conoce la pantalla que lo muestra (invocación implícita, DEC-021).
+  Un error en una ejecución se registra y la siguiente se intenta a las 24 h; no se simula un aviso.
+endlegend
+@enduml

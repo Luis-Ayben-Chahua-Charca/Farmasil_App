@@ -65,7 +65,7 @@ Agrupados por el entregable/fase del curso al que pertenecen realmente, para no 
 |---|---|---|---|---|
 | 14 | **Arquitectura centrada en datos (repositorio)** | Alta | Encaja de forma casi literal: FARMASIL ya opera así, con `DB_FARMASIL` como repositorio central compartido por los 11 módulos y toda la comunicación entre ellos pasando por esa base de datos. Va a ser la más fácil de argumentar de las tres. | Pendiente |
 | 15 | **Arquitectura centrada en interfaces de usuario** | Media | Vista de navegación sobre los mockups (`ART-MKP-*`) ya diseñados o pendientes de diseñar — formaliza cómo se navega entre las pantallas de los 11 módulos. | Pendiente |
-| 16 | **Arquitectura centrada en el flujo de datos** (tuberías y filtros / lotes secuenciales) | Baja | Relevancia real baja: FARMASIL no transforma datos en pipeline, es un sistema transaccional CRUD sobre una base relacional. Habría que documentarla más por completitud del entregable de Fase 3 que porque describa algo verdadero del sistema. | Pendiente |
+| 16 | **Arquitectura centrada en el flujo de datos** (tuberías y filtros / lotes secuenciales) | Baja | Relevancia real baja: FARMASIL no transforma datos en pipeline, es un sistema transaccional CRUD sobre una base relacional. Habría que documentarla más por completitud del entregable de Fase 3 que porque describa algo verdadero del sistema. | Hecho: `docs/diagramas/plaintext-FlujoDatos/` (AFD-01 a AFD-05), como estilo secundario de una arquitectura heterogénea (DEC-089) |
 
 ---
 

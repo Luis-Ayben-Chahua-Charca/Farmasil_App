@@ -1,0 +1,62 @@
+@startuml AFD-05_GeneracionReportes
+' Arquitectura centrada en el flujo de datos FARMASIL_APP — AFD-05 Generación de reportes — v01.00 — 27/11/2026
+' Variante: lotes secuenciales. Cada etapa recibe el resultado completo de la anterior; el lote lo inicia
+' la dueña con REP-BTN-GENERAR-REPORTE y termina con un archivo y una fila de historial.
+' Fuentes: ESP-0021, RNF-0006, ACD-03, ACD-04, DEC-037, DEC-055, DEC-059, DEC-078, seleccion-biblioteca-pdf.md.
+' Proceso de control equivalente: VP-06.
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam componentStyle rectangle
+skinparam ArrowColor #444444
+skinparam component {
+  BorderColor #8577E0
+  BackgroundColor #EDECFB
+}
+skinparam database {
+  BorderColor #444444
+  BackgroundColor #FFF8DC
+}
+skinparam rectangle {
+  BorderColor #999999
+  BackgroundColor #FFFFFF
+}
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 35
+skinparam ranksep 40
+top to bottom direction
+title AFD-05 Generación de reportes de ventas (ESP-0021): lotes secuenciales
+
+rectangle "Parámetros de la dueña [A]\nREP-CMB-TIPO-REPORTE, REP-CMB-FORMATO-REPORTE\nREP-FEC-FECHA-INICIO, REP-FEC-FECHA-FIN" as PARAM
+database "TBL_REGISTRO_VENTAS\nTBL_DETALLE_VENTAS\n(dueño: VEN)" as VENTAS
+database "TBL_USUARIOS\n(consulta transversal, DEC-059)" as USR
+database "TBL_REPORTES_VENTAS\n(dueño: REP)" as HIST
+rectangle "Sumidero: archivo\nPDF, Excel o HTML" as ARCHIVO
+
+component "R1 Validar parámetros\ninicio <= fin; tipo válido;\nformato en PDF, Excel, HTML" as R1
+component "R2 Extraer\nventas con su detalle\ny el usuario responsable" as R2
+component "R3 Filtrar el intervalo\nfecha_hora >= inicio\nY fecha_hora < fin + 1 día" as R3
+component "R4 Consolidar\nmonto recaudado, cantidad de productos,\nfechas y usuario; total recaudado" as R4
+component "R5 Dar formato\ngenerar el archivo\n(PDF con PDFsharp/MigraDoc, DEC-078)" as R5
+component "R6 Registrar el historial\ntipo, formato, intervalo, total,\nfecha y ruta del archivo" as R6
+
+PARAM --> R1 : parámetros
+R1 --> R2 : parámetros válidos
+VENTAS --> R2 : ventas y detalle\n(por IVentas, ACD-03)
+USR --> R2 : nombre del usuario
+R2 --> R3 : filas de venta
+R3 --> R4 : ventas del intervalo
+R4 --> R5 : datos consolidados
+R5 --> ARCHIVO : documento
+R5 --> R6 : ruta del archivo y total
+R6 --> HIST : fila del reporte
+
+legend bottom
+  Solo el Administrador genera reportes (RNF-0006, matriz de permisos).
+  El intervalo es semiabierto: incluye todo el día final sin depender de la hora (DEC-037).
+  Unos parámetros inválidos detienen el lote en R1 con su mensaje; no se lee la base ni se crea archivo.
+  REP escribe solo TBL_REPORTES_VENTAS; las ventas las lee por IVentas (arista Reportes → Ventas, ACD-03 y ACD-04).
+  DOC usa la misma etapa de formato PDF para el comprobante (DEC-078), pero su emisión no es un flujo en lotes.
+endlegend
+@enduml

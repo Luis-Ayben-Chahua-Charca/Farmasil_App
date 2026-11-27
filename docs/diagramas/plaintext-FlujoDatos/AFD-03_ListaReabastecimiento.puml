@@ -1,0 +1,63 @@
+@startuml AFD-03_ListaReabastecimiento
+' Arquitectura centrada en el flujo de datos FARMASIL_APP — AFD-03 Lista de reabastecimiento — v01.00 — 27/11/2026
+' Variante: lotes secuenciales. Cada etapa procesa el conjunto completo y lo entrega a la siguiente; el proceso
+' corre por lotes cada 15 días, o al iniciar si ya pasaron 15 días desde la última generación.
+' Fuentes: RNF-0010 (proceso 2), ESP-0045, ESP-0048, Diccionario de Datos (TBL_LISTA_REABASTECIMIENTO,
+' VW_STOCK_VENDIBLE), DEC-040, DEC-055, DEC-056, DEC-058. Proceso de control equivalente: VP-12 y VP-T2.
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam componentStyle rectangle
+skinparam ArrowColor #444444
+skinparam component {
+  BorderColor #8577E0
+  BackgroundColor #EDECFB
+}
+skinparam database {
+  BorderColor #444444
+  BackgroundColor #FFF8DC
+}
+skinparam rectangle {
+  BorderColor #999999
+  BackgroundColor #FFFFFF
+}
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 35
+skinparam ranksep 40
+top to bottom direction
+title AFD-03 Lista de reabastecimiento (RNF-0010, proceso 2): lotes secuenciales
+
+database "TBL_PRODUCTOS\n(dueño: INV)" as PROD
+database "VW_STOCK_VENDIBLE\n(dueño: LOT, solo lectura)" as VISTA
+database "TBL_LISTA_REABASTECIMIENTO\n(dueño: REA)" as LISTA
+rectangle "Disparador\ncada 15 días o al iniciar\nsi ya pasaron 15 días" as RELOJ
+rectangle "Configuración local\nfecha de la última generación" as CONF
+
+component "E1 Seleccionar medicamentos\nestado_producto = 'Disponible'\ncon stock_minimo" as E1
+component "E2 Unir con el stock vendible\nsin remesas vendibles = 0" as E2
+component "E3 Filtrar bajo el mínimo\nstock vendible < stock_minimo" as E3
+component "E4 Descartar los que ya figuran\nen la lista" as E4
+component "E5 Insertar ítems\norigen 'Automatico', prioridad 'Normal',\nfecha actual" as E5
+
+RELOJ --> E1 : inicio del lote
+CONF --> RELOJ : última generación
+PROD --> E1 : medicamentos\n(por IInventario)
+E1 --> E2 : medicamentos disponibles
+VISTA --> E2 : stock vendible por medicamento
+E2 --> E3 : medicamentos con stock vendible
+E3 --> E4 : candidatos
+LISTA --> E4 : medicamentos ya listados
+E4 --> E5 : ítems nuevos
+E5 --> LISTA : ítems 'Automatico'
+E5 --> CONF : fecha de esta generación
+
+legend bottom
+  Stock vendible: suma de stock_actual de las remesas 'Disponible' no vencidas (DEC-040), leído de la vista de Lotes (DEC-056, DEC-058).
+  Si la unicidad de id_producto rechaza un ítem (la dueña lo agregó por ESP-0045 durante la ejecución), se trata como «ya figura».
+  El proceso no cambia la prioridad de ítems existentes ni retira ítems: eso lo hace la dueña (ESP-0048).
+  Un medicamento que sigue bajo el mínimo vuelve a agregarse en la siguiente ejecución si se retiró de la lista.
+  REA escribe solo su tabla. Obtiene los medicamentos por IInventario (arista REA → Inventario)
+  y el stock vendible de la vista de Lotes (lectura H2 de DEC-055).
+endlegend
+@enduml
