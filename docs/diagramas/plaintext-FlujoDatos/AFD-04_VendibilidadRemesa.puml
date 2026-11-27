@@ -1,0 +1,70 @@
+@startuml AFD-04_VendibilidadRemesa
+' Arquitectura centrada en el flujo de datos FARMASIL_APP — AFD-04 Vendibilidad de una remesa — v01.00 — 27/11/2026
+' Variante: cadena de filtros. Los filtros V1 a V4 forman el predicado de vendibilidad de DEC-033, que Lotes aplica
+' en una sola consulta; V5 lo aplica Ventas con IRestricciones; V6 es la validación de la cantidad al agregar.
+' Fuentes: ESP-0001, ESP-0003, DEC-033, DEC-036, DEC-044, DEC-055, DEC-086, DEC-087.
+' Proceso de control equivalente: VP-01.
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam componentStyle rectangle
+skinparam ArrowColor #444444
+skinparam component {
+  BorderColor #8577E0
+  BackgroundColor #EDECFB
+}
+skinparam database {
+  BorderColor #444444
+  BackgroundColor #FFF8DC
+}
+skinparam rectangle {
+  BorderColor #999999
+  BackgroundColor #FFFFFF
+}
+skinparam package {
+  BorderColor #8577E0
+  BackgroundColor #FFFFFF
+}
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 30
+skinparam ranksep 35
+top to bottom direction
+title AFD-04 Vendibilidad de una remesa: cadena de filtros
+
+database "TBL_LOTES\n(dueño: LOT)" as LOTES
+database "TBL_PRODUCTOS\n(dueño: INV; lectura H5)" as PROD
+database "TBL_RESTRICCIONES_VENTA\n(dueño: RES)" as RES
+
+package "Lotes: predicado de vendibilidad (DEC-033), una sola consulta" as LOT {
+  component "V1 Medicamento disponible\nestado_producto = 'Disponible'" as V1
+  component "V2 Remesa disponible\nestado_lote = 'Disponible'" as V2
+  component "V3 Con existencias\nstock_actual > 0" as V3
+  component "V4 No vencida\nfecha_vencimiento > fecha de la venta" as V4
+}
+package "Ventas (ESP-0001)" as VEN {
+  component "V5 Restricciones activas\nrechaza si alguna es 'Bloqueante';\nreúne las 'Informativa'" as V5
+  component "V6 Cantidad\nentero > 0 y cantidad acumulada\n<= stock_actual de la remesa" as V6
+}
+rectangle "Sumidero: línea del detalle\nVEN-TBL-DETALLE-VENTA" as LINEA
+rectangle "Advertencias\nVEN-LBL-ADVERTENCIAS" as ADV
+
+LOTES --> V1 : remesas
+PROD --> V1 : nombre y estado\ndel medicamento
+V1 --> V2 : remesas de\nmedicamentos disponibles
+V2 --> V3 : remesas disponibles
+V3 --> V4 : remesas con stock
+V4 --> V5 : remesas vendibles\n(ILotes: catálogo, FEFO y combo)
+RES --> V5 : restricciones del medicamento\n(IRestricciones)
+V5 --> V6 : remesa permitida
+V5 --> ADV : restricciones informativas
+V6 --> LINEA : línea aceptada
+
+legend bottom
+  El mismo predicado V1–V4 se aplica en cuatro puntos: proponer la remesa FEFO, llenar el combo, agregar la línea y confirmar la venta (DEC-033, DEC-086).
+  Por eso Ventas no lee TBL_PRODUCTOS ni repite la regla: recibe de ILotes solo remesas vendibles (DEC-044, DEC-086, DEC-087).
+  Cada filtro que descarta la remesa da su propio mensaje (remesa vencida, medicamento descontinuado, restricción bloqueante, cantidad).
+  Una remesa aparece una sola vez por venta; si se agrega de nuevo, se acumula la cantidad (DEC-036).
+  Al confirmar, se vuelve a pasar cada línea por V1–V4, porque entre armar el carrito y registrar pudo cambiar el estado.
+endlegend
+@enduml

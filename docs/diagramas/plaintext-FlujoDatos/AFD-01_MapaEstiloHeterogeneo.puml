@@ -1,0 +1,67 @@
+@startuml AFD-01_MapaEstiloHeterogeneo
+' Arquitectura centrada en el flujo de datos FARMASIL_APP — AFD-01 Mapa del estilo heterogéneo — v01.00 — 27/11/2026
+' Estilo dominante: repositorio DB_FARMASIL con invocación explícita (ACD-01). Estilo secundario: flujo de datos,
+' en cuatro subsistemas (DEC-089). Las fuentes y los sumideros de cada flujo son tablas o vistas del repositorio.
+' Fuentes: ArquitecturaSoftware.pdf ("Arquitectura orientada al flujo de datos"), ACD-01, ACD-03, RNF-0010,
+' ESP-0001, ESP-0013, ESP-0021, DEC-021, DEC-033, DEC-055, DEC-056, DEC-078, DEC-087.
+' Notación: componente = subsistema de flujo; base de datos = repositorio; flecha = dato que entra o sale.
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam componentStyle rectangle
+skinparam ArrowColor #444444
+skinparam component {
+  BorderColor #8577E0
+  BackgroundColor #EDECFB
+}
+skinparam database {
+  BorderColor #444444
+  BackgroundColor #FFF8DC
+}
+skinparam rectangle {
+  BorderColor #999999
+  BackgroundColor #FFFFFF
+}
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 40
+skinparam ranksep 45
+title AFD-01 Dónde aplica el flujo de datos sobre el repositorio DB_FARMASIL
+
+database "DB_FARMASIL\nrepositorio compartido (ACD-01)" as BD
+
+rectangle "Procesos programados (RNF-0010), hilo de fondo" as PROG {
+  component "AFD-02 Evaluación de vencimientos\nTuberías y filtros\nmódulo ALV" as F2
+  component "AFD-03 Lista de reabastecimiento\nLotes secuenciales, cada 15 días\nmódulo REA" as F3
+}
+rectangle "Operaciones de mostrador, hilo de UI" as UI {
+  component "AFD-04 Vendibilidad de una remesa\nCadena de filtros\nmódulos LOT y VEN" as F4
+  component "AFD-05 Generación de reportes\nLotes secuenciales\nmódulo REP" as F5
+}
+
+rectangle "Aviso en la ventana principal\n(evento, DEC-021)" as AVISO
+rectangle "Archivo PDF, Excel o HTML\n(DEC-078)" as ARCHIVO
+rectangle "Remesas vendibles\nen el carrito de Ventas" as CARRITO
+
+BD --> F2 : remesas y umbral
+F2 --> AVISO : cantidad de remesas por vencer
+F2 --> BD : fecha_ultima_verif
+
+BD --> F3 : medicamentos y\nVW_STOCK_VENDIBLE
+F3 --> BD : ítems 'Automatico'\nen TBL_LISTA_REABASTECIMIENTO
+
+BD --> F4 : remesas, productos\ny restricciones
+F4 --> CARRITO : remesas que pasan\ntodos los filtros
+
+BD --> F5 : ventas, detalle\ny usuarios
+F5 --> ARCHIVO : reporte con formato
+F5 --> BD : fila en TBL_REPORTES_VENTAS
+
+legend bottom
+  El resto del sistema es transaccional (CRUD) sobre el repositorio; allí no hay transformación en etapas.
+  Fuentes y sumideros son siempre tablas o vistas de DB_FARMASIL: los flujos no se comunican entre sí.
+  Cada flujo respeta la regla de acceso de DEC-055: escribe solo en tablas de su módulo dueño.
+  Los procesos de ALV y REA corren en segundo plano sin bloquear la interfaz (RNF-0003, RNF-0010).
+  Este diagrama muestra datos y transformaciones; quién llama a quién está en VP-04, VP-06 y VP-12.
+endlegend
+@enduml
