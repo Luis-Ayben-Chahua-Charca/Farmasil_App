@@ -81,7 +81,9 @@ La solución oficial usa una separación de capas. La integración sigue ese pat
 - `FarmasilApp.VistaModelo/Principal/InicioViewModel.cs` y `FarmasilApp.Vista/Principal/InicioView.xaml`: ejemplo mínimo ejecutable desde la pantalla inicial.
 - `FarmasilApp.Vista/FarmasilApp.Vista.csproj`: referencia fijada a `PDFsharp-MigraDoc-WPF` 6.2.4.
 
-El ejemplo genera un PDF demostrativo con datos ficticios y lo guarda en `Documentos/FarmasilApp/PDF`. No genera un comprobante tributario real ni implica integración con SUNAT/OSE o con datos de ventas.
+El método legado `GenerarEjemplo()` genera un PDF demostrativo con datos ficticios. Para la previsualización de DOC se agregó el método `GenerarComprobanteBorrador(DatosComprobantePdf)`, que recibe el número y tipo de comprobante, la fecha, el código y la fecha de venta, el importe total y las líneas de producto/lote/cantidad/precio/subtotal que ya proporciona `IVentas`. El borrador se guarda en la carpeta de documentos local `FarmasilApp/PDF`; descargarlo no registra ni emite el comprobante.
+
+Este nuevo método genera únicamente una **vista previa interna**: no certifica un comprobante electrónico, no incorpora información tributaria no disponible, y no realiza conexión, firma, envío ni autorización de SUNAT/OSE. Los datos de cliente e IGV permanecen sujetos a las decisiones pendientes registradas en PEN-010 y PEN-003.
 
 ## 6. Prueba y límites
 
@@ -95,13 +97,12 @@ Verificado en la revisión del PR (17/11/2026):
 
 La evidencia visual de la ejecución en FarmasilApp (pantalla y PDF generado) está en `docs/pruebas/evidencias-pdf/`.
 
-Quedan fuera del alcance de este ejemplo:
+Quedan fuera del alcance de la integración PDF local:
 
-- generación de comprobantes con ventas reales;
-- conexión con la base de datos;
-- integración con SUNAT u OSE;
-- validación, firma, envío o autorización tributaria;
-- integración funcional definitiva con DOC y REP.
+- emisión oficial de comprobantes electrónicos con validez tributaria;
+- datos fiscales del cliente y cálculo/configuración tributaria que siguen pendientes (PEN-010 y PEN-003);
+- firma digital, código QR, conexión, envío o autorización de SUNAT/OSE;
+- sustitución de `IVentas` por una implementación real del módulo VEN (el contrato sigue usando la implementación disponible en el proyecto).
 
 ## 7. Referencias
 

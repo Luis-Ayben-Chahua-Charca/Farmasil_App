@@ -1,4 +1,5 @@
 using FarmasilApp.VistaModelo.Comun;
+using FarmasilApp.Modelo.DOC;
 
 namespace FarmasilApp.Pruebas.VistaModelo;
 
@@ -13,6 +14,20 @@ internal sealed class PdfServicioFalso : IPdfServicio
     public Exception? Excepcion { get; set; }
 
     public int Llamadas { get; private set; }
+
+    public DatosComprobantePdf? UltimosDatosComprobante { get; private set; }
+
+    public string GenerarComprobanteBorrador(DatosComprobantePdf datos)
+    {
+        Llamadas++;
+        UltimosDatosComprobante = datos ?? throw new ArgumentNullException(nameof(datos));
+        if (Excepcion is not null)
+        {
+            throw Excepcion;
+        }
+
+        return RutaGenerada;
+    }
 
     public string GenerarEjemplo()
     {

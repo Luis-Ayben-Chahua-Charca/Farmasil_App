@@ -1,8 +1,8 @@
 using FarmasilApp.Modelo.DOC;
 using FarmasilApp.Modelo.Seguridad;
 using FarmasilApp.Modelo.VEN;
+using FarmasilApp.Pruebas.VistaModelo;
 using FarmasilApp.VistaModelo.DOC;
-
 namespace FarmasilApp.Pruebas.DOC;
 
 /// <summary>
@@ -147,8 +147,11 @@ public class ComprobanteRegistroPruebas
     }
 
     private static ComprobantesViewModel CrearVistaModelo(ComprobanteRepositorioFalso repositorio)
-        => new(CrearServicio(repositorio, CrearVentas()));
-
+    => new(
+        CrearServicio(repositorio, CrearVentas()),
+        new PdfServicioFalso(),
+        new SesionSimulada()
+    );
     private static ComprobanteServicio CrearServicio(ComprobanteRepositorioFalso repositorio, VentasFalsas ventas)
         => new(repositorio, ventas, new SesionSimulada());
 
