@@ -27,6 +27,9 @@ public static class RegistroDependencias
     public static IServiceCollection AgregarModelo(this IServiceCollection servicios)
     {
         servicios.AddTransient<AlertasServicio>();
+        servicios.AddSingleton<CanalAvisosVencimientos>();
+        servicios.AddTransient<EvaluacionVencimientosServicio>();
+        servicios.AddSingleton<ProcesoDiarioVencimientos>();
         servicios.AddTransient<ComprobanteServicio>();
         servicios.AddTransient<InventarioServicio>();
         servicios.AddTransient<LotesServicio>();

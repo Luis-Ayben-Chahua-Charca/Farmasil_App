@@ -16,21 +16,16 @@ public sealed class AlertasServicio
     private readonly ILotes _lotes;
     private readonly ISesion _sesion;
     private readonly TimeProvider _reloj;
-    private readonly IDevoluciones? _devoluciones;
+    private readonly IDevoluciones _devoluciones;
 
-    public AlertasServicio(IAlertasRepositorio repositorio, ILotes lotes, ISesion sesion, TimeProvider reloj)
+    /// <summary>Contrato obligatorio para poder verificar ESP-0016 (OBS-011).</summary>
+    public AlertasServicio(IAlertasRepositorio repositorio, ILotes lotes, ISesion sesion,
+        TimeProvider reloj, IDevoluciones devoluciones)
     {
         _repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         _lotes = lotes ?? throw new ArgumentNullException(nameof(lotes));
         _sesion = sesion ?? throw new ArgumentNullException(nameof(sesion));
         _reloj = reloj ?? throw new ArgumentNullException(nameof(reloj));
-    }
-
-    /// <summary>Compatibilidad con las pruebas y consumidores de consulta de la tarea #87.</summary>
-    public AlertasServicio(IAlertasRepositorio repositorio, ILotes lotes, ISesion sesion,
-        TimeProvider reloj, IDevoluciones devoluciones)
-        : this(repositorio, lotes, sesion, reloj)
-    {
         _devoluciones = devoluciones ?? throw new ArgumentNullException(nameof(devoluciones));
     }
 
@@ -117,7 +112,6 @@ public sealed class AlertasServicio
     {
         if (!retiro.IdLote.HasValue) return; // Retiro histórico, FK ya anulada.
         var idLote = retiro.IdLote.Value;
-        if (_devoluciones is null) throw new InvalidOperationException("No está registrado IDevoluciones.");
         if (_devoluciones.OrdenesPendientesDeRemesa(idLote).Count != 0)
             throw new ReglaDeNegocioException(MensajesAlertas.DevolucionPendiente);
         var remesa = _lotes.DatosRemesas(new[] { idLote }).SingleOrDefault();

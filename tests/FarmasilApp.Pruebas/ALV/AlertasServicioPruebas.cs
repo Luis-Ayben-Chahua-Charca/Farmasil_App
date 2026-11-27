@@ -1,5 +1,6 @@
 using FarmasilApp.Modelo.ALV;
 using FarmasilApp.Modelo.Comun;
+using FarmasilApp.Modelo.DEV;
 using FarmasilApp.Modelo.LOT;
 using FarmasilApp.Modelo.Seguridad;
 
@@ -109,7 +110,7 @@ public sealed class AlertasServicioPruebas
     }
 
     private static AlertasServicio Servicio(AlertasRepositorioFalso repositorio, LotesFalsos lotes,
-        Rol rol = Rol.Administrador) => new(repositorio, lotes, new SesionSimulada(rol), new RelojFijo());
+        Rol rol = Rol.Administrador) => new(repositorio, lotes, new SesionSimulada(rol), new RelojFijo(), new DevolucionesSimulado(new RelojFijo()));
 
     private static DatosRemesaDto Remesa(int id, string numero, DateOnly vencimiento,
         EstadoLote estado = EstadoLote.Disponible, int stock = 10) => new()

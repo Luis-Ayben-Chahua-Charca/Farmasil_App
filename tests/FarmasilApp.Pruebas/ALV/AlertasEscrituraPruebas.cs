@@ -215,6 +215,7 @@ public sealed class AlertasEscrituraPruebas
         public List<AlertaRetiro> Retiros { get; } = new();
         private int _siguiente = 10;
         public int ObtenerUmbralMesesActivo() => 2;
+        public void ActualizarFechaUltimaVerificacion(DateTime fechaHoraLocal) { }
         public IReadOnlyList<AlertaConsulta> ConsultarRetiros() => Array.Empty<AlertaConsulta>();
         public T EjecutarTransaccion<T>(Func<IAlertasUnidadTrabajo, T> operacion)
         {

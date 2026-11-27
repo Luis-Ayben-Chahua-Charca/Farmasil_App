@@ -10,5 +10,6 @@ public sealed class AlertasRepositorioFalso : IAlertasRepositorio
     public T EjecutarTransaccion<T>(Func<IAlertasUnidadTrabajo, T> operacion) => throw new NotSupportedException("El falso de ESP-0013 no simula escrituras.");
 
     public int ObtenerUmbralMesesActivo() => Umbral;
+    public void ActualizarFechaUltimaVerificacion(DateTime fechaHoraLocal) { }
     public IReadOnlyList<AlertaConsulta> ConsultarRetiros() => Retiros.ToArray();
 }

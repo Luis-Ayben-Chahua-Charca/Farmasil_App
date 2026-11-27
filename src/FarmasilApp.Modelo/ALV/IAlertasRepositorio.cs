@@ -4,6 +4,9 @@ namespace FarmasilApp.Modelo.ALV;
 public interface IAlertasRepositorio
 {
     int ObtenerUmbralMesesActivo();
+
+    /// <summary>RNF-0010.1: marca la regla activa solo tras completar la evaluación con éxito.</summary>
+    void ActualizarFechaUltimaVerificacion(DateTime fechaHoraLocal);
     IReadOnlyList<AlertaConsulta> ConsultarRetiros();
 
     /// <summary>La implementación SQL confirma o revierte todas las escrituras ALV de este delegado.</summary>
