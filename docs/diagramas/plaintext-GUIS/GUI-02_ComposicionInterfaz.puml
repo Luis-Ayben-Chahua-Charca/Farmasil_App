@@ -1,0 +1,43 @@
+@startuml GUI-02_ComposicionInterfaz
+' FARMASIL_APP | GUIs | v01.00 | 27/11/2026 | paquete B aprobado.
+' Fuentes: guía UI, DEC-042/046/054/060/061/062/075/077, MainWindow.xaml.
+' Diagrama de contención funcional, no distribucion exacta ni nueva maqueta.
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam rectangleBorderColor #8577E0
+skinparam rectangleBackgroundColor #FFFFFF
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 22
+skinparam ranksep 22
+title GUI-02 Composición de la interfaz WPF
+
+rectangle "Ventana principal WPF" as MAIN {
+  rectangle "Menú persistente con sesión\nOpciones de módulos registrados\nDisponibilidad por rol y motivo\nID del menú pendientes: PEN-037\nUSR-BTN-CERRAR-SESION" as MENU #F0F0F0
+  rectangle "Contenido activo (ContentControl)\nUna pantalla ART-MKP-<MOD>-0001" as AREA #FAFAFA {
+    rectangle "Consulta\nBuscador SRH y filtros CMB/FEC\nEjemplo: INV-SRH-PRODUCTO" as FILTROS #EDECFB
+    rectangle "Resultados\nTabla TBL y, si corresponde,\ncontenedor PNL y tarjetas CRD\nEjemplo: INV-PNL-CATALOGO\nINV-CRD-PRODUCTO / INV-TBL-PRODUCTOS" as LISTA #EDECFB
+    rectangle "Ficha o captura\nCampos TXT, NUM, CMB, FEC...\nDatos de la selección\nModo consulta / alta / edición" as FICHA #EDECFB
+    rectangle "Acciones\nCrear y consultar\nActualizar y Guardar cambios\nSolicitar baja o anulación\nSegun ESP y permisos" as ACCIONES #EDECFB
+    rectangle "Respuesta visible\nMensaje de validación o resultado\nAdvertencias y estado de controles\nEjemplo: VEN-LBL-ADVERTENCIAS" as MENSAJES #FFF8DC
+    rectangle "Elementos superpuestos de la pantalla\nModal de confirmación <MOD>-MDL-...\nDOC-MDL-PREVISUALIZAR-COMPROBANTE\nNo son módulos ni pantallas adicionales" as MODALES #F0F0F0
+    FILTROS -[hidden]down- LISTA
+    LISTA -[hidden]right- FICHA
+    FICHA -[hidden]down- ACCIONES
+    LISTA -[hidden]down- MENSAJES
+    MENSAJES -[hidden]right- MODALES
+  }
+  MENU -[hidden]right- AREA
+}
+legend bottom
+  La contención expresa pertenencia. Los enlaces ocultos solo ordenan el dibujo.
+  Las zonas se incluyen cuando la ESP las requiere; no todas las pantallas son iguales.
+  VEN: catálogo, medicamento y detalle de venta. DOC: ventas, comprobantes y vista previa.
+  ALV: resultados Por vencer / Retirado y ficha sanitaria. REP: parámetros y reportes.
+  REA: lista y prioridad. COT: captura, comparativa y exportación.
+  INV, LOT, USR, PRV, PAG y RES: variantes del mantenimiento; no se rediseñan sus mockups.
+  Los identificadores mostrados son ejemplos existentes. Un control conserva su ID exacto.
+endlegend
+@enduml

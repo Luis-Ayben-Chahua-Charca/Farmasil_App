@@ -1,0 +1,51 @@
+@startuml GUI-04_InteraccionVentas
+' FARMASIL_APP | GUIs | v01.00 | 27/11/2026 | paquete B aprobado.
+' Fuentes: ESP-0001..0004, DEC-033/034/036/044/048/051/066/067, matriz de permisos.
+' El camino principal detalla ESP-0001; el historial se especifica en la leyenda.
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam shadowing false
+skinparam ArrowColor #444444
+skinparam stateBackgroundColor #EDECFB
+skinparam stateBorderColor #8577E0
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 35
+skinparam ranksep 35
+title GUI-04 Interacción de Ventas en ART-MKP-VEN-0001
+
+state "Venta en preparación [A o T]" as VENTA {
+  state "Catálogo vendible\nBusqueda y filtro terapéutico" as CAT
+  state "Medicamento seleccionado\nRemesa FEFO sugerida\nCantidad y lote elegibles" as SEL
+  state "Detalle en preparación\nLineas, método de pago y total" as DET
+  state "Confirmación de la operación\nRevalidar líneas y método" as VAL #FFF8DC
+  state "Venta registrada\nMensaje y registro actualizado" as OK
+  [*] --> CAT : abrir [remesas vendibles y pagos activos]
+  CAT --> CAT : buscar o filtrar\n/ actualizar tarjetas
+  CAT --> SEL : E1 seleccionar producto\n/ cargar ficha y sugerir remesa
+  SEL --> DET : E2 agregar\n[cantidad y remesa válidas, sin bloqueo]
+  SEL --> SEL : E2 [rechazo de validación]\n/ advertencia; no agregar línea
+  DET --> SEL : E1 otro producto
+  DET --> DET : E3 quitar / recalcular
+  DET : elegir método de pago en VEN-CMB-METODO-PAGO
+  DET --> VAL : E4 registrar venta
+  VAL --> DET : rechazo / informar\nsin registrar
+  VAL --> OK : éxito del servicio\n/ venta y stock confirmados juntos
+  OK --> [*] : fin del registro, pantalla abierta
+}
+legend bottom
+  Agregar: entero > 0, cantidad acumulada <= stock, producto y remesa disponibles,
+  no vencida y sin restricción bloqueante. Informativas: mostrar sin impedir agregar.
+  E1 = VEN-BTN-SELECCIONAR-PRODUCTO; E2 = VEN-BTN-AGREGAR-PRODUCTO.
+  E3 = VEN-BTN-QUITAR-PRODUCTO; E4 = VEN-BTN-CREAR-VENTA.
+  CAT = VEN-PNL-CATALOGO / VEN-CRD-PRODUCTO; DET = VEN-TBL-DETALLE-VENTA.
+  Advertencias: VEN-LBL-ADVERTENCIAS. Seleccionar no agrega una línea.
+  HISTORIAL (misma pantalla): VEN-BTN-LEER-VENTA carga VEN-TBL-REGISTRO-VENTAS;
+  seleccionar una venta carga su detalle (ESP-0002, A y T).
+  Actualizar y Guardar cambios: solo A y venta sin comprobante Emitido (ESP-0003).
+  Eliminar: solo A y sin ningún comprobante, incluso Anulado (ESP-0004);
+  VEN-MDL-CONFIRMAR-ELIMINACION usa Sí/No; «No» cierra solo el modal.
+  Una restricción o error mantiene el contexto y muestra su mensaje.
+  No se agrega Cancelar venta; salir de la pantalla descarta el detalle no registrado.
+endlegend
+@enduml

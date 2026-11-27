@@ -1,0 +1,56 @@
+@startuml GUI-05_InteraccionComprobantes
+' FARMASIL_APP | GUIs | v01.00 | 27/11/2026 | paquete B aprobado.
+' Fuentes: ESP-0009..0012, DEC-042/046/075/077/079, matriz de permisos.
+' Estados de GUI; cancelar la vista previa no anula un documento emitido.
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam shadowing false
+skinparam ArrowColor #444444
+skinparam stateBackgroundColor #EDECFB
+skinparam stateBorderColor #8577E0
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 35
+skinparam ranksep 35
+title GUI-05 Emisión y gestión en ART-MKP-DOC-0001
+
+state "Pantalla Documentación Tributaria" as DOC {
+  state "Consulta de comprobantes\nFiltros y resultados" as LISTA
+  state "Ventas sin comprobante Emitido\nTarjetas y filtros de venta" as VENTAS
+  state "Formulario de emisión\nVenta seleccionada y monto\nTipo, número y fecha" as FORM
+  state "Vista previa\nModal de previsualización\nTodavia sin registrar" as PRE #F0F0F0
+  state "Comprobar y emitir\nValidaciones del servicio" as EMITIR #FFF8DC
+  state "Edición de comprobante\nVenta asociada de solo lectura" as EDIT
+  state "Confirmación de anulación\nModal de la misma pantalla" as ANULAR #F0F0F0
+  [*] --> LISTA : abrir [A o T]
+  LISTA --> VENTAS : E1 [A o T]
+  VENTAS --> VENTAS : buscar por código o fecha
+  VENTAS --> FORM : E2 / seleccionar venta
+  FORM --> PRE : E1 / previsualizar
+  PRE --> FORM : E3 / volver
+  PRE --> EMITIR : E4
+  EMITIR --> PRE : rechazo
+  EMITIR --> LISTA : emitido / actualizar
+  LISTA --> EDIT : E5 [A, Emitido]
+  EDIT --> EDIT : E6 [rechazo]
+  EDIT --> LISTA : E6 [éxito]
+  LISTA --> ANULAR : E7 [A, Emitido]
+  ANULAR --> LISTA : E8 No
+  ANULAR --> LISTA : E9 Sí / Anulado
+  EDIT -[hidden]down-> ANULAR
+}
+legend bottom
+  Consultar actualiza DOC-TBL-COMPROBANTES; filtros inválidos: mensaje sin consultar BD.
+  E1 DOC-BTN-CREAR-COMPROBANTE | E2 DOC-BTN-SELECCIONAR-VENTA.
+  E3 DOC-BTN-CANCELAR-EMISION | E4 DOC-BTN-CONFIRMAR-EMISION.
+  E5 DOC-BTN-ACTUALIZAR-COMPROBANTE | E6 DOC-BTN-CONFIRMAR-ACTUALIZACION.
+  E7 DOC-BTN-ELIMINAR-COMPROBANTE | E8/E9 DOC-BTN-CONFIRMAR-NO/SI.
+  Emitir valida Boleta/Factura, campos obligatorios, número único y ausencia de Emitido.
+  Vista previa: DOC-MDL-PREVISUALIZAR-COMPROBANTE.
+  Anulación: DOC-MDL-CONFIRMAR-ELIMINACION.
+  Los Anulados siguen visibles; no admiten modificación. T no actualiza ni anula.
+  La vista previa muestra venta y detalle; no agrega cliente, IGV, SUNAT/OSE ni descarga.
+  Si se rechaza la emisión, se conserva la vista previa; Cancelar permite corregir la ficha.
+  Errores de la operación: mensaje comprensible, sin simular éxito (DEC-072/079).
+endlegend
+@enduml

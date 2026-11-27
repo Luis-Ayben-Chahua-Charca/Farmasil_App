@@ -4,6 +4,7 @@
 AGENTS.md
 CLAUDE.md
 *.local.json
+Claude outputs/
 
 # Temporales de ofimática
 ~$*.docx

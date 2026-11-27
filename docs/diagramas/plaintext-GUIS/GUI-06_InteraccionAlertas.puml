@@ -1,0 +1,55 @@
+@startuml GUI-06_InteraccionAlertas
+' FARMASIL_APP | GUIs | v01.00 | 27/11/2026 | paquete B aprobado.
+' Fuentes: ESP-0013..0016, RNF-0010, DEC-021/034/042/046/075/076, permisos.
+' El aviso es un evento de presentacion; no crea retiros ni bloquea remesas.
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam shadowing false
+skinparam ArrowColor #444444
+skinparam stateBackgroundColor #EDECFB
+skinparam stateBorderColor #8577E0
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 35
+skinparam ranksep 35
+title GUI-06 Aviso y operación en ART-MKP-ALV-0001
+
+state "Pantalla Alertas de Vencimiento" as ALV {
+  state "Consulta y selección\nTarjetas y tabla con origen\nPor vencer / Retirado" as LISTA
+  state "Ficha sanitaria de alta\nLote, defecto físico y alerta DIGEMID" as ALTA
+  state "Ficha sanitaria en edición\nDatos del retiro seleccionado\nLote de solo lectura" as EDIT
+  state "Confirmación de eliminación\nModal de la misma pantalla" as MODAL #F0F0F0
+  [*] --> LISTA : abrir menú o atender aviso [A o T]
+  LISTA --> LISTA : E1 / consultar
+  LISTA --> ALTA : preparar alta [A o T]
+  ALTA --> ALTA : E2 [inválido] / corregir
+  ALTA --> LISTA : E2 [éxito]
+  LISTA --> EDIT : E3 [A, R]
+  EDIT --> EDIT : E4 [rechazo] / informar
+  EDIT --> LISTA : E4 [éxito]
+  LISTA --> MODAL : E5
+  MODAL --> LISTA : E6 No
+  MODAL --> LISTA : rechazo / informar
+  MODAL --> LISTA : E7 Sí [G]
+  ALTA -[hidden]down-> EDIT
+  EDIT -[hidden]down-> MODAL
+}
+legend bottom
+  RNF-0010: aviso al iniciar y cada 24 h; al atenderlo se conduce a la consulta ALV.
+  El aviso no registra retiros ni bloquea remesas, y no modifica los permisos.
+  Modal: ALV-MDL-CONFIRMAR-ELIMINACION. Éxito: mensaje y tabla actualizada.
+  R = fila de retiro registrado. G = guardas de eliminación:
+  sin orden pendiente Y (remesa ausente O no vencida).
+  Alta aceptada: registrar retiro, bloquear remesa, mensaje y tabla actualizada.
+  E1 ALV-BTN-LEER-ALERTA | E2 ALV-BTN-CREAR-ALERTA.
+  E3 ALV-BTN-ACTUALIZAR-ALERTA | E4 ALV-BTN-CONFIRMAR-ACTUALIZACION.
+  E5 [A, R] ALV-BTN-ELIMINAR-ALERTA | E6/E7 ALV-BTN-CONFIRMAR-NO/SI.
+  Resultados: ALV-PNL-LOTES-RIESGO, ALV-CRD-LOTE y ALV-TBL-ALERTAS-VENCIMIENTO.
+  Filtros: lote y Todos / Por vencer / Retirados. T consulta y registra; no edita ni elimina.
+  Una fila Por vencer es calculada: no se modifica ni elimina como retiro registrado.
+  ALV-CHK-LOTE-DEFECTUOSO indica defecto físico; no es el estado de bloqueo.
+  Si la remesa no existe, se puede retirar la copia histórica sin liberar una remesa.
+  Si queda otro retiro: mensaje de eliminación con remesa aún bloqueada.
+  Si no queda otro: mensaje de éxito; Disponible o Agotado según existencias (DEC-034).
+endlegend
+@enduml

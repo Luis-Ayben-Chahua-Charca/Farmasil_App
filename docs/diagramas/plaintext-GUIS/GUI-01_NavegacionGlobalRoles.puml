@@ -1,0 +1,75 @@
+@startuml GUI-01_NavegacionGlobalRoles
+' FARMASIL_APP | GUIs | v01.00 | 27/11/2026 | paquete B aprobado.
+' Fuentes: RNF-0006, matriz de permisos, DEC-042/075/080, MainWindow y MainViewModel.
+' Convención propia de navegación: cajas = destinos; grupos = opciones del menú.
+' Las flechas hacia un grupo resumen la apertura de uno de sus destinos.
+' No son llamadas entre servicios ni asignan AutomationId (PEN-037).
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #444444
+skinparam packageStyle rectangle
+skinparam rectangleBorderColor #8577E0
+skinparam rectangleBackgroundColor #EDECFB
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 22
+skinparam ranksep 30
+top to bottom direction
+title GUI-01 Navegación global y acceso por rol
+
+actor "Dueña\nAdministrador (A)" as A
+actor "Técnica\nTecnico (T)" as T
+rectangle "Inicio de sesión\nUSR-FRM-INICIO-SESION" as ING #FFF8DC
+rectangle "Ventana principal WPF\nMenú de módulos y contenido activo" as MAIN
+A --> ING
+T --> ING
+ING --> MAIN : credenciales válidas y cuenta activa\n/ establecer sesión y rol
+ING --> ING : acceso rechazado\n/ mostrar mensaje
+MAIN -[norank]left-> ING : cerrar sesión\n/ borrar sesión y vaciar menú
+
+package "Destinos disponibles para A y T" as COMUN {
+  rectangle "Ventas (VEN)\nART-MKP-VEN-0001" as VEN
+  rectangle "Inventario (INV)\nART-MKP-INV-0001" as INV
+  rectangle "Comprobantes (DOC)\nART-MKP-DOC-0001" as DOC
+  rectangle "Alertas (ALV)\nART-MKP-ALV-0001" as ALV
+  rectangle "Métodos de Pago (PAG)\nART-MKP-PAG-0001" as PAG
+  rectangle "Restricciones (RES)\nART-MKP-RES-0001" as RES
+  rectangle "Lotes (LOT)\nART-MKP-LOT-0001" as LOT
+  VEN -[hidden]right- INV
+  INV -[hidden]right- DOC
+  DOC -[hidden]right- ALV
+  VEN -[hidden]down- PAG
+  INV -[hidden]down- RES
+  DOC -[hidden]down- LOT
+  PAG -[hidden]right- RES
+  RES -[hidden]right- LOT
+}
+package "Destinos exclusivos de A" as ADMIN {
+  rectangle "Reportes (REP)\nART-MKP-REP-0001" as REP #F0F0F0
+  rectangle "Devoluciones (DEV)\nART-MKP-DEV-0001" as DEV #F0F0F0
+  rectangle "Usuarios (USR)\nART-MKP-USR-0001" as USR #F0F0F0
+  rectangle "Proveedores (PRV)\nART-MKP-PRV-0001" as PRV #F0F0F0
+  rectangle "Reabastecimiento (REA)\nART-MKP-REA-0001" as REA #F0F0F0
+  rectangle "Cotizaciones (COT)\nART-MKP-COT-0001" as COT #F0F0F0
+  REP -[hidden]right- DEV
+  DEV -[hidden]right- USR
+  REP -[hidden]down- PRV
+  DEV -[hidden]down- REA
+  USR -[hidden]down- COT
+}
+MAIN --> COMUN : seleccionar destino\n[sesión activa, A o T]
+MAIN --> ADMIN : seleccionar destino\n[sesión activa, A]
+COMUN -[hidden]right- ADMIN
+
+legend bottom
+  T: crear/consultar VEN y DOC; consultar/registrar ALV; solo consultar INV, PAG, RES y LOT.
+  REP, DEV, USR, PRV, REA y COT permanecen visibles pero deshabilitados para T (DEC-075).
+  Cada destino es una pantalla 0001; sus operaciones no crean pantallas 0002-0004.
+  Inicio y cierre de sesión según DEC-080; USR-BTN-CERRAR-SESION vuelve al ingreso.
+  Modelo objetivo de 13 módulos; el código observado integra solo los registrados.
+  Sin sesión no hay menú. Los ID de sus botones siguen pendientes (PEN-037).
+  El cambio de módulo mantiene la ventana principal y sustituye su contenido.
+endlegend
+@enduml

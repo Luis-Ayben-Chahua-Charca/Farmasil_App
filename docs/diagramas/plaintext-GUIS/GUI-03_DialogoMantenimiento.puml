@@ -1,0 +1,50 @@
+@startuml GUI-03_DialogoMantenimiento
+' FARMASIL_APP | GUIs | v01.00 | 27/11/2026 | paquete B aprobado.
+' Fuentes: ESP de USR/PRV/INV/LOT/PAG/RES, matriz de permisos, DEC-042/046/072/075.
+' Máquina de estados de referencia de la GUI. No reemplaza las guardas de cada ESP.
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam shadowing false
+skinparam ArrowColor #444444
+skinparam stateBackgroundColor #EDECFB
+skinparam stateBorderColor #8577E0
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #999999
+skinparam nodesep 35
+skinparam ranksep 35
+title GUI-03 Diálogo común dentro de una pantalla de mantenimiento
+
+state "ART-MKP-<MOD>-0001\nUna pantalla, varios estados de interacción" as PANTALLA {
+  state "Consulta\nFiltros y resultados" as CONSULTA
+  state "Alta en preparación\nFormulario de captura" as ALTA
+  state "Registro seleccionado\nFicha cargada" as FICHA
+  state "Edición\nCambios sin confirmar" as EDICION
+  state "Confirmación de baja\nModal de la misma pantalla" as MODAL #F0F0F0
+  [*] --> CONSULTA : abrir módulo [rol autorizado]
+  CONSULTA --> CONSULTA : consultar / resultados
+  CONSULTA --> ALTA : preparar alta [A]
+  ALTA --> CONSULTA : crear [válido] / éxito
+  ALTA --> ALTA : crear [rechazo] / corregir
+  CONSULTA --> FICHA : seleccionar / cargar ficha
+  FICHA --> EDICION : actualizar [A]
+  EDICION --> CONSULTA : guardar [éxito]
+  EDICION --> EDICION : guardar [rechazo] / corregir
+  FICHA --> MODAL : baja [A y guardas previas]
+  FICHA --> FICHA : guarda rechazada / motivo
+  MODAL --> FICHA : No / cerrar modal
+  MODAL --> CONSULTA : Sí [éxito]
+  MODAL --> FICHA : Sí [rechazo] / motivo
+}
+legend bottom
+  A = Administrador. Altas, modificaciones y bajas de estos seis módulos son de A.
+  T solo consulta INV, LOT, PAG y RES. USR y PRV están deshabilitados para T.
+  Eventos: <MOD>-BTN-CREAR/LEER/ACTUALIZAR/ELIMINAR-<ENTIDAD>;
+  Guardar: <MOD>-BTN-CONFIRMAR-ACTUALIZACION (DEC-046).
+  Modal: <MOD>-MDL-CONFIRMAR-ELIMINACION; Sí/No: <MOD>-BTN-CONFIRMAR-SI/NO.
+  Los patrones anteriores se sustituyen por los ID exactos de la guía.
+  USR: cuenta propia y último administrador. LOT: proveedor, stock y devoluciones.
+  RES: baja por desactivación. PRV/PAG/INV: sus guardas y mensajes de la ESP.
+  Éxito muestra mensaje y actualiza el listado; rechazo no modifica datos.
+  No se agrega un botón Cancelar edición. Éxito termina la operación, no cierra el módulo.
+endlegend
+@enduml
