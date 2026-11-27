@@ -22,6 +22,7 @@
 | 22/11/2026 | 16.00 | Inicio de sesión (issue #88, DEC-080): se incorporan en el módulo 9 los identificadores de la pantalla mínima de inicio de sesión, que no tiene mockup aprobado: **USR-FRM-INICIO-SESION**, **USR-TXT-USUARIO-SESION**, **USR-PWD-CONTRASENA-SESION**, **USR-BTN-INICIAR-SESION**, **USR-LBL-ERROR-SESION**, **USR-BTN-VER-CONTRASENA-SESION** y **USR-BTN-CERRAR-SESION**. | AUT-0001 |
 | 23/11/2026 | 17.00 | Adecuación de Restricciones de Venta (issue #92, DEC-082): se distinguen los IDs del buscador y filtros de la ficha, y la lista de tarjetas del control tabular; se documentan sus modos en **ART-MKP-RES-0001**, las columnas completas de ESP-0030 y el acceso de solo consulta para el Técnico. | AUT-0001 |
 | 24/11/2026 | 18.00 | Adecuación de Devoluciones a Proveedores (issue #96, DEC-083): se separan el buscador (**DEV-SRH-ORDEN**) y filtro (**DEV-CMB-FILTRO-PROVEEDOR**) de la ficha, y el panel de tarjetas (**DEV-PNL-ORDENES**, **DEV-CRD-ORDEN**) como única lista de órdenes, sin tabla de órdenes; se incorporan **DEV-BTN-AGREGAR-LINEA**, **DEV-BTN-QUITAR-LINEA** y **DEV-CMB-ESTADO-ORDEN**; se confirma la edición en dos pasos con **DEV-BTN-CONFIRMAR-ACTUALIZACION** («Guardar cambios», DEC-046) y se documenta el acceso exclusivo del Administrador (DEC-075). | AUT-0001 |
+| 26/11/2026 | 19.00 | Issue #110: adecuación documental de REA en una sola pantalla **ART-MKP-REA-0001**. Se separan la búsqueda de producto y el selector de ficha; se incorporan filtros por prioridad y origen, controles de ficha, contadores derivados y confirmación de edición/eliminación. La cantidad sugerida permanece calculada sin persistencia (PEN-033); no se conserva «Pendientes de cotizar» en REA (DEC-052). | AUT-0006 |
 
 ---
 
@@ -389,6 +390,35 @@ Los identificadores nuevos se organizan por módulo. En PAG, el mockup y las esp
 | ALV-TBL-ALERTAS-VENCIMIENTO | Tabla | Medicamento, lote, vencimiento, defecto y origen. Identifica solo la tabla, no la lista de tarjetas. | ART-MKP-ALV-0001 |
 
 Modificar, confirmar y eliminar se habilitan solo para el Administrador y para alertas registradas; para la Técnica quedan visibles y deshabilitados con el motivo (RNF-0006, DEC-075). La implementación en WPF usa estos identificadores en `AutomationProperties.AutomationId` (DEC-060).
+
+#### REA — Reabastecimiento (issue #110)
+
+Todos los controles pertenecen a la pantalla única **ART-MKP-REA-0001**, conforme a DEC-042. La cantidad sugerida es informativa y no se almacena (PEN-033).
+
+| Componente | Tipo | Función | Mockup |
+| --- | --- | --- | --- |
+| REA-SRH-PRODUCTO | Búsqueda | Filtro textual opcional por nombre; distinto de **REA-CMB-PRODUCTO**. | ART-MKP-REA-0001 |
+| REA-CMB-FILTRO-PRIORIDAD | ComboBox | Filtro opcional por `Normal`/`Urgente`; separado del selector de ficha. | ART-MKP-REA-0001 |
+| REA-CMB-FILTRO-ORIGEN | ComboBox | Filtro opcional `Manual`/`Automatico`. | ART-MKP-REA-0001 |
+| REA-BTN-LEER-ITEM | Botón | Ejecuta la consulta filtrada. | ART-MKP-REA-0001 |
+| REA-TBL-LISTA-REABASTECIMIENTO | Tabla | Nombre, stock vendible, mínimo, cantidad sugerida, prioridad, origen y fecha de inclusión; solo tabla. | ART-MKP-REA-0001 |
+| REA-LBL-PRODUCTOS-BAJO-MINIMO | Etiqueta | Métrica derivada del stock vendible y mínimo; no es campo editable. | ART-MKP-REA-0001 |
+| REA-LBL-ITEMS-URGENTES | Etiqueta | Contador derivado de ítems con prioridad `Urgente`. | ART-MKP-REA-0001 |
+| REA-CMB-PRODUCTO | ComboBox | Medicamento de la ficha; solo lectura al actualizar. | ART-MKP-REA-0001 |
+| REA-CMB-PRIORIDAD | ComboBox | Prioridad editable al crear y actualizar: `Normal`/`Urgente`. | ART-MKP-REA-0001 |
+| REA-LBL-FECHA-INCLUSION | Etiqueta | Fecha del sistema al crear; solo lectura. | ART-MKP-REA-0001 |
+| REA-LBL-ORIGEN | Etiqueta | `Manual`/`Automatico`, siempre solo lectura. | ART-MKP-REA-0001 |
+| REA-NUM-CANTIDAD-SUGERIDA | Campo numérico | `MAX(stock_minimo − stock vendible, 0)`, solo lectura y no persistido (PEN-033). | ART-MKP-REA-0001 |
+| REA-BTN-CREAR-ITEM | Botón | Registra ítem manual (ESP-0045). | ART-MKP-REA-0001 |
+| REA-BTN-ACTUALIZAR-ITEM | Botón | Activa modo edición del ítem (ESP-0047). | ART-MKP-REA-0001 |
+| REA-BTN-CONFIRMAR-ACTUALIZACION | Botón | «Guardar cambios»: confirma edición en dos pasos. | ART-MKP-REA-0001 |
+| REA-BTN-ELIMINAR-ITEM | Botón | Abre confirmación de eliminación. | ART-MKP-REA-0001 |
+| REA-MDL-CONFIRMAR-ELIMINACION | Modal | Confirmación de baja desde la pantalla única. | ART-MKP-REA-0001 |
+| REA-TXT-MSJ | Mensaje | Mensaje literal de eliminación de ESP-0048. | ART-MKP-REA-0001 |
+| REA-BTN-CONFIRMAR-SI | Botón | Confirma la eliminación. | ART-MKP-REA-0001 |
+| REA-BTN-CONFIRMAR-NO | Botón | Cancela sin cambios. | ART-MKP-REA-0001 |
+
+El botón visual «Generar Lista» no crea otra operación manual: la generación automática continúa definida en RNF-0010, condición 2, y el alcance del botón permanece provisional por PEN-033. El indicador «Pendientes de cotizar» no forma parte de REA (DEC-052). Solo accede el rol Administrador.
 
 ### Módulos 1 a 8 — componentes vigentes
 

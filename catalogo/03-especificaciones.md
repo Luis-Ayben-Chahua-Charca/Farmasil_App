@@ -841,74 +841,74 @@
 | Código especificación | ESP-0045 |
 | --- | --- |
 | Nombre | Incorporación manual de ítem a la lista de reabastecimiento |
-| Versión | 02.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 26/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 3 |
 | Experto | Ninguno |
 | Código ilación | ILA-0045 |
 | Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR EXISTE(DB_FARMASIL.TBL_PRODUCTOS, estado_producto = 'Disponible')**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0001**<br>&nbsp;&nbsp;**VALIDAR REA-BTN-CREAR-ITEM = HABILITADO**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**producto = REA-CMB-PRODUCTO**<br>&nbsp;&nbsp;**prioridad = REA-CMB-PRIORIDAD**<br>&nbsp;&nbsp;**fechaInclusion = FECHA_SISTEMA**<br>&nbsp;&nbsp;**MOSTRAR fechaInclusion EN REA-LBL-FECHA-INCLUSION**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-CREAR-ITEM**<br>&nbsp;&nbsp;**VALIDAR producto EXISTE EN DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE(DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO, id_producto = producto)**<br>&nbsp;&nbsp;**VALIDAR prioridad EN ('Normal', 'Urgente')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (producto, 'Manual', prioridad, fechaInclusion) EN DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**MOSTRAR "Ítem agregado a la lista de reabastecimiento"**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO.origen = 'Manual'**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>&nbsp;&nbsp;**SI prioridad = 'Urgente' ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**VERIFICAR ITEM RESALTADO EN ROJO**<br>&nbsp;&nbsp;**FIN SI**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**producto = REA-CMB-PRODUCTO**<br>&nbsp;&nbsp;**prioridad = REA-CMB-PRIORIDAD**<br>&nbsp;&nbsp;**VALIDAR prioridad EN ('Normal', 'Urgente')**<br>&nbsp;&nbsp;**MOSTRAR REA-LBL-ORIGEN = 'Manual' (SOLO_LECTURA)**<br>&nbsp;&nbsp;**fechaInclusion = FECHA_SISTEMA**<br>&nbsp;&nbsp;**MOSTRAR fechaInclusion EN REA-LBL-FECHA-INCLUSION (SOLO_LECTURA)**<br>&nbsp;&nbsp;**stockMinimo = CONSULTAR STOCK_MINIMO(producto)**<br>&nbsp;&nbsp;**stockVendible = CONSULTAR VW_STOCK_VENDIBLE(producto), SI NO HAY FILA TOMAR 0**<br>&nbsp;&nbsp;**cantidadSugerida = MAX(stockMinimo - stockVendible, 0)**<br>&nbsp;&nbsp;**MOSTRAR cantidadSugerida EN REA-NUM-CANTIDAD-SUGERIDA (SOLO_LECTURA, SIN_PERSISTENCIA)**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-CREAR-ITEM**<br>&nbsp;&nbsp;**VALIDAR producto EXISTE Y estado_producto = 'Disponible'**<br>&nbsp;&nbsp;**VALIDAR NO EXISTE ITEM CON id_producto = producto (DEC-020)**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**REGISTRAR (producto, 'Manual', prioridad, fechaInclusion) EN DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR REA-TBL-LISTA-REABASTECIMIENTO Y CONTADORES DERIVADOS**<br>&nbsp;&nbsp;**MOSTRAR "Ítem agregado a la lista de reabastecimiento"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_CREADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR origen = 'Manual' Y id_producto UNICO**<br>&nbsp;&nbsp;**VERIFICAR REA-NUM-CANTIDAD-SUGERIDA = CALCULADA_Y_NO_PERSISTIDA**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>&nbsp;&nbsp;**SI prioridad = 'Urgente' ENTONCES RESALTAR ITEM EN ROJO**<br>**FIN** |
 | Código de artefactos asociados | ART-MKP-REA-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Especificación nueva, derivada de la Entrevista 3. Complementa la incorporación automática del proceso periódico del sistema (condición 2 de RNF-0010, versión 02.00).<br>Queda Pendiente porque el mockup **ART-MKP-REA-0001** aún no ha sido diseñado. |
+| Estado | Concluido |
+| Comentario | **Versión 03.00 (issue #110):** C1/C4 de DEC-042, solo **ART-MKP-REA-0001**; se incorporan origen, fecha y cantidad sugerida calculada de solo lectura según PEN-033 y DEC-040/056. El botón «Generar Lista» visible en el diseño no establece una quinta operación; la generación quincenal corresponde a RNF-0010 (condición 2). |
 
 | Código especificación | ESP-0046 |
 | --- | --- |
 | Nombre | Consulta de la lista de reabastecimiento |
-| Versión | 01.00 |
-| Fecha | 02/10/2026 |
+| Versión | 02.00 |
+| Fecha | 26/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 3 |
 | Experto | Ninguno |
 | Código ilación | ILA-0046 |
-| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0002**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**prioridad = REA-CMB-FILTRO-PRIORIDAD**<br>&nbsp;&nbsp;**origen = REA-CMB-FILTRO-ORIGEN**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-LEER-ITEM**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO UNIENDO DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**APLICAR FILTRO prioridad = prioridad**<br>&nbsp;&nbsp;**APLICAR FILTRO origen = origen**<br>&nbsp;&nbsp;**ORDENAR POR prioridad = 'Urgente' DESCENDENTE**<br>&nbsp;&nbsp;**CARGAR REA-TBL-LISTA-REABASTECIMIENTO CON (nombre, origen, prioridad, fecha_inclusion)**<br>&nbsp;&nbsp;**RESALTAR EN ROJO FILAS DONDE prioridad = 'Urgente'**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO = SIN_MODIFICACION**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0002 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0001**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**producto = REA-SRH-PRODUCTO (OPCIONAL, COINCIDENCIA_PARCIAL)**<br>&nbsp;&nbsp;**prioridad = REA-CMB-FILTRO-PRIORIDAD (OPCIONAL)**<br>&nbsp;&nbsp;**origen = REA-CMB-FILTRO-ORIGEN (OPCIONAL)**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-LEER-ITEM**<br>&nbsp;&nbsp;**CONSULTAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO UNIENDO DB_FARMASIL.TBL_PRODUCTOS**<br>&nbsp;&nbsp;**OBTENER stockMinimo DE TBL_PRODUCTOS Y stockVendible DE VW_STOCK_VENDIBLE; SIN REMESAS => 0**<br>&nbsp;&nbsp;**APLICAR FILTROS OPCIONALES DE producto, prioridad Y origen**<br>&nbsp;&nbsp;**ORDENAR 'Urgente' PRIMERO**<br>&nbsp;&nbsp;**cantidadSugerida = MAX(stockMinimo - stockVendible, 0)**<br>&nbsp;&nbsp;**CARGAR REA-TBL-LISTA-REABASTECIMIENTO CON (nombre, origen, prioridad, fecha_inclusion, stockVendible, stockMinimo, cantidadSugerida)**<br>&nbsp;&nbsp;**RESALTAR EN ROJO LAS FILAS CON prioridad = 'Urgente'**<br>&nbsp;&nbsp;**ACTUALIZAR REA-LBL-PRODUCTOS-BAJO-MINIMO Y REA-LBL-ITEMS-URGENTES COMO CONTADORES CALCULADOS**<br>&nbsp;&nbsp;**NO MOSTRAR INDICADOR 'Pendientes de cotizar' EN REA (DEC-052)**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR CONSULTA_REALIZADA = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR cantidadSugerida = CALCULADA_Y_NO_PERSISTIDA**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO = SIN_MODIFICACION**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-REA-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Es la vista desde la que la dueña decide qué ítems enviar a cotizar según EDU-0017. Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0002**. |
+| Estado | Concluido |
+| Comentario | **Versión 02.00 (issue #110, DEC-042 C1-C4):** consulta por producto, prioridad y origen (DEC-061), con stock vendible obtenido según DEC-040/056 y cantidad sugerida calculada sin columna adicional (PEN-033). Se retira el contador «Pendientes de cotizar» de REA (DEC-052) y se utiliza solo **ART-MKP-REA-0001**. |
 
 | Código especificación | ESP-0047 |
 | --- | --- |
 | Nombre | Actualización de ítem de la lista de reabastecimiento |
-| Versión | 01.00 |
-| Fecha | 02/10/2026 |
+| Versión | 02.00 |
+| Fecha | 26/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 3 |
 | Experto | Ninguno |
 | Código ilación | ILA-0047 |
-| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0003**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR item EN REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-ACTUALIZAR-ITEM**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0003 CON INFORMACION VIGENTE**<br>&nbsp;&nbsp;**MOSTRAR item.id_producto EN REA-CMB-PRODUCTO = SOLO_LECTURA**<br>&nbsp;&nbsp;**MOSTRAR item.origen EN REA-LBL-ORIGEN = SOLO_LECTURA**<br>&nbsp;&nbsp;**prioridad = REA-CMB-PRIORIDAD**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-CONFIRMAR-ACTUALIZACION**<br>&nbsp;&nbsp;**VALIDAR prioridad EN ('Normal', 'Urgente')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO.prioridad = prioridad DONDE id_reabastecimiento = item**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**MOSTRAR "Ítem actualizado correctamente"**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ACTUALIZADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO.id_producto = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO.origen = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0003 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0001**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR item EN REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-ACTUALIZAR-ITEM**<br>&nbsp;&nbsp;**CARGAR FICHA EN ART-MKP-REA-0001 CON DATOS VIGENTES**<br>&nbsp;&nbsp;**MOSTRAR REA-CMB-PRODUCTO, REA-LBL-ORIGEN Y REA-LBL-FECHA-INCLUSION EN SOLO_LECTURA**<br>&nbsp;&nbsp;**MOSTRAR REA-NUM-CANTIDAD-SUGERIDA = MAX(stockMinimo - stockVendible, 0) EN SOLO_LECTURA**<br>&nbsp;&nbsp;**prioridad = REA-CMB-PRIORIDAD**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-CONFIRMAR-ACTUALIZACION ("Guardar cambios")**<br>&nbsp;&nbsp;**VALIDAR prioridad EN ('Normal', 'Urgente')**<br>&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**ACTUALIZAR SOLO prioridad EN DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO DONDE id_reabastecimiento = item**<br>&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;**ACTUALIZAR REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**MOSTRAR "Ítem actualizado correctamente"**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR prioridad ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR id_producto, origen Y fecha_inclusion SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR cantidadSugerida NO_PERSISTIDA**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-REA-0001 |
 | Importancia | Media |
-| Estado | Pendiente |
-| Comentario | El medicamento y el origen se declaran de solo lectura: reasignar la identidad de un ítem ya existente equivaldría a crear uno nuevo. Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0003**. |
+| Estado | Concluido |
+| Comentario | **Versión 02.00 (issue #110):** una sola ficha en **ART-MKP-REA-0001**; solo la prioridad puede editarse, en dos pasos (DEC-046). Fecha, producto, origen y cantidad sugerida permanecen en solo lectura (PEN-033). |
 
 | Código especificación | ESP-0048 |
 | --- | --- |
 | Nombre | Eliminación de ítem de la lista de reabastecimiento |
-| Versión | 01.00 |
-| Fecha | 02/10/2026 |
+| Versión | 02.00 |
+| Fecha | 26/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 3 |
 | Experto | Ninguno |
 | Código ilación | ILA-0048 |
-| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0004**<br>**FIN** |
-| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR item EN REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-ELIMINAR-ITEM**<br>&nbsp;&nbsp;**MOSTRAR REA-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**MOSTRAR REA-TXT-MSJ = "¿Está seguro de quitar este ítem de la lista de reabastecimiento?"**<br>&nbsp;&nbsp;**SI PRESIONAR REA-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ELIMINAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO DONDE id_reabastecimiento = item**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Ítem eliminado correctamente"**<br>&nbsp;&nbsp;**SINO SI PRESIONAR REA-BTN-CONFIRMAR-NO ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CERRAR REA-MDL-CONFIRMAR-ELIMINACION**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR REA-TBL-LISTA-REABASTECIMIENTO**<br>**FIN** |
-| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ELIMINADO = VERDADERO**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>&nbsp;&nbsp;**VERIFICAR INTEGRIDAD_REFERENCIAL = SIN_VIOLACION**<br>**FIN** |
-| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0004 |
+| Precondición | **INICIO**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL = DISPONIBLE**<br>&nbsp;&nbsp;**VALIDAR CONEXION(DB_FARMASIL) = EXITOSA**<br>&nbsp;&nbsp;**VALIDAR SESION_USUARIO = ACTIVA**<br>&nbsp;&nbsp;**VALIDAR ROL(SESION_USUARIO) = 'Administrador'**<br>&nbsp;&nbsp;**VALIDAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO <> VACIA**<br>&nbsp;&nbsp;**CARGAR ART-MKP-REA-0001**<br>**FIN** |
+| Procedimiento | **INICIO**<br>&nbsp;&nbsp;**SELECCIONAR item EN REA-TBL-LISTA-REABASTECIMIENTO**<br>&nbsp;&nbsp;**PRESIONAR REA-BTN-ELIMINAR-ITEM**<br>&nbsp;&nbsp;**MOSTRAR REA-MDL-CONFIRMAR-ELIMINACION SOBRE ART-MKP-REA-0001**<br>&nbsp;&nbsp;**MOSTRAR REA-TXT-MSJ = "¿Está seguro de quitar este ítem de la lista de reabastecimiento?"**<br>&nbsp;&nbsp;**SI REA-BTN-CONFIRMAR-NO ENTONCES CERRAR MODAL SIN MODIFICACION**<br>&nbsp;&nbsp;**SI REA-BTN-CONFIRMAR-SI ENTONCES**<br>&nbsp;&nbsp;&nbsp;&nbsp;**INICIAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**ELIMINAR DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO DONDE id_reabastecimiento = item**<br>&nbsp;&nbsp;&nbsp;&nbsp;**CONFIRMAR TRANSACCION**<br>&nbsp;&nbsp;&nbsp;&nbsp;**MOSTRAR "Ítem eliminado correctamente"**<br>&nbsp;&nbsp;**FIN SI**<br>&nbsp;&nbsp;**ACTUALIZAR REA-TBL-LISTA-REABASTECIMIENTO Y CONTADORES DERIVADOS**<br>**FIN** |
+| Postcondición | **INICIO**<br>&nbsp;&nbsp;**VERIFICAR REGISTRO_ELIMINADO SOLO SI CONFIRMADO**<br>&nbsp;&nbsp;**VERIFICAR CANCELACION = SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR COTIZACIONES HISTORICAS SIN_MODIFICACION**<br>&nbsp;&nbsp;**VERIFICAR REINGRESO DE id_producto PERMITIDO TRAS ELIMINACION (DEC-020)**<br>&nbsp;&nbsp;**VERIFICAR REA-TBL-LISTA-REABASTECIMIENTO = ACTUALIZADA**<br>**FIN** |
+| Código de artefactos asociados | ART-MKP-REA-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Eliminación física: ninguna otra tabla depende de un ítem de esta lista (las cotizaciones de EDU-0017 se asocian al medicamento y al proveedor, no al ítem). Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0004**. |
+| Estado | Concluido |
+| Comentario | **Versión 02.00 (issue #110, DEC-042 C1/C4):** eliminación física con el modal sobre **ART-MKP-REA-0001**; cancelar no modifica datos y la unicidad por medicamento no impide el reingreso después de eliminar el ítem (DEC-020). |
 
 ---
 
