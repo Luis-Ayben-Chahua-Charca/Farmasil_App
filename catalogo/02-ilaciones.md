@@ -925,8 +925,8 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código ilación | ILA-0045 |
 | --- | --- |
 | Nombre | Incorporación manual de ítem a la lista de reabastecimiento |
-| Versión | 02.00 |
-| Fecha | 13/10/2026 |
+| Versión | 03.00 |
+| Fecha | 26/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 3 |
@@ -934,69 +934,69 @@ Estos componentes deben nombrarse siguiendo la Guía de Estilo de Nomenclatura d
 | Código educción | EDU-0016 |
 | Código especificación | ESP-0045 |
 | Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_PRODUCTOS** tiene al menos un medicamento con `estado_producto` = 'Disponible'.<br>5. Se carga el mockup **ART-MKP-REA-0001**.<br>6. El botón **REA-BTN-CREAR-ITEM** se encuentra habilitado. |
-| Procedimiento | 1. La dueña accede al módulo de gestión de reabastecimiento.<br>2. La dueña selecciona el medicamento a incorporar en **REA-CMB-PRODUCTO**.<br>3. La dueña selecciona la prioridad del ítem en **REA-CMB-PRIORIDAD**, con los valores 'Normal' o 'Urgente'.<br>4. El sistema registra automáticamente la fecha de inclusión y la muestra en **REA-LBL-FECHA-INCLUSION**, que no es editable.<br>5. La dueña presiona **REA-BTN-CREAR-ITEM**.<br>6. El sistema valida que el medicamento no tenga ya un ítem pendiente en la lista.<br>7. El sistema registra el ítem en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** con `origen` = 'Manual'.<br>8. El sistema actualiza **REA-TBL-LISTA-REABASTECIMIENTO**. |
-| Postcondición | 1. El ítem queda almacenado en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** con `origen` = 'Manual'.<br>2. El ítem aparece en **REA-TBL-LISTA-REABASTECIMIENTO**, resaltado en rojo si su prioridad es 'Urgente'.<br>3. El ítem queda disponible para ser cotizado según EDU-0017. |
+| Procedimiento | 1. La dueña abre el módulo REA en **ART-MKP-REA-0001**.<br>2. Selecciona un medicamento disponible en **REA-CMB-PRODUCTO** y la prioridad **REA-CMB-PRIORIDAD** (`Normal` o `Urgente`).<br>3. El sistema muestra el origen `Manual` en **REA-LBL-ORIGEN** y la fecha del sistema en **REA-LBL-FECHA-INCLUSION**, ambos de solo lectura.<br>4. El sistema obtiene `stock_minimo` del medicamento y su stock vendible según **DEC-040/056** (las remesas `Disponible` no vencidas; si no hay remesas, se toma 0); calcula `MAX(stock_minimo − stock vendible, 0)` y lo muestra en **REA-NUM-CANTIDAD-SUGERIDA**, de solo lectura.<br>5. La dueña pulsa **REA-BTN-CREAR-ITEM**.<br>6. El sistema valida que el medicamento exista y esté `Disponible`, que la prioridad pertenezca a (`Normal`, `Urgente`) y que todavía no exista un ítem para ese `id_producto` (DEC-020).<br>7. Registra en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** únicamente (`id_producto`, `origen`=`Manual`, `prioridad`, `fecha_inclusion`). No registra la cantidad sugerida.<br>8. Actualiza **REA-TBL-LISTA-REABASTECIMIENTO** y los contadores derivados; destaca en rojo la prioridad `Urgente`. |
+| Postcondición | 1. El ítem está registrado con `origen`=`Manual` y es único por medicamento (DEC-020).<br>2. **REA-TBL-LISTA-REABASTECIMIENTO** muestra el ítem; `Urgente` se destaca en rojo.<br>3. La fecha de inclusión y la cantidad sugerida son visibles sin permitir su edición; la segunda no se persiste.<br>4. El ítem queda disponible para cotizaciones (EDU-0017). |
 | Código de artefactos asociados | ART-MKP-REA-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Ilación nueva, derivada de la Entrevista 3. Complementa la incorporación automática que realiza el proceso periódico del sistema (condición 2 de RNF-0010): permite a la dueña agregar manualmente productos que no están por agotarse pero que desea cotizar igual, por ejemplo una oferta detectada en el catálogo de un proveedor.<br>Queda Pendiente porque el mockup **ART-MKP-REA-0001** aún no ha sido diseñado. |
+| Estado | Concluido |
+| Comentario | La incorporación manual complementa, sin sustituir, la generación quincenal automática de RNF-0010, condición 2. **Versión 03.00 (issue #110, DEC-042 C1-C4):** se utiliza una sola pantalla **ART-MKP-REA-0001**, se documentan fecha, origen y cantidad sugerida calculada sin persistencia según **PEN-033**, y se conserva la prioridad `Normal`/`Urgente`. El botón visual «Generar Lista» no crea una quinta operación manual; el alcance permanece provisional (PEN-033). |
 
 | Código ilación | ILA-0046 |
 | --- | --- |
 | Nombre | Consulta de la lista de reabastecimiento |
-| Versión | 01.00 |
-| Fecha | 02/10/2026 |
+| Versión | 02.00 |
+| Fecha | 26/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 3 |
 | Experto | Ninguno |
 | Código educción | EDU-0016 |
 | Código especificación | ESP-0046 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. Se carga el mockup **ART-MKP-REA-0002**. |
-| Procedimiento | 1. La dueña accede al módulo de gestión de reabastecimiento.<br>2. La dueña aplica los filtros disponibles: prioridad en **REA-CMB-FILTRO-PRIORIDAD** u origen en **REA-CMB-FILTRO-ORIGEN**.<br>3. La dueña presiona **REA-BTN-LEER-ITEM**.<br>4. El sistema consulta **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** y resuelve el nombre del medicamento contra **DB_FARMASIL.TBL_PRODUCTOS**.<br>5. El sistema muestra los resultados en **REA-TBL-LISTA-REABASTECIMIENTO**, ordenados con los ítems 'Urgente' primero y resaltados en rojo. |
-| Postcondición | 1. Los ítems consultados se visualizan en **REA-TBL-LISTA-REABASTECIMIENTO**, con los urgentes resaltados y listados primero.<br>2. No se modifica ninguna información en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**. |
-| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0002 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada y la conexión funciona.<br>2. El usuario tiene sesión activa con rol `Administrador`.<br>3. Se carga la pantalla única **ART-MKP-REA-0001**. |
+| Procedimiento | 1. La dueña entra al módulo de reabastecimiento en **ART-MKP-REA-0001**.<br>2. Opcionalmente escribe un nombre o parte del nombre en **REA-SRH-PRODUCTO**, selecciona una prioridad en **REA-CMB-FILTRO-PRIORIDAD** y/o un origen en **REA-CMB-FILTRO-ORIGEN** (sin filtros muestra todo).<br>3. Presiona **REA-BTN-LEER-ITEM**.<br>4. El sistema consulta **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** y resuelve el nombre, `stock_minimo` y el stock vendible del medicamento según **DEC-040/056**, tratando como 0 el medicamento sin remesas vendibles.<br>5. Filtra por coincidencia parcial del nombre, prioridad y origen según los valores seleccionados; ordena primero `Urgente` y después el resto.<br>6. Calcula para cada fila `cantidad_sugerida = MAX(stock_minimo − stock vendible, 0)`, de solo lectura, sin añadir columnas persistidas.<br>7. Carga **REA-TBL-LISTA-REABASTECIMIENTO** con (producto, stock vendible, stock mínimo, cantidad sugerida, prioridad, origen, fecha de inclusión) y destaca en rojo los `Urgente`.<br>8. Actualiza **REA-LBL-PRODUCTOS-BAJO-MINIMO** y **REA-LBL-ITEMS-URGENTES** como contadores derivados. No muestra `Pendientes de cotizar` dentro de REA (DEC-052). |
+| Postcondición | 1. La consulta muestra filas coherentes con los filtros y el orden requerido.<br>2. Los datos calculados de stock y cantidad sugerida se presentan solo para consulta.<br>3. **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** permanece sin modificación. |
+| Código de artefactos asociados | ART-MKP-REA-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | Es la vista desde la que la dueña decide qué ítems enviar a cotizar según EDU-0017. El resaltado en rojo de los ítems urgentes es el componente de interfaz solicitado explícitamente en la Entrevista 3.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0002**. |
+| Estado | Concluido |
+| Comentario | La consulta mantiene los filtros existentes por prioridad y origen e incorpora la búsqueda opcional por producto aceptada por C3 de DEC-042 (DEC-061). **Versión 02.00 (issue #110):** se usa solo **ART-MKP-REA-0001**, se distinguen componentes de consulta y ficha (C2), se leen stock vendible/stock mínimo sin cambiar el esquema (DEC-040/056), y la cantidad sugerida es informativa, no persistida (PEN-033). Se retira de REA «Pendientes de cotizar» (DEC-052) y el conteo de urgentes no se confunde con un selector de prioridad. |
 
 | Código ilación | ILA-0047 |
 | --- | --- |
 | Nombre | Actualización de ítem de la lista de reabastecimiento |
-| Versión | 01.00 |
-| Fecha | 02/10/2026 |
+| Versión | 02.00 |
+| Fecha | 26/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 3 |
 | Experto | Ninguno |
 | Código educción | EDU-0016 |
 | Código especificación | ESP-0047 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-REA-0003**. |
-| Procedimiento | 1. La dueña selecciona un ítem en **REA-TBL-LISTA-REABASTECIMIENTO**.<br>2. La dueña presiona **REA-BTN-ACTUALIZAR-ITEM**.<br>3. El sistema carga el mockup **ART-MKP-REA-0003** con la información vigente del ítem.<br>4. La dueña modifica la prioridad en **REA-CMB-PRIORIDAD**. El medicamento y el origen, mostrados de solo lectura, no se modifican.<br>5. La dueña presiona **REA-BTN-CONFIRMAR-ACTUALIZACION**.<br>6. El sistema actualiza el registro en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>7. El sistema actualiza **REA-TBL-LISTA-REABASTECIMIENTO**. |
-| Postcondición | 1. La prioridad del ítem queda actualizada en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>2. El medicamento y el origen permanecen inalterados.<br>3. Los cambios se reflejan en **REA-TBL-LISTA-REABASTECIMIENTO**. |
-| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0003 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada y la conexión funciona.<br>2. El usuario tiene sesión activa con rol `Administrador`.<br>3. Hay ítems en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>4. Se muestra **ART-MKP-REA-0001** en modo de consulta/ficha. |
+| Procedimiento | 1. La dueña selecciona un ítem en **REA-TBL-LISTA-REABASTECIMIENTO** de **ART-MKP-REA-0001**.<br>2. Pulsa **REA-BTN-ACTUALIZAR-ITEM** para entrar en modo edición.<br>3. El sistema carga la ficha en la misma pantalla; muestra **REA-CMB-PRODUCTO**, **REA-LBL-ORIGEN** y **REA-LBL-FECHA-INCLUSION** como solo lectura, y **REA-NUM-CANTIDAD-SUGERIDA** como cantidad calculada `MAX(stock_minimo − stock vendible, 0)`, también de solo lectura.<br>4. La dueña solo modifica **REA-CMB-PRIORIDAD** (`Normal` o `Urgente`).<br>5. Confirma con **REA-BTN-CONFIRMAR-ACTUALIZACION** («Guardar cambios»).<br>6. El sistema valida la prioridad y actualiza únicamente `prioridad` del ítem en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>7. Refresca la tabla y los contadores derivados, sin guardar cantidad sugerida. |
+| Postcondición | 1. Se actualiza solo la prioridad del ítem.<br>2. `id_producto`, `origen` y `fecha_inclusion` permanecen sin cambios.<br>3. La cantidad sugerida sigue siendo calculada, de solo lectura y sin persistencia.<br>4. La tabla refleja la prioridad actualizada. |
+| Código de artefactos asociados | ART-MKP-REA-0001 |
 | Importancia | Media |
-| Estado | Pendiente |
-| Comentario | Permite reclasificar como 'Urgente' un ítem que entró originalmente con prioridad 'Normal', por ejemplo si el stock cae más rápido de lo previsto entre un escaneo periódico y otro. El medicamento y el origen se declaran de solo lectura por el mismo criterio que en el resto del catálogo: reasignar la identidad de un ítem ya existente equivaldría a crear uno nuevo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0003**. |
+| Estado | Concluido |
+| Comentario | Se preserva la identidad del ítem y su origen. **Versión 02.00 (issue #110, DEC-042 C1/C4 y DEC-046):** actualización en dos pasos en la pantalla única **ART-MKP-REA-0001**. Solo cambia prioridad, no producto, origen, fecha ni cantidad sugerida (PEN-033). |
 
 | Código ilación | ILA-0048 |
 | --- | --- |
 | Nombre | Eliminación de ítem de la lista de reabastecimiento |
-| Versión | 01.00 |
-| Fecha | 02/10/2026 |
+| Versión | 02.00 |
+| Fecha | 26/11/2026 |
 | Autor de la plantilla | AUT-0001 |
 | Actor | ACT-0001 |
 | Fuente | Entrevista 3 |
 | Experto | Ninguno |
 | Código educción | EDU-0016 |
 | Código especificación | ESP-0048 |
-| Precondición | 1. La base de datos **DB_FARMASIL** está creada.<br>2. El usuario tiene una sesión activa con rol 'Administrador'.<br>3. Se valida la conexión con la base de datos **DB_FARMASIL**.<br>4. La tabla **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** tiene entradas válidas.<br>5. Se carga el mockup **ART-MKP-REA-0004**. |
-| Procedimiento | 1. La dueña selecciona un ítem en **REA-TBL-LISTA-REABASTECIMIENTO**.<br>2. La dueña presiona **REA-BTN-ELIMINAR-ITEM**.<br>3. El sistema muestra el modal **REA-MDL-CONFIRMAR-ELIMINACION** con el mensaje **REA-TXT-MSJ**: "¿Está seguro de quitar este ítem de la lista de reabastecimiento?"<br>4. Si la dueña presiona **REA-BTN-CONFIRMAR-SI**, el sistema elimina el registro de **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>5. Si la dueña presiona **REA-BTN-CONFIRMAR-NO**, el sistema cierra el modal sin realizar cambios.<br>6. El sistema actualiza **REA-TBL-LISTA-REABASTECIMIENTO**. |
-| Postcondición | 1. El ítem queda eliminado de **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>2. El ítem deja de mostrarse en **REA-TBL-LISTA-REABASTECIMIENTO**.<br>3. No se produce ninguna violación de integridad referencial: ninguna otra tabla depende de un ítem de esta lista. |
-| Código de artefactos asociados | ART-MKP-REA-0001, ART-MKP-REA-0004 |
+| Precondición | 1. La base de datos **DB_FARMASIL** está creada y la conexión funciona.<br>2. El usuario tiene sesión activa con rol `Administrador`.<br>3. Hay al menos un ítem en **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO**.<br>4. Está cargado **ART-MKP-REA-0001**. |
+| Procedimiento | 1. La dueña selecciona el ítem en **REA-TBL-LISTA-REABASTECIMIENTO** de **ART-MKP-REA-0001** y pulsa **REA-BTN-ELIMINAR-ITEM**.<br>2. El sistema abre **REA-MDL-CONFIRMAR-ELIMINACION** (sobre la misma pantalla) y muestra en **REA-TXT-MSJ**: «¿Está seguro de quitar este ítem de la lista de reabastecimiento?».<br>3. Si pulsa **REA-BTN-CONFIRMAR-NO**, se cierra el modal sin cambios.<br>4. Si pulsa **REA-BTN-CONFIRMAR-SI**, se elimina físicamente de **DB_FARMASIL.TBL_LISTA_REABASTECIMIENTO** solo el ítem seleccionado.<br>5. El sistema actualiza **REA-TBL-LISTA-REABASTECIMIENTO** y los contadores derivados. |
+| Postcondición | 1. El ítem seleccionado deja de existir y de mostrarse en la lista cuando se confirma.<br>2. El resto de ítems y las cotizaciones históricas del medicamento permanecen inalterados.<br>3. La restricción de unicidad por producto (DEC-020) permite incorporar de nuevo el medicamento después de la eliminación.<br>4. Cancelar no modifica la base de datos. |
+| Código de artefactos asociados | ART-MKP-REA-0001 |
 | Importancia | Vital |
-| Estado | Pendiente |
-| Comentario | La eliminación es física, a diferencia de la mayoría del catálogo, porque las cotizaciones de EDU-0017 se asocian al medicamento y al proveedor, no al ítem de esta lista. Quitar un ítem significa que ya fue pedido o que se decidió no cotizarlo.<br>Queda Pendiente por la dependencia del mockup **ART-MKP-REA-0004**. |
+| Estado | Concluido |
+| Comentario | La baja sigue siendo física porque las cotizaciones no dependen del identificador del ítem. **Versión 02.00 (issue #110, DEC-042 C1/C4; DEC-047):** el modal se integra en **ART-MKP-REA-0001** sin citar pantallas inexistentes 0002–0004. La eliminación permite reingreso posterior del mismo producto conforme a DEC-020. |
 
 ---
 
